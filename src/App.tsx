@@ -1,13 +1,17 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import MainPage from './pages/MainPage'
+import Header from './components/layout/Header'
 
 function App() {
-  return (
-    <div className="App">
-      프로젝트 시작
-    </div>
-  );
+	return (
+		<Router>
+			<Header />
+			<Routes>
+				<Route path='/' element={<MainPage />} />
+			</Routes>
+		</Router>
+	)
 }
 
-export default App;
+export default App
