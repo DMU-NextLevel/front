@@ -5,6 +5,7 @@ const MainPage:React.FC  = ()=> {
     return (
         <div>
             <Login/>
+            
         </div>
     )
 
