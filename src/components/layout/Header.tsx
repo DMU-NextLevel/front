@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import LogoImage from '../../assets/images/withuLogo.png'
 import CategoryImage from '../../assets/images/category.png'
@@ -7,8 +7,23 @@ import UserImage from '../../assets/images/default_profile.png'
 import NotificationImage from '../../assets/images/bell.png'
 import { useNavigate } from 'react-router-dom'
 
+interface HeaderBaseProps {
+	isLoggedIn: boolean
+	showCategoryMenu?: boolean
+	onLogoClick?: () => void
+	onLoginClick?: () => void
+	onProfileClick?: () => void
+	onProjectCreate?: () => void
+	onCategoryClick?: () => void
+	showSearchBar?: boolean
+	showNotification?: boolean
+}
+
 export const HeaderMain: React.FC = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false)
+	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+	const [showNotification, setShowNotification] = useState<boolean>(false)
+	const notificationRef = useRef<HTMLDivElement>(null)
 	const navigate = useNavigate()
 
 	const handleLogoClick = () => {
@@ -25,16 +40,52 @@ export const HeaderMain: React.FC = () => {
 		setIsOpen(!isOpen)
 	}
 
+	const handleProjectCreate = () => {
+		navigate('/project/create')
+	}
+
+	const handleProfileClick = () => {
+		navigate('/profile')
+	}
+
+	const toggleNotification = () => {
+		setShowNotification((prev) => !prev)
+	}
+
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
+				setShowNotification(false)
+			}
+		}
+
+		if (showNotification) {
+			document.addEventListener('mousedown', handleClickOutside)
+		} else {
+			document.removeEventListener('mousedown', handleClickOutside)
+		}
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside)
+		}
+	}, [showNotification])
+
 	return (
 		<div>
 			<HeaderLayout>
 				<TopHeader>
 					<Logo src={LogoImage} onClick={handleLogoClick} />
-					{/*<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>*/}
-					<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
-						<Notification src={NotificationImage} />
-						<UserProfile src={UserImage} />
-					</div>
+					{!isLoggedIn ? (
+						<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
+					) : (
+						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
+							<NotificationWrapper>
+								<Notification src={NotificationImage} onClick={toggleNotification} />
+								{showNotification && <NotificationBox ref={notificationRef}>새 알림이 없습니다</NotificationBox>}
+							</NotificationWrapper>
+							<UserProfile src={UserImage} onClick={handleProfileClick} />
+						</div>
+					)}
 				</TopHeader>
 			</HeaderLayout>
 			<HeaderNavbar>
@@ -45,7 +96,7 @@ export const HeaderMain: React.FC = () => {
 				<p>인기</p>
 				<p>신규</p>
 				<p>마감임박</p>
-				<ProjectButton>프로젝트 시작하기</ProjectButton>
+				<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
 				<SearchBar>
 					<SearchInput type='text' placeholder='검색어를 입력하세요' />
 					<Search src={SearchImage} alt='' />
@@ -74,6 +125,7 @@ export const HeaderMain: React.FC = () => {
 }
 
 export const HeaderSub: React.FC = () => {
+	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
 	const navigate = useNavigate()
 
 	const handleLoginClick = () => {
@@ -82,6 +134,10 @@ export const HeaderSub: React.FC = () => {
 
 	const handleLogoClick = () => {
 		navigate('/')
+	}
+
+	const handleProjectCreate = () => {
+		navigate('/project/create')
 	}
 
 	return (
@@ -93,16 +149,19 @@ export const HeaderSub: React.FC = () => {
 					<p>신규</p>
 					<p>마감임박</p>
 				</HeaderNavbar>
-				{/*<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>*/}
-				<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
-					<SearchBar>
-						<SearchInput type='text' placeholder='검색어를 입력하세요' />
-						<Search src={SearchImage} alt='' />
-					</SearchBar>
-					<Notification src={NotificationImage} />
-					<UserProfile src={UserImage} />
-                    <ProjectButton>프로젝트 시작하기</ProjectButton>
-				</div>
+				{!isLoggedIn ? (
+					<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
+				) : (
+					<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
+						<SearchBar>
+							<SearchInput type='text' placeholder='검색어를 입력하세요' />
+							<Search src={SearchImage} alt='' />
+						</SearchBar>
+						<Notification src={NotificationImage} />
+						<UserProfile src={UserImage} />
+						<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
+					</div>
+				)}
 			</TopHeader>
 		</HeaderLayout>
 	)
@@ -170,8 +229,9 @@ const ProjectButton = styled.button`
 	background-color: #a66cff;
 	color: white;
 	border: none;
-	font-size: 20px;
-	width: 190px;
+	font-size: 18px;
+	font-weight: bold;
+	width: 170px;
 	height: 40px;
 	border-radius: 10px;
 	&:hover {
@@ -209,7 +269,7 @@ const Search = styled.img`
 
 const CategoryListLayout = styled.div<{ isOpen: boolean }>`
 	overflow: hidden;
-	max-height: ${({ isOpen }) => (isOpen ? '200px' : '0')};
+	max-height: ${({ isOpen }) => (isOpen ? '230px' : '0')};
 	opacity: ${({ isOpen }) => (isOpen ? '1' : '0')};
 	transition: max-height 0.6s ease, opacity 0.6s ease;
 	background-color: #f3f3f3;
@@ -225,15 +285,24 @@ const CategoryList = styled.div`
 	width: 100%;
 	padding: 0 80px;
 	margin-top: 8px;
-	grid-template-columns: repeat(auto-fill, minmax(20%, auto));
+	padding-bottom: 20px;
+	grid-template-columns: repeat(auto-fill, minmax(18%, auto));
 	column-gap: 30px;
+	row-gap: 15px;
 	justify-content: center;
 `
 
 const CategoryListItem = styled.p`
 	font-size: 18px;
-	width: 60px;
+	width: 60%;
 	margin: 10px 0;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #aaaaaa;
+	&:hover {
+		cursor: pointer;
+		background-color: #eaeaea;
+		transition: background-color 0.2s ease;
+	}
 `
 
 const UserProfile = styled.img`
@@ -251,4 +320,22 @@ const Notification = styled.img`
 	&:hover {
 		cursor: pointer;
 	}
+`
+
+const NotificationWrapper = styled.div`
+	position: relative;
+`
+
+const NotificationBox = styled.div`
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: 10px;
+	width: 250px;
+	height: 300px;
+	background-color: #f2f2f2;
+	border-radius: 15px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+	z-index: 100;
 `
