@@ -101,7 +101,7 @@ const ProjectTitle = styled.span`
   line-height: 1.3;
 `;
 
-const RankingList = () => {
+const RankingList:React.FC = () => {
   return (
     <Wrapper>
       <Title>실시간 랭킹</Title>
