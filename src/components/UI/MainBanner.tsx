@@ -42,15 +42,15 @@ export default SimpleSlider;
 
 // styled-components로 스타일링
 const SliderWrapper = styled.div`
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
+  width: 120%;
+  max-width: 800px;
+  margin: 0 auto 0 20px;
   position: relative;
 `;
 
 const Slide = styled.div`
   width: 100%;
-  height: 300px;
+  height: 230px;
   background-color: #ccc;
   display: flex;
   justify-content: center;

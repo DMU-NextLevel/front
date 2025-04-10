@@ -5,10 +5,10 @@ const BannerWrapper = styled.div`
   background: linear-gradient(to bottom, #a064ff, #b1e1ff);
   padding: 40px 20px;
   border-radius: 8px;
-  width: 900px;
+  width: 120%;
   text-align: left;
-  max-width: 1000px;
-  margin: 60px auto;
+  max-width: 950px;
+  margin: 120px auto 200px 20px;
 `;
 
 const Title = styled.h2`
