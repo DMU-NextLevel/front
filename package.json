@@ -9,8 +9,8 @@
 		"@testing-library/user-event": "^13.2.1",
 		"@types/jest": "^27.0.1",
 		"@types/node": "^16.7.13",
-		"@types/react": "^19.0.0",
-		"@types/react-dom": "^19.0.0",
+		"@types/react": "19.1.2",
+		"@types/react-dom": "19.1.2",
 		"axios": "^1.8.3",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
@@ -46,5 +46,8 @@
 			"last 1 safari version"
 		]
 	},
-	"packageManager": "yarn@1.22.19"
+	"packageManager": "yarn@1.22.19",
+	"devDependencies": {
+		"@types/react-slick": "^0.23.13"
+	}
 }
