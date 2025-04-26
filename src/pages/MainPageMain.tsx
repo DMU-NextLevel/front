@@ -12,12 +12,11 @@ const MainPage: React.FC = () => {
   return (
     <MainWrapper>
         <MainBanner />
-        <div style={{ margin: "0 10%", padding: "20px" }}>
-        <MainContentLine1>
-          <RecommendProject />
-          <RankingList />
-        </MainContentLine1>
-        </div>
+        <RecommendProject />
+        <RankingList />
+        <RealTimeFeed />
+        <FollowProjectBanner />
+        <PromoBanner />
     </MainWrapper>
   );
 };
@@ -27,20 +26,14 @@ export default MainPage;
 
 const MainWrapper = styled.div`
   width: 100%;
+  
   margin-left: 0;        // 👈 왼쪽 정렬
   margin-right: auto;    // 👈 오른쪽 여백만 자동
+  
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 `;
 
-const MainContentLine1 = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin: 0 auto;
-  padding: 0 20px;
-  box-sizing: border-box;
-`;
 
 

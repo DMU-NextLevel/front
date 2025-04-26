@@ -3,20 +3,56 @@ import styled from 'styled-components';
 
 const RecommendedProject = () => {
   const projects = [
-    { id: 1, title: '프로젝트 1', percent: 40, image: '' },
-    { id: 2, title: '프로젝트 2', percent: 20, image: '' },
-    { id: 3, title: '프로젝트 3', percent: 100, image: '' },
-  
+    {
+      id: 1,
+      title: 'HoverAir X1: 셀프 비행 카메라',
+      percent: 40,
+      image: 'https://i.ebayimg.com/images/g/T9UAAOSweV9lXHQs/s-l400.jpg'
+    },
+    {
+      id: 2,
+      title: 'Drumi: 발로 작동하는 세탁기',
+      percent: 20,
+      image: 'https://img1.daumcdn.net/thumb/R800x0/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F255A414858B3CB532C&scode=mtistory2'
+    },
+    {
+      id: 3,
+      title: 'Nomad 에너지 드링크',
+      percent: 100,
+      image: 'https://www.yankodesign.com/images/design_news/2025/04/draft-coffeejack/coffeejack_v2_3.jpg'
+    },
+    {
+      id: 4,
+      title: 'COFFEEJACK V2: 휴대용 에스프레소 머신',
+      percent: 55,
+      image: 'https://cdn.homecrux.com/wp-content/uploads/2025/04/COFFEEJACK-V2-Portable-Espresso-machine-2.jpg'
+    },
+    {
+      id: 5,
+      title: 'Pebble Time: 스마트워치',
+      percent: 75,
+      image: 'https://i.kickstarter.com/assets/012/032/069/46817a8c099133d5bf8b64aad282a696_original.png?anim=false&fit=cover&gravity=auto&height=576&origin=ugc&q=92&sig=rOTB6R5uOmKTlUpnqYLqKALPN0hricwUTf950LCIVrI%3D&v=1463725702&width=1024'
+    },
+    {
+      id: 6,
+      title: 'Glyph: 몰입형 헤드셋',
+      percent: 90,
+      image: 'https://kr.aving.net/news/photo/201702/1375955_549261_1410.jpg'
+    }
   ];
 
   return (
     <Container>
-      <Title>맞춤 추천 TOP3</Title>
+      <Title>맞춤 추천 TOP6</Title>
       <CardList>
         {projects.map((project) => (
           <ImageTextItem key={project.id}>
             <ImageWrapper>
-              {!project.image && <NoImage>이미지 없음</NoImage>}
+              {project.image ? (
+                <StyledImage src={project.image} alt={project.title} />
+              ) : (
+                <NoImage>이미지 없음</NoImage>
+              )}
             </ImageWrapper>
             <TextSection>
               <Percent>{project.percent}% 달성</Percent>
@@ -25,6 +61,7 @@ const RecommendedProject = () => {
           </ImageTextItem>
         ))}
       </CardList>
+      <LinkToRecommand href="/">추천 프로젝트 보러가기</LinkToRecommand>
     </Container>
   );
 };
@@ -34,20 +71,20 @@ export default RecommendedProject;
 // ✅ styled-components 정리
 
 const Container = styled.div`
-  width: 100%;
+  width: 70%;
   max-width: 1200px;
-  padding: 40px 20px;
+  padding: 0px 20px;
   margin: 0 auto;
 `;
 
 const Title = styled.h2`
-  font-size: 25px;
+  font-size: 20px;
   margin-bottom: 20px;
 `;
 
 const CardList = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 22%); /* 3열 */
+  grid-template-columns: repeat(3, 1fr); /* 3열 */
   gap: 40px;
 `;
 
@@ -55,6 +92,7 @@ const ImageTextItem = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  border-radius: 10px;
 `;
 
 const ImageWrapper = styled.div`
@@ -63,6 +101,28 @@ const ImageWrapper = styled.div`
   background-color: #f0f0f0;
   display: grid;
   place-items: center;
+  border-radius: 10px;
+`;
+
+const StyledImage = styled.img`
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  object-fit: cover;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    filter: brightness(1.05);
+  }
+  
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const NoImage = styled.div`
@@ -85,4 +145,14 @@ const ProjectTitle = styled.div`
   font-weight: 600;
   font-size: 18px;
   margin-top: 4px;
+`;
+
+const LinkToRecommand = styled.a`
+  margin-top: 30px;
+  text-decoration: none;
+  text-align: right;
+  color: inherit;
+  &:hover {
+    text-decoration: underline;
+  }
 `;

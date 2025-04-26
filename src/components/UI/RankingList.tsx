@@ -8,17 +8,13 @@ const projects = [
   { id: 3, title: '테스트용 펀딩품목입니다. 자유롭게 사용하세요.', percent: 100, image: '' },
   { id: 4, title: '테스트용 펀딩품목입니다. 자유롭게 사용하세요.', percent: 70, image: '' },
   { id: 5, title: '테스트용 펀딩품목입니다. 자유롭게 사용하세요.', percent: 40, image: '' },
-  { id: 6, title: '테스트용 펀딩품목입니다. 자유롭게 사용하세요.', percent: 80, image: '' },
 ];
 
 // 전체 컨테이너
-const Wrapper = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 70px;
-  width: 300px;
+const Wrapper = styled.div` 
+  width: 30%;
   background: #fff;
-  padding: 10px;
+  padding: 0 20px;
 `;
 
 // 랭킹 박스
@@ -121,11 +117,21 @@ const RankingList:React.FC = () => {
               <Percent>{item.percent}% 달성</Percent>
             </Info>
           </ImageTextItem>
+          
         ))}
       </List>
+      <LinkToRecommand href="/">추천 프로젝트 보러가기</LinkToRecommand>
     </Wrapper>
   );
 };
-
+const LinkToRecommand = styled.a`
+  margin-top: 30px;
+  text-decoration: none;
+  test-align: right;
+  color: inherit;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
 
 export default RankingList;
