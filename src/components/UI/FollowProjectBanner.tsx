@@ -3,8 +3,6 @@ import styled from 'styled-components';
 
 
 const BannerWrapper = styled.div`
-  width: 90%;
-  max-width: 1200px;
   margin: 40px auto 0 auto;
   text-align: left;
   background-image: url('/123.png');  // <-- public 폴더 기준 경로
@@ -13,10 +11,9 @@ const BannerWrapper = styled.div`
 `;
 
 const BannerContent = styled.div`
-  width: 940px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center;  
 `;
 
 const Title = styled.h2`

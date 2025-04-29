@@ -41,9 +41,24 @@ const RecommendedProject = () => {
     }
   ];
 
+  const ArrowRightCircleIcon: React.FC<{ size?: number; color?: string }> = ({
+      size = 24,
+      color = 'currentColor',
+    }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" style={{ verticalAlign: 'middle' }} className="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+    </svg>
+  );
+  
   return (
     <Container>
-      <Title>맞춤 추천 TOP6</Title>
+      <Title>취향 맞춤 프로젝트</Title>
+      <TextLine>
+        <Text>당신을 위한 추천 프로젝트</Text>
+        <LinkBlock>
+          <LinkToRecommand href="/">추천 프로젝트 보러가기 <ArrowRightCircleIcon size={15} color="#" /></LinkToRecommand>
+        </LinkBlock>
+      </TextLine>
       <CardList>
         {projects.map((project) => (
           <ImageTextItem key={project.id}>
@@ -61,7 +76,7 @@ const RecommendedProject = () => {
           </ImageTextItem>
         ))}
       </CardList>
-      <LinkToRecommand href="/">추천 프로젝트 보러가기</LinkToRecommand>
+      
     </Container>
   );
 };
@@ -73,13 +88,27 @@ export default RecommendedProject;
 const Container = styled.div`
   width: 70%;
   max-width: 1200px;
-  padding: 0px 20px;
+  padding: 0px 0px;
   margin: 0 auto;
 `;
 
 const Title = styled.h2`
   font-size: 20px;
   margin-bottom: 20px;
+`;
+
+const TextLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const Text = styled.p`
+  font-size: 16px;
+  color: #888;
+  margin: 0;
+  padding: 0 0px;
 `;
 
 const CardList = styled.div`
@@ -147,12 +176,32 @@ const ProjectTitle = styled.div`
   margin-top: 4px;
 `;
 
+const LinkBlock = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  font-size: 14px;
+`;
+
+
 const LinkToRecommand = styled.a`
-  margin-top: 30px;
+  font-size: 14px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.6em 0.6em;
+  font-weight: bold;
   text-decoration: none;
-  text-align: right;
   color: inherit;
+  background-image: linear-gradient(45deg,rgb(89, 50, 147) 50%, transparent 50%);
+  background-position: 100%;
+  background-size: 400%;
+  transition: background-position 300ms ease-in-out, color 300ms ease-in-out;
+  border-radius: 50px;
+
   &:hover {
-    text-decoration: underline;
+    background-position: 0;
+    color: #fff;
+    text-decoration: none;
   }
 `;

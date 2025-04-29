@@ -6,17 +6,20 @@ import PromoBanner from "../components/UI/PromoBanner";
 import RankingList from "../components/UI/RankingList";
 import FollowProjectBanner from "../components/UI/FollowProjectBanner";
 import RealTimeFeed from "../components/UI/RealTimeFeed";
-
+import CategoryNav from "../components/UI/CategoryNav";
 
 const MainPage: React.FC = () => {
   return (
+    
     <MainWrapper>
         <MainBanner />
-        <div style={{ margin: "0 10%", padding: "20px" }}>
-        <MainContentLine1>
-          <RecommendProject />
-          <RankingList />
-        </MainContentLine1>
+        <div style={{ margin: "0 10%", padding: "20px"}}>
+          <MainContentLine1>
+            <RecommendProject />
+            <RankingList />
+          </MainContentLine1>
+          <RealTimeFeed />
+          <PromoBanner />
         </div>
     </MainWrapper>
   );
