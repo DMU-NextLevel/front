@@ -8,6 +8,7 @@ import NotificationImage from '../../assets/images/bell.png'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/AuthContext'
 
+
 interface HeaderBaseProps {
 	isLoggedIn: boolean
 	showCategoryMenu?: boolean
@@ -73,23 +74,8 @@ export const HeaderMain: React.FC = () => {
 
 	return (
 		<div>
-			<HeaderLayout>
-				<TopHeader>
-					<Logo src={LogoImage} onClick={handleLogoClick} />
-					{!isLoggedIn ? (
-						<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
-					) : (
-						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
-							<NotificationWrapper>
-								<Notification src={NotificationImage} onClick={toggleNotification} />
-								{showNotification && <NotificationBox ref={notificationRef}>새 알림이 없습니다</NotificationBox>}
-							</NotificationWrapper>
-							<UserProfile src={UserImage} onClick={handleProfileClick} />
-						</div>
-					)}
-				</TopHeader>
-			</HeaderLayout>
 			<HeaderNavbar>
+			<Logo src={LogoImage} onClick={handleLogoClick} />
 				<CategoryMenu onClick={handleCategoryClick}>
 					<Category src={CategoryImage} alt='' />
 					카테고리
@@ -102,22 +88,31 @@ export const HeaderMain: React.FC = () => {
 					<SearchInput type='text' placeholder='검색어를 입력하세요' />
 					<Search src={SearchImage} alt='' />
 				</SearchBar>
+				{!isLoggedIn ? (
+						<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
+					) : (
+						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
+							<NotificationWrapper>
+								<Notification src={NotificationImage} onClick={toggleNotification} />
+								{showNotification && <NotificationBox ref={notificationRef}>새 알림이 없습니다</NotificationBox>}
+							</NotificationWrapper>
+							<UserProfile src={UserImage} onClick={handleProfileClick} />
+						</div>
+					)}
 			</HeaderNavbar>
 			{
 				<CategoryListLayout isOpen={isOpen}>
 					<CategoryList>
-						<CategoryListItem>가전</CategoryListItem>
-						<CategoryListItem>뷰티</CategoryListItem>
-						<CategoryListItem>패션</CategoryListItem>
-						<CategoryListItem>도서</CategoryListItem>
-						<CategoryListItem>굿즈</CategoryListItem>
-						<CategoryListItem>게임</CategoryListItem>
-						<CategoryListItem>만화</CategoryListItem>
-						<CategoryListItem>사진</CategoryListItem>
-						<CategoryListItem>음악</CategoryListItem>
-						<CategoryListItem>교육</CategoryListItem>
-						<CategoryListItem>스포츠</CategoryListItem>
-						<CategoryListItem>푸드</CategoryListItem>
+						<CategoryListItem><i className="bi bi-cpu"></i> 테크/가전</CategoryListItem>
+						<CategoryListItem><i className="bi bi-house"></i> 라이프스타일</CategoryListItem>
+						<CategoryListItem><i className="bi bi-bag"></i> 패션/잡화</CategoryListItem>
+						<CategoryListItem><i className="bi bi-heart-pulse"></i> 뷰티/헬스</CategoryListItem>
+						<CategoryListItem><i className="bi bi-brush"></i> 취미/DIY</CategoryListItem>
+						<CategoryListItem><i className="bi bi-controller"></i> 게임</CategoryListItem>
+						<CategoryListItem><i className="bi bi-book"></i> 교육/키즈</CategoryListItem>
+						<CategoryListItem><i className="bi bi-star"></i> 반려동물</CategoryListItem>
+						<CategoryListItem><i className="bi bi-airplane"></i> 여행/레저</CategoryListItem>
+						<CategoryListItem><i className="bi bi-cup-straw"></i> 푸드/음료</CategoryListItem>
 					</CategoryList>
 				</CategoryListLayout>
 			}
@@ -171,12 +166,13 @@ export const HeaderSub: React.FC = () => {
 const HeaderLayout = styled.div`
 	display: flex;
 	height: 60px;
-	padding: 0 20px;
+	padding: 0 20%;
 	margin: 5px;
-	padding-top: 2vh;
+	padding-top: 5vh;
 	align-items: center;
 	flex-direction: column;
 	padding-right: 60px;
+	
 `
 
 const TopHeader = styled.div`
@@ -207,10 +203,10 @@ const HeaderLink = styled.div`
 const HeaderNavbar = styled.div`
 	display: flex;
 	padding: 0 60px;
-	gap: 60px;
+	gap: 40px;
 	font-size: 20px;
 	font-weight: bold;
-	height: 60px;
+	height: 80px;
 	align-items: center;
 `
 
@@ -283,18 +279,17 @@ const CategoryListLayout = styled.div<{ isOpen: boolean }>`
 
 const CategoryList = styled.div`
 	display: grid;
-	width: 100%;
-	padding: 0 80px;
+	padding: 0 20%;
 	margin-top: 8px;
 	padding-bottom: 20px;
 	grid-template-columns: repeat(auto-fill, minmax(18%, auto));
-	column-gap: 30px;
+	column-gap: 20px;
 	row-gap: 15px;
 	justify-content: center;
 `
 
 const CategoryListItem = styled.p`
-	font-size: 18px;
+	font-size: 16px;
 	width: 60%;
 	margin: 10px 0;
 	padding-bottom: 10px;
