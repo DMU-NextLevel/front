@@ -39,6 +39,10 @@
 			navigate('/login')
 			setIsOpen(false)
 		}
+		const handleSignupClick = () => {
+			navigate('/signup')
+			setIsOpen(false)
+		}
 
 		const handleCategoryClick = () => {
 			setIsOpen(!isOpen)
@@ -91,7 +95,10 @@
 						<Search src={SearchImage} alt='' />
 					</SearchBar>
 					{!isLoggedIn ? (
-							<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
+							<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px' }}>
+								<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
+								<HeaderLink onClick={handleSignupClick}>회원가입</HeaderLink>
+							</div>
 						) : (
 							<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
 								<NotificationWrapper>
@@ -149,6 +156,7 @@
 					</HeaderNavbar>
 					{!isLoggedIn ? (
 						<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
+						//<HeaderLink onClick={handleLoginClick}>회원가입</HeaderLink>
 					) : (
 						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
 							<SearchBar>
@@ -168,12 +176,18 @@
 	const HeaderLayout = styled.div`
 		display: flex;
 		height: 60px;
-		padding: 0 20%;
+		padding: 0 15%;
 		margin: 5px;
 		padding-top: 5vh;
 		align-items: center;
 		flex-direction: column;
 		padding-right: 60px;
+		
+		@media (max-width: 1500px) {
+			padding: 0 10%;
+		}
+		@media (max-width: 1200px) {
+			padding: 0 5%;
 		
 	`
 
@@ -185,26 +199,34 @@
 	`
 
 	const Logo = styled.img`
-		width: 200px;
-		height: 45px;
+		width: 150px;
+		height: 35px;
 		&:hover {
 			cursor: pointer;
 		}
 	`
 
 	const HeaderLink = styled.div`
-		text-decoration: none;
-		color: black;
-		font-size: 16px;
-		margin-left: auto;
-		&:hover {
-			cursor: pointer;
-		}
-	`
+	color: #333;
+	font-size: 16px;
+	font-weight: 500;
+	padding: 10px 10px;
+	border-bottom: 2px solid transparent;
+	transition: all 0.3s ease;
+
+	&:hover {
+		cursor: pointer;
+		border-bottom: 2px solid #a66cff;
+		color : #a66cff;
+		font-weight: 600;
+		transition: all 0.3s ease;
+	}
+`
+
 
 	const HeaderNavbar = styled.div`
 		display: flex;
-		padding: 0 60px;
+		padding: 0 15%;
 		font-size: 20px;
 		font-weight: bold;
 		height: 80px;
@@ -262,43 +284,71 @@
 		background-color: #a66cff;
 		color: white;
 		border: none;
-		font-size: 18px;
-		font-weight: bold;
-		width: 170px;
+		border-radius: 8px;
+		cursor: pointer;
+		font-size: 16px;
+		width: 150px;
 		height: 40px;
-		border-radius: 10px;
+		font-weight: bold;
+		transition: background-color 0.3s;
+		justify-content: between-space;
 		&:hover {
-			cursor: pointer;
+			background-color:rgb(91, 48, 160);
 		}
-	`
+	`;
 
 	const SearchBar = styled.div`
-		width: 350px;
-		height: 50px;
-		background-color: #f3f3f3;
-		display: flex;
-		align-items: center;
-		border-radius: 10px;
-		margin-left: auto;
-	`
-	const SearchInput = styled.input`
-		background-color: #f3f3f3;
-		border: none;
-		height: 35px;
-		width: 290px;
-		margin-left: 10px;
-		font-size: 16px;
-		&:focus {
-			outline: none;
-		}
-	`
-	const Search = styled.img`
-		width: 20px;
-		padding-left: 10px;
-		&:hover {
-			cursor: pointer;
-		}
-	`
+	width: 250px;
+	height: 50px;
+	background-color: #f5f5f5;
+	display: flex;
+	align-items: center;
+	border-radius: 12px;
+	margin-left: auto;
+	padding: 0 12px;
+	box-shadow: inset 0 0 0 2px transparent;
+	transition: 0.3s ease, background-color 0.3s ease;
+
+	&:hover {
+		background-color: #ffffff;
+		box-shadow: inset 0 0 0 2px #a66cff55;
+		transform: scale(1.02);
+	}
+	&:focus-within {
+		box-shadow: inset 0 0 0 2px #a66cff;
+	}
+`
+
+const SearchInput = styled.input`
+	background-color: transparent;
+	border: none;
+	height: 35px;
+	width: 90%;
+	font-size: 16px;
+	color: #333;
+	padding-left: 8px;
+	transition: color 0.3s ease;
+
+	&:focus {
+		outline: none;
+		color: #111;
+	}
+
+	&::placeholder {
+		color: #999;
+		transition: opacity 0.2s ease;
+	}
+`
+
+const Search = styled.img`
+	width: 20px;
+	cursor: pointer;
+	transition: filter 0.3s ease, transform 0.2s ease;
+	&:hover {
+		transform: scale(1.1)	;
+	}
+`
+
 
 	const CategoryListLayout = styled.div<{ isOpen: boolean }>`
 		overflow: hidden;
@@ -325,19 +375,27 @@
 	`
 
 
+
 	const CategoryListItem = styled.p`
 		font-size: 16px;
 		width: 60%;
 		text-align: center;
 		margin: 20px 0;
-		padding-bottom: 10px;
+		padding: 12px 0;
 		border-bottom: 1px solid #aaaaaa;
+		transition: all 0.3s ease;
+		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+		color: #333;
+
 		&:hover {
 			cursor: pointer;
-			background-color: #eaeaea;
-			transition: background-color 0.2s ease;
+			background-color: #f0eaff;
+			color: #6a1b9a;
+			transform: scale(1.05);
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 		}
 	`
+
 
 	const UserProfile = styled.img`
 		width: 50px;
@@ -373,3 +431,4 @@
 		padding: 20px;
 		z-index: 100;
 	`
+

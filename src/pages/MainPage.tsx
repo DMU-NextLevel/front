@@ -13,14 +13,14 @@ const MainPage: React.FC = () => {
     
     <MainWrapper>
         <MainBanner />
-        <div style={{ margin: "0 10%", padding: "20px"}}>
+        <MainContentWrapper>
           <MainContentLine1>
             <RecommendProject />
             <RankingList />
           </MainContentLine1>
           <RealTimeFeed />
           <PromoBanner />
-        </div>
+        </MainContentWrapper>
     </MainWrapper>
   );
 };
@@ -35,6 +35,17 @@ const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+`;
+
+const MainContentWrapper = styled.div`
+  margin: 0 15%;
+  padding: 20px;
+
+  @media (max-width: 1500px) {
+    margin: 0 10%;
+  }
+  @media (max-width: 1200px) {
+    margin: 0 5%;
 `;
 
 const MainContentLine1 = styled.div`

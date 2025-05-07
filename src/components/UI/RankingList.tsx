@@ -57,6 +57,8 @@ const Wrapper = styled.div`
   width: 30%;
   background: #fff;
   padding: 0 20px;
+  border-left: 1px solid #eaeaea;
+  margin-left : 40px;
 `;
 
 // 랭킹 박스
@@ -102,7 +104,7 @@ const Item = styled.li`
 
 // 이미지 감싸는 박스
 const ImageWrapper = styled.div`
-  width: 100px;
+  width: 120px;
   height: 80px;
   background-color: #f0f0f0;
   border-radius: 6px;
