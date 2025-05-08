@@ -29,7 +29,7 @@ export default MainPage;
 
 
 const MainWrapper = styled.div`
-  width: 100%;
+
   margin-left: 0;        // 👈 왼쪽 정렬
   margin-right: auto;    // 👈 오른쪽 여백만 자동
   display: flex;
@@ -39,7 +39,7 @@ const MainWrapper = styled.div`
 
 const MainContentWrapper = styled.div`
   margin: 0 15%;
-  padding: 20px;
+  padding: 20px 0;
 
   @media (max-width: 1500px) {
     margin: 0 10%;

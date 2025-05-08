@@ -4,15 +4,35 @@ import styled from 'styled-components'
 const Footer: React.FC = () => {
 	return (
 		<FooterLayout>
-			<FooterBaro>
-				<p>공지사항</p>
-				<p>고객센터</p>
-			</FooterBaro>
-			<FooterText>
-				일부 상품의 경우 위드유는 통신판매중개자이며 통신판매 당사자가 아닙니다.
-				<br />
-				해당되는 상품의 경우 상품, 상품정보, 거래에 관한 의무와 책임은 판매자에게 있으므로, 각 상품 페이지에서 구체적인 내용을 확인하시기 바랍니다.
-			</FooterText>
+			<FooterHeader>
+				<a href='/'>정책 & 약관 <i className="bi bi-chevron-down"></i></a>
+				<a href='/'><b>개인정보처리방침 <i className="bi bi-box-arrow-up-right"></i></b></a>
+			</FooterHeader>
+
+			<FooterBody>
+				<FooterBaro>
+					<h2><i className="bi bi-info-circle-fill"></i> 위드유 고객센터</h2>
+					<a href='/'>공지사항</a>
+					<a href='/'>고객센터</a>
+					<a href='/'>이용약관</a>
+					<a href='/'>정책 & 약관</a>
+				</FooterBaro>
+				<FooterContent>
+					<FooterText>
+						위드유 대표: 홍길동 | 사업자등록번호: 123-45-67890 | 
+						주소: 서울특별시 강남구 테헤란로 123, 위드유타워 5층 <br />
+						고객센터: 02-1234-5678 | 이메일: support@withu.co.kr
+					</FooterText>
+					<FooterNotice>
+						※ 일부 상품의 경우 위드유는 통신판매중개자이며 통신판매 당사자가 아닙니다.<br />
+						해당 상품의 거래 책임은 판매자에게 있으며, 자세한 내용은 각 상품 페이지를 참고해 주세요.
+					</FooterNotice>
+					
+				</FooterContent>
+			</FooterBody>
+			<FooterFooter>
+				<FooterCopy>ⓒ 2025 WITHU CORP. All RIGHT RESERVED.</FooterCopy>
+			</FooterFooter>
 		</FooterLayout>
 	)
 }
@@ -20,28 +40,94 @@ const Footer: React.FC = () => {
 export default Footer
 
 const FooterLayout = styled.div`
-	display: flex;
-	width: 100%;
-	height: 200px;
+	
 	background-color: #f3f3f3;
 	margin-top: 10vh;
+	padding: 20px 15%;
+`
+
+const FooterHeader = styled.div`
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: 50px;
+	padding: 0 10px;
+	border-top: 1px solid #aaaaaa;
+	border-bottom: 1px solid #aaaaaa;
+	margin-bottom: 20px;
+
+	a {
+		color: rgb(99, 99, 99);
+		text-decoration: none;
+		font-size: 14px;
+		margin-right: 20px;
+		&:hover {
+			color: #000;
+			
+		}
+
+`
+const FooterBody = styled.div`
+	display: flex;
 `
 
 const FooterBaro = styled.div`
 	display: flex;
 	flex-direction: column;
-	border-right: 1px solid #aaaaaa;
-	width: 140px;
+	width: 300px;
 	font-weight: bold;
+	h2{
+		}
 	p {
+		font-size: 14px;
+		margin: 10px 0;
+		
 		&:hover {
 			cursor: pointer;
 		}
 	}
-	padding-left: 30px;
+	a {
+		color: rgb(99, 99, 99);
+		text-decoration: none;
+		font-size: 16px;
+		margin: 10px 0;
+		&:hover {
+			color: #000;
+			text-decoration: underline;
+		}
+
 `
 
 const FooterText = styled.p`
+	color:rgb(99, 99, 99);
+`
+
+const FooterContent = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 	padding-left: 40px;
+	color: #777;
+	font-size: 14px;
+	line-height: 1.6;
+`
+
+const FooterNotice = styled.p`
+	margin-top: 10px;
 	color: #9a9a9a;
+`
+
+const FooterCopy = styled.p`
+	margin-top: auto;
+	font-size: 13px;
+	color: #bbb;
+	test-align: center;
+`
+const FooterFooter = styled.div`
+	justify-content: center;
+	align-items: center;
+	
+	height: 50px;
+	background-color: #f3f3f3;
+	margin-top: 20px;
 `
