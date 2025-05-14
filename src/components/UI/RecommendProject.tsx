@@ -133,7 +133,7 @@ const ImageTextItem = styled.div`
 
 const ImageWrapper = styled.div`
   width: 100%;
-  height: 180px;
+  height: 150px;
   background-color: #f0f0f0;
   display: grid;
   place-items: center;
@@ -142,7 +142,7 @@ const ImageWrapper = styled.div`
 
 const StyledImage = styled.img`
   width: 100%;
-  height: 180px;
+  height: 150px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   object-fit: cover;

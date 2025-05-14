@@ -1,0 +1,28 @@
+[[redirects]]
+    from = "/public/*"
+    to = "https://api.nextlevel.r-e.kr/public/:splat"
+    status = 200
+    force = true
+
+[[redirects]]
+    from = "/social/*"
+    to = "https://api.nextlevel.r-e.kr/social/:splat"
+    status = 200
+    force = true
+
+[[redirects]]
+    from = "/payment/*"
+    to = "https://api.nextlevel.r-e.kr/payment/:splat"
+    status = 200
+    force = true
+
+[[redirects]]
+    from = "/api1/*"
+    to = "https://api.nextlevel.r-e.kr/api1/:splat"
+    status = 200
+    force = true
+
+[[redirects]]
+    from = "/*"
+    to = "/index.html"
+    status = 200

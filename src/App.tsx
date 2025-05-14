@@ -9,6 +9,7 @@ import A from './pages/a';
 import MyPage from './pages/MyPage';
 import MainPage from './pages/MainPage'
 import FundingPage from './pages/FundingPage'
+import Search from './pages/Search';
 import { AuthProvider } from './hooks/AuthContext'
 
 function App() {
@@ -33,6 +34,7 @@ const AppWrapper = () => {
 				<Route path='/idfind' element={<IDFindPage />} />
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/funding' element={<FundingPage />} />
+				<Route path='/search' element={<Search />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
