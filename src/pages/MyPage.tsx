@@ -42,6 +42,14 @@ const MyPage = () => {
     },
   ];
 
+  const formatPhoneWithHyphen = (input: string) => {
+  const numbers = input.replace(/\D/g, '').slice(0, 11); // 숫자만 추출, 최대 11자리
+
+    if (numbers.length < 4) return numbers;
+    if (numbers.length < 8) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+      return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7)}`;
+  };
+
   const allTags = Array.from(new Set(products.flatMap(p => p.tags)));
   const [showRecentView, setShowRecentView] = useState(false);
   const [showSettingsOverlay, setShowSettingsOverlay] = useState(false);
@@ -70,12 +78,16 @@ const MyPage = () => {
   const [tempUserInfo, setTempUserInfo] = useState(userInfo);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field:string) => {
-      setTempUserInfo((prev) => ({
-        ...prev,
-        [field]: e.target.value,
-      }));
-  };
+    const value = e.target.value;
 
+    if(field === 'phone'){
+      const formatted = formatPhoneWithHyphen(value);
+       setTempUserInfo((prev) => ({
+        ...prev,
+        [field]: formatted,
+      }));
+    }
+  }
   const handleCharge = (amout: number) => {
     setPoint(prev => prev + amout);
   };
