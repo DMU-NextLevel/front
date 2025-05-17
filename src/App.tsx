@@ -11,10 +11,12 @@ import MainPage from './pages/MainPage'
 import FundingPage from './pages/FundingPage'
 import Search from './pages/Search';
 import { AuthProvider } from './hooks/AuthContext'
+import ScrollToTop from './hooks/ScrollToTop';
 
 function App() {
 	return (
 		<Router>
+			<ScrollToTop />
 			<AppWrapper />
 		</Router>
 	)
