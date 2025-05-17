@@ -8,8 +8,13 @@ import bannerImage from '../assets/images/banner.png';
 import { useNavigate } from 'react-router-dom';
 import { api, testApi } from '../AxiosInstance';
 import { useAuth } from '../hooks/AuthContext';
+import axios from 'axios';
 
-const Login = () => {
+interface props {
+  setLoginType: React.Dispatch<React.SetStateAction<string>>
+}
+
+const Login = ({setLoginType}:props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -41,6 +46,17 @@ const Login = () => {
         alert("다시 시도해주세요. (서버에러)")
       }
     }
+  }
+
+  const socialLogin = (type:string) => {
+    if (type === 'kakao') {
+      window.open('http://localhost:8080/oauth2/authorization/kakao')
+    } else if (type === 'naver') {
+      window.open('http://localhost:8080/oauth2/authorization/naver')
+    } else if (type === 'google') {
+      window.open('http://localhost:8080/oauth2/authorization/google')
+    }
+    setLoginType(type)
   }
 
   const handleSignup = () => {
@@ -100,9 +116,9 @@ const Login = () => {
 
             <p style={styles.socialText}>다른 방법으로 로그인</p>
             <div style={styles.socialIcons}>
-              <RiKakaoTalkFill style={{ ...styles.iconStyle, background: '#fae100' }} />
-              <SiNaver style={{ ...styles.iconStyle, background: '#03c75a', color: 'white' }} />
-              <FcGoogle style={styles.iconStyle} />
+              <RiKakaoTalkFill style={{ ...styles.iconStyle, background: '#fae100' }} onClick={() => socialLogin('kakao')} />
+              <SiNaver style={{ ...styles.iconStyle, background: '#03c75a', color: 'white' }} onClick={() => { socialLogin('naver')}} />
+              <FcGoogle style={styles.iconStyle} onClick={() => {socialLogin('google')}} />
             </div>
 
             <div style={styles.bottomText}>
