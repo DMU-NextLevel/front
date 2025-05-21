@@ -29,9 +29,6 @@ const AppWrapper = () => {
 	const hideLayout = ['/login', '/signup', '/kakao/callback', '/naver/callback', '/google/callback']
 	const mainPage = ['/']
 
-	useEffect(() => {
-		console.log('로그인 타입 : ', loginType)
-	},[loginType])
 	return (
 		<AuthProvider>
 			{!hideLayout.includes(location.pathname) ? mainPage.includes(location.pathname) ? <HeaderMain /> : <HeaderSub /> : null}
@@ -43,9 +40,9 @@ const AppWrapper = () => {
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/funding' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
-				<Route path={`/google/callback`} element={<SocialLogin loginType={loginType}/>} />
-				<Route path={`/kakao/callback`} element={<SocialLogin loginType={loginType}/>} />
-				<Route path={`/naver/callback`} element={<SocialLogin loginType={loginType}/>} />
+				<Route path={`/google/callback`} element={<SocialLogin loginType={'google'}/>} />
+				<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'}/>} />
+				<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'}/>} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
