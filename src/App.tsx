@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'
 import { HeaderMain, HeaderSub } from './components/layout/Header'
 import Footer from './components/layout/Footer'
@@ -28,6 +28,10 @@ const AppWrapper = () => {
 	const location = useLocation()
 	const hideLayout = ['/login', '/signup', '/kakao/callback', '/naver/callback', '/google/callback']
 	const mainPage = ['/']
+
+	useEffect(() => {
+		console.log('로그인 타입 : ', loginType)
+	},[loginType])
 	return (
 		<AuthProvider>
 			{!hideLayout.includes(location.pathname) ? mainPage.includes(location.pathname) ? <HeaderMain /> : <HeaderSub /> : null}
@@ -39,7 +43,9 @@ const AppWrapper = () => {
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/funding' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
-				<Route path={`/${loginType}/callback/`} element={<SocialLogin loginType={loginType}/>} />
+				<Route path={`/google/callback`} element={<SocialLogin loginType={loginType}/>} />
+				<Route path={`/kakao/callback`} element={<SocialLogin loginType={loginType}/>} />
+				<Route path={`/naver/callback`} element={<SocialLogin loginType={loginType}/>} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
