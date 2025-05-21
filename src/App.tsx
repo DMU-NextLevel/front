@@ -26,7 +26,7 @@ function App() {
 const AppWrapper = () => {
 	const [loginType, setLoginType] = useState<string>('')
 	const location = useLocation()
-	const hideLayout = ['/login', '/signup', '/kakao/callback']
+	const hideLayout = ['/login', '/signup', '/kakao/callback', '/naver/callback', '/google/callback']
 	const mainPage = ['/']
 	return (
 		<AuthProvider>
