@@ -21,6 +21,19 @@
 		showNotification?: boolean
 	}
 
+	const categories = [
+		{ label: '테크/가전', icon: 'bi bi-cpu', tag: '1' },
+		{ label: '라이프스타일', icon: 'bi bi-house', tag: '2' },
+		{ label: '패션/잡화', icon: 'bi bi-bag', tag: '3' },
+		{ label: '뷰티/헬스', icon: 'bi bi-heart-pulse', tag: '4' },
+		{ label: '취미/DIY', icon: 'bi bi-brush', tag: '5' },
+		{ label: '게임', icon: 'bi bi-controller', tag: '6' },
+		{ label: '교육/키즈', icon: 'bi bi-book', tag: '7' },
+		{ label: '반려동물', icon: 'bi bi-star', tag: '8' },
+		{ label: '여행/레저', icon: 'bi bi-airplane', tag: '9' },
+		{ label: '푸드/음료', icon: 'bi bi-cup-straw', tag: '10' },
+	];
+
 	export const HeaderMain: React.FC = () => {
 		const [isOpen, setIsOpen] = useState<boolean>(false)
 		const {isLoggedIn, logout} = useAuth()
@@ -84,6 +97,7 @@
 					<Logo src={LogoImage} onClick={handleLogoClick} />
 					{!isLoggedIn ? (
 							<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px' }}>
+								{isLoggedIn ? '로그인됨' : '로그인안됨'}
 								<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
 								<HeaderLink onClick={handleSignupClick}>회원가입</HeaderLink>
 							</div>
@@ -103,9 +117,9 @@
 					
 					<CategoryMenu onClick={handleCategoryClick}>
 						
-						<NavItem><Category src={CategoryImage} alt='' /> 카테고리</NavItem>
+						<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 					</CategoryMenu>
-					{isLoggedIn ? '로그인됨' : '로그인안됨'}
+					
 					<NavItem>인기</NavItem>
 					<NavItem>신규</NavItem>
 					<NavItem>마감임박</NavItem>
@@ -118,18 +132,23 @@
 				</HeaderNavbar>
 				{
 					<CategoryListLayout isOpen={isOpen}>
+					<CategorySection>
+						<h3>카테고리</h3>
 						<CategoryList>
-							<CategoryListItem><i className="bi bi-cpu"></i> 테크/가전</CategoryListItem>
-							<CategoryListItem><i className="bi bi-house"></i> 라이프스타일</CategoryListItem>
-							<CategoryListItem><i className="bi bi-bag"></i> 패션/잡화</CategoryListItem>
-							<CategoryListItem><i className="bi bi-heart-pulse"></i> 뷰티/헬스</CategoryListItem>
-							<CategoryListItem><i className="bi bi-brush"></i> 취미/DIY</CategoryListItem>
-							<CategoryListItem><i className="bi bi-controller"></i> 게임</CategoryListItem>
-							<CategoryListItem><i className="bi bi-book"></i> 교육/키즈</CategoryListItem>
-							<CategoryListItem><i className="bi bi-star"></i> 반려동물</CategoryListItem>
-							<CategoryListItem><i className="bi bi-airplane"></i> 여행/레저</CategoryListItem>
-							<CategoryListItem><i className="bi bi-cup-straw"></i> 푸드/음료</CategoryListItem>
+							{categories.map((cat) => (
+								<CategoryListItem
+								key={cat.tag}
+								onClick={() =>
+									navigate('/search', {
+									state: { tag: cat.tag }
+									})
+								}
+								>
+								<i className={cat.icon}></i> {cat.label}
+								</CategoryListItem>
+							))}
 						</CategoryList>
+					</CategorySection>
 					</CategoryListLayout>
 				}
 			</HeaderWrapper>
@@ -201,7 +220,7 @@
 					<Logo src={LogoImage} onClick={handleLogoClick} />
 						<CategoryMenu onClick={handleCategoryClick}>
 							
-							<NavItem><Category src={CategoryImage} alt='' /> 카테고리</NavItem>
+							<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 						</CategoryMenu>
 						<NavItem>인기</NavItem>
 						<NavItem>신규</NavItem>
@@ -234,17 +253,19 @@
 					{
 						<CategoryListLayout isOpen={isOpen}>
 							<CategoryList>
-								<CategoryListItem><i className="bi bi-cpu"></i> 테크/가전</CategoryListItem>
-								<CategoryListItem><i className="bi bi-house"></i> 라이프스타일</CategoryListItem>
-								<CategoryListItem><i className="bi bi-bag"></i> 패션/잡화</CategoryListItem>
-								<CategoryListItem><i className="bi bi-heart-pulse"></i> 뷰티/헬스</CategoryListItem>
-								<CategoryListItem><i className="bi bi-brush"></i> 취미/DIY</CategoryListItem>
-								<CategoryListItem><i className="bi bi-controller"></i> 게임</CategoryListItem>
-								<CategoryListItem><i className="bi bi-book"></i> 교육/키즈</CategoryListItem>
-								<CategoryListItem><i className="bi bi-star"></i> 반려동물</CategoryListItem>
-								<CategoryListItem><i className="bi bi-airplane"></i> 여행/레저</CategoryListItem>
-								<CategoryListItem><i className="bi bi-cup-straw"></i> 푸드/음료</CategoryListItem>
-							</CategoryList>
+							{categories.map((cat) => (
+								<CategoryListItem
+								key={cat.tag}
+								onClick={() =>
+									navigate('/search', {
+									state: { tag: cat.tag }
+									})
+								}
+								>
+								<i className={cat.icon}></i> {cat.label}
+								</CategoryListItem>
+							))}
+						</CategoryList>
 						</CategoryListLayout>
 					}
 				</SubHeaderWrapper>
@@ -456,32 +477,36 @@ const Search = styled.img`
 		max-height: ${({ isOpen }) => (isOpen ? '230px' : '0')};
 		opacity: ${({ isOpen }) => (isOpen ? '1' : '0')};
 		transition: max-height 0.6s ease, opacity 0.6s ease;
-		/*display: flex;
-		width: 100%;
-		height: 160px;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-		margin-bottom: 20px;
-		*/
-	`
+		display: flex;
 
+	`
+	const CategorySection = styled.div`
+		margin: 40px 0 ;
+		padding:  0 40px;
+		border-left: 1px solid #ddd;
+		h3 {
+			color: #333;
+			font-size: 14px;
+			font-weight: 600;
+			padding: 0;
+			margin: 0 0 10px 0;
+			}
+	`
 	const CategoryList = styled.div`
 		display: grid;
-		margin-top: 8px;
-		padding: 0 20px 20px 20px;
-		grid-template-columns: repeat(auto-fill, minmax(18%, auto));
-		column-gap: 20px;
-		row-gap: 15px;
-		justify-content: space-between;
-	`
+		margin-top: 2px;
 
-
+		grid-template-columns: repeat(2, 1fr);
+		row-gap: 12px;                         
+		column-gap: 20px;                      
+		min-width: 100px;
+	`;
 
 	const CategoryListItem = styled.p`
-		font-size: 16px;
-		width: 60%;
+		font-size: 14px;
 		text-align: left;
-		margin: 10px 0;
-		padding: 12px 0;
+		margin: 0 0;
+		padding:  0;
 	
 		transition: all 0.3s ease;
 		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
