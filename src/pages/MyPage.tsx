@@ -4,6 +4,21 @@ import Swal from 'sweetalert2';
 
 const MyPage = () => {
 
+  const [homePhone, setHomePhone] = useState({
+    area: '02',
+    number: '',
+  });
+
+  const formatHomePhoneNumber = (input: string) => {
+    const numbersOnly = input.replace(/\D/g, '').slice(0, 7); 
+    if (numbersOnly.length < 4) return numbersOnly;
+     return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
+     };
+
+
+
+
+
   const products = [
     {
       id:1,
@@ -86,15 +101,31 @@ const MyPage = () => {
         ...prev,
         [field]: formatted,
       }));
+    } else {
+      setTempUserInfo((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
     }
-  }
+  };
+
+  const handleHomePhoneChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+
+    if(name ==='number'){
+    const formatted = formatHomePhoneNumber(value);
+    setHomePhone((prev) => ({ ...prev, number: formatted }));
+    } else {
+      setHomePhone((prev) => ({ ...prev, [name]:value }));
+    }
+  };
+
   const handleCharge = (amout: number) => {
     setPoint(prev => prev + amout);
   };
 
   const handleEditClick = (field: string) => {
     setEditFields((prev) => ({ ...prev,[field]: true}));
-   // setTempUserInfo(userInfo);
   };
 
   const handleSaveClick = (field: string) => {
@@ -285,7 +316,12 @@ const MyPage = () => {
     { label: '비밀번호 확인', field: 'passwordcf'}
   ].map(({ label, field }) => (
     <InfoItem key={field}>
-      <Label>{label}</Label>
+      <Label>
+        {label}
+        {['이름', '닉네임', '전화번호', '이메일 주소'].includes(label) && (
+          <RequiredMark> *</RequiredMark>
+        )}
+        </Label>
       <Content>
         {editFields [field as keyof typeof editFields] ? (
           <input
@@ -306,21 +342,74 @@ const MyPage = () => {
       )}
     </InfoItem>
   ))}
+
+  <InfoItem>
+  <Label>집전화번호</Label>
+  <FlexRow>
+    <AreaSelect
+      name="area"
+      value={homePhone.area}
+      onChange={handleHomePhoneChange}
+    >
+      <option value="02">02 (서울)</option>
+      <option value="031">031 (경기)</option>
+      <option value="032">032 (인천)</option>
+      <option value="033">033 (강원)</option>
+      <option value="041">041 (충남)</option>
+      <option value="042">042 (대전)</option>
+      <option value="043">043 (충북)</option>
+      <option value="044">044 (세종)</option>
+      <option value="051">051 (부산)</option>
+      <option value="052">052 (울산)</option>
+      <option value="053">053 (대구)</option>
+      <option value="054">054 (경북)</option>
+      <option value="055">055 (경남)</option>
+      <option value="061">061 (전남)</option>
+      <option value="062">062 (광주)</option>
+      <option value="063">063 (전북)</option>
+      <option value="064">064 (제주)</option>
+
+    </AreaSelect>
+    <HomePhoneInput
+      name="number"
+      type="text"
+      maxLength={8}
+      placeholder="전화번호를 입력해주세요."
+      value={homePhone.number}
+      onChange={handleHomePhoneChange}
+    />
+  </FlexRow>
+</InfoItem>
+
 </ScrollableContent>
   <OverlayFooter>
 
   <ChangeBtn onClick={handleResetClick}>초기화</ChangeBtn>
 
-  <ChangeBtn onClick={async () => {
-  const result = await Swal.fire({
-    title: '변경사항을 저장할까요?',
-    text: '입력한 정보가 저장됩니다.',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: '저장',
-    cancelButtonText: '취소',
-    confirmButtonColor: '#A66CFF',
-    cancelButtonColor: '#ddd',
+  <ChangeBtn 
+    onClick={async () => {
+
+      const {name, nickname, phone, email } = tempUserInfo;
+
+      if( !name.trim() || !nickname.trim() || !phone.trim() || !email.trim()) {
+        await Swal.fire({
+          icon:'error',
+          title: '필수 항목을 입력해주세요.',
+          text: '이름, 닉네임, 전화번호, 이메일은 필수입니다.',
+          confirmButtonColor:'#a66cff',
+        });
+        return;
+      }
+
+      const result = await Swal.fire({
+        title: '변경사항을 저장할까요?',
+        text: '입력한 정보가 저장됩니다.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '저장',
+        cancelButtonText: '취소',
+        confirmButtonColor: '#A66CFF',
+        cancelButtonColor: '#ddd',
   });
 
   if (result.isConfirmed) {
@@ -492,6 +581,13 @@ const TabButton = styled.button<{ active?: boolean }>`
   cursor: pointer;
 `;
 
+const RequiredMark = styled.span`
+  color: #a66cff;
+  font-size: 16px;
+  margin-left: 4px;
+`;
+
+
 
 const MenuButton = styled.button`
   background: none;
@@ -529,6 +625,26 @@ const AvatarImg = styled.img`
   border-radius: 50%;
   object-fit: cover;
   pointer-events:none;
+`;
+
+const FlexRow = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const AreaSelect = styled.select`
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+`;
+
+const HomePhoneInput = styled.input`
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
 `;
 
 const HiddenFileInput = styled.input`
