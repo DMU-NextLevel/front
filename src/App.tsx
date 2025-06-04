@@ -11,6 +11,7 @@ import FundingPage from './pages/FundingPage'
 import Search from './pages/Search';
 import { AuthProvider } from './hooks/AuthContext'
 import ScrollToTop from './hooks/ScrollToTop';
+import { PopupPaymentPage, SuccessPage } from './components/UI/TossPayments';
 
 function App() {
 	return (
@@ -23,7 +24,7 @@ function App() {
 
 const AppWrapper = () => {
 	const location = useLocation()
-	const hideLayout = ['/login', '/signup']
+	const hideLayout = ['/login', '/signup','/popup-payment', '/popup-payment-success']
 	const mainPage = ['/']
 	return (
 		<AuthProvider>
@@ -36,6 +37,8 @@ const AppWrapper = () => {
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/funding/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
+				<Route path='/popup-payment' element={<PopupPaymentPage/>} />
+				<Route path='/popup-payment-success' element={<SuccessPage/>}/>
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
