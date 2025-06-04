@@ -22,22 +22,15 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await testApi.put('/public/login', {
-				email,
-				password,
-			})
+      await testApi
+				.put('/public/login', {
+					email,
+					password,
+				})
+				.then(() => {
+					login('true')
+				})
 
-			const accessToken = response.headers['access']
-			const refreshToken = response.headers['refresh']
-			console.log(refreshToken)
-      console.log(response)
-      console.log(response.headers['Refresh'])
-
-			if (refreshToken || accessToken) {
-        login(accessToken, refreshToken)
-				localStorage.setItem('access', accessToken)
-				localStorage.setItem('refresh', refreshToken)
-			}
       navigate("/")
     } catch(e:any) {
       const errorCode = e.response?.data?.code

@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 // 인증 Context의 타입을 정의합니다.
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: (accessToken: string, refreshToken: string) => void;
+  login: (status:string) => void;
   logout: () => void;
 }
 
@@ -20,27 +20,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // 컴포넌트가 마운트될 때 localStorage에서 refresh 토큰을 확인하여 로그인 상태를 설정합니다.
   useEffect(() => {
-    const refreshToken = localStorage.getItem('refresh');
-    if (refreshToken) {
-      // refresh 토큰이 존재하면 로그인 상태로 설정합니다.
-      // 여기서는 간단히 존재 여부만 확인하지만, 실제로는 토큰 유효성 검사 로직이 필요할 수 있습니다.
-      setIsLoggedIn(true);
-    }
+    const isLogin = localStorage.getItem('LoginStatus')
+		if (isLogin) {
+			// refresh 토큰이 존재하면 로그인 상태로 설정합니다.
+			// 여기서는 간단히 존재 여부만 확인하지만, 실제로는 토큰 유효성 검사 로직이 필요할 수 있습니다.
+			setIsLoggedIn(true)
+		}
   }, []); // 빈 배열은 컴포넌트가 처음 마운트될 때만 실행되도록 합니다.
 
   // 로그인 처리 함수: 토큰을 localStorage에 저장하고 isLoggedIn 상태를 true로 설정합니다.
-  const login = (accessToken: string, refreshToken: string) => {
-    localStorage.setItem('access', accessToken);
-    localStorage.setItem('refresh', refreshToken);
-    setIsLoggedIn(true);
-  };
+  const login = (status: string) => {
+		localStorage.setItem('LoginStatus', status)
+		setIsLoggedIn(true)
+	}
 
-  // 로그아웃 처리 함수: localStorage에서 토큰을 제거하고 isLoggedIn 상태를 false로 설정합니다.
-  const logout = () => {
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
-    setIsLoggedIn(false);
-  };
+	// 로그아웃 처리 함수: localStorage에서 토큰을 제거하고 isLoggedIn 상태를 false로 설정합니다.
+	const logout = () => {
+		localStorage.removeItem('LoginStatus')
+		setIsLoggedIn(false)
+	}
 
   // Context.Provider를 사용하여 하위 컴포넌트에 상태와 함수를 제공합니다.
   return (
