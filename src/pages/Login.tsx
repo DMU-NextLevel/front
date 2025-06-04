@@ -23,7 +23,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       await testApi
-				.post('/public/login', {
+				.put('/public/login', {
 					email,
 					password,
 				})

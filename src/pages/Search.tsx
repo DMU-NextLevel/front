@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import { api } from '../AxiosInstance';
+import { api, testApi } from '../AxiosInstance';
 import noImage from '../assets/images/noImage.jpg';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
@@ -121,7 +121,7 @@ const Search: React.FC = () => {
         desc: true                    // 필요에 따라 정렬 반대 여부
       };
 
-      const response = await api.post<ProjectResponse>(
+      const response = await testApi.post<ProjectResponse>(
         '/public/project/all',
         requestData
       );
