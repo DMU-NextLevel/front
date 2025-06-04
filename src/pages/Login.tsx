@@ -6,7 +6,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 import bannerImage from '../assets/images/banner.png';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../AxiosInstance';
+import { api, testApi } from '../AxiosInstance';
 import { useAuth } from '../hooks/AuthContext';
 
 const Login = () => {
@@ -22,7 +22,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await api.post('/public/login', {
+      const response = await testApi.put('/public/login', {
 				email,
 				password,
 			})
@@ -60,7 +60,7 @@ const Login = () => {
 
   return (
     <>
-      
+
       <style>
         {`
           input[type='password']::-ms-reveal,
@@ -130,7 +130,7 @@ const Login = () => {
           ></motion.div>
 
           <motion.img
-            src={bannerImage}  
+            src={bannerImage}
             alt="withU 설명 이미지"
             style={styles.image}
             initial={{ opacity: 0, scale: 0.9 }}

@@ -53,10 +53,16 @@ const RecommendedProject = () => {
 
   const navigate = useNavigate()
 
-  const handleClick = () => {
-    navigate('/funding')
+  const handleClick = (project:any) => {
+    const query = new URLSearchParams({
+      title: project.title,
+      percent: project.percent.toString(),
+      image: project.image
+    }).toString()
+    navigate(`/funding/${project.id}?${query}`)
+    console.log(project)
   }
-  
+
   return (
     <Container>
       <Title>취향 맞춤 프로젝트</Title>
@@ -68,7 +74,7 @@ const RecommendedProject = () => {
       </TextLine>
       <CardList>
         {projects.map((project) => (
-          <ImageTextItem onClick={handleClick} key={project.id}>
+          <ImageTextItem onClick={() => {handleClick(project)}} key={project.id}>
             <ImageWrapper>
               {project.image ? (
                 <StyledImage src={project.image} alt={project.title} />
@@ -83,7 +89,7 @@ const RecommendedProject = () => {
           </ImageTextItem>
         ))}
       </CardList>
-      
+
     </Container>
   );
 };
@@ -148,13 +154,13 @@ const StyledImage = styled.img`
   object-fit: cover;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
-  
+
   &:hover {
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
     filter: brightness(1.05);
   }
-  
+
   &:active {
     transform: translateY(0) scale(0.98);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
