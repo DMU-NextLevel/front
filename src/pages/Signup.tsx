@@ -127,7 +127,7 @@ const Signup = () => {
 
 	const handleVerifyClick = () => {
     try {
-      testApi.put('/public/login/email',{
+      testApi.post('/public/login/email',{
         email : email,
         key : emailCode
       })
