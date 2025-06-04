@@ -10,6 +10,8 @@ import MyPage from './pages/MyPage';
 import MainPage from './pages/MainPage'
 import FundingPage from './pages/FundingPage'
 import Search from './pages/Search';
+import ProjectCreatePage from './pages/ProjectCreatePage';
+import ProjectInfoPage from './pages/ProjectInfoPage';
 import { AuthProvider } from './hooks/AuthContext'
 import ScrollToTop from './hooks/ScrollToTop';
 
@@ -37,6 +39,8 @@ const AppWrapper = () => {
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/funding' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
+				<Route path="/projectcreate" element={<ProjectCreatePage />} />
+				<Route path="/projectinfo" element={<ProjectInfoPage />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>

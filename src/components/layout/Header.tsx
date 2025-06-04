@@ -49,7 +49,7 @@
 		}
 
 		const handleProjectCreate = () => {
-			navigate('/project/create')
+			navigate('/projectcreate')
 		}
 
 		const handleProfileClick = () => {
@@ -164,7 +164,7 @@
 		}
 
 		const handleProjectCreate = () => {
-			navigate('/project/create')
+			navigate('/projectcreate')
 		}
 
 		const handleProfileClick = () => {

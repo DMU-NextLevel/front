@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Swal from 'sweetalert2';
+import { api } from '../AxiosInstance'
 
 const MyPage = () => {
 
@@ -83,12 +84,12 @@ const MyPage = () => {
   });
   const [tempProfileImage, setTempProfileImage] = useState<string | null>(profileImage);
   const [userInfo, setUserInfo] = useState({
-    name: '김찬영',
-    nickname: '넥스트레벨',
-    phone: '010-6672-6024',
-    email: 'kcy021216@gmail.com',
-    password: '비밀번호 변경하기',
-    passwordcf: '비밀번호 확인',
+    name: '',
+    nickname: '',
+    phone: '',
+    email: '',
+    password: '',
+    passwordcf: '',
   });
   const [tempUserInfo, setTempUserInfo] = useState(userInfo);
 
@@ -158,6 +159,52 @@ const MyPage = () => {
       document.body.style.overflow = '';
     };
   }, [showRecentView, showSettingsOverlay, showPointOverlay]);
+
+  useEffect(() => {
+  api.get('/social/user')
+    .then(response => {
+      const user = response.data.data;
+
+      setUserInfo({
+        name: user.name || '',
+        nickname: user.nickName || '',
+        phone: user.number || '',
+        email: user.email || '',
+        password: '비밀번호 변경하기',
+        passwordcf: '비밀번호 확인',
+      });
+
+      setTempUserInfo({
+        name: user.name || '',
+        nickname: user.nickName || '',
+        phone: user.number || '',
+        email: user.email || '',
+        password: '비밀번호 변경하기',
+        passwordcf: '비밀번호 확인',
+      });
+
+      setPoint(user.point || 0);
+
+      const areaParts = user.areaNumber?.split('-') || [];
+      setHomePhone({
+        area: areaParts[0] || '02',
+        number: areaParts.slice(1).join('') || '',
+      });
+
+      if (user.img) {
+        const imageUrl = `https://your-server.com/images/${user.img}`;
+        setProfileImage(imageUrl);
+        setTempProfileImage(imageUrl);
+      }
+    })
+    .catch(error => {
+      console.error('유저 정보 불러오기 실패:', error);
+    });
+}, []);
+
+
+
+
 
   const handleClick = (label: string) => {
     setShowRecentView(false);
