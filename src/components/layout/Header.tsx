@@ -4,10 +4,8 @@
 	import CategoryImage from '../../assets/images/category.png'
 	import SearchImage from '../../assets/images/search.svg'
 	import UserImage from '../../assets/images/default_profile.png'
-	import NotificationImage from '../../assets/images/bell.png'
 	import { useNavigate } from 'react-router-dom'
 	import { useAuth } from '../../hooks/AuthContext'
-import { px } from 'framer-motion'
 
 
 	interface HeaderBaseProps {
@@ -34,6 +32,19 @@ import { px } from 'framer-motion'
 		{ label: '여행/레저', icon: 'bi bi-airplane', tag: '9' },
 		{ label: '푸드/음료', icon: 'bi bi-cup-straw', tag: '10' },
 	];
+	
+	// 링크 설정 객체
+	const searchLinks = {
+		RECOMMEND: '/search?order=RECOMMEND',
+		NEW: '/search?order=NEW',
+		EXPIRED: '/search?order=EXPIRED',
+		COMPLETED: '/search?order=COMPLETED'
+	};
+	
+	// 링크 생성 함수
+	const createSearchLink = (type: keyof typeof searchLinks) => {
+		return searchLinks[type];
+	};
 
 	export const HeaderMain: React.FC = () => {
 		const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -120,9 +131,9 @@ import { px } from 'framer-motion'
 						<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 					</CategoryMenu>
 					
-					<NavItem>인기</NavItem>
-					<NavItem>신규</NavItem>
-					<NavItem>마감임박</NavItem>
+					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
+					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
+					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
 					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
 					<SearchBar>
 						<SearchInput type='text' placeholder='검색어를 입력하세요' />
@@ -142,7 +153,7 @@ import { px } from 'framer-motion'
 							<i className="bi bi-buildings"></i><div>메이커 스튜디오</div>
 						</CategorySectionButton>
 						<CategorySectionButton bgColor="rgb(230, 246, 255)"  hoverColor="rgb(216, 228, 234)">
-							<i className="bi bi-box2"></i><div>서포터 클럽</div>
+							<i className="bi bi-box2"></i><div>즐겨찾기</div>
 						</CategorySectionButton>
 					</CategorySection>
 					<CategorySection>
@@ -152,10 +163,10 @@ import { px } from 'framer-motion'
 								<CategoryListItem
 								key={cat.tag}
 								onClick={() =>
-									navigate('/search', {
-									state: { tag: cat.tag }
+									navigate(`/search?tag=${cat.tag}`, {
+									  state: cat.tag
 									})
-								}
+								  }
 								>
 								<i className={cat.icon}></i> {cat.label}
 								</CategoryListItem>
@@ -165,16 +176,16 @@ import { px } from 'framer-motion'
 					<CategorySection>
 						<h3>프로젝트</h3>
 						<NavSection>
-								<NavSectionItem><a href="">인기 프로젝트 보기</a></NavSectionItem>
-								<NavSectionItem><a href="">추천 프로젝트</a></NavSectionItem>
-								<NavSectionItem><a href="">신규 프로젝트</a></NavSectionItem>
-								<NavSectionItem><a href="">마감 임박 프로젝트</a></NavSectionItem>
-								<NavSectionItem><a href="">완료된 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>인기 프로젝트 보기</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>추천 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('NEW')}>신규 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('EXPIRED')}>마감 임박 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('COMPLETED')}>완료된 프로젝트</a></NavSectionItem>
 						</NavSection>
-					</CategorySection>
-					<CategorySection>
-						<h3>도구/서비스</h3>
-						<NavSection>
+						</CategorySection>
+						<CategorySection>
+							<h3>도구/서비스</h3>
+							<NavSection>
 								<NavSectionItem><a href="">공지사항</a></NavSectionItem>
 								<NavSectionItem><a href="">고객센터</a></NavSectionItem>
 								<NavSectionItem><a href="/mypage">마이페이지</a></NavSectionItem>
@@ -256,9 +267,9 @@ import { px } from 'framer-motion'
 							
 							<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 						</CategoryMenu>
-						<NavItem>인기</NavItem>
-						<NavItem>신규</NavItem>
-						<NavItem>마감임박</NavItem>
+						<NavItem><a href="/search?order=RECOMMEND">인기</a></NavItem>
+						<NavItem><a href="/search?order=NEW">신규</a></NavItem>
+						<NavItem><a href="/search?order=EXPIRED">마감임박</a></NavItem>
 
 						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px', marginRight: '20px' }}>
 							<SearchBar style={{ marginRight: '20px' }}>
@@ -293,7 +304,7 @@ import { px } from 'framer-motion'
 							<i className="bi bi-buildings"></i><div>메이커 스튜디오</div>
 						</CategorySectionButton>
 						<CategorySectionButton bgColor="rgb(230, 246, 255)"  hoverColor="rgb(216, 228, 234)">
-							<i className="bi bi-box2"></i><div>서포터 클럽</div>
+							<i className="bi bi-box2"></i><div>즐겨찾기</div>
 						</CategorySectionButton>
 					</CategorySection>
 					<CategorySection>
@@ -303,10 +314,10 @@ import { px } from 'framer-motion'
 								<CategoryListItem
 								key={cat.tag}
 								onClick={() =>
-									navigate('/search', {
-									state: { tag: cat.tag }
+									navigate(`/search?tag=${cat.tag}`, {
+									  state: cat.tag
 									})
-								}
+								  }
 								>
 								<i className={cat.icon}></i> {cat.label}
 								</CategoryListItem>
@@ -316,11 +327,11 @@ import { px } from 'framer-motion'
 					<CategorySection>
 						<h3>프로젝트</h3>
 						<NavSection>
-								<NavSectionItem><a href="">인기 프로젝트 보기</a></NavSectionItem>
-								<NavSectionItem><a href="">추천 프로젝트</a></NavSectionItem>
-								<NavSectionItem><a href="">신규 프로젝트</a></NavSectionItem>
-								<NavSectionItem><a href="">마감 임박 프로젝트</a></NavSectionItem>
-								<NavSectionItem><a href="">완료된 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>인기 프로젝트 보기</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>추천 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('NEW')}>신규 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('EXPIRED')}>마감 임박 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('COMPLETED')}>완료된 프로젝트</a></NavSectionItem>
 						</NavSection>
 					</CategorySection>
 					<CategorySection>
@@ -355,7 +366,7 @@ import { px } from 'framer-motion'
 		padding: 0 15%;
 		border-bottom: 1px solidrgb(215, 215, 215);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 아래 방향 그림자 */
-		margin-bottom: 20px;
+		
 	`;
 
 	const TopHeader = styled.div`
@@ -452,6 +463,10 @@ import { px } from 'framer-motion'
 			font-size: 14px;
 			padding: 8px 4px;
 			margin: 0 8px;
+		}
+		a {
+			text-decoration: none;
+			color: #222;
 		}
 	`
 

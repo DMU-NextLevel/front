@@ -55,8 +55,8 @@ const orderOptions = [
 const Search: React.FC = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const currentTag = location.state?.tag || '';
-  const initialTag = searchParams.get('tag') || '';
+  const tagFromState = location.state as string | undefined;
+  const initialTag = tagFromState || searchParams.get('tag') || '';
   const [tag, setTag] = useState(initialTag);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -95,6 +95,14 @@ const Search: React.FC = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const newTag = searchParams.get('tag');
+    if (newTag !== tag) {
+      setTag(newTag || '');
+      fetchProjects(); // URL 파라미터 변경 시 검색 실행
+    }
+  }, [searchParams]);
+
   const getRemainingDays = (expiredDateStr: string): string => {
     const today = new Date();
     const expiredDate = new Date(expiredDateStr);
@@ -116,7 +124,7 @@ const Search: React.FC = () => {
       const requestData = {
         order: order || 'RECOMMEND',
         tag: tag ? [parseInt(tag)] : null,
-        page: parseInt(page) || 1,
+        page: parseInt(page),
         search: searchTerm || null,   // 혹시 검색어가 있다면 포함 (없으면 null)
         desc: true                    // 필요에 따라 정렬 반대 여부
       };
@@ -211,8 +219,8 @@ useEffect(() => {
         </LoadingOverlay>
       )}
       {projects.length === 0 && !loading && <div>검색 결과가 없습니다.</div>}
-      <div>총 <strong >{projects.length}</strong>개의 프로젝트가 있습니다.</div>
-      {error && <ErrorText>{error}</ErrorText>}
+      {projects.length > 0 && <div>총 <strong>{projects.length}</strong>개의 프로젝트가 있습니다.</div>}
+      {/* {error && <ErrorText>{error}</ErrorText>} */}
       
       
       
@@ -239,8 +247,8 @@ useEffect(() => {
                       onClick={() => handleLikeToggle(item.id, item.isRecommend)}
                     />
                   </CardTopWrapper>
-                  id:{item.id}|
-                  page:{item.pageCount}
+                  {/* id:{item.id}|
+                  page:{item.pageCount} */}
                   <CardContent>
                     <InfoRow>{item.completionRate}% 달성</InfoRow>
                     <TitleRow>{item.title}</TitleRow>
