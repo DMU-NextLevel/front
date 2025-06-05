@@ -81,7 +81,11 @@ const Search: React.FC = () => {
 
   observer.current = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting && hasMore) {
-      setPage(prev => (parseInt(prev) + 1).toString());
+      // Prevent duplicate calls to page 1
+      const nextPage = parseInt(page) + 1;
+      if (page !== '0' || nextPage > 1) {
+        setPage(prev => (parseInt(prev) + 1).toString());
+      }
     }
   });
 
@@ -179,11 +183,11 @@ useEffect(() => {
     }
   };
 
-  useEffect(() => {
-    if (page !== '') {
-      fetchProjects();
-    }
-  }, [page]);
+  // useEffect(() => {
+  //   if (page !== '') {
+  //     fetchProjects();
+  //   }
+  // }, [page]);
 
   return (
     <Container>
@@ -247,8 +251,7 @@ useEffect(() => {
                       onClick={() => handleLikeToggle(item.id, item.isRecommend)}
                     />
                   </CardTopWrapper>
-                  {/* id:{item.id}|
-                  page:{item.pageCount} */}
+                  {/* id:{item.id} */}
                   <CardContent>
                     <InfoRow>{item.completionRate}% 달성</InfoRow>
                     <TitleRow>{item.title}</TitleRow>

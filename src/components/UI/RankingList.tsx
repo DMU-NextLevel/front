@@ -52,11 +52,53 @@ const ArrowRightCircleIcon: React.FC<{ size?: number; color?: string }> = ({
 </svg>
 );
 
+
+const RankingList:React.FC = () => {
+  const navigate = useNavigate()
+
+  const handleClick = () => {
+    navigate('/funding')
+  }
+
+  return (
+    <Wrapper>
+      <Title>실시간 랭킹</Title>
+      
+      <List>
+        {projects.map((item, index) => (
+          <ImageTextItem onClick={handleClick} key={item.id}>
+            <RankNumber>{index + 1}</RankNumber>
+            <Info>
+              <ProjectTitle>{item.title}</ProjectTitle>
+              <Percent>{item.percent}% 달성</Percent>
+            </Info>
+            <ImageWrapper>
+              {item.image ? (
+                <img src={item.image} alt={item.title} />
+              ) : (
+                <NoImage>이미지 없음</NoImage>
+              )}
+            </ImageWrapper>
+          </ImageTextItem>
+          
+          
+        ))}
+      </List>
+      <div style={{ textAlign: 'right', marginBottom: '10px', margin: '0' }}>
+        <LinkToRecommand href="/">실시간 랭킹 더보기  <ArrowRightCircleIcon size={15} color="#" />
+        </LinkToRecommand>
+      </div>
+    </Wrapper>
+  );
+};
+
+
+
 // 전체 컨테이너
 const Wrapper = styled.div` 
   width: 30%;
   background: #fff;
-  padding: 0 20px;
+  padding: 40px 0px 0px 20px;
   border-left: 1px solid #eaeaea;
   margin-left : 40px;
 `;
@@ -64,35 +106,34 @@ const Wrapper = styled.div`
 // 랭킹 박스
 const ImageTextItem = styled.div`
   display: flex;
-  align-items: flex-start;  // 👈 숫자와 이미지 모두 위쪽 정렬
-  gap: 12px;                // 숫자와 이미지 사이 간격
-  margin-bottom: 12px
+  align-items: flex-start;  
+  margin-bottom: 12px;
+  justify-content: space-between;
+  margin-bottom: 12px;
   `;
 
 // 랭킹 숫자
 const RankNumber = styled.div`
-  font-weight: bold;        // 👈 "굵은 숫자" 적용
+  font-weight: bold;
   font-size: 22px;
-  width: 30px;
-  text-align: center;
+  width: 20px;
   color: #333;
-  align-self: center;   
-  margin-top: 6px;          // (선택) 미세한 위치 조정
+  margin-top: 6px;
 `;
 
 
 // 제목
-const Title = styled.h3`
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 16px;
+const Title = styled.h2`
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin: 0;
 `;
 
 // 리스트 전체
 const List = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 10px 0 0 0;
 `;
 
 // 개별 아이템
@@ -104,10 +145,10 @@ const Item = styled.li`
 
 // 이미지 감싸는 박스
 const ImageWrapper = styled.div`
-  width: 120px;
-  height: 80px;
+  width: 100px;
+  height: 70px;
   background-color: #f0f0f0;
-  border-radius: 6px;
+  border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -116,18 +157,17 @@ const ImageWrapper = styled.div`
   margin-right: 12px;
   flex-shrink: 0;
 
-  // img 크기 고정
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 이미지 비율 무시하고 딱 채워줌 */
-    border-radius: 6px; /* 테두리 둥글게 */
+    object-fit: cover;
+    border-radius: 3px;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
   }
   &:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
     filter: brightness(1.05);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
@@ -148,6 +188,7 @@ const NoImage = styled.div`
 const Info = styled.div`
   display: flex;
   flex-direction: column;
+  width: 180px;
 `;
 
 // 달성률
@@ -165,44 +206,6 @@ const ProjectTitle = styled.span`
 `;
 
 
-
-const RankingList:React.FC = () => {
-  const navigate = useNavigate()
-
-  const handleClick = () => {
-    navigate('/funding')
-  }
-
-  return (
-    <Wrapper>
-      <Title>실시간 랭킹</Title>
-      
-      <List>
-        {projects.map((item, index) => (
-          <ImageTextItem onClick={handleClick} key={item.id}>
-            <RankNumber>{index + 1}</RankNumber> {/* 숫자 컴포넌트 추가 */}
-            <ImageWrapper>
-              {item.image ? (
-                <img src={item.image} alt={item.title} />
-              ) : (
-                <NoImage>이미지 없음</NoImage>
-              )}
-            </ImageWrapper>
-            <Info>
-              <ProjectTitle>{item.title}</ProjectTitle>
-              <Percent>{item.percent}% 달성</Percent>
-            </Info>
-          </ImageTextItem>
-          
-        ))}
-      </List>
-      <div style={{ textAlign: 'right', marginBottom: '10px', margin: '0' }}>
-        <LinkToRecommand href="/">실시간 랭킹 더보기  <ArrowRightCircleIcon size={15} color="#" />
-        </LinkToRecommand>
-      </div>
-    </Wrapper>
-  );
-};
 
 
 

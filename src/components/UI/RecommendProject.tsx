@@ -6,7 +6,7 @@ const RecommendedProject = () => {
   const projects = [
     {
       id: 1,
-      title: 'HoverAir X1: 셀프 비행 카메라',
+      title: 'HoverAir X1: 셀프 비행 카메라 이온 배터리 전지 튜브 포함',
       percent: 40,
       image: 'https://i.ebayimg.com/images/g/T9UAAOSweV9lXHQs/s-l400.jpg'
     },
@@ -101,13 +101,14 @@ export default RecommendedProject;
 const Container = styled.div`
   width: 70%;
   max-width: 1200px;
-  padding: 0px 0px;
+  padding: 40px 0px;
   margin: 0 auto;
 `;
 
 const Title = styled.h2`
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 20px;
+  margin: 0;
 `;
 
 const TextLine = styled.div`
@@ -118,7 +119,7 @@ const TextLine = styled.div`
 `;
 
 const Text = styled.p`
-  font-size: 16px;
+  font-size: 14px;
   color: #888;
   margin: 0;
   padding: 0 0px;
@@ -127,7 +128,7 @@ const Text = styled.p`
 const CardList = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3열 */
-  gap: 40px;
+  gap: 20px;
 `;
 
 const ImageTextItem = styled.div`
@@ -149,7 +150,7 @@ const ImageWrapper = styled.div`
 const StyledImage = styled.img`
   width: 100%;
   height: 150px;
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   object-fit: cover;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -180,13 +181,14 @@ const TextSection = styled.div`
 const Percent = styled.div`
   color: #A66CFF;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 16px;
 `;
 
 const ProjectTitle = styled.div`
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: 500;
+  font-size: 14px;
   margin-top: 4px;
+  min-height: 40px;
 `;
 
 const LinkBlock = styled.div`
@@ -218,3 +220,7 @@ const LinkToRecommand = styled.a`
     text-decoration: none;
   }
 `;
+
+
+
+

@@ -8,6 +8,7 @@ import FollowProjectBanner from "../components/UI/FollowProjectBanner";
 import RealTimeFeed from "../components/UI/RealTimeFeed";
 import CategoryNav from "../components/UI/CategoryNav";
 import CategorySelector from "./CategorySelector";
+import NewProject from "../components/UI/NewProject";
 
 const categories = [
   { label: '전체', icon: 'bi bi-circle', tag: '' },
@@ -38,6 +39,7 @@ const MainPage: React.FC = () => {
             <RecommendProject />
             <RankingList />
           </MainContentLine1>
+          <NewProject />
           <RealTimeFeed />
           <PromoBanner />
         </MainContentWrapper>
@@ -50,8 +52,8 @@ export default MainPage;
 
 const MainWrapper = styled.div`
   
-  margin-left: 0;        // 👈 왼쪽 정렬
-  margin-right: auto;    // 👈 오른쪽 여백만 자동
+  margin-left: 0;
+  margin-right: auto;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -73,7 +75,7 @@ const MainContentLine1 = styled.div`
   display: flex;
   justify-content: space-between;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0;
   box-sizing: border-box;
 `;
 
