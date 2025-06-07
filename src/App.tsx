@@ -11,6 +11,7 @@ import FundingPage from './pages/FundingPage'
 import Search from './pages/Search';
 import { AuthProvider } from './hooks/AuthContext'
 import ScrollToTop from './hooks/ScrollToTop';
+import Creater from './pages/Creater';
 
 function App() {
 	return (
@@ -36,6 +37,7 @@ const AppWrapper = () => {
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/funding/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
+				<Route path='/creater' element={<Creater />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
