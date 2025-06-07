@@ -45,7 +45,7 @@ const RankingList:React.FC = () => {
         ))}
       </List>
       <div style={{ textAlign: 'right', marginBottom: '10px', margin: '0' }}>
-        <LinkToRecommand href="/">실시간 랭킹 더보기<i className="bi bi-arrow-right-circle"></i></LinkToRecommand>
+        
       </div>
     </Wrapper>
   );
@@ -58,7 +58,7 @@ const Wrapper = styled.div`
   width: 30%;
   background: #fff;
   padding: 40px 0px 0px 40px;
-  border-left: 1px solid #eaeaea;
+  border-left: 1px solid rgb(246, 246, 246);
   margin-left : 40px;
 `;
 
@@ -86,7 +86,8 @@ const RankNumber = styled.div`
 // 제목
 const Title = styled.h2`
   font-size: 24px;
-  margin-bottom: 20px;
+  margin: 0 0 20px 0;
+  
 `;
 
 // 리스트 전체
@@ -165,29 +166,6 @@ const ProjectTitle = styled.span`
   font-size: 14px;
   line-height: 1.3;
   
-`;
-
-
-
-
-
-const LinkToRecommand = styled.a`
-  font-size: 14px;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0.6em 0.6em;
-  font-weight: bold;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.1s;
-  &:hover {
-    text-decoration: none;
-    cursor: pointer;
-    color: #A66CFF;
-    font-size: 14px;
-  }
 `;
 
 export default RankingList;

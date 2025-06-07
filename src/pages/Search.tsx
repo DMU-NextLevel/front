@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { fetchProjectsFromServer } from '../components/UI/fetchProjectsFromServer';
-
+import NewProject from '../components/UI/NewProject';
 
 
 
@@ -117,11 +117,11 @@ const Search: React.FC = () => {
 
     return createdHours <=24 ? 'New' : diffDays < 0 ? '마감' : `${diffDays}일 남음`;
   };
-  
 
 
   const fetchProjects = async () => {
     try {
+      setLoading(true); // 🔐 로딩 시작
       const loadProjects = async () => {
         const data = await fetchProjectsFromServer({ 
           order: order || 'RECOMMEND',
@@ -137,7 +137,11 @@ const Search: React.FC = () => {
           setProjects(data);
         }
       };
-      loadProjects();
+      await Promise.all([
+        loadProjects(),
+        new Promise((resolve) => setTimeout(resolve, 500))
+      ]);
+      
     } catch (error) {
       console.error('프로젝트 불러오기 실패:', error);
       setError('프로젝트 불러오기 실패');
@@ -198,15 +202,17 @@ const Search: React.FC = () => {
           </DotWaveWrapper>
         </LoadingOverlay>
       )}
-      {searchTerm && (
-        <SearchTermWrapper>
-          <SearchTerm>{searchTerm}</SearchTerm> 검색 결과
-          <CloseButton onClick={() => setSearchTerm('')}>
-            <i className="bi bi-x"></i>
-          </CloseButton>
-        </SearchTermWrapper>
-      )}
-      {projects.length === 0 && !loading && <div>검색 결과가 없습니다.</div>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {searchTerm && (
+          <SearchTermWrapper>
+            <SearchTerm>{searchTerm}</SearchTerm> 검색 결과
+            <CloseButton onClick={() => setSearchTerm('')}>
+              <i className="bi bi-x"></i>
+            </CloseButton>
+          </SearchTermWrapper>
+        )}
+        </div>
+      {projects.length === 0 && !loading && <NoResult><i className="bi bi-search"></i><p>검색 결과가 없습니다.</p></NoResult>}
       {projects.length > 0 && <div>총 <strong>{projects.length}</strong>개의 프로젝트가 있습니다.</div>}
       {/* {error && <ErrorText>{error}</ErrorText>} */}
       
@@ -362,25 +368,6 @@ const CategoryItem = styled.div`
   }
 `;
 
-const SelectedTagText = styled.p`
-  font-size: 16px;
-  margin-bottom: 12px;
-  color: #555;
-`;
-const SearchForm = styled.div`
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  align-items: center;
-  flex-wrap: wrap;
-`;
-const Select = styled.select`
-  padding: 8px;
-  margin-left: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-`;
 const OrderTabWrapper = styled.div`
   position: relative;
   display: flex;
@@ -421,35 +408,10 @@ const OrderButton = styled.button`
   }
 `;
 
-
-const Input = styled.input`
-  padding: 8px;
-  margin-left: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-`;
-
-const SearchButton = styled.button`
-  padding: 8px 16px;
-  background: #A66CFF;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-
-  &:hover {
-    background: #944dff;
-  }
-`;
-
-const ErrorText = styled.h3`
-  color: red;
-`;
-
 const CardList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 50px;
+  column-gap: 50px;
   justify-content: space-between;
   overflow: visible;
   position: relative;
@@ -666,9 +628,9 @@ const Tag = styled.span`
 
 
 const LoadingOverlay = styled.div`
-  position: fixed;
-  top: 0;
+  position: absolute;
   left: 0;
+  right: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.6);
@@ -690,7 +652,7 @@ const DotWaveWrapper = styled.div`
 
 const Dot = styled.span`
   width: 10px;
-  height: 10px;
+  height: 10px; 
   background-color: #A66CFF;
   border-radius: 50%;
   margin: 0 5px;
@@ -716,30 +678,31 @@ const Dot = styled.span`
   }
 `;
 
+const NoResult = styled.div`
+  text-align: center; 
+  padding: 130px;
+  color: #888;
+  p {
+    font-size: 32px;
+    color: #888;
+    font-weight: bold;
+  } 
 
-const tag_new = styled.span`
-  background: #A66CFF;
-  padding: 4px 6px;
-  font-size: 10px;
-  border-radius: 6px;
-  color: white;
+  i {
+    font-weight: bold;
+    font-size: 64px;
+  }
 `;
 
-const tag_end = styled.span`
-  background: #A66CFF;
-  padding: 4px 6px;
-  font-size: 10px;
-  border-radius: 6px;
-  color: white;
-`;
+
 
 const SearchTermWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 16px;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: bold;
-  color:rgb(223, 212, 240);
+  color:#888;
 `;
 
 const SearchTerm = styled.span`
@@ -751,5 +714,6 @@ const CloseButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+  padding: 0;
 `;
   

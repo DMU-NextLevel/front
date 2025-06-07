@@ -35,11 +35,15 @@ const MainPage: React.FC = () => {
         
         <MainContentWrapper>
           <CategorySelector categories={categories} />
+          <Line />
           <MainContentLine1>
             <RecommendProject />
             <RankingList />
           </MainContentLine1>
+          <Line />
           <NewProject />
+          <Line />
+          <br/>
           <RealTimeFeed />
           <PromoBanner />
         </MainContentWrapper>
@@ -50,6 +54,7 @@ const MainPage: React.FC = () => {
 export default MainPage;
 
 
+  
 const MainWrapper = styled.div`
   
   margin-left: 0;
@@ -61,14 +66,15 @@ const MainWrapper = styled.div`
 
 const MainContentWrapper = styled.div`
   margin: 0 15%;
-  padding: 20px 0;
+  padding: 0;
 
   @media (max-width: 1500px) {
     margin: 0 10%;
   }
   @media (max-width: 1200px) {
-    margin: 0 5%;
+    margin: 0 2%;
 `;
+
 
 const MainContentLine1 = styled.div`
   width: 100%;
@@ -80,3 +86,12 @@ const MainContentLine1 = styled.div`
 `;
 
 
+const Line = styled.hr`
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color:rgb(246, 246, 246);
+  border: none;
+  margin: 0 auto;
+`;

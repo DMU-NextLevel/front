@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const BannerWrapper = styled.div`
@@ -49,6 +50,7 @@ const Button = styled.button`
 `;
 
 const PromoBanner = () => {
+  const navigate = useNavigate();
   return (
     <BannerWrapper>
       <Title>좋은 아이디어를 수익화 해보는건 어떤가요?</Title>
@@ -58,7 +60,7 @@ const PromoBanner = () => {
           저희가 당신과 함께 하겠습니다, <Highlight>withU</Highlight>
           
         </Description>
-        <Button>프로젝트 등록하기</Button>
+        <Button onClick={() => navigate('/creater')}>프로젝트 등록하기</Button>
       </ContentWrapper>
     </BannerWrapper>
   );

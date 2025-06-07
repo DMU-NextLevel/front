@@ -34,7 +34,7 @@ const RecommendedProject = () => {
       <TextLine>
         <Text>당신을 위한 추천 프로젝트</Text>
         <LinkBlock>
-          <LinkToRecommand href="/">추천 프로젝트 보러가기 <ArrowRightCircleIcon size={15} color="#" /></LinkToRecommand>
+          <LinkToRecommand href="/search?order=RECOMMEND">추천 프로젝트 보러가기 <ArrowRightCircleIcon size={15} color="#" /></LinkToRecommand>
         </LinkBlock>
       </TextLine>
       <CardList>

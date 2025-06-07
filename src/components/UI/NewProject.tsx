@@ -23,7 +23,10 @@ const NewProject: React.FC = () => {
   return (
     <Container>
         <Title>신규 프로젝트</Title>
-        <Text>신규 프로젝트를 만나보세요!</Text>
+        <TextLine>
+          <Text>신규 프로젝트를 만나보세요!</Text>
+          <LinkToRecommand href="/search?order=USER">신규 프로젝트 더보기<i className="bi bi-arrow-right-circle"></i></LinkToRecommand>
+        </TextLine>
         {projects.length == 0 && <p>프로젝트가 없습니다.</p>}
         <CardList>
         {projects.map((item, index) => {
@@ -62,6 +65,7 @@ const NewProject: React.FC = () => {
         })}
       </CardList>
 
+
       
     </Container>
   );
@@ -81,12 +85,38 @@ const Title = styled.h2`
   
 `;
 
+const TextLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
 const Text = styled.p`
   font-size: 14px;
   color: #888;
   margin: 0;
   padding: 0 0px;
-  margin-bottom: 20px;
+
+`;
+
+const LinkToRecommand = styled.a`
+  font-size: 14px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.6em 0.6em;
+  font-weight: bold;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.1s;
+  &:hover {
+    text-decoration: none;
+    cursor: pointer;
+    color: #A66CFF;
+    font-size: 14px;
+  } 
 `;
 
 const CardList = styled.div`

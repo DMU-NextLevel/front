@@ -47,6 +47,8 @@
 		return searchLinks[type];
 	};
 
+
+
 	export const HeaderMain: React.FC = () => {
 		const [isOpen, setIsOpen] = useState<boolean>(false)
 		const {isLoggedIn, logout} = useAuth()
@@ -63,6 +65,10 @@
 			}
 		};
 
+		const handleLogout = () => {
+			logout(); // localStorage에서 제거되고 로그인 상태가 false로 바뀜
+			window.location.href = '/login'; // 필요하다면 로그인 페이지로 리디렉션
+		}
 
 		const handleLogoClick = () => {
 			navigate('/')
@@ -123,6 +129,7 @@
 							</div>
 						) : (
 							<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
+								<HeaderLink onClick={handleLogout}>로그아웃</HeaderLink>
 								<NotificationWrapper>
 									<Notification onClick={toggleNotification}>
 										<i className={showNotification ? 'bi bi-bell-fill' : 'bi bi-bell'}></i>
@@ -391,7 +398,7 @@
 			padding: 0 10%;
 		}
 		@media (max-width: 1200px) {
-			padding: 0 5%;
+			padding: 0 2%;
 		
 	`;
 	
@@ -615,6 +622,7 @@
 		padding:  0 50px 0 20px;
 		border-left: 1px solid #ddd;
 		min-width : 150px;
+		font-size: 14px;
 		h3 {
 			color: #333;
 			font-size: 14px;
@@ -622,6 +630,9 @@
 			padding: 0;
 			margin: 0 0 15px 0;
 			}
+		@media (max-width: 1200px) {
+			font-size: 13px;
+		}
 	`
 	const CategoryList = styled.div`
 		display: grid;
@@ -631,6 +642,7 @@
 		row-gap: 15px;                         
 		column-gap: 40px;                      
 		min-width: 100px;
+		
 	`;
 	const CategorySectionButton = styled.div<{
 		bgColor?: string;
@@ -674,11 +686,9 @@
 	
 
 	const CategoryListItem = styled.p`
-		font-size: 15px;
 		text-align: left;
 		margin: 0 0;
 		padding:  0;
-	
 		transition: all 0.3s ease;
 		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 		color: #333;
@@ -694,6 +704,7 @@
 			text-decoration: none;
 			color: #333;
 		}
+		
 	`
 
 	const NavSection = styled.div`
@@ -704,7 +715,7 @@
 		row-gap: 12px;                         
 		column-gap: 20px;                      
 		min-width: 100px;
-		font-size: 15px;
+
 
 		a{
 			text-decoration: none;
@@ -712,7 +723,6 @@
 		}
 	`;
 	const NavSectionItem = styled.p`
-		font-size: 15px;
 		text-align: left;
 		margin: 0 0 15px 0;
 		padding:  0;
