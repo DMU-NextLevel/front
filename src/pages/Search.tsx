@@ -9,31 +9,6 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { fetchProjectsFromServer } from '../components/UI/fetchProjectsFromServer';
 
-interface ProjectItem {
-  id: number;
-  title: string;
-  titleImg: string;
-  completionRate: number;
-  recommendCount: number;
-  tags: string[];
-  pageCount: number;
-  totalCount: number;
-  userCount: number;
-  createdAt: string;
-  isRecommend: boolean;
-  expired: string;
-  isExpired: boolean;
-}
-
-interface ProjectResponse {
-  message: string;
-  data: {
-    projects: ProjectItem[];
-    totalCount: number;
-    pageCount: number;
-    page: number;
-  };
-}
 
 
 
