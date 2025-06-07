@@ -11,7 +11,7 @@ import FundingPage from './pages/FundingPage'
 import Search from './pages/Search';
 import { AuthProvider } from './hooks/AuthContext'
 import ScrollToTop from './hooks/ScrollToTop';
-import { PopupPaymentPage, SuccessPage } from './components/UI/TossPayments';
+import { FailPage, PopupPaymentPage, SuccessPage } from './components/UI/TossPayments'
 
 function App() {
 	return (
@@ -37,8 +37,9 @@ const AppWrapper = () => {
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/funding/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
-				<Route path='/popup-payment' element={<PopupPaymentPage/>} />
-				<Route path='/popup-payment-success' element={<SuccessPage/>}/>
+				<Route path='/popup-payment' element={<PopupPaymentPage />} />
+				<Route path='/popup-payment-success' element={<SuccessPage />} />
+				<Route path='/fail' element={<FailPage />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>

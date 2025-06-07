@@ -208,6 +208,7 @@ return (
 export function SuccessPage() {
 	const navigate = useNavigate()
 	const [searchParams] = useSearchParams()
+	const didConfirm = useRef(false)
 
 	useEffect(() => {
 		// 쿼리 파라미터 값이 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
@@ -219,21 +220,32 @@ export function SuccessPage() {
 		}
 
 		async function confirm() {
+			// 개발 환경에서 요청 한번만 보내도록 설정
+			if (didConfirm.current) return
+			didConfirm.current = true
+
 			const response = await api.get(`/payment/toss/approve?orderId=${requestData.orderId}&paymentKey=${requestData.paymentKey}&amount=${requestData.amount}`, {
 				headers: {
 					'Content-Type': 'application/json',
-				}
+				},
 			})
 
-			const json = await response.json()
+			const json = await response.data
 
-			if (!response.ok) {
+			if (!response.status || response.status >= 400) {
 				// 결제 실패 비즈니스 로직을 구현하세요.
 				navigate(`/fail?message=${json.message}&code=${json.code}`)
 				return
 			}
 
 			// 결제 성공 비즈니스 로직을 구현하세요.
+			const timeout = setTimeout(() => {
+				if (window.opener && !window.opener.closed) {
+					window.close()
+				}
+			}, 500)
+
+			return () => clearTimeout(timeout)
 		}
 		confirm()
 	}, [])
