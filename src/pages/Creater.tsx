@@ -18,34 +18,6 @@ const Container = styled.div`
   background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
 `;
 
-const Header = styled.header`
-  background: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-`;
-
-const HeaderContent = styled.div`
-  max-width: 96rem;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
-`;
-
-const HeaderInner = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const HeaderTitle = styled.div`
-  h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1f2937;
-  }
-  p {
-    color: #4b5563;
-  }
-`;
 
 const CreateButton = styled.button`
   background: #2563eb;
@@ -74,7 +46,7 @@ const CreateButton = styled.button`
 const HeroSection = styled.section`
   padding: 5rem 1rem;
   text-align: center;
-  height: 515px;
+  height: 520px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -139,17 +111,6 @@ const PrimaryButton = styled.button`
   }
 `;
 
-const OutlineButton = styled.button`
-  background: white;
-  color: #1f2937;
-  font-size: 1rem;
-  padding: 0.75rem 1.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  cursor: pointer;
-`;
-
 const CreaterNav = styled.nav`
   padding: 15px 15%;
   display: flex;
@@ -158,7 +119,7 @@ const CreaterNav = styled.nav`
   gap: 1rem;
 `;
 const CreaterNavItem = styled.nav`
-  padding: 20px 30px;
+  padding: 15px 30px;
   background:rgb(239, 239, 239);
   border-radius: 10px;
   cursor: pointer;
