@@ -127,7 +127,7 @@ const Search: React.FC = () => {
           order: order || 'RECOMMEND',
           page: 0,
           search: searchTerm,
-          desc: true,
+          desc: false,
           tag: tag !== null && tag !== undefined && !isNaN(parseInt(tag))
             ? parseInt(tag)
             : undefined,
