@@ -7,7 +7,6 @@ import { useAuth } from '../hooks/AuthContext';
 import { useSearchParams } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import CategorySelector from './CategorySelector';
 
 
 interface ProjectItem {
@@ -28,8 +27,15 @@ interface ProjectItem {
 
 interface ProjectResponse {
   message: string;
-  data: ProjectItem[];
+  data: {
+    projects: ProjectItem[];
+    totalCount: number;
+    pageCount: number;
+    page: number;
+  };
 }
+
+
 
 const categories = [
   { label: '전체', icon: 'bi bi-circle', tag: '' },
@@ -91,75 +97,100 @@ const Search: React.FC = () => {
 
   if (node) observer.current.observe(node);}, [loading, hasMore]);
 
-
-  useEffect(() => {
-    AOS.init({
-      duration: 800,  // 애니메이션 지속 시간 (ms)
-      once: true,     // 한 번만 실행 (true), 스크롤 시 계속 실행 (false)
-    });
-  }, []);
-
   useEffect(() => {
     const newTag = searchParams.get('tag');
     if (newTag !== tag) {
       setTag(newTag || '');
-      fetchProjects(); // URL 파라미터 변경 시 검색 실행
     }
   }, [searchParams]);
 
-  const getRemainingDays = (expiredDateStr: string): string => {
+  useEffect(() => {
+    // tag나 order가 변경될 때만 fetchProjects 호출
+    if (tag || order) {
+      setProjects([]);
+      setHasMore(true);
+      fetchProjects();
+    }
+  }, [tag, order]);
+
+  useEffect(() => {
+    // 페이지가 변경될 때만 fetchProjects 호출
+    if (page && page !== '0') {
+      fetchProjects();
+    }
+  }, [page]);
+
+  const getRemainingDays = (expiredDateStr: string, createdDateStr: string): string => {
     const today = new Date();
     const expiredDate = new Date(expiredDateStr);
+    const createdDate = new Date(createdDateStr);
 
-    // 오늘 자정 기준으로 계산
-    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const expiredMidnight = new Date(expiredDate.getFullYear(), expiredDate.getMonth(), expiredDate.getDate());
-
-    const diffTime = expiredMidnight.getTime() - todayMidnight.getTime();
+    // 남은 일수 계산 (현재 시간 기준)
+    const diffTime = expiredDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    return diffDays < 0 ? '마감' : `${diffDays}일 남음`;
+    // 생성일로부터 24시간 이내면 NEW
+    const createdDiff = today.getTime() - createdDate.getTime();
+    const createdHours = Math.floor(createdDiff / (1000 * 60 * 60));
+
+    return createdHours <=24 ? 'New' : diffDays < 0 ? '마감' : `${diffDays}일 남음`;
   };
+  
 
   const fetchProjects = async () => {
     setLoading(true);
     setError(null);
+  
     try {
-      const requestData = {
+      const requestData: any = {
         order: order || 'RECOMMEND',
-        tag: tag ? [parseInt(tag)] : null,
-        page: parseInt(page),
-        search: searchTerm || null,   // 혹시 검색어가 있다면 포함 (없으면 null)
-        desc: true                    // 필요에 따라 정렬 반대 여부
+        page: 0,
+        desc: true,
+        tag: tag !== null && tag !== undefined && !isNaN(parseInt(tag))
+          ? [parseInt(tag)]
+          : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], // ✅ tag가 null이면 전체 태그 전송
       };
-
-      const response = await testApi.post<ProjectResponse>(
-        '/public/project/all',
-        requestData
-      );
-      const newProjects = response.data.data;
-
-      if (newProjects.length === 0) {
-        setHasMore(false); // 더 이상 가져올 데이터 없음
-      } else {
-        setProjects(prev => [...prev, ...newProjects]);
+  
+      if (searchTerm && searchTerm.trim() !== "") {
+        requestData.search = searchTerm.trim();
       }
-    } catch {
+  
+      console.log("📦 requestData:", requestData);
+  
+      const response = await testApi.post('/public/project/all', requestData);
+      const projectList = response.data.data?.projects;
+  
+      console.log("✅ 받아온 프로젝트:", projectList);
+  
+      if (Array.isArray(projectList)) {
+        if (projectList.length === 0) {
+          setHasMore(false);
+        } else {
+          setProjects(prev => {
+            const existingIds = new Set(prev.map(p => p.id));
+            const uniqueProjects = projectList.filter(p => !existingIds.has(p.id));
+            return [...prev, ...uniqueProjects];
+          });
+        }
+      }
+      
+  
+    } catch (error) {
+      console.error('❌ 프로젝트 불러오기 실패:', error);
       setError('프로젝트 불러오기 실패');
     } finally {
       setLoading(false);
     }
   };
+  
+  
+  
+  
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-useEffect(() => {
-  setProjects([]);
-  setHasMore(true);
-  setPage('1');
-  fetchProjects();  // ✅ 직접 호출
-}, [tag, order]);
+
 
 
 
@@ -167,22 +198,29 @@ useEffect(() => {
 //////////////////////////////////////////////////////////////////////////////////
   
   const handleLikeToggle = async (projectId: number, current: boolean) => {
-    if (!isLoggedIn) {
-      navigate('/login');
-      return;
-    }
-    try {
-      if (current) {
-        await api.delete(`/project/like/${projectId}`);
-      } else {
-        await api.post(`/project/like/${projectId}`);
-      }
-      fetchProjects();
-    } catch (e) {
-      console.error('좋아요 실패', e);
-    }
+    // if (!isLoggedIn) {
+    //   navigate('/login');
+    //   return;
+    // }
+    // try {
+    //   if (current) {
+    //     await api.delete(`/project/like/${projectId}`);
+    //   } else {
+    //     await api.post(`/project/like/${projectId}`);
+    //   }
+    //   fetchProjects();
+    // } catch (e) {
+    //   console.error('좋아요 실패', e);
+    // }
   };
 
+  // useEffect(() => {
+  //   setProjects([]);
+  //   setHasMore(true);
+  //   setPage('1');
+  //   fetchProjects();  // ✅ 직접 호출
+  // }, [tag, order]);
+  
   // useEffect(() => {
   //   if (page !== '') {
   //     fetchProjects();
@@ -236,6 +274,7 @@ useEffect(() => {
             <Card key={item.id} ref={isLast ? lastProjectRef : undefined}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div>
+                <a href={`/project/${item.id}`}>  
                   <CardTopWrapper>
                     <Thumbnail
                       src={`https://api.nextlevel.r-e.kr/img/${item.titleImg}`}
@@ -251,17 +290,20 @@ useEffect(() => {
                       onClick={() => handleLikeToggle(item.id, item.isRecommend)}
                     />
                   </CardTopWrapper>
+                  </a>
                   {/* id:{item.id} */}
                   <CardContent>
                     <InfoRow>{item.completionRate}% 달성</InfoRow>
+                    <a href={`/project/${item.id}`}>  
                     <TitleRow>{item.title}</TitleRow>
+                    </a>
                     <CreaterRow>회사이름</CreaterRow>
                     {/* <InfoRow>추천 수: {item.recommendCount}</InfoRow> */}
                     <TagLow>
-                    {item.tags.map((tag, index) => (
-                      <Tag key={index}>{tag}</Tag>
-                    ))}
-                     <Tag>{getRemainingDays(item.expired)}</Tag>
+                      {item.tags.map((tag, index) => (
+                        <Tag key={index}>{tag}</Tag>
+                      ))}
+                      {item.tags.length === 0 && <Tag>태그 없음</Tag>}
                     </TagLow>
                     
                   </CardContent>
@@ -280,18 +322,7 @@ useEffect(() => {
           );
         })}
       </CardList>
-
-
-
       
-
-      <div data-aos="fade-up" 
-        	 data-aos-offset="200" 
-             data-aos-easing="ease-out-cubic"
-             data-aos-duration="2000" 
-             >
-        </div>
-        
     </Container>
   );
 };
@@ -491,7 +522,10 @@ const Card = styled.div`
   overflow: visible;
   position: relative;
   z-index: 3;
-
+  a{
+    text-decoration: none;
+    color: inherit;
+  }
   &:hover {
     z-index: 5;
   }
@@ -736,4 +770,21 @@ const Dot = styled.span`
       transform: translateY(-8px);
     }
   }
+`;
+
+
+const tag_new = styled.span`
+  background: #A66CFF;
+  padding: 4px 6px;
+  font-size: 10px;
+  border-radius: 6px;
+  color: white;
+`;
+
+const tag_end = styled.span`
+  background: #A66CFF;
+  padding: 4px 6px;
+  font-size: 10px;
+  border-radius: 6px;
+  color: white;
 `;
