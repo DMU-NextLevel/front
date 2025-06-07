@@ -102,10 +102,10 @@ const Signup = () => {
     formdata.append('password',password)
     formdata.append('name',name)
     formdata.append('nickName',nickname)
-    formdata.append('number', '123123')
+    formdata.append('number', '010-1234-5678')
     formdata.append('address', 'test')
 		if (!nameError && !emailError && !passwordError && !termsError) {
-			testApi.put('/public/login', formdata)
+			testApi.post('/public/login', formdata)
 			alert('회원가입 완료!')
 			navigate('/login')
 		}

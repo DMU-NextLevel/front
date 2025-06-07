@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import MainBanner from "../components/UI/MainBanner";
 import RecommendProject from "../components/UI/RecommendProject";
@@ -7,13 +7,33 @@ import RankingList from "../components/UI/RankingList";
 import FollowProjectBanner from "../components/UI/FollowProjectBanner";
 import RealTimeFeed from "../components/UI/RealTimeFeed";
 import CategoryNav from "../components/UI/CategoryNav";
+import CategorySelector from "./CategorySelector";
+
+const categories = [
+  { label: '전체', icon: 'bi bi-circle', tag: '' },
+  { label: '테크/가전', icon: 'bi bi-cpu', tag: '1' },
+  { label: '라이프스타일', icon: 'bi bi-house', tag: '2' },
+  { label: '패션/잡화', icon: 'bi bi-bag', tag: '3' },
+  { label: '뷰티/헬스', icon: 'bi bi-heart-pulse', tag: '4' },
+  { label: '취미/DIY', icon: 'bi bi-brush', tag: '5' },
+  { label: '게임', icon: 'bi bi-controller', tag: '6' },
+  { label: '교육/키즈', icon: 'bi bi-book', tag: '7' },
+  { label: '반려동물', icon: 'bi bi-star', tag: '8' },
+  { label: '여행/레저', icon: 'bi bi-airplane', tag: '9' },
+  { label: '푸드/음료', icon: 'bi bi-cup-straw', tag: '10' },
+];
+
 
 const MainPage: React.FC = () => {
+  const [tag, setTag] = useState('');
+
   return (
     
     <MainWrapper>
         <MainBanner />
+        
         <MainContentWrapper>
+          <CategorySelector categories={categories} />
           <MainContentLine1>
             <RecommendProject />
             <RankingList />
@@ -30,8 +50,8 @@ export default MainPage;
 
 const MainWrapper = styled.div`
   
-  margin-left: 0;        // 👈 왼쪽 정렬
-  margin-right: auto;    // 👈 오른쪽 여백만 자동
+  margin-left: 0;      
+  margin-right: auto;  
   display: flex;
   flex-direction: column;
   box-sizing: border-box;

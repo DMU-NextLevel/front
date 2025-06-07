@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import { api } from '../AxiosInstance';
+import { api, testApi } from '../AxiosInstance';
 import noImage from '../assets/images/noImage.jpg';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
+import { useSearchParams } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import CategorySelector from './CategorySelector';
+
+
 interface ProjectItem {
   id: number;
   title: string;
@@ -49,17 +53,40 @@ const orderOptions = [
 ];
 
 const Search: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const tagFromState = location.state as string | undefined;
+  const initialTag = tagFromState || searchParams.get('tag') || '';
+  const [tag, setTag] = useState(initialTag);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const [order, setOrder] = useState('RECOMMEND');
-  const [page, setPage] = useState('1');
-  const [tag, setTag] = useState('');
+  const [page, setPage] = useState('0');
+  //const [tag, setTag] = useState('');
   const orderIndex = orderOptions.findIndex(opt => opt.value === order);
 
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastProjectRef = useCallback((node: HTMLDivElement | null) => {
+  if (loading) return;
+  if (observer.current) observer.current.disconnect();
+
+  observer.current = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && hasMore) {
+      setPage(prev => (parseInt(prev) + 1).toString());
+    }
+  });
+
+  if (node) observer.current.observe(node);}, [loading, hasMore]);
+
 
   useEffect(() => {
     AOS.init({
@@ -67,6 +94,14 @@ const Search: React.FC = () => {
       once: true,     // 한 번만 실행 (true), 스크롤 시 계속 실행 (false)
     });
   }, []);
+
+  useEffect(() => {
+    const newTag = searchParams.get('tag');
+    if (newTag !== tag) {
+      setTag(newTag || '');
+      fetchProjects(); // URL 파라미터 변경 시 검색 실행
+    }
+  }, [searchParams]);
 
   const getRemainingDays = (expiredDateStr: string): string => {
     const today = new Date();
@@ -82,193 +117,48 @@ const Search: React.FC = () => {
     return diffDays < 0 ? '마감' : `${diffDays}일 남음`;
   };
 
-  // const fetchProjects = async () => {
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     const query = `/public/project/all?order=${order}&page=${page}&tag=${tag}`;
-  //     const response = await api.get<ProjectResponse>(query);
-  //     setProjects(response.data.data);
-  //   } catch {
-  //     setError('프로젝트 불러오기 실패');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-///////////////////////////////////////////////////////////////////////////////////////
-const fetchProjects = () => {
-  setLoading(true);
-  setError(null);
+  const fetchProjects = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const requestData = {
+        order: order || 'RECOMMEND',
+        tag: tag ? [parseInt(tag)] : null,
+        page: parseInt(page),
+        search: searchTerm || null,   // 혹시 검색어가 있다면 포함 (없으면 null)
+        desc: true                    // 필요에 따라 정렬 반대 여부
+      };
 
-  // 더미 데이터 삽입
-  const dummyData: ProjectItem[] = [
-    {
-      "id": 1,
-      "title": "판타지역사소설 <바라다라의 시간>",
-      "titleImg": "/src/여운1.png",
-      "completionRate": 30,
-      "recommendCount": 0,
-      "tags": [
-        "라이프 스타일",
-        "패션 잡화"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 30,
-      "createdAt": "2025-05-11T07:43:09.000+00:00",
-      "isRecommend": false,
-      "expired": "2025-08-03T00:00:00.000+00:00",
-      "isExpired": true
-    },
-    {
-      "id": 2,
-      "title": "[이불6장압축] 압파의 금의환향",
-      "titleImg": "/src/-01 오후 7.59.421.png",
-      "completionRate": 80,
-      "recommendCount": 20,
-      "tags": [
-        "테크 가전",
-        "라이프 스타일"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 0,
-      "createdAt": "2025-05-13T02:31:11.000+00:00",
-      "isRecommend": true,
-      "expired": "2025-06-03T00:00:00.000+00:00",
-      "isExpired": true
-    },
-    {
-      "id": 3,
-      "title": "project title",
-      "titleImg": "/src/-01 오후 7.59.422.png",
-      "completionRate": 60,
-      "recommendCount": 0,
-      "tags": [
-        "테크 가전",
-        "라이프 스타일"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 0,
-      "createdAt": "2025-05-13T02:31:15.000+00:00",
-      "isRecommend": false,
-      "expired": "2025-07-03T00:00:00.000+00:00",
-      "isExpired": true
-    },
-    {
-      "id": 4,
-      "title": "project title",
-      "titleImg": "/src/-01 오후 7.59.423.png",
-      "completionRate": 20,
-      "recommendCount": 0,
-      "tags": [
-        "테크 가전",
-        "라이프 스타일"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 0,
-      "createdAt": "2025-05-13T02:31:17.000+00:00",
-      "isRecommend": false,
-      "expired": "2025-08-03T00:00:00.000+00:00",
-      "isExpired": true
-    },
-    {
-      "id": 5,
-      "title": "project title",
-      "titleImg": "/src/-01 오후 7.59.424.png",
-      "completionRate": 1980,
-      "recommendCount": 0,
-      "tags": [
-        "테크 가전",
-        "라이프 스타일"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 0,
-      "createdAt": "2025-05-13T02:31:18.000+00:00",
-      "isRecommend": false,
-      "expired": "2025-03-03T00:00:00.000+00:00",
-      "isExpired": true
-    },
-    {
-      "id": 6,
-      "title": "project title",
-      "titleImg": "/src/-01 오후 7.59.425.png",
-      "completionRate": 128,
-      "recommendCount": 0,
-      "tags": [
-        "테크 가전",
-        "뷰티 헬스"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 0,
-      "createdAt": "2025-05-13T02:31:23.000+00:00",
-      "isRecommend": false,
-      "expired": "2025-03-03T00:00:00.000+00:00",
-      "isExpired": true
-    },
-    {
-      "id": 7,
-      "title": "project title2",
-      "titleImg": "/src/-01 오후 7.59.426.png",
-      "completionRate": 75,
-      "recommendCount": 0,
-      "tags": [
-        "테크 가전",
-        "뷰티 헬스"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 0,
-      "createdAt": "2025-05-13T02:31:26.000+00:00",
-      "isRecommend": false,
-      "expired": "2025-03-03T00:00:00.000+00:00",
-      "isExpired": true
-    },
-    {
-      "id": 8,
-      "title": "자유자재 데포르메 3D \u003C머슬&커비바디\u003E",
-      "titleImg": "/src/-01 오후 7.59.427.png",
-      "completionRate": 5,
-      "recommendCount": 0,
-      "tags": [
-        "테크 가전",
-        "게임"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 0,
-      "createdAt": "2025-05-13T07:13:06.000+00:00",
-      "isRecommend": false,
-      "expired": "2025-03-03T00:00:00.000+00:00",
-      "isExpired": true
-    },
-    {
-      "id": 9,
-      "title": "어디서든 누를 수 있는 \u003C키보드 키링\u003E",
-      "titleImg": "/src/-01 오후 7.59.428.png",
-      "completionRate": 45,
-      "recommendCount": 0,
-      "tags": [
-        "테크 가전"
-      ],
-      "pageCount": 1,
-      "totalCount": 9,
-      "userCount": 0,
-      "createdAt": "2025-05-13T07:17:54.000+00:00",
-      "isRecommend": false,
-      "expired": "2025-03-03T00:00:00.000+00:00",
-      "isExpired": true
+      const response = await testApi.post<ProjectResponse>(
+        '/public/project/all',
+        requestData
+      );
+      const newProjects = response.data.data;
+
+      if (newProjects.length === 0) {
+        setHasMore(false); // 더 이상 가져올 데이터 없음
+      } else {
+        setProjects(prev => [...prev, ...newProjects]);
+      }
+    } catch {
+      setError('프로젝트 불러오기 실패');
+    } finally {
+      setLoading(false);
     }
-  
-  ];
+  };
 
-  setProjects(dummyData);
-  setLoading(false);
-};
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+useEffect(() => {
+  setProjects([]);
+  setHasMore(true);
+  setPage('1');
+  fetchProjects();  // ✅ 직접 호출
+}, [tag, order]);
+
+
+
 
 //////////////////////////////////////////////////////////////////////////////////
   
@@ -290,8 +180,10 @@ const fetchProjects = () => {
   };
 
   useEffect(() => {
-    fetchProjects();
-  }, [tag]);
+    if (page !== '') {
+      fetchProjects();
+    }
+  }, [page]);
 
   return (
     <Container>
@@ -327,15 +219,17 @@ const fetchProjects = () => {
         </LoadingOverlay>
       )}
       {projects.length === 0 && !loading && <div>검색 결과가 없습니다.</div>}
-      <div>총 <strong >{projects.length}</strong>개의 프로젝트가 있습니다.</div>
-      {error && <ErrorText>{error}</ErrorText>}
+      {projects.length > 0 && <div>총 <strong>{projects.length}</strong>개의 프로젝트가 있습니다.</div>}
+      {/* {error && <ErrorText>{error}</ErrorText>} */}
       
       
       
-      <CardList>
-        {projects.map((item) => (
-            <Card key={item.id}>
 
+      <CardList>
+        {projects.map((item, index) => {
+          const isLast = index === projects.length - 1;
+          return (
+            <Card key={item.id} ref={isLast ? lastProjectRef : undefined}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div>
                   <CardTopWrapper>
@@ -353,7 +247,8 @@ const fetchProjects = () => {
                       onClick={() => handleLikeToggle(item.id, item.isRecommend)}
                     />
                   </CardTopWrapper>
-                  
+                  {/* id:{item.id}|
+                  page:{item.pageCount} */}
                   <CardContent>
                     <InfoRow>{item.completionRate}% 달성</InfoRow>
                     <TitleRow>{item.title}</TitleRow>
@@ -365,6 +260,7 @@ const fetchProjects = () => {
                     ))}
                      <Tag>{getRemainingDays(item.expired)}</Tag>
                     </TagLow>
+                    
                   </CardContent>
                   </div> 
                   <ProgressSection percent={item.completionRate}>
@@ -378,9 +274,13 @@ const fetchProjects = () => {
                   </ProgressSection>
               </div>
             </Card>
-          
-        ))}
+          );
+        })}
       </CardList>
+
+
+
+      
 
       <div data-aos="fade-up" 
         	 data-aos-offset="200" 

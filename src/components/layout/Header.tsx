@@ -4,7 +4,6 @@
 	import CategoryImage from '../../assets/images/category.png'
 	import SearchImage from '../../assets/images/search.svg'
 	import UserImage from '../../assets/images/default_profile.png'
-	import NotificationImage from '../../assets/images/bell.png'
 	import { useNavigate } from 'react-router-dom'
 	import { useAuth } from '../../hooks/AuthContext'
 
@@ -20,6 +19,32 @@
 		showSearchBar?: boolean
 		showNotification?: boolean
 	}
+
+	const categories = [
+		{ label: '테크/가전', icon: 'bi bi-cpu', tag: '1' },
+		{ label: '라이프스타일', icon: 'bi bi-house', tag: '2' },
+		{ label: '패션/잡화', icon: 'bi bi-bag', tag: '3' },
+		{ label: '뷰티/헬스', icon: 'bi bi-heart-pulse', tag: '4' },
+		{ label: '취미/DIY', icon: 'bi bi-brush', tag: '5' },
+		{ label: '게임', icon: 'bi bi-controller', tag: '6' },
+		{ label: '교육/키즈', icon: 'bi bi-book', tag: '7' },
+		{ label: '반려동물', icon: 'bi bi-star', tag: '8' },
+		{ label: '여행/레저', icon: 'bi bi-airplane', tag: '9' },
+		{ label: '푸드/음료', icon: 'bi bi-cup-straw', tag: '10' },
+	];
+	
+	// 링크 설정 객체
+	const searchLinks = {
+		RECOMMEND: '/search?order=RECOMMEND',
+		NEW: '/search?order=NEW',
+		EXPIRED: '/search?order=EXPIRED',
+		COMPLETED: '/search?order=COMPLETED'
+	};
+	
+	// 링크 생성 함수
+	const createSearchLink = (type: keyof typeof searchLinks) => {
+		return searchLinks[type];
+	};
 
 	export const HeaderMain: React.FC = () => {
 		const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -46,10 +71,6 @@
 
 		const handleCategoryClick = () => {
 			setIsOpen(!isOpen)
-		}
-
-		const handleProjectCreate = () => {
-			navigate('/project/create')
 		}
 
 		const handleProfileClick = () => {
@@ -103,33 +124,72 @@
 					
 					<CategoryMenu onClick={handleCategoryClick}>
 						
-						<NavItem><Category src={CategoryImage} alt='' /> 카테고리</NavItem>
+						<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 					</CategoryMenu>
-					{isLoggedIn ? '로그인됨' : '로그인안됨'}
-					<NavItem>인기</NavItem>
-					<NavItem>신규</NavItem>
-					<NavItem>마감임박</NavItem>
-					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
+					
+					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
+					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
+					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
+					<ProjectButton onClick={() => navigate('/creater')}>프로젝트 시작하기</ProjectButton>
 					<SearchBar>
 						<SearchInput type='text' placeholder='검색어를 입력하세요' />
-						<Search src={SearchImage} alt='' />
+						<SearchButton>
+							<i className="bi bi-search"></i>
+						</SearchButton>
 					</SearchBar>
 					
 				</HeaderNavbar>
 				{
 					<CategoryListLayout isOpen={isOpen}>
+					<CategorySection style={{ border: 'none', padding: '0px 20px 0 20px'}}>
+						<CategorySectionButton>
+							<i className="bi bi-bookmark-check"></i><div>팔로우 프로젝트</div>
+						</CategorySectionButton>
+						<CategorySectionButton onClick={() => navigate('/creater')} bgColor="rgb(233, 236, 239)"  hoverColor="rgb(206, 208, 211)">
+							<i className="bi bi-buildings"></i><div>위더 스튜디오</div>
+						</CategorySectionButton>
+						<CategorySectionButton bgColor="rgb(230, 246, 255)"  hoverColor="rgb(216, 228, 234)">
+							<i className="bi bi-box2"></i><div>즐겨찾기</div>
+						</CategorySectionButton>
+					</CategorySection>
+					<CategorySection>
+						<h3>카테고리</h3>
 						<CategoryList>
-							<CategoryListItem><i className="bi bi-cpu"></i> 테크/가전</CategoryListItem>
-							<CategoryListItem><i className="bi bi-house"></i> 라이프스타일</CategoryListItem>
-							<CategoryListItem><i className="bi bi-bag"></i> 패션/잡화</CategoryListItem>
-							<CategoryListItem><i className="bi bi-heart-pulse"></i> 뷰티/헬스</CategoryListItem>
-							<CategoryListItem><i className="bi bi-brush"></i> 취미/DIY</CategoryListItem>
-							<CategoryListItem><i className="bi bi-controller"></i> 게임</CategoryListItem>
-							<CategoryListItem><i className="bi bi-book"></i> 교육/키즈</CategoryListItem>
-							<CategoryListItem><i className="bi bi-star"></i> 반려동물</CategoryListItem>
-							<CategoryListItem><i className="bi bi-airplane"></i> 여행/레저</CategoryListItem>
-							<CategoryListItem><i className="bi bi-cup-straw"></i> 푸드/음료</CategoryListItem>
+							{categories.map((cat) => (
+								<CategoryListItem
+								key={cat.tag}
+								onClick={() =>
+									navigate(`/search?tag=${cat.tag}`, {
+									  state: cat.tag
+									})
+								  }
+								>
+								<i className={cat.icon}></i> {cat.label}
+								</CategoryListItem>
+							))}
 						</CategoryList>
+					</CategorySection>
+					<CategorySection>
+						<h3>프로젝트</h3>
+						<NavSection>
+							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>인기 프로젝트 보기</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>추천 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('NEW')}>신규 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('EXPIRED')}>마감 임박 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('COMPLETED')}>완료된 프로젝트</a></NavSectionItem>
+						</NavSection>
+						</CategorySection>
+						<CategorySection>
+							<h3>도구/서비스</h3>
+							<NavSection>
+								<NavSectionItem><a href="">공지사항</a></NavSectionItem>
+								<NavSectionItem><a href="">고객센터</a></NavSectionItem>
+								<NavSectionItem><a href="/mypage">마이페이지</a></NavSectionItem>
+								<NavSectionItem><a href="">정책 & 약관</a></NavSectionItem>
+								
+						</NavSection>
+					</CategorySection>
+					
 					</CategoryListLayout>
 				}
 			</HeaderWrapper>
@@ -201,12 +261,11 @@
 					<Logo src={LogoImage} onClick={handleLogoClick} />
 						<CategoryMenu onClick={handleCategoryClick}>
 							
-							<NavItem><Category src={CategoryImage} alt='' /> 카테고리</NavItem>
+							<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 						</CategoryMenu>
-						<NavItem>인기</NavItem>
-						<NavItem>신규</NavItem>
-						<NavItem>마감임박</NavItem>
-						<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
+						<NavItem><a href="/search?order=RECOMMEND">인기</a></NavItem>
+						<NavItem><a href="/search?order=NEW">신규</a></NavItem>
+						<NavItem><a href="/search?order=EXPIRED">마감임박</a></NavItem>
 
 						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px', marginRight: '20px' }}>
 							<SearchBar style={{ marginRight: '20px' }}>
@@ -232,21 +291,58 @@
 							</div>
 					</HeaderNavbar>
 					{
-						<CategoryListLayout isOpen={isOpen}>
-							<CategoryList>
-								<CategoryListItem><i className="bi bi-cpu"></i> 테크/가전</CategoryListItem>
-								<CategoryListItem><i className="bi bi-house"></i> 라이프스타일</CategoryListItem>
-								<CategoryListItem><i className="bi bi-bag"></i> 패션/잡화</CategoryListItem>
-								<CategoryListItem><i className="bi bi-heart-pulse"></i> 뷰티/헬스</CategoryListItem>
-								<CategoryListItem><i className="bi bi-brush"></i> 취미/DIY</CategoryListItem>
-								<CategoryListItem><i className="bi bi-controller"></i> 게임</CategoryListItem>
-								<CategoryListItem><i className="bi bi-book"></i> 교육/키즈</CategoryListItem>
-								<CategoryListItem><i className="bi bi-star"></i> 반려동물</CategoryListItem>
-								<CategoryListItem><i className="bi bi-airplane"></i> 여행/레저</CategoryListItem>
-								<CategoryListItem><i className="bi bi-cup-straw"></i> 푸드/음료</CategoryListItem>
-							</CategoryList>
-						</CategoryListLayout>
-					}
+					<CategoryListLayout isOpen={isOpen}>
+					<CategorySection style={{ border: 'none', padding: '0px 20px 0 20px'}}>
+						<CategorySectionButton>
+							<i className="bi bi-bookmark-check"></i><div>팔로우 프로젝트</div>
+						</CategorySectionButton>
+						<CategorySectionButton onClick={() => navigate('/creater')} bgColor="rgb(233, 236, 239)"  hoverColor="rgb(206, 208, 211)">
+							<i className="bi bi-buildings"></i><div>위더 스튜디오</div>
+						</CategorySectionButton>
+						<CategorySectionButton bgColor="rgb(230, 246, 255)"  hoverColor="rgb(216, 228, 234)">
+							<i className="bi bi-box2"></i><div>즐겨찾기</div>
+						</CategorySectionButton>
+					</CategorySection>
+					<CategorySection>
+						<h3>카테고리</h3>
+						<CategoryList>
+							{categories.map((cat) => (
+								<CategoryListItem
+								key={cat.tag}
+								onClick={() =>
+									navigate(`/search?tag=${cat.tag}`, {
+									  state: cat.tag
+									})
+								  }
+								>
+								<i className={cat.icon}></i> {cat.label}
+								</CategoryListItem>
+							))}
+						</CategoryList>
+					</CategorySection>
+					<CategorySection>
+						<h3>프로젝트</h3>
+						<NavSection>
+							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>인기 프로젝트 보기</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>추천 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('NEW')}>신규 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('EXPIRED')}>마감 임박 프로젝트</a></NavSectionItem>
+							<NavSectionItem><a href={createSearchLink('COMPLETED')}>완료된 프로젝트</a></NavSectionItem>
+						</NavSection>
+					</CategorySection>
+					<CategorySection>
+						<h3>도구/서비스</h3>
+						<NavSection>
+								<NavSectionItem><a href="">공지사항</a></NavSectionItem>
+								<NavSectionItem><a href="">고객센터</a></NavSectionItem>
+								<NavSectionItem><a href="/mypage">마이페이지</a></NavSectionItem>
+								<NavSectionItem><a href="">정책 & 약관</a></NavSectionItem>
+								
+						</NavSection>
+					</CategorySection>
+					
+					</CategoryListLayout>
+				}
 				</SubHeaderWrapper>
 			</div>
 		)
@@ -266,7 +362,7 @@
 		padding: 0 15%;
 		border-bottom: 1px solidrgb(215, 215, 215);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 아래 방향 그림자 */
-		margin-bottom: 20px;
+		
 	`;
 
 	const TopHeader = styled.div`
@@ -364,6 +460,10 @@
 			padding: 8px 4px;
 			margin: 0 8px;
 		}
+		a {
+			text-decoration: none;
+			color: #222;
+		}
 	`
 
 	const Category = styled.img`
@@ -397,52 +497,62 @@
 	`;
 
 	const SearchBar = styled.div`
-  width: 250px;
-  height: 50px;
-  background-color: #f5f5f5;
-  display: flex;
-  align-items: center;
-  border-radius: 12px;
-  margin-left: auto; /* ✅ 이거 추가 */
-  padding: 0 12px;
-  box-shadow: inset 0 0 0 2px transparent;
-  transition: 0.3s ease, background-color 0.3s ease;
+	width: 250px;
+	height: 40px;
+	background-color: #fff;
+	display: flex;
+	align-items: center;
+	border-radius: 50px;
+	border: 1px solid	rgb(209, 208, 208);
+	margin-left: auto;
+	padding: 0 12px;
+	box-shadow: inset 0 0 0 2px transparent;
+	transition: 0.3s ease, background-color 0.3s ease;
 
-  &:hover {
-    background-color: #ffffff;
-    box-shadow: inset 0 0 0 2px #a66cff55;
-    transform: scale(1.02);
-  }
-
-  &:focus-within {
-    box-shadow: inset 0 0 0 2px #a66cff;
-  }
-`
-
-
-const SearchInput = styled.input`
-	background-color: transparent;
-	border: none;
-	height: 35px;
-	width: 90%;
-	font-size: 16px;
-	color: #333;
-	padding-left: 8px;
-	transition: color 0.3s ease;
-
-	&:focus {
-		outline: none;
-		color: #111;
+	&:hover {
+		background-color: #f5f5f5;
+		box-shadow: inset 0 0 0 2px #a66cff55;
+		transform: scale(1.02);
 	}
 
-	&::placeholder {
-		color: #999;
-		transition: opacity 0.2s ease;
+	&:focus-within {
+		box-shadow: inset 0 0 0 2px #a66cff;
 	}
-`
+	`
 
-const Search = styled.img`
+
+	const SearchInput = styled.input`
+		background-color: transparent;
+		border: none;
+		height: 35px;
+		width: 90%;
+		font-size: 15px;
+		color: #333;
+		padding-left: 8px;
+		transition: color 0.3s ease;
+
+		&:focus {
+			outline: none;
+			color: #111;
+		}
+
+		&::placeholder {
+			color: #999;
+			transition: opacity 0.2s ease;
+		}
+	`
+
+	const Search = styled.img`
+		width: 20px;
+		cursor: pointer;
+		transition: filter 0.3s ease, transform 0.2s ease;
+		&:hover {
+			transform: scale(1.1)	;
+		}
+	`
+	const SearchButton = styled.div`
 	width: 20px;
+	font-weight: bold;
 	cursor: pointer;
 	transition: filter 0.3s ease, transform 0.2s ease;
 	&:hover {
@@ -453,35 +563,81 @@ const Search = styled.img`
 
 	const CategoryListLayout = styled.div<{ isOpen: boolean }>`
 		overflow: hidden;
-		max-height: ${({ isOpen }) => (isOpen ? '230px' : '0')};
+		max-height: ${({ isOpen }) => (isOpen ? '400px' : '0')};
 		opacity: ${({ isOpen }) => (isOpen ? '1' : '0')};
 		transition: max-height 0.6s ease, opacity 0.6s ease;
-		/*display: flex;
-		width: 100%;
-		height: 160px;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-		margin-bottom: 20px;
-		*/
-	`
+		display: flex;
+		justify-content: center;
 
+	`
+	const CategorySection = styled.div`
+		margin: 40px 0 ;
+		padding:  0 50px 0 20px;
+		border-left: 1px solid #ddd;
+		min-width : 150px;
+		h3 {
+			color: #333;
+			font-size: 14px;
+			font-weight: 600;
+			padding: 0;
+			margin: 0 0 15px 0;
+			}
+	`
 	const CategoryList = styled.div`
 		display: grid;
-		margin-top: 8px;
-		padding: 0 20px 20px 20px;
-		grid-template-columns: repeat(auto-fill, minmax(18%, auto));
-		column-gap: 20px;
-		row-gap: 15px;
-		justify-content: space-between;
-	`
+		margin-top: 2px;
 
-
+		grid-template-columns: repeat(2, 1fr);
+		row-gap: 15px;                         
+		column-gap: 40px;                      
+		min-width: 100px;
+	`;
+	const CategorySectionButton = styled.div<{
+		bgColor?: string;
+		hoverColor?: string;
+	  }>`
+		background: ${({ bgColor }) => bgColor || 'rgb(255, 248, 231)'};
+		display: flex;
+		align-items: center;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		font-size: 14px;
+		text-align: left;
+		width: 200px;
+		padding: 10px 0px 10px 20px;
+		font-weight: bold;
+		transition: background-color 0.1s;
+		margin-bottom: 10px;
+	  
+		&:hover {
+		  background-color: ${({ hoverColor }) => hoverColor || 'rgb(238, 232, 217)'};
+		}
+	  
+		div {
+		  align-items: center;
+		  justify-content: center;
+		}
+	  
+		i {
+		  background: white;
+		  padding: 5px;
+		  color: black;
+		  border-radius: 5px;
+		  font-size: 22px;
+		  margin-right: 10px;
+		}
+	  `;
+	  
+	
+	
+	
 
 	const CategoryListItem = styled.p`
-		font-size: 16px;
-		width: 60%;
+		font-size: 15px;
 		text-align: left;
-		margin: 10px 0;
-		padding: 12px 0;
+		margin: 0 0;
+		padding:  0;
 	
 		transition: all 0.3s ease;
 		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
@@ -493,9 +649,51 @@ const Search = styled.img`
 			transform: scale(1.05);
 			transition: all 0.3s ease;
 		}
+
+		a {
+			text-decoration: none;
+			color: #333;
+		}
 	`
 
+	const NavSection = styled.div`
+		display: block;
+		margin-top: 2px;
 
+		grid-template-columns: repeat(2, 1fr);
+		row-gap: 12px;                         
+		column-gap: 20px;                      
+		min-width: 100px;
+		font-size: 15px;
+
+		a{
+			text-decoration: none;
+			color: #333;
+		}
+	`;
+	const NavSectionItem = styled.p`
+		font-size: 15px;
+		text-align: left;
+		margin: 0 0 15px 0;
+		padding:  0;
+	
+		transition: all 0.3s ease;
+		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+		color: #333;
+
+		&:hover {
+			cursor: pointer;
+			color: #6a1b9a;
+			transform: scale(1.05);
+			transition: all 0.3s ease;
+		}
+
+		a {
+			text-decoration: none;
+			color: #333;
+		}
+	`;
+	
 	const UserProfile = styled.img`
 		width: 30px;
 		height: 30px;
