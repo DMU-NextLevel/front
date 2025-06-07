@@ -182,8 +182,6 @@ const LinkToRecommand = styled.a`
   text-decoration: none;
   color: inherit;
   transition: all 0.1s;
-
-
   &:hover {
     text-decoration: none;
     cursor: pointer;
