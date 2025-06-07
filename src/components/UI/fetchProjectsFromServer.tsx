@@ -1,4 +1,4 @@
-import { testApi } from '../../AxiosInstance';
+import { api, testApi } from '../../AxiosInstance';
 
 interface ProjectItem {
   id: number;
@@ -35,6 +35,7 @@ interface ProjectRequest {
   pageCount?: number;
 }
 
+
 export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<ProjectItem[]> => {
   const {
     order = 'RECOMMEND',
@@ -58,7 +59,7 @@ export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<Pr
 
   console.log('📦 요청 보낼 데이터:', requestData);
 
-  const response = await testApi.post<ProjectResponse>('/public/project/all', requestData);
+  const response = await api.post<ProjectResponse>('/public/project/all', requestData);
   return response.data.data.projects;
 };
 

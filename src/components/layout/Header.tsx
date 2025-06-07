@@ -6,6 +6,7 @@
 	import UserImage from '../../assets/images/default_profile.png'
 	import { useNavigate } from 'react-router-dom'
 	import { useAuth } from '../../hooks/AuthContext'
+	import { fetchProjectsFromServer } from '../UI/fetchProjectsFromServer'
 
 
 	interface HeaderBaseProps {
@@ -53,6 +54,14 @@
 		const notificationRef = useRef<HTMLDivElement>(null)
 		const navigate = useNavigate()
 		const [isHoveringCategory, setIsHoveringCategory] = useState(false)
+		const [keyword, setKeyword] = useState('');
+
+		const handleSubmit = (e: React.FormEvent) => {
+			e.preventDefault();
+			if (keyword.trim()) {
+			window.location.href = `/search?search=${encodeURIComponent(keyword.trim())}`;
+			}
+		};
 
 
 		const handleLogoClick = () => {
@@ -135,12 +144,22 @@
 					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
 					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
 					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
-					<SearchBar>
-						<SearchInput type='text' placeholder='검색어를 입력하세요' />
-						<SearchButton>
+					
+					
+
+					<SearchBar onSubmit={handleSubmit}>
+						<SearchInput
+								type="text"
+								placeholder="검색어를 입력하세요"
+								value={keyword}
+								onChange={(e) => setKeyword(e.target.value)}
+							/>
+						<SearchButton type="submit">
 							<i className="bi bi-search"></i>
 						</SearchButton>
 					</SearchBar>
+
+
 					
 				</HeaderNavbar>
 				{
@@ -207,7 +226,14 @@
 		const notificationRef = useRef<HTMLDivElement>(null)
 		const navigate = useNavigate()
 		const [isHoveringCategory, setIsHoveringCategory] = useState(false)
+		const [keyword, setKeyword] = useState('');
 
+		const handleSubmit = (e: React.FormEvent) => {
+			e.preventDefault();
+			if (keyword.trim()) {
+			window.location.href = `/search?search=${encodeURIComponent(keyword.trim())}`;
+			}
+		};
 
 		const handleLogoClick = () => {
 			navigate('/')
@@ -272,10 +298,17 @@
 						<NavItem><a href="/search?order=EXPIRED">마감임박</a></NavItem>
 
 						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px', marginRight: '20px' }}>
-							<SearchBar style={{ marginRight: '20px' }}>
-								<SearchInput type='text' placeholder='검색어를 입력하세요' />
-								<Search src={SearchImage} alt='' />
-							</SearchBar>
+						<SearchBar onSubmit={handleSubmit}>
+							<SearchInput
+									type="text"
+									placeholder="검색어를 입력하세요"
+									value={keyword}
+									onChange={(e) => setKeyword(e.target.value)}
+								/>
+							<SearchButton type="submit">
+								<i className="bi bi-search"></i>
+							</SearchButton>
+						</SearchBar>
 							{!isLoggedIn ? (
 									<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px' }}>
 										<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
@@ -500,7 +533,8 @@
 		}
 	`;
 
-	const SearchBar = styled.div`
+
+	const SearchBar = styled.form`
 	width: 250px;
 	height: 40px;
 	background-color: #fff;
@@ -554,10 +588,12 @@
 			transform: scale(1.1)	;
 		}
 	`
-	const SearchButton = styled.div`
+	const SearchButton = styled.button`
 	width: 20px;
 	font-weight: bold;
 	cursor: pointer;
+	border: none;
+	background-color: transparent;
 	transition: filter 0.3s ease, transform 0.2s ease;
 	&:hover {
 		transform: scale(1.1)	;

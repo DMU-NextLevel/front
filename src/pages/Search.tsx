@@ -7,7 +7,7 @@ import { useAuth } from '../hooks/AuthContext';
 import { useSearchParams } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-
+import { fetchProjectsFromServer } from '../components/UI/fetchProjectsFromServer';
 
 interface ProjectItem {
   id: number;
@@ -66,7 +66,7 @@ const Search: React.FC = () => {
   const [tag, setTag] = useState(initialTag);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -77,13 +77,13 @@ const Search: React.FC = () => {
 
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
-
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
-
   const lastProjectRef = useCallback((node: HTMLDivElement | null) => {
   if (loading) return;
   if (observer.current) observer.current.disconnect();
+
+
 
   observer.current = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting && hasMore) {
@@ -97,6 +97,13 @@ const Search: React.FC = () => {
 
   if (node) observer.current.observe(node);}, [loading, hasMore]);
 
+  // 검색 키워드 저장
+  useEffect(() => {
+    const keyword = searchParams.get('search');
+    setSearchTerm(keyword ?? '');
+  }, [searchParams]);
+
+  
   useEffect(() => {
     const newTag = searchParams.get('tag');
     if (newTag !== tag) {
@@ -106,12 +113,12 @@ const Search: React.FC = () => {
 
   useEffect(() => {
     // tag나 order가 변경될 때만 fetchProjects 호출
-    if (tag || order) {
+    if (tag || order || searchTerm) {
       setProjects([]);
       setHasMore(true);
       fetchProjects();
     }
-  }, [tag, order]);
+  }, [tag, order, searchTerm]);
 
   useEffect(() => {
     // 페이지가 변경될 때만 fetchProjects 호출
@@ -137,66 +144,34 @@ const Search: React.FC = () => {
   };
   
 
+
   const fetchProjects = async () => {
-    setLoading(true);
-    setError(null);
-  
     try {
-      const requestData: any = {
-        order: order || 'RECOMMEND',
-        page: 0,
-        desc: true,
-        tag: tag !== null && tag !== undefined && !isNaN(parseInt(tag))
-          ? [parseInt(tag)]
-          : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], // ✅ tag가 null이면 전체 태그 전송
-      };
-  
-      if (searchTerm && searchTerm.trim() !== "") {
-        requestData.search = searchTerm.trim();
-      }
-  
-      console.log("📦 requestData:", requestData);
-  
-      const response = await testApi.post('/public/project/all', requestData);
-      const projectList = response.data.data?.projects;
-  
-      console.log("✅ 받아온 프로젝트:", projectList);
-  
-      if (Array.isArray(projectList)) {
-        if (projectList.length === 0) {
-          setHasMore(false);
-        } else {
-          setProjects(prev => {
-            const existingIds = new Set(prev.map(p => p.id));
-            const uniqueProjects = projectList.filter(p => !existingIds.has(p.id));
-            return [...prev, ...uniqueProjects];
-          });
+      const loadProjects = async () => {
+        const data = await fetchProjectsFromServer({ 
+          order: order || 'RECOMMEND',
+          page: 0,
+          search: searchTerm,
+          desc: true,
+          tag: tag !== null && tag !== undefined && !isNaN(parseInt(tag))
+            ? parseInt(tag)
+            : undefined,
+        });
+        console.log("📦 서버에서 받아온 프로젝트:", data);
+        if (Array.isArray(data)) {
+          setProjects(data);
         }
-      }
-      
-  
+      };
+      loadProjects();
     } catch (error) {
-      console.error('❌ 프로젝트 불러오기 실패:', error);
+      console.error('프로젝트 불러오기 실패:', error);
       setError('프로젝트 불러오기 실패');
     } finally {
       setLoading(false);
     }
   };
   
-  
-  
-  
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////
-  
+  //좋아요 기능 추후 추가 예정
   const handleLikeToggle = async (projectId: number, current: boolean) => {
     // if (!isLoggedIn) {
     //   navigate('/login');
@@ -214,18 +189,6 @@ const Search: React.FC = () => {
     // }
   };
 
-  // useEffect(() => {
-  //   setProjects([]);
-  //   setHasMore(true);
-  //   setPage('1');
-  //   fetchProjects();  // ✅ 직접 호출
-  // }, [tag, order]);
-  
-  // useEffect(() => {
-  //   if (page !== '') {
-  //     fetchProjects();
-  //   }
-  // }, [page]);
 
   return (
     <Container>
@@ -259,6 +222,14 @@ const Search: React.FC = () => {
             <Dot /> <Dot /> <Dot />
           </DotWaveWrapper>
         </LoadingOverlay>
+      )}
+      {searchTerm && (
+        <SearchTermWrapper>
+          <SearchTerm>{searchTerm}</SearchTerm> 검색 결과
+          <CloseButton onClick={() => setSearchTerm('')}>
+            <i className="bi bi-x"></i>
+          </CloseButton>
+        </SearchTermWrapper>
       )}
       {projects.length === 0 && !loading && <div>검색 결과가 없습니다.</div>}
       {projects.length > 0 && <div>총 <strong>{projects.length}</strong>개의 프로젝트가 있습니다.</div>}
@@ -300,10 +271,8 @@ const Search: React.FC = () => {
                     <CreaterRow>회사이름</CreaterRow>
                     {/* <InfoRow>추천 수: {item.recommendCount}</InfoRow> */}
                     <TagLow>
-                      {item.tags.map((tag, index) => (
-                        <Tag key={index}>{tag}</Tag>
-                      ))}
-                      {item.tags.length === 0 && <Tag>태그 없음</Tag>}
+                      <Tag>{item.tags[0]}</Tag>
+                      {item.tags[0] && <Tag>{item.tags[1]}</Tag>}
                     </TagLow>
                     
                   </CardContent>
@@ -788,3 +757,24 @@ const tag_end = styled.span`
   border-radius: 6px;
   color: white;
 `;
+
+const SearchTermWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 32px;
+  font-weight: bold;
+  color:rgb(223, 212, 240);
+`;
+
+const SearchTerm = styled.span`
+  margin-right: 8px;
+  color: #000;
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+`;
+  
