@@ -61,3 +61,10 @@ export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<Pr
   const response = await testApi.post<ProjectResponse>('/public/project/all', requestData);
   return response.data.data.projects;
 };
+
+
+// RECOMMEND : 추천수 기준
+// COMPLETION : 참여 금액 / 목표 금액 * 100
+// USER : 펀딩에 참여한 인원 기준
+// CREATED : 생성일 기준
+// EXPIRED : 만료일 기준

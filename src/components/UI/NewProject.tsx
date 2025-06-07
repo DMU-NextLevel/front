@@ -3,122 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { useNavigate } from 'react-router-dom';
 import noImage from '../../assets/images/noImage.jpg';
 import { fetchProjectsFromServer } from './fetchProjectsFromServer';
-// const projects = [
-//     {
-//         "id": 14,
-//         "title": "[골프]양피와 합피의 장점을 갖춘! 신소재로 제작 큐티프렌즈 골프장갑!",
-//         "titleImg": "d8eda9d53210b78cnull.jpg",
-//         "completionRate": 0.0,
-//         "likeCount": 0,
-//         "tags": [
-//             "테크 가전",
-//             "패션 잡화"
-//         ],
-//         "pageCount": null,
-//         "totalCount": 14,
-//         "userCount": 0,
-//         "viewCount": 0,
-//         "createdAt": "2025-06-04T06:16:16.000+00:00",
-//         "isLiked": false,
-//         "expired": "2025-07-02T15:00:00.000+00:00",
-//         "isExpired": false
-//     },
-//     {
-//         "id": 12,
-//         "title": "[골프]양피와 합피의 장점을 갖춘! 신소재로 제작 큐티프렌즈 골프장갑!",
-//         "titleImg": "d8eda9d53210b78cnull.jpg",
-//         "completionRate": 0.0,
-//         "likeCount": 0,
-//         "tags": [
-//             "테크 가전",
-//             "라이프 스타일"
-//         ],
-//         "pageCount": null,
-//         "totalCount": 14,
-//         "userCount": 0,
-//         "viewCount": 0,
-//         "createdAt": "2025-06-04T06:16:13.000+00:00",
-//         "isLiked": false,
-//         "expired": "2025-07-02T15:00:00.000+00:00",
-//         "isExpired": false
-//     },
-//     {
-//         "id": 13,
-//         "title": "[골프]양피와 합피의 장점을 갖춘! 신소재로 제작 큐티프렌즈 골프장갑!",
-//         "titleImg": "d8eda9d53210b78cnull.jpg",
-//         "completionRate": 0.0,
-//         "likeCount": 0,
-//         "tags": [
-//             "테크 가전",
-//             "라이프 스타일"
-//         ],
-//         "pageCount": null,
-//         "totalCount": 14,
-//         "userCount": 0,
-//         "viewCount": 0,
-//         "createdAt": "2025-06-04T06:16:13.000+00:00",
-//         "isLiked": false,
-//         "expired": "2025-07-02T15:00:00.000+00:00",
-//         "isExpired": false
-//     },
-//     {
-//         "id": 11,
-//         "title": "[퍼팅연습기] 놓칠 수 없는 레이저 퍼팅으로 쓰리펏은 이제 그만 퍼티스트 II",
-//         "titleImg": "d8eda9d53210b78cnull.jpg",
-//         "completionRate": 0.0,
-//         "likeCount": 0,
-//         "tags": [
-//             "테크 가전",
-//             "라이프 스타일"
-//         ],
-//         "pageCount": null,
-//         "totalCount": 14,
-//         "userCount": 0,
-//         "viewCount": 0,
-//         "createdAt": "2025-06-04T06:16:04.000+00:00",
-//         "isLiked": false,
-//         "expired": "2025-07-02T15:00:00.000+00:00",
-//         "isExpired": false
-//     },
-//     {
-//         "id": 10,
-//         "title": "[퍼팅연습기] 놓칠 수 없는 레이저 퍼팅으로 쓰리펏은 이제 그만 퍼티스트 II",
-//         "titleImg": "d8eda9d53210b78cnull.jpg",
-//         "completionRate": 0.0,
-//         "likeCount": 0,
-//         "tags": [
-//             "테크 가전",
-//             "라이프 스타일"
-//         ],
-//         "pageCount": null,
-//         "totalCount": 14,
-//         "userCount": 0,
-//         "viewCount": 0,
-//         "createdAt": "2025-06-04T06:16:03.000+00:00",
-//         "isLiked": false,
-//         "expired": "2025-07-02T15:00:00.000+00:00",
-//         "isExpired": false
-//     },
-//     {
-//         "id": 9,
-//         "title": "[퍼팅연습기] 놓칠 수 없는 레이저 퍼팅으로 쓰리펏은 이제 그만 퍼티스트 II",
-//         "titleImg": "d8eda9d53210b78cnull.jpg",
-//         "completionRate": 0.0,
-//         "likeCount": 0,
-//         "tags": [
-//             "라이프 스타일",
-//             "패션 잡화"
-//         ],
-//         "pageCount": null,
-//         "totalCount": 14,
-//         "userCount": 0,
-//         "viewCount": 0,
-//         "createdAt": "2025-06-04T06:16:00.000+00:00",
-//         "isLiked": false,
-//         "expired": "2025-07-02T15:00:00.000+00:00",
-//         "isExpired": false
-//     }
-//   ];
+
 
 
 const NewProject: React.FC = () => {
@@ -138,6 +23,7 @@ const NewProject: React.FC = () => {
   return (
     <Container>
         <Title>신규 프로젝트</Title>
+        <Text>신규 프로젝트를 만나보세요!</Text>
         {projects.length == 0 && <p>프로젝트가 없습니다.</p>}
         <CardList>
         {projects.map((item, index) => {
@@ -185,13 +71,21 @@ export default NewProject;
 
 
 const Container = styled.div`
-  margin-top: 20px;
+  margin: 40px 0;
 
 `;
 
 const Title = styled.h2`
   font-size: 24px;
   margin : 0;
+  
+`;
+
+const Text = styled.p`
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+  padding: 0 0px;
   margin-bottom: 20px;
 `;
 
