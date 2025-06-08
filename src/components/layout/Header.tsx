@@ -33,7 +33,7 @@
 		{ label: '여행/레저', icon: 'bi bi-airplane', tag: '9' },
 		{ label: '푸드/음료', icon: 'bi bi-cup-straw', tag: '10' },
 	];
-	
+
 	// 링크 설정 객체
 	const searchLinks = {
 		RECOMMEND: '/search?order=RECOMMEND',
@@ -41,7 +41,7 @@
 		EXPIRED: '/search?order=EXPIRED',
 		COMPLETED: '/search?order=COMPLETED'
 	};
-	
+
 	// 링크 생성 함수
 	const createSearchLink = (type: keyof typeof searchLinks) => {
 		return searchLinks[type];
@@ -137,18 +137,17 @@
 						)}
 				</TopHeader>
 				<HeaderNavbar>
-					
+
 					<CategoryMenu onClick={handleCategoryClick}>
-						
+
 						<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 					</CategoryMenu>
-					
+
 					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
 					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
 					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
-<<<<<<< HEAD
 					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
-					
+
 					
 
 					<SearchBar onSubmit={handleSubmit}>
@@ -159,18 +158,12 @@
 								onChange={(e) => setKeyword(e.target.value)}
 							/>
 						<SearchButton type="submit">
-=======
-					<ProjectButton onClick={() => navigate('/creater')}>프로젝트 시작하기</ProjectButton>
-					<SearchBar>
-						<SearchInput type='text' placeholder='검색어를 입력하세요' />
-						<SearchButton>
->>>>>>> 7eb4c00636d5a0fbe6a1234b8133398883aa843a
 							<i className="bi bi-search"></i>
 						</SearchButton>
 					</SearchBar>
 
 
-					
+
 				</HeaderNavbar>
 				{
 					<CategoryListLayout isOpen={isOpen}>
@@ -219,10 +212,10 @@
 								<NavSectionItem><a href="">고객센터</a></NavSectionItem>
 								<NavSectionItem><a href="/mypage">마이페이지</a></NavSectionItem>
 								<NavSectionItem><a href="">정책 & 약관</a></NavSectionItem>
-								
+
 						</NavSection>
 					</CategorySection>
-					
+
 					</CategoryListLayout>
 				}
 			</HeaderWrapper>
@@ -300,7 +293,7 @@
 					<HeaderNavbar >
 					<Logo src={LogoImage} onClick={handleLogoClick} />
 						<CategoryMenu onClick={handleCategoryClick}>
-							
+
 							<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 						</CategoryMenu>
 						<NavItem><a href="/search?order=RECOMMEND">인기</a></NavItem>
@@ -384,10 +377,10 @@
 								<NavSectionItem><a href="">고객센터</a></NavSectionItem>
 								<NavSectionItem><a href="/mypage">마이페이지</a></NavSectionItem>
 								<NavSectionItem><a href="">정책 & 약관</a></NavSectionItem>
-								
+
 						</NavSection>
 					</CategorySection>
-					
+
 					</CategoryListLayout>
 				}
 				</SubHeaderWrapper>
@@ -402,14 +395,14 @@
 		}
 		@media (max-width: 1200px) {
 			padding: 0 2%;
-		
+
 	`;
-	
+
 	const SubHeaderWrapper = styled.div`
 		padding: 0 15%;
 		border-bottom: 1px solidrgb(215, 215, 215);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 아래 방향 그림자 */
-		
+
 	`;
 
 	const TopHeader = styled.div`
@@ -419,7 +412,7 @@
 		margin-top: 15px;
 		width: 100%;
 	`
-	
+
 
 	const Logo = styled.img`
 		width: 150px;
@@ -520,7 +513,7 @@
 	`
 
 	const CategoryMenu = styled.p`
-		
+
 		&:hover {
 			cursor: pointer;
 		}
@@ -567,7 +560,7 @@
 		box-shadow: inset 0 0 0 2px #a66cff;
 	}
 	`
-  
+
 	const SearchInput = styled.input`
 		background-color: transparent;
 		border: none;
@@ -640,10 +633,10 @@
 		margin-top: 2px;
 
 		grid-template-columns: repeat(2, 1fr);
-		row-gap: 15px;                         
-		column-gap: 40px;                      
+		row-gap: 15px;
+		column-gap: 40px;
 		min-width: 100px;
-		
+
 	`;
 	const CategorySectionButton = styled.div<{
 		bgColor?: string;
@@ -662,16 +655,16 @@
 		font-weight: bold;
 		transition: background-color 0.1s;
 		margin-bottom: 10px;
-	  
+
 		&:hover {
 		  background-color: ${({ hoverColor }) => hoverColor || 'rgb(238, 232, 217)'};
 		}
-	  
+
 		div {
 		  align-items: center;
 		  justify-content: center;
 		}
-	  
+
 		i {
 		  background: white;
 		  padding: 5px;
@@ -681,10 +674,10 @@
 		  margin-right: 10px;
 		}
 	  `;
-	  
-	
-	
-	
+
+
+
+
 
 	const CategoryListItem = styled.p`
 		text-align: left;
@@ -705,7 +698,7 @@
 			text-decoration: none;
 			color: #333;
 		}
-		
+
 	`
 
 	const NavSection = styled.div`
@@ -713,8 +706,8 @@
 		margin-top: 2px;
 
 		grid-template-columns: repeat(2, 1fr);
-		row-gap: 12px;                         
-		column-gap: 20px;                      
+		row-gap: 12px;
+		column-gap: 20px;
 		min-width: 100px;
 
 
@@ -727,11 +720,11 @@
 		text-align: left;
 		margin: 0 0 15px 0;
 		padding:  0;
-	
+
 		transition: all 0.3s ease;
 		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 		color: #333;
-    
+
 		&:hover {
 			cursor: pointer;
 			color: #6a1b9a;
@@ -744,7 +737,7 @@
 			color: #333;
 		}
 	`;
-	
+
 	const UserProfile = styled.img`
 		width: 30px;
 		height: 30px;
@@ -765,7 +758,7 @@
 
 			&:hover {
 				cursor: pointer;
-				color:#555;	
+				color:#555;
 				transform: scale(1.1);
 				transition: all 0.3s ease;
 			}
