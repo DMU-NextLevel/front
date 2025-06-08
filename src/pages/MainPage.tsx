@@ -56,8 +56,9 @@ export default MainPage;
 
   
 const MainWrapper = styled.div`
-  margin-left: 0;
-  margin-right: auto;
+  
+  margin-left: 0;        // 👈 왼쪽 정렬
+  margin-right: auto;    // 👈 오른쪽 여백만 자동
   display: flex;
   flex-direction: column;
   box-sizing: border-box;

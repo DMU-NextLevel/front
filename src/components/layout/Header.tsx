@@ -88,10 +88,6 @@
 			setIsOpen(!isOpen)
 		}
 
-		const handleProjectCreate = () => {
-			navigate('/project/create')
-		}
-
 		const handleProfileClick = () => {
 			navigate('/mypage')
 		}
@@ -150,6 +146,7 @@
 					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
 					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
 					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
+<<<<<<< HEAD
 					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
 					
 					
@@ -162,6 +159,12 @@
 								onChange={(e) => setKeyword(e.target.value)}
 							/>
 						<SearchButton type="submit">
+=======
+					<ProjectButton onClick={() => navigate('/creater')}>프로젝트 시작하기</ProjectButton>
+					<SearchBar>
+						<SearchInput type='text' placeholder='검색어를 입력하세요' />
+						<SearchButton>
+>>>>>>> 7eb4c00636d5a0fbe6a1234b8133398883aa843a
 							<i className="bi bi-search"></i>
 						</SearchButton>
 					</SearchBar>
@@ -175,8 +178,8 @@
 						<CategorySectionButton>
 							<i className="bi bi-bookmark-check"></i><div>팔로우 프로젝트</div>
 						</CategorySectionButton>
-						<CategorySectionButton onClick={handleProjectCreate} bgColor="rgb(233, 236, 239)"  hoverColor="rgb(206, 208, 211)">
-							<i className="bi bi-buildings"></i><div>메이커 스튜디오</div>
+						<CategorySectionButton onClick={() => navigate('/creater')} bgColor="rgb(233, 236, 239)"  hoverColor="rgb(206, 208, 211)">
+							<i className="bi bi-buildings"></i><div>위더 스튜디오</div>
 						</CategorySectionButton>
 						<CategorySectionButton bgColor="rgb(230, 246, 255)"  hoverColor="rgb(216, 228, 234)">
 							<i className="bi bi-box2"></i><div>즐겨찾기</div>
@@ -340,8 +343,8 @@
 						<CategorySectionButton>
 							<i className="bi bi-bookmark-check"></i><div>팔로우 프로젝트</div>
 						</CategorySectionButton>
-						<CategorySectionButton onClick={handleProjectCreate} bgColor="rgb(233, 236, 239)"  hoverColor="rgb(206, 208, 211)">
-							<i className="bi bi-buildings"></i><div>메이커 스튜디오</div>
+						<CategorySectionButton onClick={() => navigate('/creater')} bgColor="rgb(233, 236, 239)"  hoverColor="rgb(206, 208, 211)">
+							<i className="bi bi-buildings"></i><div>위더 스튜디오</div>
 						</CategorySectionButton>
 						<CategorySectionButton bgColor="rgb(230, 246, 255)"  hoverColor="rgb(216, 228, 234)">
 							<i className="bi bi-box2"></i><div>즐겨찾기</div>
@@ -564,8 +567,7 @@
 		box-shadow: inset 0 0 0 2px #a66cff;
 	}
 	`
-
-
+  
 	const SearchInput = styled.input`
 		background-color: transparent;
 		border: none;
@@ -586,7 +588,6 @@
 			transition: opacity 0.2s ease;
 		}
 	`
-
 	const Search = styled.img`
 		width: 20px;
 		cursor: pointer;
@@ -730,7 +731,7 @@
 		transition: all 0.3s ease;
 		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 		color: #333;
-
+    
 		&:hover {
 			cursor: pointer;
 			color: #6a1b9a;
