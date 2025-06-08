@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchProjectsFromServer } from './fetchProjectsFromServer';
+import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer';
 
 
 

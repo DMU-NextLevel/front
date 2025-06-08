@@ -30,7 +30,10 @@ const Login = () => {
 				.then(() => {
 					login('true')
 				})
-
+        const response = await api.get('/social/user');
+        const userData = response.data.data;  
+        console.log(userData)
+        login(userData);
       navigate("/")
     } catch(e:any) {
       const errorCode = e.response?.data?.code

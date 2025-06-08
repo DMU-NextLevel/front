@@ -68,7 +68,7 @@ const CategoryItem = styled.div`
   align-items: center;
   font-size: 13px;
   min-width: 80px;
-  color:rgb(20, 7, 41);
+  color: rgb(58, 58, 58);
   cursor: pointer;
   transition: all 0.2s ease;
 

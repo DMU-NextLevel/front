@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from 'react-router-dom';
-import noImage from '../../assets/images/noImage.jpg';
-import { fetchProjectsFromServer } from './fetchProjectsFromServer';
+import noImage from '../../../assets/images/noImage.jpg';
+import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer';
 
 
 

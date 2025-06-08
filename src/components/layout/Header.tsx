@@ -6,8 +6,8 @@
 	import UserImage from '../../assets/images/default_profile.png'
 	import { useNavigate } from 'react-router-dom'
 	import { useAuth } from '../../hooks/AuthContext'
-	import { fetchProjectsFromServer } from '../UI/fetchProjectsFromServer'
 
+	
 
 	interface HeaderBaseProps {
 		isLoggedIn: boolean
@@ -51,13 +51,13 @@
 
 	export const HeaderMain: React.FC = () => {
 		const [isOpen, setIsOpen] = useState<boolean>(false)
-		const {isLoggedIn, logout} = useAuth()
+		const {isLoggedIn, logout, user} = useAuth()
 		const [showNotification, setShowNotification] = useState<boolean>(false)
 		const notificationRef = useRef<HTMLDivElement>(null)
 		const navigate = useNavigate()
 		const [isHoveringCategory, setIsHoveringCategory] = useState(false)
 		const [keyword, setKeyword] = useState('');
-
+		
 		const handleSubmit = (e: React.FormEvent) => {
 			e.preventDefault();
 			if (keyword.trim()) {
@@ -117,7 +117,7 @@
 				document.removeEventListener('mousedown', handleClickOutside)
 			}
 		}, [showNotification])
-
+		const [isHovered, setIsHovered] = useState(false);
 		return (
 			<HeaderWrapper>
 				<TopHeader>
@@ -129,14 +129,41 @@
 							</div>
 						) : (
 							<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
-								<HeaderLink onClick={handleLogout}>로그아웃</HeaderLink>
 								<NotificationWrapper>
 									<Notification onClick={toggleNotification}>
 										<i className={showNotification ? 'bi bi-bell-fill' : 'bi bi-bell'}></i>
 									</Notification>
 									{showNotification && <NotificationBox ref={notificationRef}>새 알림이 없습니다</NotificationBox>}
 								</NotificationWrapper>
+								<AvatarWrapper
+								  onMouseEnter={() => setIsHovered(true)}
+								  onMouseLeave={() => setIsHovered(false)}
+								>
 								<UserProfile src={UserImage} onClick={handleProfileClick} />
+								<ProfilePopup visible={isHovered}>
+									<Banner>
+									<i className="fas fa-volume-up" style={{ fontSize: '18px', float: 'right' }} />
+									<BannerImg src={user?.img || UserImage} alt="프로필" />
+									<Name>{user?.name || '익명'}</Name>
+									</Banner>
+									<Email>{user?.email}</Email>
+									<Department>{user?.socialProvider || '일반 사용자'}</Department>
+									<Settings>
+									<SettingItem onClick={handleProfileClick}>
+										<i className="fas fa-user"></i>
+										마이페이지
+									</SettingItem>
+									<SettingItem onClick={handleLogout}>
+										<i className="fas fa-th"></i>
+										로그아웃
+									</SettingItem>
+									<SettingItem onClick={handleProfileClick}>
+										<i className="fas fa-cog"></i>
+										내정보 변경
+									</SettingItem>
+									</Settings>
+								</ProfilePopup>
+								</AvatarWrapper>
 							</div>
 						)}
 				</TopHeader>
@@ -212,7 +239,7 @@
 						<CategorySection>
 							<h3>도구/서비스</h3>
 							<NavSection>
-								<NavSectionItem><a href="">공지사항</a></NavSectionItem>
+								<NavSectionItem><a href="/notice">공지사항</a></NavSectionItem>
 								<NavSectionItem><a href="">고객센터</a></NavSectionItem>
 								<NavSectionItem><a href="/mypage">마이페이지</a></NavSectionItem>
 								<NavSectionItem><a href="">정책 & 약관</a></NavSectionItem>
@@ -222,6 +249,9 @@
 					
 					</CategoryListLayout>
 				}
+		
+					
+
 			</HeaderWrapper>
 		)
 	}
@@ -790,3 +820,87 @@
 		z-index: 100;
 	`
 
+
+
+
+
+/////////////////////////////////
+
+const AvatarWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const ProfilePopup = styled.div<{ visible: boolean }>`
+  position: absolute;
+  top: 35px;
+  right: 0;
+  width: 280px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  padding: 20px 20px 20px 20px;
+  z-index: 100;
+  opacity: ${({ visible }) => (visible ? 1 : 0)};
+  visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
+  transform: translateY(${({ visible }) => (visible ? '0' : '-10px')});
+  transition: all 0.25s ease;
+  pointer-events: ${({ visible }) => (visible ? 'auto' : 'none')};
+`;
+
+const Banner = styled.div`
+  background: linear-gradient(to right, #5e60ce, #4361ee);
+  border-radius: 10px 10px 0 0;
+  padding: 20px;
+  text-align: center;
+  color: white;
+`;
+
+const BannerImg = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-top: 10px;
+`;
+
+const Name = styled.div`
+  font-weight: bold;
+  font-size: 17px;
+  margin-top: 10px;
+`;
+
+const Email = styled.div`
+  font-size: 14px;
+  color: #374151;
+  margin-top: 10px;
+`;
+
+const Department = styled.div`
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 16px;
+`;
+
+const Settings = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-top: 12px;
+`;
+
+const SettingItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  color: #4b5563;
+  cursor: pointer;
+
+  i {
+	font-size: 18px;
+	margin-bottom: 4px;
+  }
+
+  &:hover {
+	color: #2563eb;
+  }
+`;

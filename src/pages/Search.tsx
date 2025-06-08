@@ -7,8 +7,7 @@ import { useAuth } from '../hooks/AuthContext';
 import { useSearchParams } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { fetchProjectsFromServer } from '../components/UI/fetchProjectsFromServer';
-import NewProject from '../components/UI/NewProject';
+import { fetchProjectsFromServer } from '../hooks/fetchProjectsFromServer';
 
 
 

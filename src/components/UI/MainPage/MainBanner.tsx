@@ -3,9 +3,9 @@ import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import styled from 'styled-components'
-import bannerImg from '../../assets/images/withU_testBanner1.jpg';
-import bannerMov2 from '../../assets/images/withU_testBanner2.mp4';
-import bannerMov3 from '../../assets/images/withU_testBanner3.mp4';
+import bannerImg from '../../../assets/images/withU_testBanner1.jpg';
+import bannerMov2 from '../../../assets/images/withU_testBanner2.mp4';
+import bannerMov3 from '../../../assets/images/withU_testBanner3.mp4';
 
 const SimpleSlider: React.FC = () => {
 	const sliderRef = useRef<Slider>(null);

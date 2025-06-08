@@ -11,6 +11,10 @@ import FundingPage from './pages/FundingPage'
 import Search from './pages/Search';
 import { AuthProvider } from './hooks/AuthContext'
 import ScrollToTop from './hooks/ScrollToTop';
+import NoticeBoard from './pages/NoticeBoard';
+import NoticeDetail from './pages/NoticeDetail';
+import NoticeWrite from './pages/NoticeWrite';
+import ProfileHeader from './pages/ProfileHeader';
 
 function App() {
 	return (
@@ -36,6 +40,11 @@ const AppWrapper = () => {
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/funding/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
+				<Route path='/notice' element={<NoticeBoard />} />
+				<Route path='/notice/no' element={<NoticeDetail />} />
+				<Route path='/notice/write' element={<NoticeWrite />} />
+				{/* <Route path='/notice/:no' element={<NoticeDetail />} /> */}
+				<Route path='/profile' element={<ProfileHeader />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>

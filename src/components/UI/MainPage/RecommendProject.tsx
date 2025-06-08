@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchProjectsFromServer } from './fetchProjectsFromServer';
-import noImage from '../../assets/images/noImage.jpg';
+import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer';
+import noImage from '../../../assets/images/noImage.jpg';
 const RecommendedProject = () => {
 
   const ArrowRightCircleIcon: React.FC<{ size?: number; color?: string }> = ({
