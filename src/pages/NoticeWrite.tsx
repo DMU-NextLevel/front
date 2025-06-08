@@ -7,7 +7,9 @@ import Underline from '@tiptap/extension-underline';
 import Strike from '@tiptap/extension-strike';
 import Blockquote from '@tiptap/extension-blockquote';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
-
+import { useUserRole } from '../hooks/useUserRole';
+import { api } from '../AxiosInstance';
+import axios from 'axios';
 
 const Container = styled.div`
   margin: 0 auto;
@@ -169,6 +171,8 @@ const NoticeWrite: React.FC = () => {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
+  const { role, loading } = useUserRole();
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -209,7 +213,7 @@ const NoticeWrite: React.FC = () => {
   };
   
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const title = (document.getElementById('title') as HTMLInputElement)?.value;
     const content = editor?.getHTML();
   
@@ -218,17 +222,45 @@ const NoticeWrite: React.FC = () => {
       return;
     }
   
-    const images = extractImagesFromContent(content);
+    if (role !== 'ADMIN' && !loading) {
+      alert('관리자만 공지사항을 작성할 수 있습니다.');
+      return;
+    }
   
-    const newPost = {
-      title,
-      content,
-      images,
-    };
+    const images = extractImagesFromContent(content); // base64 또는 URL
   
-    console.log('📦 저장된 공지사항:', newPost);
-    alert('공지사항이 저장되었습니다! (콘솔 확인)');
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+  
+    if (images.length === 0) {
+      // 이미지가 없더라도 빈 배열임을 명시
+      formData.append('images', '');
+    } else {
+      images.forEach((img) => {
+        formData.append('images', img);
+      });
+    }
+  
+    try {
+      const res = await axios.post('http://localhost:8080/admin/notice', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
+      });
+  
+      if (res.data.message === 'success') {
+        alert('공지사항이 성공적으로 등록되었습니다!');
+        window.location.href = '/notice';
+      } else {
+        alert(`등록 실패: ${res.data.message}`);
+      }
+    } catch (err) {
+      console.error('공지사항 등록 중 오류:', err);
+      alert('공지사항 등록 중 오류가 발생했습니다.');
+    }
   };
+  
+ 
 
   return (
     <Container>

@@ -1,59 +1,19 @@
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useState, useEffect, KeyboardEvent } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/AuthContext';
+import { api } from '../AxiosInstance';
+import { useUserRole } from '../hooks/useUserRole';
+import noImage from '../assets/images/noImage.jpg';
 
 type Notice = {
+  id: number;
   title: string;
-  date: string;
-  image?: string;
+  createdAt: string;
+  imgs: string[];
 };
 
-const notices: Notice[] = [
-  { title: "[약관/개인] 개인정보처리방침 개정 안내 [와디즈]", date: "2025.05.27" },
-  { title: "[와디즈 페이퍼스] 투자서비스 금융정보 안내", date: "2025.05.22" },
-  {
-    title: "‘헬스 사피, 웨이브 프로틴’… 와디즈 ‘성실 인센티브펀딩’ 1시간 만에 1.2억원 몰려",
-    date: "2025.05.19",
-    image: "https://placehold.co/80x80?text=헬스+사피"
-  },
-  {
-    title: "와디즈, 와이즈 취미 기술 박람회서 ‘글로벌 교육투자팀 전략’ 제시",
-    date: "2025.05.17",
-    image: "https://placehold.co/80x80?text=교육투자팀"
-  },
-  {
-    title: "와디즈, 여신자 최다 ‘취향 발견’ 큐레이션 마이- 관련 결제액 3배 이상 증가",
-    date: "2025.05.16",
-    image: "https://placehold.co/80x80?text=취향+발견"
-  },
-  {
-    title: "[지원사업] 한국 벤처 기획자 후속 메이커 모집 (~6/21)까지 상시 모집 및 선정",
-    date: "2025.05.15",
-    image: "https://placehold.co/80x80?text=벤처+모집"
-  },
-  {
-    title: "AI 노트클래스 콘텐츠 오픈 완료… 와디즈, ‘학익형’ 트렌드 확산",
-    date: "2025.05.15",
-    image: "https://placehold.co/80x80?text=AI+노트"
-  },
-  {
-    title: "[기획전] 와디즈 퍼스트테크 입점팀 참여 메이커 모집 (~7/8)",
-    date: "2025.05.14",
-    image: "https://placehold.co/80x80?text=퍼스트테크"
-  },
-  {
-    title: "“불황에도 통했다”… ‘프리미엄’ 제품 와디즈서 언어이 훨풍",
-    date: "2025.05.14",
-    image: "https://placehold.co/80x80?text=프리미엄"
-  },
-  {
-    title: "[기획전] 스포츠·아웃도어 생활 참여 메이커 모집 (~6/10)",
-    date: "2025.05.09",
-    image: "https://placehold.co/80x80?text=아웃도어"
-  },
-];
-
 const Container = styled.div`
-
   margin: 0 auto;
   padding: 40px 15%;
   font-family: 'sans-serif';
@@ -104,7 +64,7 @@ const NoticeItem = styled.li`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 40px 0;
+  padding: 20px 0;
   border-bottom: 1px solid #e5e7eb;
 `;
 
@@ -167,9 +127,31 @@ const NoticeBoard: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [noticeList, setNoticeList] = useState<Notice[]>([]);
+  const { isLoggedIn } = useAuth();
+  const { role, loading } = useUserRole();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    api.get('/public/notice')
+      .then(res => {
+        if (res.data.message === 'success') {
+          setNoticeList(res.data.data);
+        }
+      })
+      .catch(err => {
+        console.error('공지 불러오기 실패:', err);
+      });
+  }, []);
 
   const handleSearch = () => {
     setSearchTerm(searchInput.trim());
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
+    setSearchInput('');
+    setSearchTerm('');
     setCurrentPage(1);
   };
 
@@ -179,13 +161,15 @@ const NoticeBoard: React.FC = () => {
     }
   };
 
-  const handleReset = () => {
-    setSearchInput('');
-    setSearchTerm('');
-    setCurrentPage(1);
+  const handleCreate = () => {
+    navigate('/notice/write');
   };
 
-  const filteredNotices = notices.filter((notice) =>
+  const handleNoticeClick = (notice: Notice) => {
+    navigate(`/notice/${notice.id}`, { state: notice });
+  };
+
+  const filteredNotices = noticeList.filter((notice) =>
     notice.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -193,25 +177,35 @@ const NoticeBoard: React.FC = () => {
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const currentNotices = filteredNotices.slice(startIndex, startIndex + PAGE_SIZE);
 
+  const formatDate = (isoDate: string) => {
+    const d = new Date(isoDate);
+    return `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`;
+  };
+
   return (
     <Container>
       <Title>공지사항</Title>
-
-      
 
       {filteredNotices.length === 0 ? (
         <EmptyMessage>검색 결과가 없습니다.</EmptyMessage>
       ) : (
         <>
           <NoticeList>
-            {currentNotices.map((notice, index) => (
-              <NoticeItem key={index}>
+            {currentNotices.map((notice) => (
+              <NoticeItem key={notice.id} onClick={() => handleNoticeClick(notice)} style={{ cursor: 'pointer' }}>
                 <NoticeText>
                   <NoticeTitle>{notice.title}</NoticeTitle>
-                  <NoticeDate>{notice.date}</NoticeDate>
+                  <NoticeDate>{formatDate(notice.createdAt)}</NoticeDate>
                 </NoticeText>
-                {notice.image && (
-                  <Thumbnail src={notice.image} alt={`공지사항 썸네일 - ${notice.title}`} />
+                {notice.imgs?.length > 0 && (
+                  <Thumbnail
+                    src={`https://api.nextlevel.r-e.kr/img/${notice.imgs[0]}`}
+                    alt={`공지 썸네일 - ${notice.title}`}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = noImage;
+                    }}
+                  />
                 )}
               </NoticeItem>
             ))}
@@ -232,7 +226,12 @@ const NoticeBoard: React.FC = () => {
           )}
         </>
       )}
-      <br/>
+      
+      {!loading && role === 'ADMIN' && (
+        <Button onClick={handleCreate}>공지사항 작성</Button>
+      )}
+
+      <br />
       <SearchContainer>
         <SearchInput
           type="text"

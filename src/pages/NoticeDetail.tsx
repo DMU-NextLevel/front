@@ -1,48 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useUserRole } from '../hooks/useUserRole';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { api } from '../AxiosInstance';
 
 type NoticeArticle = {
+  id: number;
   title: string;
-  date: string;
   content: string;
-  image?: string;
+  createdAt: string;
+  imgs?: string[];
 };
-
-type RelatedNotice = {
-  title: string;
-  date: string;
-};
-
-const article: NoticeArticle = {
-  title: "[위드유 파이낸스] 투자서비스 종료공지 안내",
-  date: "2024.01.15",
-  image: "https://placehold.co/80x80?text=WY",
-  content: `안녕하세요. 위드유(주)입니다.
-
-위드유 투자서비스를 이용해주시는 분들께 진심으로 감사 말씀을 드립니다.
-
-위드유 투자서비스는 혁신 투자정보제공(투자콘텐츠/투자분석/투자프로파일) 운영이 중단되며,
-공식적으로 2024.1.18자로 투자 서비스 일체가 중단됩니다.
-
-기존 위드유 투자 서비스 계정/자산은 위드유 내의 서비스와 아이디로 내의 투자 관리 영역에서
-안전히 종료절차를 거치게 해드리며, 공지사항 사항에 대해서는 별도 FAQ로 안내드리도록 하겠습니다.
-
-감사합니다.
-위드유 드림`,
-};
-
-const relatedNotices: RelatedNotice[] = [
-  {
-    title: "[약관/개인] 개인정보처리방침 개정 안내 [위드유]",
-    date: "2025.05.27",
-  },
-  {
-    title: "[위드유 파이낸스] 투자서비스 종료공지 안내",
-    date: "2024.01.15",
-  },
-];
-
-// ================== styled components ==================
 
 const Container = styled.div` 
   margin: 0 auto;
@@ -56,13 +24,32 @@ const Title = styled.h1`
   margin-bottom: 12px;
 `;
 
+const ArticleOption = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  justify-content: space-between;
+`;
+
 const Meta = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 14px;
   color: #6b7280;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
+`;
+
+const ArticleOptionItem = styled.div`
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+
+  &:hover {
+    color: #2563eb;
+  }
 `;
 
 const AuthorImage = styled.img`
@@ -84,34 +71,6 @@ const Divider = styled.hr`
   border-color: #e5e7eb;
 `;
 
-const SubTitle = styled.h2`
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 16px;
-`;
-
-const RelatedList = styled.ul`
-  list-style: none;
-  padding: 0;
-`;
-
-const RelatedItem = styled.li`
-  padding: 16px 0;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const RelatedTitle = styled.span`
-  color: #2563eb;
-  font-weight: 500;
-`;
-
-const RelatedDate = styled.span`
-  color: #6b7280;
-  font-size: 14px;
-`;
-
 const Button = styled.button`
   margin-top: 40px;
   background: #f9fafb;
@@ -127,39 +86,71 @@ const Button = styled.button`
   }
 `;
 
-// ================== Component ==================
-
 const NoticeDetail: React.FC = () => {
+  const { role, loading: roleLoading } = useUserRole();
+  const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const article = location.state as NoticeArticle | undefined;
+
+  const formatDate = (isoDate: string) => {
+    const d = new Date(isoDate);
+    return `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`;
+  };
+
+  if (!article) {
+    return <Container>공지 정보를 불러올 수 없습니다.</Container>;
+  }
+  
+  //삭제 함수
+  const handleDelete = async () => {
+    if (!id) return;
+    console.log(id);
+    const confirm = window.confirm('정말 삭제하시겠습니까?');
+    if (!confirm) return;
+    
+    try {
+      const res = await api.delete(`/admin/notice/${id}`);
+      if (res.data.message === 'success') {
+        alert('삭제가 완료되었습니다.');
+        navigate('/notice');
+      } else {
+        alert('삭제 실패: ' + res.data.message);
+      }
+    } catch (err) {
+      console.error('삭제 중 오류:', err);
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <Container>
       <Title>{article.title}</Title>
+      <ArticleOption>
+        <Meta>
+          {article.imgs && article.imgs.length > 0 && (
+            <AuthorImage src={`https://placehold.co/80x80?text=WU`} alt="작성자 이미지" />
+          )}
+          <span>관리자</span>
+          <span>{formatDate(article.createdAt)}</span>
+        </Meta>
 
-      <Meta>
-        {article.image && (
-          <AuthorImage src={article.image} alt="작성자 프로필 이미지" />
+        {!roleLoading && role === 'USER' && (
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <ArticleOptionItem onClick={() => alert('수정 기능 연결 예정')}>수정</ArticleOptionItem>
+            <ArticleOptionItem onClick={() => handleDelete()}>삭제</ArticleOptionItem>
+          </div>
         )}
-        <span>와디즈</span>
-        <span>{article.date}</span>
-      </Meta>
+      </ArticleOption>
 
       <Content>{article.content}</Content>
-
       <Divider />
 
-      <SubTitle>공지 말머리에 다른 게시글</SubTitle>
-      <RelatedList>
-        {relatedNotices.map((notice, index) => (
-          <RelatedItem key={index}>
-            <RelatedTitle>{notice.title}</RelatedTitle>
-            <RelatedDate>{notice.date}</RelatedDate>
-          </RelatedItem>
-        ))}
-      </RelatedList>
-
-      <Button>목록으로 돌아가기</Button>
+      <Button onClick={() => navigate('/notice')}>목록으로 돌아가기</Button>
     </Container>
   );
 };
 
-export default NoticeDetail;
 
+export default NoticeDetail;

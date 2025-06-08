@@ -2,11 +2,10 @@
 	import styled from 'styled-components'
 	import LogoImage from '../../assets/images/withuLogo.png'
 	import CategoryImage from '../../assets/images/category.png'
-	import SearchImage from '../../assets/images/search.svg'
 	import UserImage from '../../assets/images/default_profile.png'
 	import { useNavigate } from 'react-router-dom'
 	import { useAuth } from '../../hooks/AuthContext'
-
+	import { useUserRole } from '../../hooks/useUserRole'
 	
 
 	interface HeaderBaseProps {
@@ -20,7 +19,7 @@
 		showSearchBar?: boolean
 		showNotification?: boolean
 	}
-
+	
 	const categories = [
 		{ label: '테크/가전', icon: 'bi bi-cpu', tag: '1' },
 		{ label: '라이프스타일', icon: 'bi bi-house', tag: '2' },
@@ -47,7 +46,7 @@
 		return searchLinks[type];
 	};
 
-
+	
 
 	export const HeaderMain: React.FC = () => {
 		const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -55,9 +54,10 @@
 		const [showNotification, setShowNotification] = useState<boolean>(false)
 		const notificationRef = useRef<HTMLDivElement>(null)
 		const navigate = useNavigate()
-		const [isHoveringCategory, setIsHoveringCategory] = useState(false)
 		const [keyword, setKeyword] = useState('');
-		
+		const { role, loading } = useUserRole();
+		const [isHovered, setIsHovered] = useState(false);
+
 		const handleSubmit = (e: React.FormEvent) => {
 			e.preventDefault();
 			if (keyword.trim()) {
@@ -66,8 +66,8 @@
 		};
 
 		const handleLogout = () => {
-			logout(); // localStorage에서 제거되고 로그인 상태가 false로 바뀜
-			window.location.href = '/login'; // 필요하다면 로그인 페이지로 리디렉션
+			logout(); 
+			window.location.href = '/login'; 
 		}
 
 		const handleLogoClick = () => {
@@ -117,7 +117,7 @@
 				document.removeEventListener('mousedown', handleClickOutside)
 			}
 		}, [showNotification])
-		const [isHovered, setIsHovered] = useState(false);
+		
 		return (
 			<HeaderWrapper>
 				<TopHeader>
@@ -258,12 +258,13 @@
 
 	export const HeaderSub: React.FC = () => {
 		const [isOpen, setIsOpen] = useState<boolean>(false)
-		const {isLoggedIn, logout} = useAuth()
+		const {isLoggedIn, logout, user} = useAuth()
 		const [showNotification, setShowNotification] = useState<boolean>(false)
 		const notificationRef = useRef<HTMLDivElement>(null)
 		const navigate = useNavigate()
 		const [isHoveringCategory, setIsHoveringCategory] = useState(false)
 		const [keyword, setKeyword] = useState('');
+		const [isHovered, setIsHovered] = useState(false);
 
 		const handleSubmit = (e: React.FormEvent) => {
 			e.preventDefault();
@@ -275,6 +276,11 @@
 		const handleLogoClick = () => {
 			navigate('/')
 			setIsOpen(false)
+		}
+
+		const handleLogout = () => {
+			logout(); 
+			window.location.href = '/login'; 
 		}
 
 		const handleLoginClick = () => {
@@ -359,7 +365,35 @@
 											</Notification>
 											{showNotification && <NotificationBox ref={notificationRef}>새 알림이 없습니다</NotificationBox>}
 										</NotificationWrapper>
-										<UserProfile src={UserImage} onClick={handleProfileClick} />
+										<AvatarWrapper
+								  onMouseEnter={() => setIsHovered(true)}
+								  onMouseLeave={() => setIsHovered(false)}
+								>
+								<UserProfile src={UserImage} onClick={handleProfileClick} />
+								<ProfilePopup visible={isHovered}>
+									<Banner>
+									<i className="fas fa-volume-up" style={{ fontSize: '18px', float: 'right' }} />
+									<BannerImg src={user?.img || UserImage} alt="프로필" />
+									<Name>{user?.name || '익명'}</Name>
+									</Banner>
+									<Email>{user?.email}</Email>
+									<Department>{user?.socialProvider || '일반 사용자'}</Department>
+									<Settings>
+									<SettingItem onClick={handleProfileClick}>
+										<i className="fas fa-user"></i>
+										마이페이지
+									</SettingItem>
+									<SettingItem onClick={handleLogout}>
+										<i className="fas fa-th"></i>
+										로그아웃
+									</SettingItem>
+									<SettingItem onClick={handleProfileClick}>
+										<i className="fas fa-cog"></i>
+										내정보 변경
+									</SettingItem>
+									</Settings>
+								</ProfilePopup>
+								</AvatarWrapper>
 									</div>
 								)}
 							</div>

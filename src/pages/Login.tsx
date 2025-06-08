@@ -22,19 +22,13 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      await testApi
-				.put('/public/login', {
-					email,
-					password,
-				})
-				.then(() => {
-					login('true')
-				})
-        const response = await api.get('/social/user');
-        const userData = response.data.data;  
-        console.log(userData)
-        login(userData);
-      navigate("/")
+      await testApi.put('/public/login', { email, password });
+  
+      const response = await api.get('/social/user');
+      const userData = response.data.data;
+  
+      login('true', userData); // <-- 여기에 유저 정보 전달
+      navigate('/');
     } catch(e:any) {
       const errorCode = e.response?.data?.code
       console.log(e)

@@ -41,9 +41,8 @@ const AppWrapper = () => {
 				<Route path='/funding/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
 				<Route path='/notice' element={<NoticeBoard />} />
-				<Route path='/notice/no' element={<NoticeDetail />} />
+				<Route path='/notice/:id' element={<NoticeDetail />} />
 				<Route path='/notice/write' element={<NoticeWrite />} />
-				{/* <Route path='/notice/:no' element={<NoticeDetail />} /> */}
 				<Route path='/profile' element={<ProfileHeader />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
