@@ -56,7 +56,6 @@ export default MainPage;
 
   
 const MainWrapper = styled.div`
-  
   margin-left: 0;
   margin-right: auto;
   display: flex;
