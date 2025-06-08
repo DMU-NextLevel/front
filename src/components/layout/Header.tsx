@@ -96,6 +96,10 @@
 			setShowNotification((prev) => !prev)
 		}
 
+		const handleProjectCreate = () => {
+			navigate('/creater')
+		}
+
 		useEffect(() => {
 			const handleClickOutside = (e: MouseEvent) => {
 				if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
@@ -146,10 +150,8 @@
 					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
 					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
 					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
-<<<<<<< HEAD
 					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
-					
-					
+
 
 					<SearchBar onSubmit={handleSubmit}>
 						<SearchInput
