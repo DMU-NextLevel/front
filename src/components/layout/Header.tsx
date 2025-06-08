@@ -299,9 +299,15 @@ export const HeaderSub: React.FC = () => {
 
 						<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
 					</CategoryMenu>
-					<NavItem><a href="/search?order=RECOMMEND">인기</a></NavItem>
-					<NavItem><a href="/search?order=NEW">신규</a></NavItem>
-					<NavItem><a href="/search?order=EXPIRED">마감임박</a></NavItem>
+					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
+					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
+					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
+					
+					
+					
+					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
+					
+					
 
 					<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px', marginRight: '20px' }}>
 					<SearchBar onSubmit={handleSubmit}>
