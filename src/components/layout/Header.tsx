@@ -146,8 +146,7 @@
 					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
 					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
 					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
-<<<<<<< HEAD
-					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
+					<ProjectButton onClick={() => navigate('/creater')}>프로젝트 시작하기</ProjectButton>
 					
 					
 
@@ -159,12 +158,6 @@
 								onChange={(e) => setKeyword(e.target.value)}
 							/>
 						<SearchButton type="submit">
-=======
-					<ProjectButton onClick={() => navigate('/creater')}>프로젝트 시작하기</ProjectButton>
-					<SearchBar>
-						<SearchInput type='text' placeholder='검색어를 입력하세요' />
-						<SearchButton>
->>>>>>> 7eb4c00636d5a0fbe6a1234b8133398883aa843a
 							<i className="bi bi-search"></i>
 						</SearchButton>
 					</SearchBar>
