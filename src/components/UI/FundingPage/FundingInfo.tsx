@@ -15,13 +15,15 @@ interface props {
 }
 
 const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, peopleNum, likeNum }: props): JSX.Element => {
+	const baseUrl = process.env.REACT_APP_API_BASE_URL
+
 	const PayClick = () => {
 		setPayOpen(true)
 	}
 
 	return (
 		<FundingInfoWrapper>
-			<InfoImage src={`http://localhost:8080/image/${image}`} />
+			<InfoImage src={`${baseUrl}/image/${image}`} />
 			<InfoTagWrapper>
 				<Tag>고양이</Tag>
 				<Tag>장난감</Tag>

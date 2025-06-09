@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { fetchProjectsFromServer } from './fetchProjectsFromServer';
 import noImage from '../../assets/images/noImage.jpg';
 const RecommendedProject = () => {
+  const baseUrl = process.env.REACT_APP_API_BASE_URL
 
   const ArrowRightCircleIcon: React.FC<{ size?: number; color?: string }> = ({
       size = 24,
@@ -42,7 +43,7 @@ const RecommendedProject = () => {
           <ImageTextItem key={project.id} onClick={() => navigate(`/funding/${project.id}`)}>
             <ImageWrapper>
               {project.titleImg ? (
-                <StyledImage src={project.titleImg ? `https://api.nextlevel.r-e.kr/img/${project.titleImg}` : noImage}
+                <StyledImage src={project.titleImg ? `${baseUrl}/img/${project.titleImg}` : noImage}
                 alt={project.title}
                 onError={(e) => {
                   e.currentTarget.onerror = null;
