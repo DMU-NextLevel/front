@@ -129,6 +129,14 @@ const MyPage = () => {
   };
 
 
+  const fieldMap: Record<string, string> = {
+    name: 'name',
+    nickname: 'nickName',
+    phone: 'number',
+    password: 'password',
+    passwordcf: 'passwordcf',
+  };
+
   //이게 회원정보 수정 api로 적음
   const handleSaveClick = async (field: string) => {
     try {
@@ -144,12 +152,13 @@ const MyPage = () => {
       }
   
       // ✅ 여기가 핵심: API 요청 보내기
-      const response = await fetch('/api/user/update', {
-        method: 'PATCH',
+      const response = await fetch('http://localhost:8080/social/user', {
+        method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name: field, value: newValue }),
+        credentials: 'include',
+        body: JSON.stringify({ name: fieldMap[field], value: newValue }),
       });
   
       const result = await response.json();
@@ -223,16 +232,26 @@ const MyPage = () => {
 
 
   //이게 프로필 이미지 변경 api로 적음
+  
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-  
+
+    const fieldMap: Record<string, string> = {
+      name: 'name',
+      nickname: 'nickName',
+      phone: 'number',
+      password: 'password',
+      passwordcf: 'passwordcf',
+    };
+
     const formData = new FormData();
     formData.append('img', file); 
   
     try {
-      const res = await fetch('/api/user/upload-profile', {
-        method: 'POST',
+      const res = await fetch('http://localhost:8080/social/user/img', {
+        method: 'PUT',
+        credentials: 'include',
         body: formData,
       });
   
@@ -411,9 +430,9 @@ const MyPage = () => {
         )}
       </Content>
       {editFields[field as keyof typeof editFields] ? (
-        <ChangeBtn onClick={() => {
-          setEditFields((prev) => ({...prev, [field]: false}));
-        }}>변경완료</ChangeBtn>
+        <ChangeBtn onClick={() => handleSaveClick(field)}>
+        변경완료
+      </ChangeBtn>
       ) : (
         <ChangeBtn onClick={() => handleEditClick(field)}>변경</ChangeBtn>
       )}
