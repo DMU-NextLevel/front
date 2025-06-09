@@ -19,11 +19,18 @@ interface IUserData {
 	completionRate: number | undefined	//달성률
 }
 
+interface IProjectData {
+	story: any[]
+	notice: any[]
+	community: any[]
+}
+
 const FundingPage = (): JSX.Element => {
 	const {no} = useParams<{no:string}>()
 	const [payOpen, setPayOpen] = useState<boolean>(false)
 	const [searchParams] = useSearchParams()
 	const [userData, setUserData] = useState<IUserData | null>(null)
+	const [projectData, setProjectData] = useState<IProjectData | null>(null)
 	const percent = searchParams.get('percent')
 
 	// 프로젝트 상세조회
@@ -48,6 +55,28 @@ const FundingPage = (): JSX.Element => {
 		}
 	},[no])
 
+	// 프로젝트 스토리, 새소식, 커뮤니티 조회
+	useEffect(() => {
+		try {
+			api.get(`/public/project/${no}/all`).then(
+				(res) => {
+					const dataRoot = res.data.data
+					setProjectData({
+						story: dataRoot.story.imgs,
+						notice: dataRoot.notice.notices,
+						community: dataRoot.community.communities
+					})
+				}
+			)
+		} catch (e:any) {
+			console.log(e)
+		}
+	},[no])
+
+	useEffect(() => {
+		console.log(projectData)
+	},[projectData])
+
 	return (
 		<FundingPageWrapper>
 			<ColumBox>
@@ -63,7 +92,9 @@ const FundingPage = (): JSX.Element => {
 				/>
 				<StarterInfo starter={userData?.starter} />
 			</ColumBox>
-			<FundingContent />
+			<FundingContent
+				projectData={projectData}
+			/>
 			{payOpen && (
 				<Modal onClose={() => setPayOpen(false)}>
 					<FundingModal />

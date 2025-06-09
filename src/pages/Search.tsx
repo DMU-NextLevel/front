@@ -54,6 +54,7 @@ const Search: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
+  const baseUrl = process.env.REACT_APP_API_BASE_URL
   const lastProjectRef = useCallback((node: HTMLDivElement | null) => {
   if (loading) return;
   if (observer.current) observer.current.disconnect();
@@ -229,7 +230,7 @@ const Search: React.FC = () => {
                 <a href={`/project/${item.id}`}>
                   <CardTopWrapper>
                     <Thumbnail
-                      src={`https://api.nextlevel.r-e.kr/img/${item.titleImg}`}
+                      src={`${baseUrl}/img/${item.titleImg}`}
                       alt={item.title}
                       onError={(e) => {
                         e.currentTarget.onerror = null;
