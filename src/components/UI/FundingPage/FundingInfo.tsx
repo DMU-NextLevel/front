@@ -11,9 +11,10 @@ interface props {
 	description: string
 	amount: number
 	peopleNum: number
+	likeNum: number
 }
 
-const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, peopleNum }: props): JSX.Element => {
+const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, peopleNum, likeNum }: props): JSX.Element => {
 	const PayClick = () => {
 		setPayOpen(true)
 	}
@@ -40,7 +41,7 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 			<RowBox>
 				<ColumBox>
 					<Like src={LikeImage} />
-					<Liker>2,551</Liker>
+					<Liker>{likeNum}</Liker>
 				</ColumBox>
 				<PayButton onClick={PayClick}>스타터와 함께하기</PayButton>
 			</RowBox>
