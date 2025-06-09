@@ -1,46 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-
+import { fetchProjectsFromServer } from './fetchProjectsFromServer';
+import noImage from '../../assets/images/noImage.jpg';
 const RecommendedProject = () => {
-  const projects = [
-    {
-      id: 1,
-      title: 'HoverAir X1: 셀프 비행 카메라',
-      percent: 40,
-      image: 'https://i.ebayimg.com/images/g/T9UAAOSweV9lXHQs/s-l400.jpg'
-    },
-    {
-      id: 2,
-      title: 'Drumi: 발로 작동하는 세탁기',
-      percent: 20,
-      image: 'https://img1.daumcdn.net/thumb/R800x0/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F255A414858B3CB532C&scode=mtistory2'
-    },
-    {
-      id: 3,
-      title: 'Nomad 에너지 드링크',
-      percent: 100,
-      image: 'https://www.yankodesign.com/images/design_news/2025/04/draft-coffeejack/coffeejack_v2_3.jpg'
-    },
-    {
-      id: 4,
-      title: 'COFFEEJACK V2: 휴대용 에스프레소 머신',
-      percent: 55,
-      image: 'https://cdn.homecrux.com/wp-content/uploads/2025/04/COFFEEJACK-V2-Portable-Espresso-machine-2.jpg'
-    },
-    {
-      id: 5,
-      title: 'Pebble Time: 스마트워치',
-      percent: 75,
-      image: 'https://i.kickstarter.com/assets/012/032/069/46817a8c099133d5bf8b64aad282a696_original.png?anim=false&fit=cover&gravity=auto&height=576&origin=ugc&q=92&sig=rOTB6R5uOmKTlUpnqYLqKALPN0hricwUTf950LCIVrI%3D&v=1463725702&width=1024'
-    },
-    {
-      id: 6,
-      title: 'Glyph: 몰입형 헤드셋',
-      percent: 90,
-      image: 'https://kr.aving.net/news/photo/201702/1375955_549261_1410.jpg'
-    }
-  ];
 
   const ArrowRightCircleIcon: React.FC<{ size?: number; color?: string }> = ({
       size = 24,
@@ -53,55 +16,67 @@ const RecommendedProject = () => {
 
   const navigate = useNavigate()
 
-  const handleClick = () => {
-    navigate('/funding')
-  }
-  
+  const [projects, setProjects] = useState<any[]>([]);
+      useEffect(() => {
+        const loadProjects = async () => {
+          const data = await fetchProjectsFromServer({ order: "COMPLETION", pageCount: 6 });
+          console.log("📦 서버에서 받아온 프로젝트:", data);
+          if (Array.isArray(data)) {
+            setProjects(data);
+          }
+        };
+        loadProjects();
+      }, []);
+
   return (
     <Container>
       <Title>취향 맞춤 프로젝트</Title>
       <TextLine>
         <Text>당신을 위한 추천 프로젝트</Text>
         <LinkBlock>
-          <LinkToRecommand href="/">추천 프로젝트 보러가기 <ArrowRightCircleIcon size={15} color="#" /></LinkToRecommand>
+          <LinkToRecommand href="/search?order=RECOMMEND">추천 프로젝트 보러가기 <ArrowRightCircleIcon size={15} color="#" /></LinkToRecommand>
         </LinkBlock>
       </TextLine>
       <CardList>
         {projects.map((project) => (
-          <ImageTextItem onClick={handleClick} key={project.id}>
+          <ImageTextItem key={project.id} onClick={() => navigate(`/project/${project.id}`)}>
             <ImageWrapper>
-              {project.image ? (
-                <StyledImage src={project.image} alt={project.title} />
+              {project.titleImg ? (
+                <StyledImage src={project.titleImg ? `https://api.nextlevel.r-e.kr/img/${project.titleImg}` : noImage}
+                alt={project.title}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = noImage;
+                }} /> 
               ) : (
                 <NoImage>이미지 없음</NoImage>
               )}
             </ImageWrapper>
             <TextSection>
-              <Percent>{project.percent}% 달성</Percent>
+              <Percent>{project.completionRate}% 달성</Percent>
               <ProjectTitle>{project.title}</ProjectTitle>
             </TextSection>
           </ImageTextItem>
         ))}
       </CardList>
-      
+
     </Container>
   );
 };
 
 export default RecommendedProject;
 
-// ✅ styled-components 정리
-
 const Container = styled.div`
   width: 70%;
   max-width: 1200px;
-  padding: 0px 0px;
+  padding: 40px 0px;
   margin: 0 auto;
 `;
 
 const Title = styled.h2`
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 20px;
+  margin: 0;
 `;
 
 const TextLine = styled.div`
@@ -112,7 +87,7 @@ const TextLine = styled.div`
 `;
 
 const Text = styled.p`
-  font-size: 16px;
+  font-size: 14px;
   color: #888;
   margin: 0;
   padding: 0 0px;
@@ -121,7 +96,7 @@ const Text = styled.p`
 const CardList = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3열 */
-  gap: 40px;
+  gap: 20px;
 `;
 
 const ImageTextItem = styled.div`
@@ -129,6 +104,7 @@ const ImageTextItem = styled.div`
   flex-direction: column;
   width: 100%;
   border-radius: 10px;
+  cursor: pointer;
 `;
 
 const ImageWrapper = styled.div`
@@ -143,18 +119,17 @@ const ImageWrapper = styled.div`
 const StyledImage = styled.img`
   width: 100%;
   height: 150px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
   object-fit: cover;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
-  
+
   &:hover {
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
     filter: brightness(1.05);
   }
-  
+
   &:active {
     transform: translateY(0) scale(0.98);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -174,13 +149,14 @@ const TextSection = styled.div`
 const Percent = styled.div`
   color: #A66CFF;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 16px;
 `;
 
 const ProjectTitle = styled.div`
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: 500;
+  font-size: 14px;
   margin-top: 4px;
+  min-height: 40px;
 `;
 
 const LinkBlock = styled.div`
@@ -200,15 +176,15 @@ const LinkToRecommand = styled.a`
   font-weight: bold;
   text-decoration: none;
   color: inherit;
-  background-image: linear-gradient(45deg,rgb(89, 50, 147) 50%, transparent 50%);
-  background-position: 100%;
-  background-size: 400%;
-  transition: background-position 300ms ease-in-out, color 300ms ease-in-out;
-  border-radius: 50px;
-
+  transition: all 0.1s;
   &:hover {
-    background-position: 0;
-    color: #fff;
     text-decoration: none;
+    cursor: pointer;
+    color: #A66CFF;
+    font-size: 14px;
   }
 `;
+
+
+
+

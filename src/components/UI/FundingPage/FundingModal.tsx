@@ -1,8 +1,8 @@
 import React, { JSX, useEffect, useState } from "react"
 import styled from "styled-components"
 import FundingReward from "./FundingReward"
-import FundingFree from "./FundingFree"
 import FundingPay from "./FundingPay"
+import FundingFree from "./FundingFree"
 
 const exam = [
     {
@@ -17,6 +17,8 @@ const exam = [
 const FundingModal = ():JSX.Element => {
     const [step, setStep] = useState<Number>(1)
     const [isShow, setIsShow] = useState<boolean>(false)
+    const [checked, setChecked] = useState<boolean>(false)
+    const [selectReward, setSelectReward] = useState<Number|null>(null)
 
     useEffect(() => {
         if(step === 1) {
@@ -28,8 +30,10 @@ const FundingModal = ():JSX.Element => {
 
     const nextClick = () => {
         setStep(2)
+        setSelectReward(null)
     }
 
+    // 디버깅용
     const moveStep = (step:number) => {
         setStep(step)
     }
@@ -44,16 +48,19 @@ const FundingModal = ():JSX.Element => {
             <Reward>
                 {!isShow ? (
                     <>
-                        <FundingFree/>
+                        <FundingFree checked={selectReward}setSelectReward={setSelectReward}/>
                         {exam.map((reward) => (
                             <FundingReward
+                                id={reward.id}
                                 price={reward.price}
                                 title={reward.title}
                                 description={reward.description}
                                 date={reward.date}
+                                checked={selectReward}
+                                setSelectReward={setSelectReward}
                             />
                         ))}
-                        <ModalButton onClick={nextClick}>다음</ModalButton>
+                        <ModalButton disabled={selectReward == null} onClick={nextClick}>다음</ModalButton>
                     </>
                 ) : (
                     <>
