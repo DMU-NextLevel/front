@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import { api, testApi } from '../AxiosInstance';
+import { api } from '../AxiosInstance';
 import noImage from '../assets/images/noImage.jpg';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';
@@ -78,7 +78,7 @@ const Search: React.FC = () => {
     setSearchTerm(keyword ?? '');
   }, [searchParams]);
 
-  
+
   useEffect(() => {
     const newTag = searchParams.get('tag');
     if (newTag !== tag) {
@@ -123,7 +123,7 @@ const Search: React.FC = () => {
     try {
       setLoading(true); // 🔐 로딩 시작
       const loadProjects = async () => {
-        const data = await fetchProjectsFromServer({ 
+        const data = await fetchProjectsFromServer({
           order: order || 'RECOMMEND',
           page: 0,
           search: searchTerm,
@@ -141,7 +141,7 @@ const Search: React.FC = () => {
         loadProjects(),
         new Promise((resolve) => setTimeout(resolve, 500))
       ]);
-      
+
     } catch (error) {
       console.error('프로젝트 불러오기 실패:', error);
       setError('프로젝트 불러오기 실패');
@@ -149,7 +149,7 @@ const Search: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   //좋아요 기능 추후 추가 예정
   const handleLikeToggle = async (projectId: number, current: boolean) => {
     // if (!isLoggedIn) {
@@ -215,9 +215,9 @@ const Search: React.FC = () => {
       {projects.length === 0 && !loading && <NoResult><i className="bi bi-search"></i><p>검색 결과가 없습니다.</p></NoResult>}
       {projects.length > 0 && <div>총 <strong>{projects.length}</strong>개의 프로젝트가 있습니다.</div>}
       {/* {error && <ErrorText>{error}</ErrorText>} */}
-      
-      
-      
+
+
+
 
       <CardList>
         {projects.map((item, index) => {
@@ -226,7 +226,7 @@ const Search: React.FC = () => {
             <Card key={item.id} ref={isLast ? lastProjectRef : undefined}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div>
-                <a href={`/project/${item.id}`}>  
+                <a href={`/project/${item.id}`}>
                   <CardTopWrapper>
                     <Thumbnail
                       src={`https://api.nextlevel.r-e.kr/img/${item.titleImg}`}
@@ -236,7 +236,7 @@ const Search: React.FC = () => {
                         e.currentTarget.src = noImage;
                       }}
                     />
-                    
+
                     <HeartIcon
                       className={item.isRecommend ? 'bi bi-heart-fill' : 'bi bi-heart'}
                       onClick={() => handleLikeToggle(item.id, item.isRecommend)}
@@ -246,7 +246,7 @@ const Search: React.FC = () => {
                   {/* id:{item.id} */}
                   <CardContent>
                     <InfoRow>{item.completionRate}% 달성</InfoRow>
-                    <a href={`/project/${item.id}`}>  
+                    <a href={`/project/${item.id}`}>
                     <TitleRow>{item.title}</TitleRow>
                     </a>
                     <CreaterRow>회사이름</CreaterRow>
@@ -255,24 +255,24 @@ const Search: React.FC = () => {
                       <Tag>{item.tags[0]}</Tag>
                       {item.tags[0] && <Tag>{item.tags[1]}</Tag>}
                     </TagLow>
-                    
+
                   </CardContent>
-                  </div> 
+                  </div>
                   <ProgressSection percent={item.completionRate}>
                     <ProgressBarWrapper>
                       <ProgressBar percent={item.completionRate}>
                         <Tooltip percent={item.completionRate} className="tooltip" >{item.userCount}명 참여</Tooltip>
                         </ProgressBar>
-                      
+
                     </ProgressBarWrapper>
-                    
+
                   </ProgressSection>
               </div>
             </Card>
           );
         })}
       </CardList>
-      
+
     </Container>
   );
 };
@@ -319,7 +319,7 @@ const CategoryRow = styled.div`
   overflow-x: auto;
   height: 80px;
   padding: 12px 20px;
-  
+
   align-items: center;
   justify-content: space-between;
 `;
@@ -340,7 +340,7 @@ const CategoryItem = styled.div`
     justify-content: center;
     align-items: center;
     transition: all 0.2s ease;
-    
+
   }
     &:hover {
         color: #A66CFF;
@@ -444,12 +444,12 @@ const Thumbnail = styled.img`
   object-fit: cover;
   width: 260px;
   z-index: 1;
-  transition: all 0.5s ease;  
+  transition: all 0.5s ease;
   &:hover{
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
       transform: scale(1.005);
-      transition: all 0.5s ease;  
-    } 
+      transition: all 0.5s ease;
+    }
 
   img {
     height: 180px;
@@ -460,14 +460,14 @@ const Thumbnail = styled.img`
       hover{
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
       transform: scale(1.005);
-      transition: all 0.2s ease;  
+      transition: all 0.2s ease;
     }
- 
+
     }
 `;
 
 const CardContent = styled.div`
-  
+
   display: flex;
   flex-direction: column;
 
@@ -502,7 +502,7 @@ const CreaterRow = styled.div`
     font-weight: bold;
     transition: all 0.2s ease;
   }
-`;  
+`;
 const ProgressSection = styled.div<{ percent: number }>`
   width: 10px;
   height: 100%;
@@ -565,14 +565,14 @@ const Tooltip = styled.div<{ percent: number }>`
     if (percent >= 40) return '#AFB4FF'; // SubColor 2
     if (percent >= 20) return '#B1E1FF'; // SubColor 3
     return '#9A9A9A';                    // SubColor 4
-  }}; 
+  }};
   }
 
   ${ProgressSection}:hover & {
     opacity: 1;
     transition: opacity 0.3s ease;
     transition-delay: 0.5s;
-    
+
   }
 `;
 
@@ -584,7 +584,7 @@ const ProgressBarWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column-reverse;
-  transition: all 0.3s ease;  
+  transition: all 0.3s ease;
 `;
 
 
@@ -652,7 +652,7 @@ const DotWaveWrapper = styled.div`
 
 const Dot = styled.span`
   width: 10px;
-  height: 10px; 
+  height: 10px;
   background-color: #A66CFF;
   border-radius: 50%;
   margin: 0 5px;
@@ -679,14 +679,14 @@ const Dot = styled.span`
 `;
 
 const NoResult = styled.div`
-  text-align: center; 
+  text-align: center;
   padding: 130px;
   color: #888;
   p {
     font-size: 32px;
     color: #888;
     font-weight: bold;
-  } 
+  }
 
   i {
     font-weight: bold;
@@ -716,4 +716,4 @@ const CloseButton = styled.button`
   cursor: pointer;
   padding: 0;
 `;
-  
+

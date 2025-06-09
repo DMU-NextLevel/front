@@ -5,7 +5,7 @@ import StarterInfo from '../components/UI/FundingPage/StarterInfo'
 import FundingContent from '../components/UI/FundingPage/FundingContent'
 import FundingModal from '../components/UI/FundingPage/FundingModal'
 import Modal from '../components/layout/Modal'
-import { testApi } from '../AxiosInstance'
+import { api } from '../AxiosInstance'
 import { useParams, useSearchParams } from 'react-router-dom'
 
 interface IUserData {
@@ -29,7 +29,7 @@ const FundingPage = (): JSX.Element => {
 	// 프로젝트 상세조회
 	useEffect(() => {
 		try {
-			testApi.get(`/public/project/${no}`).then((res) => {
+			api.get(`/public/project/${no}`).then((res) => {
 				setUserData({
 					title: res.data.data.title,
 					description: res.data.data.content,

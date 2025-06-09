@@ -1,4 +1,4 @@
-import { api, testApi } from '../../AxiosInstance';
+import { api } from '../../AxiosInstance';
 
 interface ProjectItem {
   id: number;
