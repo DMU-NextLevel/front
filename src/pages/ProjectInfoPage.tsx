@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-// 스타일드 컴포넌트 정의
+// css 시작!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
@@ -88,16 +89,31 @@ const FormGroup = styled.div`
   margin-bottom: 1.5rem;
 `;
 
-const Label = styled.label`
+interface LabelProps {
+  required?: boolean;
+}
+
+const Label = styled.label<LabelProps>`
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 
-  &[required]:after {
-    content: ' *';
-    color: #ff4d4f;
+  &::after {
+    content: ${({ required }) => (required ? '"*"' : '""')};
+    color: #a66bff;
+    margin-left: 0.25rem;
   }
+`;
+
+const RequiredBadge = styled.span`
+  color: #a66bff;
+  font-size: 1.1em;
+  line-height: 1;
+  margin-left: 0.25rem;
 `;
 
 const Input = styled.input`
@@ -128,7 +144,7 @@ const TextArea = styled.textarea`
   border-radius: 4px;
   font-size: 1rem;
   font-family: inherit;
-  resize: vertical;
+  resize: none;
   transition: all 0.3s;
 
   &:focus {
@@ -164,12 +180,21 @@ const BackButton = styled(Button)`
   }
 `;
 
-const NextButton = styled(Button)`
-  background: #a66bff;
-  color: white;
-
+const SubmitButton = styled(Button)<{ $isActive: boolean }>`
+  background: ${props => props.$isActive ? '#a66bff' : '#f0f0f0'};
+  color: ${props => props.$isActive ? 'white' : '#999'};
+  cursor: ${props => props.$isActive ? 'pointer' : 'not-allowed'};
+  opacity: 1;
+  transition: all 0.2s ease;
+  
   &:hover {
-    background: #8a5cff;
+    background: ${props => props.$isActive ? '#8a5cff' : '#f0f0f0'};
+    transform: ${props => props.$isActive ? 'translateY(-2px)' : 'none'};
+    box-shadow: ${props => props.$isActive ? '0 4px 12px rgba(166, 107, 255, 0.3)' : 'none'};
+  }
+  
+  &:active {
+    transform: ${props => props.$isActive ? 'translateY(0)' : 'none'};
   }
 `;
 
@@ -252,7 +277,7 @@ const ProjectInfoPage: React.FC = () => {
     teamExpertise: '',
     teamRoles: '',
     
-    // 기타
+    // 기타..
     future: ''
   });
 
@@ -276,8 +301,8 @@ const ProjectInfoPage: React.FC = () => {
 
   const validateAmount = (amount: string) => {
     const numAmount = parseNumber(amount);
-    if (numAmount < 300000) {
-      alert('최소 30만 원 이상 입력해주세요.');
+    if (numAmount < 5000) {
+      alert('최소 5천 원 이상 입력해주세요.');
       return false;
     }
     if (numAmount > 100000000) {
@@ -290,19 +315,45 @@ const ProjectInfoPage: React.FC = () => {
   const handleConfirmClick = () => {
     const numAmount = parseNumber(formData.targetAmount);
     if (numAmount === 0) {
-      alert('금액을 입력해주세요.');
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: '금액을 입력해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인'
+      });
       return;
     }
 
     if (validateAmount(formData.targetAmount)) {
       const formattedAmount = formatNumber(formData.targetAmount);
-      if (window.confirm(`${formattedAmount}원으로 설정하시겠습니까?`)) {
-        // 확인 버튼을 누르면 입력된 금액을 유지하고 포커스를 제거
-        const input = document.querySelector('input[name="targetAmount"]') as HTMLInputElement;
-        if (input) {
-          input.blur();
+      Swal.fire({
+        title: '확인',
+        text: `${formattedAmount}원으로 설정하시겠습니까?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#a66bff',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '예, 설정합니다',
+        cancelButtonText: '취소'
+      }).then((result: { isConfirmed: boolean }) => {
+        if (result.isConfirmed) {
+          
+          const input = document.querySelector('input[name="targetAmount"]') as HTMLInputElement;
+          if (input) {
+            input.blur();
+          }
+          
+         
+          Swal.fire({
+            icon: 'success',
+            title: '설정 완료',
+            text: `${formattedAmount}원으로 설정되었습니다.`,
+            confirmButtonColor: '#a66bff',
+            confirmButtonText: '확인'
+          });
         }
-      }
+      });
     }
   };
 
@@ -330,9 +381,30 @@ const ProjectInfoPage: React.FC = () => {
     });
   };
 
+  const isFormValid = () => {
+    const requiredFields = [
+      'title',
+      'category',
+      'startDate',
+      'endDate',
+      'targetAmount'
+    ];
+
+    return requiredFields.every(field => {
+      const value = formData[field as keyof typeof formData];
+      return value !== undefined && value !== null && value !== '';
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('프로젝트 정보 제출:', { ...state, ...formData });
+
+    navigate('/project/introduction', { 
+      state: { 
+        ...state, 
+        ...formData
+      } 
+    });
   };
 
   return (
@@ -342,22 +414,22 @@ const ProjectInfoPage: React.FC = () => {
 
         <Section>
           <FormGroup>
-            <Label>프로젝트 제목 *</Label>
+            <Label required>프로젝트 제목</Label>
             <Input type="text" name="title" value={formData.title} readOnly required />
           </FormGroup>
 
           <FormGroup>
-            <Label>카테고리 *</Label>
+            <Label required>카테고리</Label>
             <Input type="text" name="category" value={formData.category} readOnly required />
           </FormGroup>
 
           <FormGroup>
-            <Label>시작일 *</Label>
+            <Label required>시작일</Label>
             <Input type="date" name="startDate" value={formData.startDate} onChange={handleStartDateChange} min={new Date().toISOString().split('T')[0]} required />
           </FormGroup>
 
           <FormGroup>
-            <Label>마감일 *</Label>
+            <Label required>마감일</Label>
             <Input type="date" name="endDate" value={formData.endDate} onChange={handleChange} min={formData.startDate ? (() => {
               const minDate = new Date(formData.startDate);
               minDate.setDate(minDate.getDate() + 7);
@@ -367,7 +439,7 @@ const ProjectInfoPage: React.FC = () => {
           </FormGroup>
 
           <FormGroup>
-            <Label>목표 금액 *</Label>
+            <Label required>목표 금액</Label>
             <InputWrapper>
               <Input 
                 type="text" 
@@ -376,7 +448,7 @@ const ProjectInfoPage: React.FC = () => {
                 name="targetAmount" 
                 value={formData.targetAmount} 
                 onChange={handleChange} 
-                placeholder="300,000원 ~ 100,000,000원" 
+                placeholder="5,000원 ~ 100,000,000원" 
                 required 
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -393,7 +465,7 @@ const ProjectInfoPage: React.FC = () => {
                 확인
               </ConfirmButton>
             </InputWrapper>
-            <HelperText>최소 30만 원 ~ 최대 1억 원 사이에서 설정해 주세요.</HelperText>
+            <HelperText>최소 5천 원 ~ 최대 1억 원 사이에서 설정해 주세요.</HelperText>
           </FormGroup>
 
           <FormGroup>
@@ -402,79 +474,21 @@ const ProjectInfoPage: React.FC = () => {
           </FormGroup>
         </Section>
 
-        <Title>프로젝트 소개</Title>
 
-        <Section>
-          <SectionTitle>1. 프로젝트 개요</SectionTitle>
-          <SectionDescription>프로젝트의 목적, 주요 기능, 타겟 고객 등 프로젝트를 소개해주세요.</SectionDescription>
-          <TextArea name="overview" value={formData.overview} onChange={handleChange} placeholder="예: 이 프로젝트는 ~~~을 목표로 하는 프로젝트입니다." required />
-        </Section>
+        
 
-        <Section>
-          <SectionTitle>2. 프로젝트 선정 이유</SectionTitle>
-          <SectionDescription>이 프로젝트를 왜 진행하게 되었는지, 어떤 문제를 해결하고자 하는지 설명해주세요.</SectionDescription>
-          <TextArea name="reason" value={formData.reason} onChange={handleChange} placeholder="예: 기존 서비스의 ~~~한 문제점을 해결하고자 시작하게 되었습니다." required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>3. 프로젝트 배경</SectionTitle>
-          <SectionDescription>이 프로젝트를 시작하게 된 배경과 동기에 대해 설명해주세요.</SectionDescription>
-          <TextArea name="background" value={formData.background} onChange={handleChange} placeholder="예: 최근 ~~~한 문제를 해결하기 위해 이 프로젝트를 기획하게 되었습니다." required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>4. 타겟 고객</SectionTitle>
-          <SectionDescription>이 프로젝트의 주요 고객층은 누구인가요?</SectionDescription>
-          <TextArea name="targetAudience" value={formData.targetAudience} onChange={handleChange} placeholder="예: 20-30대 직장인, 소상공인 등" required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>5. 차별화 포인트</SectionTitle>
-          <SectionDescription>기존 서비스와 차별화된 점이 무엇인가요?</SectionDescription>
-          <TextArea name="uniqueValue" value={formData.uniqueValue} onChange={handleChange} placeholder="예: 기존 서비스와 달리 ~~~한 점이 특징입니다." required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>6. 실행 계획</SectionTitle>
-          <SectionDescription>프로젝트를 어떻게 진행할 계획인가요?</SectionDescription>
-          <TextArea name="executionPlan" value={formData.executionPlan} onChange={handleChange} placeholder="예: 1단계: ~~~, 2단계: ~~~" required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>7. 일정 계획</SectionTitle>
-          <SectionDescription>주요 마일스톤과 일정을 알려주세요.</SectionDescription>
-          <TextArea name="schedule" value={formData.schedule} onChange={handleChange} placeholder="예: 6월: 기획 완료, 7월: 개발 시작, 8월: 테스트" required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>8. 예산 계획</SectionTitle>
-          <SectionDescription>예산을 어떻게 사용할 계획인가요?</SectionDescription>
-          <TextArea name="budgetPlan" value={formData.budgetPlan} onChange={handleChange} placeholder="예: 개발 비용 50%, 마케팅 30%, 운영 비용 20%" required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>9. 팀 소개</SectionTitle>
-          <SectionDescription>프로젝트를 진행하는 팀을 소개해주세요.</SectionDescription>
-          <TextArea name="team" value={formData.team} onChange={handleChange} placeholder="예: 저희 팀은 ~~~한 경험을 가진 인원들로 구성되어 있습니다." required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>10. 팀 역량</SectionTitle>
-          <SectionDescription>팀의 강점과 보유 역량은 무엇인가요?</SectionDescription>
-          <TextArea name="teamExpertise" value={formData.teamExpertise} onChange={handleChange} placeholder="예: 저희 팀은 ~~~ 분야에서 5년 이상의 경험을 가지고 있습니다." required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>11. 팀원별 역할</SectionTitle>
-          <SectionDescription>각 팀원의 역할을 설명해주세요.</SectionDescription>
-          <TextArea name="teamRoles" value={formData.teamRoles} onChange={handleChange} placeholder="예: 홍길동: 기획 및 디자인, 김철수: 프론트엔드 개발" required />
-        </Section>
-        
-        <Section>
-          <SectionTitle>12. 향후 계획</SectionTitle>
-          <SectionDescription>프로젝트 완료 후 계획이 있으신가요?</SectionDescription>
-          <TextArea name="future" value={formData.future} onChange={handleChange} placeholder="예: 지속적인 유지보수와 추가 기능 개발을 계획 중입니다." required />
-        </Section>
+
+        <ButtonGroup>
+          <BackButton type="button" onClick={() => navigate(-1)}>이전</BackButton>
+          <SubmitButton 
+            type="button"
+            onClick={() => navigate('/project/media', { state: formData })}
+            $isActive={isFormValid()}
+            disabled={!isFormValid()}
+          >
+            다음 단계로
+          </SubmitButton>
+        </ButtonGroup>
       </Form>
     </Container>
   );

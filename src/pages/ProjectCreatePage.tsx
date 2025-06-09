@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import Swal from 'sweetalert2';
 
 
 interface ProjectFormData {
@@ -24,6 +25,7 @@ const categories = [
 
 const ProjectCreatePage: React.FC = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<ProjectFormData>({
     title: "",
     category: ""
@@ -39,16 +41,84 @@ const ProjectCreatePage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  console.log("프로젝트 생성 데이터:", formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("프로젝트 생성 데이터:", formData);
 
-  // ✅ 여기서 라벨 값 찾아서 함께 넘김
-  const selectedCategory = categories.find(cat => cat.value === formData.category);
-  const categoryLabel = selectedCategory?.label || formData.category;
+    const { isConfirmed } = await Swal.fire({
+      title: '개인정보 수집 및 이용 동의',
+      html: `
+        <div style="text-align: left; padding: 0 10px;">
+          
 
-  navigate('/projectinfo', {
-    state: {
+          <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <p style="font-weight: bold; margin-bottom: 10px;">개인정보 수집 및 이용 동의</p>
+            
+            <div style="max-height: 400px; overflow-y: auto; margin-bottom: 15px; padding: 10px; background: white; border: 1px solid #eee; border-radius: 4px;">
+              <h3>1. 수집하는 개인정보 항목</h3>
+              <div>
+                <h4><개인 메이커></h4>
+                <ul>
+                  <li>필수항목: 대표자 정보 (이름, 이메일주소, 휴대전화 번호, 본인인증값(DI)), 정산대금 입금 계좌정보(은행명, 예금주명, 계좌번호), 뒷자리 마스킹된 신분증 사본(생년월일, 주소), 담당자정보(이메일, 전화번호, 담당자와 대표자가 다른 경우에 한함)</li>
+                </ul>
+                
+                <h4><개인사업자 메이커 / 법인사업자 메이커></h4>
+                <ul>
+                  <li>필수항목: 대표자 정보 (이름, 이메일주소, 휴대전화 번호, 본인인증정보(DI), 생년월일, 사업장 소재지, 성별, 공동대표인 경우 대표 전부의 정보를 의미), 정산대금 입금 계좌정보(은행명, 예금주명, 계좌번호), 담당자정보(이메일, 전화번호, 담당자와 대표자가 다른 경우에 한함)</li>
+                </ul>
+                
+                <p>회사는 부가가치세법 제16조에 따른 세금계산서 교부를 위해 개인 메이커에 대해 아래와 같은 개인정보를 수집합니다.</p>
+                <ul>
+                  <li>주민등록번호</li>
+                </ul>
+                
+                <p>또한 서비스 이용 과정에서 서비스 이용기록, 접속로그, 쿠키, IP주소, 기기정보 등이 생성되어 저장될 수 있습니다.</p>
+              </div>
+
+              <h3>2. 개인정보의 수집 및 이용 목적</h3>
+              <ul>
+                <li>서비스 개설 관련 신청/문의 및 상담</li>
+                <li>서비스 이용 메이커 회원 관리</li>
+                <li>서비스 제공에 관한 계약 이행</li>
+                <li>서비스 제공에 따른 정산금 지급 및 사후 관리</li>
+              </ul>
+
+              <h3>3. 개인정보의 보유 및 이용기간</h3>
+              <p>원칙적으로 개인정보 수집 및 이용목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다.</p>
+              <p>관련 법령에 의해 일정기간 보관이 필요한 개인정보의 경우, 해당 법령의 규정에 따라 보관합니다.</p>
+              <p>아래 법령에서 일정기간 정보의 보관을 규정하는 경우, 표시된 기간 동안 법령의 규정에 따라 개인정보를 보관하며, 다른 목적으로는 절대 이용하지 않습니다.</p>
+              <ul>
+                <li>국세기본법 : 거래에 관한 장부 및 증거서류 (5년)</li>
+              </ul>
+              <p>그 밖의 사항은 회사의 개인정보 처리방침에 따릅니다.</p>
+            </div>
+          </div>
+        </div>
+      `,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#a66bff',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '동의하고 계속하기',
+      cancelButtonText: '취소',
+      reverseButtons: true
+    });
+
+    if (!isConfirmed) {
+      return; // 사용자가 취소한 경우
+    }
+    
+    setIsLoading(true);
+    
+    // ✅ 여기서 라벨 값 찾아서 함께 넘김
+    const selectedCategory = categories.find(cat => cat.value === formData.category);
+    const categoryLabel = selectedCategory?.label || formData.category;
+    
+    // 1초 대기 (로딩 효과를 보여주기 위함)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    navigate('/projectinfo', {
+      state: {
       ...formData,
       categoryLabel: categoryLabel
     }
@@ -67,6 +137,12 @@ const ProjectCreatePage: React.FC = () => {
 
   return (
     <Container>
+      {isLoading && (
+        <LoadingOverlay>
+          <LoadingSpinner />
+          <LoadingText>프로젝트 생성 중...</LoadingText>
+        </LoadingOverlay>
+      )}
       <WelcomeMessage>{userName}님, 환영합니다!</WelcomeMessage>
       <Form onSubmit={handleSubmit}>
         <Title>프로젝트 생성</Title>
@@ -100,6 +176,7 @@ const ProjectCreatePage: React.FC = () => {
              {categories.map(cat => (
                 <CategoryListItem
                  key={cat.value}
+                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, category: cat.value }))}
                  $selected={formData.category === cat.value}
       >
@@ -124,7 +201,7 @@ const ProjectCreatePage: React.FC = () => {
           disabled={!isFormValid}
           $isActive={isFormValid}
         >
-          다음
+          제출하기
         </SubmitButton>
       </Form>
     </Container>
@@ -310,6 +387,44 @@ const Select = styled.select`
     border-color: #a66bff;
   }
 `;
+
+// 로딩 애니메이션
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const LoadingSpinner = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #a66bff;
+  border-radius: 50%;
+  animation: ${spin} 1s linear infinite;
+`;
+
+const LoadingText = styled.div`
+  margin-top: 20px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 500;
+`;
+
+
 
 const SubmitButton = styled.button<{ $isActive: boolean }>`
   width: 100%;
