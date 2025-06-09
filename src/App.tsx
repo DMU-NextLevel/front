@@ -17,6 +17,7 @@ import ProjectIntroductionPage from './pages/ProjectIntroductionPage';
 import { AuthProvider } from './hooks/AuthContext'
 import ScrollToTop from './hooks/ScrollToTop';
 
+
 function App() {
 	return (
 		<Router>
@@ -45,6 +46,8 @@ const AppWrapper = () => {
 				<Route path='/projectinfo' element={<ProjectInfoPage />} />
 				<Route path='/project/introduction' element={<ProjectIntroductionPage />} />
 				<Route path='/project/media' element={<ProjectMediaPage />} />
+
+
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>

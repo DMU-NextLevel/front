@@ -128,10 +128,56 @@ const MyPage = () => {
     setEditFields((prev) => ({ ...prev,[field]: true}));
   };
 
-  const handleSaveClick = (field: string) => {
-  setEditFields((prev) => ({ ...prev, [field]: false }));
-  setUserInfo(tempUserInfo);
+
+  //이게 회원정보 수정 api로 적음
+  const handleSaveClick = async (field: string) => {
+    try {
+      const newValue = tempUserInfo[field as keyof typeof tempUserInfo];
+  
+      if (field === 'email') {
+        await Swal.fire({
+          icon: 'error',
+          title: '이메일은 변경할 수 없습니다.',
+          confirmButtonColor: '#a66cff',
+        });
+        return;
+      }
+  
+      // ✅ 여기가 핵심: API 요청 보내기
+      const response = await fetch('/api/user/update', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: field, value: newValue }),
+      });
+  
+      const result = await response.json();
+  
+      if (result.message !== 'success') {
+        throw new Error('업데이트 실패');
+      }
+  
+      // 성공 시 상태 반영
+      setEditFields((prev) => ({ ...prev, [field]: false }));
+      setUserInfo((prev) => ({ ...prev, [field]: newValue }));
+  
+      await Swal.fire({
+        icon: 'success',
+        title: '변경되었습니다!',
+        timer: 1200,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: 'error',
+        title: '변경 실패',
+        text: '다시 시도해주세요.',
+        confirmButtonColor: '#a66cff',
+      });
+    }
   };
+  
 
 
   const handleResetClick = () => {
@@ -175,16 +221,47 @@ const MyPage = () => {
     }
   };
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+
+  //이게 프로필 이미지 변경 api로 적음
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setTempProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+  
+    const formData = new FormData();
+    formData.append('img', file); 
+  
+    try {
+      const res = await fetch('/api/user/upload-profile', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      const result = await res.json();
+  
+      if (result.message !== 'success') {
+        throw new Error('업로드 실패');
+      }
+  
+      const uploadedUrl = result.imageUrl;
+      setTempProfileImage(uploadedUrl);
+  
+      await Swal.fire({
+        icon: 'success',
+        title: '이미지가 변경되었습니다!',
+        timer: 1200,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error('이미지 업로드 에러:', error);
+      await Swal.fire({
+        icon: 'error',
+        title: '이미지 변경 실패',
+        text: '잠시 후 다시 시도해주세요.',
+        confirmButtonColor: '#a66cff',
+      });
     }
   };
+  
 
   const filteredProducts = selectedFilter === '전체'
   ? products

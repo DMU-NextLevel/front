@@ -17,7 +17,9 @@ const IDFindPage = () => {
     navigate('/signup');
   };
 
-  const handleChangePassword = () => {
+
+  //이게 비밀번호 변경 api로 적음..되겠지?
+  const handleChangePassword = async () => {
     if (currentPassword === newPassword) {
       alert('새로운 비밀번호와 기존 비밀번호가 같습니다.');
       return;
@@ -26,12 +28,45 @@ const IDFindPage = () => {
       alert('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
       return;
     }
-
-    alert('비밀번호 변경이 완료되었습니다.');
-    setCurrentPassword('');
-    setNewPassword('');
-    setNewPasswordCheck('');
+  
+    try {
+      const response = await fetch('/api/user/update-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          oldPassword: currentPassword,
+          newPassword: newPassword,
+        }),
+      });
+  
+      if (response.status === 400) {
+        alert('모든 값을 입력해 주세요.');
+        return;
+      }
+  
+      if (response.status === 404) {
+        alert('기존 비밀번호가 일치하지 않습니다.');
+        return;
+      }
+  
+      const result = await response.json();
+  
+      if (result.message === 'success') {
+        alert('비밀번호 변경이 완료되었습니다.');
+        setCurrentPassword('');
+        setNewPassword('');
+        setNewPasswordCheck('');
+      } else {
+        alert('비밀번호 변경에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('서버 오류:', error);
+      alert('서버 오류가 발생했습니다.');
+    }
   };
+  
 
   return (
     <div
