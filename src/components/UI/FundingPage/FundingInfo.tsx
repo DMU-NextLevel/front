@@ -9,9 +9,11 @@ interface props {
 	percent: string
 	image: string
 	description: string
+	amount: number
+	peopleNum: number
 }
 
-const FundingInfo = ({ setPayOpen, title, percent, image, description }: props): JSX.Element => {
+const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, peopleNum }: props): JSX.Element => {
 	const PayClick = () => {
 		setPayOpen(true)
 	}
@@ -29,10 +31,10 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description }: props):
 			</Description>
 			<Rate>
 				<PeopleNum>
-					<span>194</span>명 참여
+					<span>{peopleNum}</span>명 참여
 				</PeopleNum>
 				<Amount>
-					<span>47,756,000</span>원 달성
+					<span>{amount}</span>원 달성
 				</Amount>
 			</Rate>
 			<RowBox>

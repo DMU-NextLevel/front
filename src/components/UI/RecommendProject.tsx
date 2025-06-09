@@ -39,7 +39,7 @@ const RecommendedProject = () => {
       </TextLine>
       <CardList>
         {projects.map((project) => (
-          <ImageTextItem key={project.id} onClick={() => navigate(`/project/${project.id}`)}>
+          <ImageTextItem key={project.id} onClick={() => navigate(`/funding/${project.id}`)}>
             <ImageWrapper>
               {project.titleImg ? (
                 <StyledImage src={project.titleImg ? `https://api.nextlevel.r-e.kr/img/${project.titleImg}` : noImage}
@@ -47,7 +47,7 @@ const RecommendedProject = () => {
                 onError={(e) => {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = noImage;
-                }} /> 
+                }} />
               ) : (
                 <NoImage>이미지 없음</NoImage>
               )}

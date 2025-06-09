@@ -12,8 +12,8 @@ interface IUserData {
 	title: string | undefined
 	description: string | undefined
 	image: string | undefined
-	peopleNum : Number | undefined	// 참여 수
-	amount: Number | undefined	//총액
+	peopleNum : number | undefined	// 참여 수
+	amount: number | undefined	//총액
 	likeNum: Number | undefined	//추천수
 	starter: string | undefined
 	completionRate: Number | undefined	//달성률
@@ -57,6 +57,8 @@ const FundingPage = (): JSX.Element => {
 					percent={percent ?? ''}
 					image={userData?.image ?? ''}
 					description={userData?.description ?? ''}
+					amount={userData?.amount ?? 0}
+					peopleNum={userData?.peopleNum ?? 0}
 				/>
 				<StarterInfo starter={userData?.starter} />
 			</ColumBox>
