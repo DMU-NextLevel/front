@@ -153,7 +153,7 @@ const MyPage = () => {
       }
   
       // ✅ 여기가 핵심: API 요청 보내기
-      const response = await fetch('http://localhost:8080/social/user', {
+      const response = await fetch('https://api.nextlevel.r-e.kr/social/user', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -292,7 +292,7 @@ const MyPage = () => {
     formData.append('img', file); 
   
     try {
-      const res = await fetch('http://localhost:8080/social/user/img', {
+      const res = await fetch('https://api.nextlevel.r-e.kr/social/user/img', {
         method: 'PUT',
         credentials: 'include',
         body: formData,
@@ -622,8 +622,9 @@ const MyPage = () => {
       <Main>
         <Greeting>
           <h2>{userInfo.name}님 안녕하세요.</h2>
-          <InviteBox>뭘 넣을까요??</InviteBox>
+          <InviteBox>당신의 아이디어, 펀딩으로 연결하세요!</InviteBox>
           <StatGrid>
+            
   {['펀딩+', '스토어', '지지서명', '알림신청', '포인트', '쿠폰'].map((label) => {
     let value: React.ReactNode;
 
@@ -682,10 +683,20 @@ const fadeIn = keyframes`
 
 const Container = styled.div`
   display: flex;
-  padding:  15px 15px;
+  padding: 15px;
   box-sizing: border-box;
   font-family: 'Pretendard', sans-serif;
+
+  width: 100%;
+  max-width: 100vw; /* ✅ 넘침 방지 */
+  min-height: 100vh;
+  overflow-x: hidden; /* ✅ 가로 스크롤 제거 */
 `;
+
+
+
+
+
 
 const Sidebar = styled.aside`
   width: 260px;
@@ -761,14 +772,9 @@ const Avatar = styled.div`
 const AvatarImg = styled.img`
   width: 105px;
   height: 105px;
-  min-width: 105px;
-  min-height: 105px;
-  max-width: 105px;
-  max-height: 105px;
   border-radius: 50%;
   object-fit: cover;
-  pointer-events: none;
-  display: block;
+  pointer-events:none;
 `;
 
 const FlexRow = styled.div`
@@ -826,9 +832,13 @@ const ActivityMenu = styled.div`
 
 const Main = styled.main`
   flex: 1;
+  min-width: 0;       // ✅ flex-child overflow 방지
   padding: 40px 15px;
   background: #fff;
+  overflow-x: hidden;
 `;
+
+
 
 const Greeting = styled.div`
   margin-bottom: 30px;
@@ -886,25 +896,30 @@ const SectionTitle = styled.div`
 `;
 
 const ProductList = styled.div`
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));  /* ✅ 간격 여유 */
+  gap: 24px;  /* ✅ 사진 간격 넓게 */
   padding-bottom: 20px;
+  width: 100%;
+  max-width: 100%;
 `;
 
+
+
+
 const ProductCardNormal = styled.div`
-  min-width: 140px;
   background: #fff;
   border: 1px solid #eee;
   border-radius: 12px;
   text-align: center;
   padding: 12px;
+  transition: transform 0.2s;
 
   img {
-    border-radius: 8px;
-    width: 300px;
+    width: 100%;
     height: 180px;
     object-fit: cover;
+    border-radius: 8px;
   }
 
   .discount {
@@ -912,7 +927,12 @@ const ProductCardNormal = styled.div`
     margin-top: 10px;
     font-size: 14px;
   }
+
+  &:hover {
+    transform: scale(1.02);
+  }
 `;
+
 
 const Overlay = styled.div`
   position: fixed;
@@ -1000,7 +1020,26 @@ const RecentOverlay = styled.div`
   animation: ${fadeIn} 0.3s ease-out;
 `;
 
-const SettingsOverlay = styled(RecentOverlay)``;
+const SettingsOverlay = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; // 또는 max-width: 90vw;
+  max-width: 90vw;
+  height: auto;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  padding: 24px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  z-index: 9999;
+`;
+
+
+
+
 
 const ScrollableContent = styled.div`
   flex: 1;
