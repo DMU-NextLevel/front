@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer';
@@ -27,6 +28,17 @@ const RecommendedProject = () => {
         };
         loadProjects();
       }, []);
+  const [projects, setProjects] = useState<any[]>([]);
+      useEffect(() => {
+        const loadProjects = async () => {
+          const data = await fetchProjectsFromServer({ order: "COMPLETION", pageCount: 6 });
+          console.log("📦 서버에서 받아온 프로젝트:", data);
+          if (Array.isArray(data)) {
+            setProjects(data);
+          }
+        };
+        loadProjects();
+      }, []);
 
   return (
     <Container>
@@ -34,6 +46,7 @@ const RecommendedProject = () => {
       <TextLine>
         <Text>당신을 위한 추천 프로젝트</Text>
         <LinkBlock>
+          <LinkToRecommand href="/search?order=RECOMMEND">추천 프로젝트 보러가기 <ArrowRightCircleIcon size={15} color="#" /></LinkToRecommand>
           <LinkToRecommand href="/search?order=RECOMMEND">추천 프로젝트 보러가기 <ArrowRightCircleIcon size={15} color="#" /></LinkToRecommand>
         </LinkBlock>
       </TextLine>
@@ -53,6 +66,7 @@ const RecommendedProject = () => {
               )}
             </ImageWrapper>
             <TextSection>
+              <Percent>{project.completionRate}% 달성</Percent>
               <Percent>{project.completionRate}% 달성</Percent>
               <ProjectTitle>{project.title}</ProjectTitle>
             </TextSection>

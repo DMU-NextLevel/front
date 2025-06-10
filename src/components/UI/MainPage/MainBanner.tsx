@@ -55,6 +55,7 @@ const SimpleSlider: React.FC = () => {
 			{/* 커스텀 버튼 */}
 			<CustomButton onClick={() => sliderRef.current?.slickPrev()}>{'<'}</CustomButton>
 			<CustomButtonRight onClick={() => sliderRef.current?.slickNext()}>{'>'}</CustomButtonRight>
+		
 		</SliderWrapper>
 	)
 }

@@ -70,48 +70,48 @@
 			window.location.href = '/login'; 
 		}
 
-		const handleLogoClick = () => {
-			navigate('/')
-			setIsOpen(false)
-		}
+	const handleLogoClick = () => {
+		navigate('/')
+		setIsOpen(false)
+	}
 
-		const handleLoginClick = () => {
-			navigate('/login')
-			setIsOpen(false)
-		}
-		const handleSignupClick = () => {
-			navigate('/signup')
-			setIsOpen(false)
-		}
+	const handleLoginClick = () => {
+		navigate('/login')
+		setIsOpen(false)
+	}
+	const handleSignupClick = () => {
+		navigate('/signup')
+		setIsOpen(false)
+	}
 
-		const handleCategoryClick = () => {
-			setIsOpen(!isOpen)
-		}
+	const handleCategoryClick = () => {
+		setIsOpen(!isOpen)
+	}
 
-		const handleProjectCreate = () => {
-			navigate('/project/create')
-		}
+	const handleProfileClick = () => {
+		navigate('/mypage')
+	}
 
-		const handleProfileClick = () => {
-			navigate('/mypage')
-		}
+	const toggleNotification = () => {
+		setShowNotification((prev) => !prev)
+	}
 
-		const toggleNotification = () => {
-			setShowNotification((prev) => !prev)
-		}
+	const handleProjectCreate = () => {
+		navigate('/creater')
+	}
 
-		useEffect(() => {
-			const handleClickOutside = (e: MouseEvent) => {
-				if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
-					setShowNotification(false)
-				}
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
+				setShowNotification(false)
 			}
+		}
 
-			if (showNotification) {
-				document.addEventListener('mousedown', handleClickOutside)
-			} else {
-				document.removeEventListener('mousedown', handleClickOutside)
-			}
+		if (showNotification) {
+			document.addEventListener('mousedown', handleClickOutside)
+		} else {
+			document.removeEventListener('mousedown', handleClickOutside)
+		}
 
 			return () => {
 				document.removeEventListener('mousedown', handleClickOutside)
@@ -283,62 +283,68 @@
 			window.location.href = '/login'; 
 		}
 
-		const handleLoginClick = () => {
-			navigate('/login')
-			setIsOpen(false)
-		}
-		const handleSignupClick = () => {
-			navigate('/signup')
-			setIsOpen(false)
-		}
+	const handleLoginClick = () => {
+		navigate('/login')
+		setIsOpen(false)
+	}
+	const handleSignupClick = () => {
+		navigate('/signup')
+		setIsOpen(false)
+	}
 
-		const handleCategoryClick = () => {
-			setIsOpen(!isOpen)
-		}
+	const handleCategoryClick = () => {
+		setIsOpen(!isOpen)
+	}
 
-		const handleProjectCreate = () => {
-			navigate('/project/create')
-		}
+	const handleProjectCreate = () => {
+		navigate('/project/create')
+	}
 
-		const handleProfileClick = () => {
-			navigate('/mypage')
-		}
+	const handleProfileClick = () => {
+		navigate('/mypage')
+	}
 
-		const toggleNotification = () => {
-			setShowNotification((prev) => !prev)
+	const toggleNotification = () => {
+		setShowNotification((prev) => !prev)
 
-		}
+	}
 
-		useEffect(() => {
-			const handleClickOutside = (e: MouseEvent) => {
-				if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
-					setShowNotification(false)
-				}
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (notificationRef.current && !notificationRef.current.contains(e.target as Node)) {
+				setShowNotification(false)
 			}
+		}
 
-			if (showNotification) {
-				document.addEventListener('mousedown', handleClickOutside)
-			} else {
-				document.removeEventListener('mousedown', handleClickOutside)
-			}
+		if (showNotification) {
+			document.addEventListener('mousedown', handleClickOutside)
+		} else {
+			document.removeEventListener('mousedown', handleClickOutside)
+		}
 
-			return () => {
-				document.removeEventListener('mousedown', handleClickOutside)
-			}
-		}, [showNotification])
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside)
+		}
+	}, [showNotification])
 
-		return (
-			<div>
-				<SubHeaderWrapper>
-					<HeaderNavbar >
-					<Logo src={LogoImage} onClick={handleLogoClick} />
-						<CategoryMenu onClick={handleCategoryClick}>
-							
-							<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
-						</CategoryMenu>
-						<NavItem><a href="/search?order=RECOMMEND">인기</a></NavItem>
-						<NavItem><a href="/search?order=NEW">신규</a></NavItem>
-						<NavItem><a href="/search?order=EXPIRED">마감임박</a></NavItem>
+	return (
+		<div>
+			<SubHeaderWrapper>
+				<HeaderNavbar >
+				<Logo src={LogoImage} onClick={handleLogoClick} />
+					<CategoryMenu onClick={handleCategoryClick}>
+
+						<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
+					</CategoryMenu>
+					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
+					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
+					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
+					
+					
+					
+					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
+					
+					
 
 						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px', marginRight: '20px' }}>
 						<SearchBar onSubmit={handleSubmit}>
@@ -473,136 +479,136 @@
 		
 	`;
 
-	const TopHeader = styled.div`
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		margin-top: 15px;
-		width: 100%;
-	`
-	
-
-	const Logo = styled.img`
-		width: 150px;
-		height: 35px;
-		transition: all 0.3s ease;
-		&:hover {
-			cursor: pointer;
-			transform: scale(1.05);
-			transition: all 0.3s ease;
-		}
-	`
-
-	const HeaderLink = styled.div`
-		color: #333;
-		font-size: 16px;
-		font-weight: 500;
-		padding: 10px 10px;
-		margin: 0 5px;
-		border-bottom: 2px solid transparent;
-		transition: all 0.3s ease;
-
-		&:hover {
-			cursor: pointer;
-			color : #a66cff;
-			transform: scale(1.02);
-			transition: all 0.3s ease;
-		}
-			&::after {
-			content: '';
-			position: absolute;
-			bottom: 0px;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 0%;
-			height: 3px;
-			background-color: #a66cff;
-			transition: width 0.25s ease;
-		}
-
-		&:hover::after {
-			width: 100%;
-		}
-	`
+const TopHeader = styled.div`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-top: 15px;
+	width: 100%;
+`
 
 
-	const HeaderNavbar = styled.div`
-		display: flex;
-		font-size: 20px;
-		font-weight: bold;
-		height: 80px;
-		align-items: center;
-
-	`
-
-	const NavItem = styled.p`
-		position: relative;
-		padding: 10px 20px;
-		font-size: 18px;
-		font-weight: 800;
-		color: #222;
-		white-space: nowrap;
+const Logo = styled.img`
+	width: 150px;
+	height: 35px;
+	transition: all 0.3s ease;
+	&:hover {
 		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		transform: scale(1.05);
+		transition: all 0.3s ease;
+	}
+`
 
+const HeaderLink = styled.div`
+	color: #333;
+	font-size: 16px;
+	font-weight: 500;
+	padding: 10px 10px;
+	margin: 0 5px;
+	border-bottom: 2px solid transparent;
+	transition: all 0.3s ease;
+
+	&:hover {
+		cursor: pointer;
+		color : #a66cff;
+		transform: scale(1.02);
+		transition: all 0.3s ease;
+	}
 		&::after {
-			content: '';
-			position: absolute;
-			bottom: -20px;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 0%;
-			height: 5px;
-			background-color: #a66cff;
-			transition: width 0.25s ease;
-		}
-
-		&:hover::after {
-			width: 100%;
-		}
-
-		@media (max-width: 768px) {
-			font-size: 14px;
-			padding: 8px 4px;
-			margin: 0 8px;
-		}
-		a {
-			text-decoration: none;
-			color: #222;
-		}
-	`
-
-	const Category = styled.img`
-		width: 18px;
-		height: 18px;
-		padding-right: 5px;
-	`
-
-	const CategoryMenu = styled.p`
-		
-		&:hover {
-			cursor: pointer;
-		}
-	`
-
-	const ProjectButton = styled.button`
+		content: '';
+		position: absolute;
+		bottom: 0px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 0%;
+		height: 3px;
 		background-color: #a66cff;
-		color: white;
-		border: none;
-		border-radius: 8px;
+		transition: width 0.25s ease;
+	}
+
+	&:hover::after {
+		width: 100%;
+	}
+`
+
+
+const HeaderNavbar = styled.div`
+	display: flex;
+	font-size: 20px;
+	font-weight: bold;
+	height: 80px;
+	align-items: center;
+
+`
+
+const NavItem = styled.p`
+	position: relative;
+	padding: 10px 20px;
+	font-size: 18px;
+	font-weight: 800;
+	color: #222;
+	white-space: nowrap;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	&::after {
+		content: '';
+		position: absolute;
+		bottom: -20px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 0%;
+		height: 5px;
+		background-color: #a66cff;
+		transition: width 0.25s ease;
+	}
+
+	&:hover::after {
+		width: 100%;
+	}
+
+	@media (max-width: 768px) {
+		font-size: 14px;
+		padding: 8px 4px;
+		margin: 0 8px;
+	}
+	a {
+		text-decoration: none;
+		color: #222;
+	}
+`
+
+const Category = styled.img`
+	width: 18px;
+	height: 18px;
+	padding-right: 5px;
+`
+
+const CategoryMenu = styled.p`
+
+	&:hover {
 		cursor: pointer;
-		font-size: 16px;
-		width: 150px;
-		height: 40px;
-		font-weight: bold;
-		transition: background-color 0.3s;
-		justify-content: between-space;
-		&:hover {
-			background-color:rgb(91, 48, 160);
-		}
-	`;
+	}
+`
+
+const ProjectButton = styled.button`
+	background-color: #a66cff;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 16px;
+	width: 150px;
+	height: 40px;
+	font-weight: bold;
+	transition: background-color 0.3s;
+	justify-content: between-space;
+	&:hover {
+		background-color:rgb(91, 48, 160);
+	}
+`;
 
 
 	const SearchBar = styled.form`
@@ -618,32 +624,31 @@
 	box-shadow: inset 0 0 0 2px transparent;
 	transition: 0.3s ease, background-color 0.3s ease;
 
-	&:hover {
-		background-color: #f5f5f5;
-		box-shadow: inset 0 0 0 2px #a66cff55;
-		transform: scale(1.02);
+&:hover {
+	background-color: #f5f5f5;
+	box-shadow: inset 0 0 0 2px #a66cff55;
+	transform: scale(1.02);
+}
+
+&:focus-within {
+	box-shadow: inset 0 0 0 2px #a66cff;
+}
+`
+
+const SearchInput = styled.input`
+	background-color: transparent;
+	border: none;
+	height: 35px;
+	width: 90%;
+	font-size: 15px;
+	color: #333;
+	padding-left: 8px;
+	transition: color 0.3s ease;
+
+	&:focus {
+		outline: none;
+		color: #111;
 	}
-
-	&:focus-within {
-		box-shadow: inset 0 0 0 2px #a66cff;
-	}
-	`
-
-
-	const SearchInput = styled.input`
-		background-color: transparent;
-		border: none;
-		height: 35px;
-		width: 90%;
-		font-size: 15px;
-		color: #333;
-		padding-left: 8px;
-		transition: color 0.3s ease;
-
-		&:focus {
-			outline: none;
-			color: #111;
-		}
 
 		&::placeholder {
 			color: #999;
@@ -672,13 +677,13 @@
 `
 
 
-	const CategoryListLayout = styled.div<{ isOpen: boolean }>`
-		overflow: hidden;
-		max-height: ${({ isOpen }) => (isOpen ? '400px' : '0')};
-		opacity: ${({ isOpen }) => (isOpen ? '1' : '0')};
-		transition: max-height 0.6s ease, opacity 0.6s ease;
-		display: flex;
-		justify-content: center;
+const CategoryListLayout = styled.div<{ isOpen: boolean }>`
+	overflow: hidden;
+	max-height: ${({ isOpen }) => (isOpen ? '400px' : '0')};
+	opacity: ${({ isOpen }) => (isOpen ? '1' : '0')};
+	transition: max-height 0.6s ease, opacity 0.6s ease;
+	display: flex;
+	justify-content: center;
 
 	`
 	const CategorySection = styled.div`
@@ -757,12 +762,12 @@
 		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 		color: #333;
 
-		&:hover {
-			cursor: pointer;
-			color: #6a1b9a;
-			transform: scale(1.05);
-			transition: all 0.3s ease;
-		}
+	&:hover {
+		cursor: pointer;
+		color: #6a1b9a;
+		transform: scale(1.05);
+		transition: all 0.3s ease;
+	}
 
 		a {
 			text-decoration: none;
@@ -771,9 +776,9 @@
 		
 	`
 
-	const NavSection = styled.div`
-		display: block;
-		margin-top: 2px;
+const NavSection = styled.div`
+	display: block;
+	margin-top: 2px;
 
 		grid-template-columns: repeat(2, 1fr);
 		row-gap: 12px;                         
@@ -795,64 +800,64 @@
 		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 		color: #333;
 
-		&:hover {
-			cursor: pointer;
-			color: #6a1b9a;
-			transform: scale(1.05);
-			transition: all 0.3s ease;
-		}
-
-		a {
-			text-decoration: none;
-			color: #333;
-		}
-	`;
-	
-	const UserProfile = styled.img`
-		width: 30px;
-		height: 30px;
-		border-radius: 50%;
+	&:hover {
+		cursor: pointer;
+		color: #6a1b9a;
+		transform: scale(1.05);
 		transition: all 0.3s ease;
+	}
+
+	a {
+		text-decoration: none;
+		color: #333;
+	}
+`;
+
+const UserProfile = styled.img`
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	transition: all 0.3s ease;
+	&:hover {
+		cursor: pointer;
+		transform: scale(1.1);
+		transition: all 0.3s ease;
+	}
+`
+
+const Notification = styled.div`
+	i {
+		font-size: 25px;
+		color: #555;
+		transition: color 0.3s ease, font-size 0.3s ease, transform 0.3s ease;
+
 		&:hover {
 			cursor: pointer;
+			color:#555;
 			transform: scale(1.1);
 			transition: all 0.3s ease;
 		}
-	`
-
-	const Notification = styled.div`
-		i {
-			font-size: 25px;
-			color: #555;
-			transition: color 0.3s ease, font-size 0.3s ease, transform 0.3s ease;
-
-			&:hover {
-				cursor: pointer;
-				color:#555;	
-				transform: scale(1.1);
-				transition: all 0.3s ease;
-			}
-		}
-	`
+	}
+`
 
 
-	const NotificationWrapper = styled.div`
-		position: relative;
-	`
+const NotificationWrapper = styled.div`
+	position: relative;
+`
 
-	const NotificationBox = styled.div`
-		position: absolute;
-		top: 100%;
-		right: 0;
-		margin-top: 10px;
-		width: 250px;
-		height: 300px;
-		background-color: #f2f2f2;
-		border-radius: 15px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		padding: 20px;
-		z-index: 100;
-	`
+const NotificationBox = styled.div`
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: 10px;
+	width: 250px;
+	height: 300px;
+	background-color: #f2f2f2;
+	border-radius: 15px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+	z-index: 100;
+`
 
 
 
