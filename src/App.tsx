@@ -43,7 +43,7 @@ const AppWrapper = () => {
 				<Route path='/funding/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
 				<Route path='/project/create' element={<ProjectCreatePage />} />
-				<Route path='/projectinfo' element={<ProjectInfoPage />} />
+				<Route path='/project/info' element={<ProjectInfoPage />} />
 				<Route path='/project/introduction' element={<ProjectIntroductionPage />} />
 				<Route path='/project/media' element={<ProjectMediaPage />} />
 				<Route path='/creater' element={<Creater />} />

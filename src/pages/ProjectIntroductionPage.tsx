@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useCreateStore } from '../store/store';
+import { api } from '../AxiosInstance';
 
 // css 스타트
 const Container = styled.div`
@@ -27,7 +29,7 @@ const Title = styled.h2`
   text-align: center;
   position: relative;
   padding-bottom: 1rem;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -134,7 +136,8 @@ const RequiredBadge = styled.span`
 const ProjectIntroductionPage: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
-  
+  const {title, content, tag1, tag2, titleImg, imgs, expired, goal} = useCreateStore()
+
   const [formData, setFormData] = useState({
     overview: state?.overview || '',
     reason: state?.reason || '',
@@ -157,7 +160,7 @@ const ProjectIntroductionPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isFormValid()) {
       Swal.fire({
         icon: 'error',
@@ -195,9 +198,20 @@ const ProjectIntroductionPage: React.FC = () => {
           }
         });
 
+        const projectData = new FormData()
+        projectData.append('title', title)
+        projectData.append('content', content)
+        projectData.append('tags', String(tag1))
+        if (tag2 !== null)
+          projectData.append('tags', String(tag2))
+        imgs.forEach((img) => projectData.append('imgs', img))
+        projectData.append('expired', expired)
+        projectData.append('goal', String(goal))
+
+        console.log(projectData)
         // 제출 로직 (API 호출 등)
-        await new Promise(resolve => setTimeout(resolve, 1000)); // API 호출 대신 1초 지연
-        
+        await api.post('/api1/project', projectData)
+
         // 제출 성공 시
         await Swal.fire({
           icon: 'success',
@@ -208,7 +222,7 @@ const ProjectIntroductionPage: React.FC = () => {
           timer: 1500,
           timerProgressBar: true
         });
-        
+
         // 메인 페이지로 이동
         navigate('/');
       } catch (error) {
@@ -236,144 +250,144 @@ const ProjectIntroductionPage: React.FC = () => {
         <Section>
           <SectionTitle>1. 프로젝트 개요 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>프로젝트의 목적, 주요 기능, 타겟 고객 등 프로젝트를 소개해주세요.</SectionDescription>
-          <TextArea 
-            name="overview" 
-            value={formData.overview} 
-            onChange={handleChange} 
-            placeholder="예: 이 프로젝트는 ~~~을 목표로 하는 프로젝트입니다." 
-            required 
+          <TextArea
+            name="overview"
+            value={formData.overview}
+            onChange={handleChange}
+            placeholder="예: 이 프로젝트는 ~~~을 목표로 하는 프로젝트입니다."
+            required
           />
         </Section>
 
         <Section>
           <SectionTitle>2. 프로젝트 선정 이유 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>이 프로젝트를 왜 진행하게 되었는지, 어떤 문제를 해결하고자 하는지 설명해주세요.</SectionDescription>
-          <TextArea 
-            name="reason" 
-            value={formData.reason} 
-            onChange={handleChange} 
-            placeholder="예: 기존 서비스의 ~~~한 문제점을 해결하고자 시작하게 되었습니다." 
-            required 
+          <TextArea
+            name="reason"
+            value={formData.reason}
+            onChange={handleChange}
+            placeholder="예: 기존 서비스의 ~~~한 문제점을 해결하고자 시작하게 되었습니다."
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>3. 프로젝트 배경 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>이 프로젝트를 시작하게 된 배경과 동기에 대해 설명해주세요.</SectionDescription>
-          <TextArea 
-            name="background" 
-            value={formData.background} 
-            onChange={handleChange} 
-            placeholder="예: 최근 ~~~한 문제를 해결하기 위해 이 프로젝트를 기획하게 되었습니다." 
-            required 
+          <TextArea
+            name="background"
+            value={formData.background}
+            onChange={handleChange}
+            placeholder="예: 최근 ~~~한 문제를 해결하기 위해 이 프로젝트를 기획하게 되었습니다."
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>4. 타겟 고객 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>이 프로젝트의 주요 고객층은 누구인가요?</SectionDescription>
-          <TextArea 
-            name="targetAudience" 
-            value={formData.targetAudience} 
-            onChange={handleChange} 
-            placeholder="예: 20-30대 직장인, 소상공인 등" 
-            required 
+          <TextArea
+            name="targetAudience"
+            value={formData.targetAudience}
+            onChange={handleChange}
+            placeholder="예: 20-30대 직장인, 소상공인 등"
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>5. 차별화 포인트 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>기존 서비스와 차별화된 점이 무엇인가요?</SectionDescription>
-          <TextArea 
-            name="uniqueValue" 
-            value={formData.uniqueValue} 
-            onChange={handleChange} 
-            placeholder="예: 기존 서비스와 달리 ~~~한 점이 특징입니다." 
-            required 
+          <TextArea
+            name="uniqueValue"
+            value={formData.uniqueValue}
+            onChange={handleChange}
+            placeholder="예: 기존 서비스와 달리 ~~~한 점이 특징입니다."
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>6. 실행 계획 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>프로젝트를 어떻게 진행할 계획인가요?</SectionDescription>
-          <TextArea 
-            name="executionPlan" 
-            value={formData.executionPlan} 
-            onChange={handleChange} 
-            placeholder="예: 1단계: ~~~, 2단계: ~~~" 
-            required 
+          <TextArea
+            name="executionPlan"
+            value={formData.executionPlan}
+            onChange={handleChange}
+            placeholder="예: 1단계: ~~~, 2단계: ~~~"
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>7. 일정 계획 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>주요 마일스톤과 일정을 알려주세요.</SectionDescription>
-          <TextArea 
-            name="schedule" 
-            value={formData.schedule} 
-            onChange={handleChange} 
-            placeholder="예: 6월: 기획 완료, 7월: 개발 시작, 8월: 테스트" 
-            required 
+          <TextArea
+            name="schedule"
+            value={formData.schedule}
+            onChange={handleChange}
+            placeholder="예: 6월: 기획 완료, 7월: 개발 시작, 8월: 테스트"
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>8. 예산 계획 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>예산을 어떻게 사용할 계획인가요?</SectionDescription>
-          <TextArea 
-            name="budgetPlan" 
-            value={formData.budgetPlan} 
-            onChange={handleChange} 
-            placeholder="예: 개발 비용 50%, 마케팅 30%, 운영 비용 20%" 
-            required 
+          <TextArea
+            name="budgetPlan"
+            value={formData.budgetPlan}
+            onChange={handleChange}
+            placeholder="예: 개발 비용 50%, 마케팅 30%, 운영 비용 20%"
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>9. 팀 소개 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>프로젝트를 진행하는 팀을 소개해주세요.</SectionDescription>
-          <TextArea 
-            name="team" 
-            value={formData.team} 
-            onChange={handleChange} 
-            placeholder="예: 저희 팀은 ~~~한 경험을 가진 인원들로 구성되어 있습니다." 
-            required 
+          <TextArea
+            name="team"
+            value={formData.team}
+            onChange={handleChange}
+            placeholder="예: 저희 팀은 ~~~한 경험을 가진 인원들로 구성되어 있습니다."
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>10. 팀 역량 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>팀의 강점과 보유 역량은 무엇인가요?</SectionDescription>
-          <TextArea 
-            name="teamExpertise" 
-            value={formData.teamExpertise} 
-            onChange={handleChange} 
-            placeholder="예: 저희 팀은 ~~~ 분야에서 5년 이상의 경험을 가지고 있습니다." 
-            required 
+          <TextArea
+            name="teamExpertise"
+            value={formData.teamExpertise}
+            onChange={handleChange}
+            placeholder="예: 저희 팀은 ~~~ 분야에서 5년 이상의 경험을 가지고 있습니다."
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>11. 팀원별 역할 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>각 팀원의 역할을 설명해주세요.</SectionDescription>
-          <TextArea 
-            name="teamRoles" 
-            value={formData.teamRoles} 
-            onChange={handleChange} 
-            placeholder="예: 홍길동: 기획 및 디자인, 김철수: 프론트엔드 개발" 
-            required 
+          <TextArea
+            name="teamRoles"
+            value={formData.teamRoles}
+            onChange={handleChange}
+            placeholder="예: 홍길동: 기획 및 디자인, 김철수: 프론트엔드 개발"
+            required
           />
         </Section>
-        
+
         <Section>
           <SectionTitle>12. 향후 계획 <RequiredBadge>*</RequiredBadge></SectionTitle>
           <SectionDescription>프로젝트 완료 후 계획이 있으신가요?</SectionDescription>
-          <TextArea 
-            name="future" 
-            value={formData.future} 
-            onChange={handleChange} 
-            placeholder="예: 지속적인 유지보수와 추가 기능 개발을 계획 중입니다." 
-            required 
+          <TextArea
+            name="future"
+            value={formData.future}
+            onChange={handleChange}
+            placeholder="예: 지속적인 유지보수와 추가 기능 개발을 계획 중입니다."
+            required
           />
         </Section>
 

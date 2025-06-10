@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useCreateStore } from '../store/store';
 
 // css 스타토토
 const Container = styled.div`
@@ -27,7 +28,7 @@ const Title = styled.h2`
   text-align: center;
   position: relative;
   padding-bottom: 1rem;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -149,13 +150,13 @@ const Thumbnail = styled.div`
   overflow: hidden;
   margin-right: 10px;
   margin-bottom: 10px;
-  
+
   img, video {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  
+
   button {
     position: absolute;
     top: 2px;
@@ -172,12 +173,12 @@ const Thumbnail = styled.div`
     cursor: pointer;
     font-size: 12px;
     padding: 0;
-    
+
     &:hover {
       background: #ff4d4f;
     }
   }
-  
+
   &::before {
     content: attr(data-index);
     position: absolute;
@@ -242,17 +243,23 @@ const ProjectMediaPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
-  
+  const {setContent, setTitleImg, setImgs} = useCreateStore()
+
   // ProjectInfoPage에서 전달된 데이터가 없으면 이전 페이지로 이동
   useEffect(() => {
     if (!state) {
       navigate('/project/create');
     }
   }, [navigate, state]);
-  
+
+  useEffect(() => {
+    setTitleImg(null)
+    setImgs([])
+  },[])
+
   const MAX_IMAGES = 10;
   const MAX_VIDEOS = 3;
-  
+
   const [formData, setFormData] = useState({
     thumbnail: null as File | null,
     thumbnailPreview: state?.thumbnailPreview || '',
@@ -276,7 +283,7 @@ const ProjectMediaPage: React.FC = () => {
         });
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({
@@ -285,6 +292,7 @@ const ProjectMediaPage: React.FC = () => {
           thumbnailPreview: reader.result as string
         }));
       };
+      setTitleImg(file)
       reader.readAsDataURL(file);
     }
   };
@@ -303,9 +311,9 @@ const ProjectMediaPage: React.FC = () => {
         });
         return;
       }
-      
+
       const validFiles = Array.from(files).slice(0, remainingSlots);
-      
+
       // 파일 크기 검사 (각 파일 1MB 이하)
       const oversizedFiles = validFiles.filter(file => file.size > 1 * 1024 * 1024);
       if (oversizedFiles.length > 0) {
@@ -318,20 +326,22 @@ const ProjectMediaPage: React.FC = () => {
         });
         return;
       }
-      
+
       const newImages = validFiles.map(file => ({
         file,
         preview: URL.createObjectURL(file)
       }));
-      
+
       setFormData(prev => ({
         ...prev,
         images: [...prev.images, ...newImages].slice(0, MAX_IMAGES)
       }));
-      
+
       if (imageInputRef.current) {
         imageInputRef.current.value = '';
       }
+      const currentImgs = useCreateStore.getState().imgs
+      setImgs([...currentImgs, ...validFiles])
     }
   };
 
@@ -349,18 +359,18 @@ const ProjectMediaPage: React.FC = () => {
         });
         return;
       }
-      
+
       const validFiles = Array.from(files).slice(0, remainingSlots);
-      
+
       // 파일 형식 및 크기 검사
       const invalidFiles = validFiles.filter(file => {
         const fileName = file.name.toLowerCase();
-        const isValidFormat = fileName.endsWith('.mp4') || fileName.endsWith('.webm') || 
+        const isValidFormat = fileName.endsWith('.mp4') || fileName.endsWith('.webm') ||
                            file.type === 'video/mp4' || file.type === 'video/webm';
         const isSizeValid = file.size <= 1 * 1024 * 1024; // 1MB
         return !isValidFormat || !isSizeValid;
       });
-      
+
       if (invalidFiles.length > 0) {
         Swal.fire({
           icon: 'error',
@@ -371,17 +381,17 @@ const ProjectMediaPage: React.FC = () => {
         });
         return;
       }
-      
+
       const newVideos = validFiles.map(file => ({
         file,
         preview: URL.createObjectURL(file)
       }));
-      
+
       setFormData(prev => ({
         ...prev,
         videos: [...prev.videos, ...newVideos].slice(0, MAX_VIDEOS)
       }));
-      
+
       if (videoInputRef.current) {
         videoInputRef.current.value = '';
       }
@@ -405,18 +415,18 @@ const ProjectMediaPage: React.FC = () => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetIndex: number) => {
     e.preventDefault();
     const sourceIndex = Number(e.dataTransfer.getData('text/plain'));
-    
+
     if (sourceIndex === targetIndex) return;
-    
+
     const newImages = [...formData.images];
     const [movedItem] = newImages.splice(sourceIndex, 1);
     newImages.splice(targetIndex, 0, movedItem);
-    
+
     setFormData(prev => ({
       ...prev,
       images: newImages
     }));
-    
+
     e.currentTarget.style.opacity = '1';
   };
 
@@ -447,7 +457,7 @@ const ProjectMediaPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.thumbnailPreview) {
       Swal.fire({
         icon: 'error',
@@ -458,7 +468,7 @@ const ProjectMediaPage: React.FC = () => {
       });
       return;
     }
-    
+
     if (formData.images.length === 0) {
       Swal.fire({
         icon: 'error',
@@ -524,6 +534,11 @@ const ProjectMediaPage: React.FC = () => {
     );
   };
 
+  const scriptChange = (e:any) => {
+    setFormData(prev => ({ ...prev, summary: e.target.value }))
+    setContent(formData.summary)
+  }
+
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
@@ -532,15 +547,15 @@ const ProjectMediaPage: React.FC = () => {
         <Section>
           <SectionTitle>대표 이미지 <span style={{ color: '#ff4d4f' }}>*</span></SectionTitle>
           <SectionDescription>프로젝트를 대표하는 썸네일 이미지를 업로드해주세요.</SectionDescription>
-          <ImageUploadArea 
+          <ImageUploadArea
             onClick={() => fileInputRef.current?.click()}
             style={formData.thumbnailPreview ? { borderColor: '#a66bff', borderStyle: 'solid' } : {}}
           >
             {formData.thumbnailPreview ? (
-              <img 
-                src={formData.thumbnailPreview} 
-                alt="대표 이미지 미리보기" 
-                style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }} 
+              <img
+                src={formData.thumbnailPreview}
+                alt="대표 이미지 미리보기"
+                style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }}
               />
             ) : (
               <div>
@@ -564,8 +579,8 @@ const ProjectMediaPage: React.FC = () => {
           <SectionDescription>
             프로젝트를 소개할 이미지를 업로드하세요. (최대 {MAX_IMAGES}개, 각 파일 최대 1MB)
           </SectionDescription>
-          
-          <ImageUploadArea 
+
+          <ImageUploadArea
             onClick={() => imageInputRef.current?.click()}
             style={{ marginBottom: '1rem' }}
           >
@@ -592,7 +607,7 @@ const ProjectMediaPage: React.FC = () => {
               <p style={{ marginBottom: '0.5rem' }}>업로드된 이미지 ({formData.images.length}/{MAX_IMAGES}):</p>
               <ImagePreview>
                 {formData.images.map((image, index) => (
-                  <Thumbnail 
+                  <Thumbnail
                     key={`img-${index}`}
                     draggable
                     onDragStart={(e) => handleDragStart(e, index)}
@@ -607,18 +622,18 @@ const ProjectMediaPage: React.FC = () => {
                       backgroundColor: draggedIndex === index ? '#f0f0f0' : 'transparent'
                     }}
                   >
-                              <img 
-                                src={image.preview} 
-                                alt={`이미지 ${index + 1}`} 
-                                style={{ 
-                                  width: '100%', 
-                                  height: '100%', 
+                              <img
+                                src={image.preview}
+                                alt={`이미지 ${index + 1}`}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
                                   objectFit: 'cover',
-                                  pointerEvents: 'none' 
-                                }} 
+                                  pointerEvents: 'none'
+                                }}
                               />
-                              <button 
-                                type="button" 
+                              <button
+                                type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   removeImage(index);
@@ -639,8 +654,8 @@ const ProjectMediaPage: React.FC = () => {
           <SectionDescription>
             프로젝트를 소개할 동영상을 업로드하세요. (최대 {MAX_VIDEOS}개, 각 파일 최대 1MB)
           </SectionDescription>
-          
-          <ImageUploadArea 
+
+          <ImageUploadArea
             onClick={() => videoInputRef.current?.click()}
             style={{ marginBottom: '1rem' }}
           >
@@ -668,12 +683,12 @@ const ProjectMediaPage: React.FC = () => {
               <ImagePreview>
                 {formData.videos.map((video, index) => (
                   <Thumbnail key={`vid-${index}`}>
-                    <video 
-                      src={video.preview} 
+                    <video
+                      src={video.preview}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         removeVideo(index);
@@ -696,7 +711,7 @@ const ProjectMediaPage: React.FC = () => {
             placeholder="예: 혁신적인 기술로 일상의 문제 해결"
             maxLength={30}
             value={formData.summary}
-            onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
+            onChange={scriptChange}
             required
           />
         </Section>
@@ -724,8 +739,8 @@ const ProjectMediaPage: React.FC = () => {
           <BackButton type="button" onClick={() => navigate(-1)}>
             이전
           </BackButton>
-          <NextButton 
-            type="submit" 
+          <NextButton
+            type="submit"
             disabled={!isFormValid()}
             style={{ opacity: isFormValid() ? 1 : 0.6 }}
           >
