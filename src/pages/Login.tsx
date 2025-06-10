@@ -6,16 +6,20 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 import bannerImage from '../assets/images/banner.png';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../AxiosInstance';
+import { api  } from '../AxiosInstance';
 import { useAuth } from '../hooks/AuthContext';
 
-const Login = () => {
-  const baseUrl = process.env.REACT_APP_API_BASE_URL
+interface props {
+  setLoginType: React.Dispatch<React.SetStateAction<string>>
+}
+
+const Login = ({setLoginType}:props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const navigate = useNavigate();
-  const { login } = useAuth()
+  const navigate = useNavigate()
+  const baseUrl = process.env.REACT_APP_API_BASE_URL
+  const { refreshAuth } = useAuth()
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -23,13 +27,15 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      await api.put('/public/login', { email, password });
-
-      const response = await api.get('/social/user');
-      const userData = response.data.data;
-
-      login('true', userData); // <-- 여기에 유저 정보 전달
-      navigate('/');
+      await api
+				.put('/public/login', {
+					email,
+					password,
+				})
+				.then(() => {
+          refreshAuth()
+					navigate('/')
+				})
     } catch(e:any) {
       const errorCode = e.response?.data?.code
       console.log(e)
@@ -39,6 +45,30 @@ const Login = () => {
         alert("다시 시도해주세요. (서버에러)")
       }
     }
+  }
+
+  const socialLogin = (type:string) => {
+    const width = 700
+		const height = 900
+		const left = window.screenX + (window.outerWidth - width) / 2
+		const top = window.screenY + (window.outerHeight - height) / 2
+
+		const url = `${baseUrl}/oauth2/authorization/${type}`
+
+		window.open(url, 'toss_payment_popup', `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no`)
+
+		const messageListener = (event: MessageEvent) => {
+			// 신뢰할 수 있는 도메인인지 확인 (XSS 방어)
+			if (event.origin !== window.location.origin) return
+
+			if (event.data === 'social-success') {
+				window.removeEventListener('message', messageListener)
+				setLoginType(type)
+        refreshAuth()
+				navigate('/')
+			}
+		}
+    window.addEventListener('message', messageListener)
   }
 
   const handleSignup = () => {
@@ -109,9 +139,9 @@ const Login = () => {
 
             <p style={styles.socialText}>다른 방법으로 로그인</p>
             <div style={styles.socialIcons}>
-              <RiKakaoTalkFill style={{ ...styles.iconStyle, background: '#fae100' }} onClick={handleSocialKakao} />
-              <SiNaver style={{ ...styles.iconStyle, background: '#03c75a', color: 'white' }} onClick={handleSocialNaver} />
-              <FcGoogle style={styles.iconStyle} onClick={handleSocialGoogle} />
+              <RiKakaoTalkFill style={{ ...styles.iconStyle, background: '#fae100' }} onClick={() => socialLogin('kakao')} />
+              <SiNaver style={{ ...styles.iconStyle, background: '#03c75a', color: 'white' }} onClick={() => { socialLogin('naver')}} />
+              <FcGoogle style={styles.iconStyle} onClick={() => {socialLogin('google')}} />
             </div>
 
             <div style={styles.bottomText}>
