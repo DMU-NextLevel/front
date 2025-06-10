@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Swal from 'sweetalert2';
-import { api, testApi } from '../AxiosInstance';
+import { api } from '../AxiosInstance';
 
 const MyPage = () => {
 
