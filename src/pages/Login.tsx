@@ -6,11 +6,14 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 import bannerImage from '../assets/images/banner.png';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../AxiosInstance';
+import { api  } from '../AxiosInstance';
 import { useAuth } from '../hooks/AuthContext';
 
-const Login = () => {
-  const baseUrl = process.env.REACT_APP_API_BASE_URL
+interface props {
+  setLoginType: React.Dispatch<React.SetStateAction<string>>
+}
+
+const Login = ({setLoginType}:props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -23,13 +26,16 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      await api.put('/public/login', { email, password });
+      await api
+				.put('/public/login', {
+					email,
+					password,
+				})
+				.then(() => {
+					login('true')
+				})
 
-      const response = await api.get('/social/user');
-      const userData = response.data.data;
-
-      login('true', userData); // <-- 여기에 유저 정보 전달
-      navigate('/');
+      navigate("/")
     } catch(e:any) {
       const errorCode = e.response?.data?.code
       console.log(e)
@@ -41,23 +47,23 @@ const Login = () => {
     }
   }
 
+  const socialLogin = (type:string) => {
+    if (type === 'kakao') {
+      window.open('http://localhost:8080/oauth2/authorization/kakao')
+    } else if (type === 'naver') {
+      window.open('http://localhost:8080/oauth2/authorization/naver')
+    } else if (type === 'google') {
+      window.open('http://localhost:8080/oauth2/authorization/google')
+    }
+    setLoginType(type)
+  }
+
   const handleSignup = () => {
     navigate('/signup')
   }
 
   const handleIdfind = () => {
     navigate('/idfind')
-  }
-  const handleSocialGoogle = () => {
-    window.location.href = `${baseUrl}/oauth2/authorization/google`;
-  }
-
-  const handleSocialNaver = () => {
-    window.location.href = `${baseUrl}/oauth2/authorization/naver`;
-  }
-
-  const handleSocialKakao = () => {
-    window.location.href = `${baseUrl}/oauth2/authorization/kakao`;
   }
 
   return (
@@ -109,13 +115,13 @@ const Login = () => {
 
             <p style={styles.socialText}>다른 방법으로 로그인</p>
             <div style={styles.socialIcons}>
-              <RiKakaoTalkFill style={{ ...styles.iconStyle, background: '#fae100' }} onClick={handleSocialKakao} />
-              <SiNaver style={{ ...styles.iconStyle, background: '#03c75a', color: 'white' }} onClick={handleSocialNaver} />
-              <FcGoogle style={styles.iconStyle} onClick={handleSocialGoogle} />
+              <RiKakaoTalkFill style={{ ...styles.iconStyle, background: '#fae100' }} onClick={() => socialLogin('kakao')} />
+              <SiNaver style={{ ...styles.iconStyle, background: '#03c75a', color: 'white' }} onClick={() => { socialLogin('naver')}} />
+              <FcGoogle style={styles.iconStyle} onClick={() => {socialLogin('google')}} />
             </div>
 
             <div style={styles.bottomText}>
-              아직 위드유 계정이 없으신가요?
+              아직 텀블벅 계정이 없으신가요?
               <span onClick={handleSignup}  style={styles.link}>회원가입</span>
               <br />
               혹시 비밀번호를 잊으셨나요?
@@ -129,7 +135,6 @@ const Login = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            onClick={handleSocialKakao}
           ></motion.div>
 
           <motion.img
@@ -139,7 +144,6 @@ const Login = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            onClick={handleSocialNaver}
           />
 
           <motion.div
