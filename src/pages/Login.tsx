@@ -17,9 +17,9 @@ const Login = ({setLoginType}:props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const navigate = useNavigate();
-  const { login } = useAuth()
+  const navigate = useNavigate()
   const baseUrl = process.env.REACT_APP_API_BASE_URL
+  const { refreshAuth } = useAuth()
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -33,10 +33,9 @@ const Login = ({setLoginType}:props) => {
 					password,
 				})
 				.then(() => {
-					login('true')
+          refreshAuth()
+					navigate('/')
 				})
-
-      navigate("/")
     } catch(e:any) {
       const errorCode = e.response?.data?.code
       console.log(e)
@@ -65,7 +64,8 @@ const Login = ({setLoginType}:props) => {
 			if (event.data === 'social-success') {
 				window.removeEventListener('message', messageListener)
 				setLoginType(type)
-        //navigate('/')
+        refreshAuth()
+				navigate('/')
 			}
 		}
     window.addEventListener('message', messageListener)
