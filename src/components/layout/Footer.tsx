@@ -4,10 +4,12 @@ import styled from 'styled-components'
 const Footer: React.FC = () => {
 	return (
 		<FooterLayout>
+			<Line />
 			<FooterHeader>
 				<a href='/'>정책 & 약관 <i className="bi bi-chevron-down"></i></a>
 				<a href='/'><b>개인정보처리방침 <i className="bi bi-box-arrow-up-right"></i></b></a>
 			</FooterHeader>
+			<Line />
 
 			<FooterBody>
 				<FooterBaro>
@@ -41,9 +43,15 @@ export default Footer
 
 const FooterLayout = styled.div`
 	
-	background-color: #f3f3f3;
+	background-color:rgb(255, 255, 255);
 	margin-top: 10vh;
 	padding: 20px 15%;
+	@media (max-width: 1500px) {
+		padding: 20px 10%;
+	}
+	@media (max-width: 1200px) {
+		padding: 20px 2%;
+	}
 `
 
 const FooterHeader = styled.div`
@@ -52,9 +60,6 @@ const FooterHeader = styled.div`
 	width: 100%;
 	height: 50px;
 	padding: 0 10px;
-	border-top: 1px solid #aaaaaa;
-	border-bottom: 1px solid #aaaaaa;
-	margin-bottom: 20px;
 
 	a {
 		color: rgb(99, 99, 99);
@@ -69,6 +74,7 @@ const FooterHeader = styled.div`
 `
 const FooterBody = styled.div`
 	display: flex;
+	margin: 40px 0;
 `
 
 const FooterBaro = styled.div`
@@ -128,6 +134,15 @@ const FooterFooter = styled.div`
 	align-items: center;
 	
 	height: 50px;
-	background-color: #f3f3f3;
+	background-color: #fff;
 	margin-top: 20px;
 `
+const Line = styled.hr`
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: rgb(246, 246, 246);
+  border: none;
+  margin: 0 auto;
+`;

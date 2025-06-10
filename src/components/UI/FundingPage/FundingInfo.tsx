@@ -5,36 +5,45 @@ import LikeImage from '../../../assets/images/Like.svg'
 
 interface props {
 	setPayOpen: React.Dispatch<React.SetStateAction<boolean>>
+	title: string
+	percent: string
+	image: string
+	description: string
+	amount: number
+	peopleNum: number
+	likeNum: number
 }
 
-const FundingInfo = ({ setPayOpen }: props): JSX.Element => {
+const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, peopleNum, likeNum }: props): JSX.Element => {
+	const baseUrl = process.env.REACT_APP_API_BASE_URL
+
 	const PayClick = () => {
 		setPayOpen(true)
 	}
 
 	return (
 		<FundingInfoWrapper>
-			<InfoImage src={ExamImage} />
+			<InfoImage src={`${baseUrl}/image/${image}`} />
 			<InfoTagWrapper>
 				<Tag>고양이</Tag>
 				<Tag>장난감</Tag>
 			</InfoTagWrapper>
-			<Title>글로벌 1위! 미국 2년 연속 1등 브랜드의 펫 공기털청기!</Title>
+			<Title>{title}</Title>
 			<Description>
-				이건 공기 청정기가 아닌 털청기입니다! 공기 청정은 기본, 공중에 날리는 털까지 모두 포집해버리니까요. 홈런펫 털청기로 집사와 주인님의 호흡기까지 건강하게 관리해보세요.
+				{description}
 			</Description>
 			<Rate>
 				<PeopleNum>
-					<span>194</span>명 참여
+					<span>{peopleNum}</span>명 참여
 				</PeopleNum>
 				<Amount>
-					<span>47,756,000</span>원 달성
+					<span>{amount}</span>원 달성
 				</Amount>
 			</Rate>
 			<RowBox>
 				<ColumBox>
 					<Like src={LikeImage} />
-					<Liker>2,551</Liker>
+					<Liker>{likeNum}</Liker>
 				</ColumBox>
 				<PayButton onClick={PayClick}>스타터와 함께하기</PayButton>
 			</RowBox>

@@ -6,7 +6,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 import bannerImage from '../assets/images/banner.png';
 import { useNavigate } from 'react-router-dom';
-import { api, testApi } from '../AxiosInstance';
+import { api } from '../AxiosInstance';
 import { useAuth } from '../hooks/AuthContext';
 
 const Login = () => {
@@ -22,16 +22,13 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      await testApi
-				.post('/public/login', {
-					email,
-					password,
-				})
-				.then(() => {
-					login('true')
-				})
-
-      navigate("/")
+      await api.put('/public/login', { email, password });
+  
+      const response = await api.get('/social/user');
+      const userData = response.data.data;
+  
+      login('true', userData); // <-- 여기에 유저 정보 전달
+      navigate('/');
     } catch(e:any) {
       const errorCode = e.response?.data?.code
       console.log(e)

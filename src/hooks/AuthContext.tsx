@@ -1,59 +1,89 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { api } from '../AxiosInstance'; // 실제 API 인스턴스로 바꿔주세요
 
-// 인증 Context의 타입을 정의합니다.
-interface AuthContextType {
-  isLoggedIn: boolean;
-  login: (status:string) => void;
-  logout: () => void;
+// 유저 타입 정의
+export interface User {
+  name?: string;
+  nickName?: string;
+  point?: number;
+  address?: string;
+  number?: string;
+  areaNumber?: string | null;
+  email?: string;
+  socialProvider?: string | null;
+  img?: string | null;
 }
 
-// 기본값으로 Context를 생성합니다.
-// Context의 초기값은 실제 사용될 값과 형태가 일치해야 하며,
-// 일반적으로 Provider가 렌더링되기 전에는 사용되지 않으므로 null 또는 undefined를 포함할 수 있습니다.
-// 여기서는 사용될 함수의 형태만 맞추고, 실제 로직은 Provider에서 구현합니다.
+// 컨텍스트 타입 정의
+interface AuthContextType {
+  isLoggedIn: boolean;
+  login: (status: string, userData?: User) => void;
+  logout: () => void;
+  user: User | null;
+  setUser: (user: User) => void;
+}
+
+// 컨텍스트 생성
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Context Provider 컴포넌트를 생성합니다.
+// Provider 컴포넌트
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // 로그인 상태를 관리하는 state
+  const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  // 컴포넌트가 마운트될 때 localStorage에서 refresh 토큰을 확인하여 로그인 상태를 설정합니다.
   useEffect(() => {
-    const isLogin = localStorage.getItem('LoginStatus')
-		if (isLogin) {
-			// refresh 토큰이 존재하면 로그인 상태로 설정합니다.
-			// 여기서는 간단히 존재 여부만 확인하지만, 실제로는 토큰 유효성 검사 로직이 필요할 수 있습니다.
-			setIsLoggedIn(true)
-		}
-  }, []); // 빈 배열은 컴포넌트가 처음 마운트될 때만 실행되도록 합니다.
+    const status = localStorage.getItem('LoginStatus');
+    if (status) {
+      setIsLoggedIn(true);
 
-  // 로그인 처리 함수: 토큰을 localStorage에 저장하고 isLoggedIn 상태를 true로 설정합니다.
-  const login = (status: string) => {
-		localStorage.setItem('LoginStatus', status)
-		setIsLoggedIn(true)
-	}
+      const saved = localStorage.getItem('UserData');
+      if (saved) {
+        setUser(JSON.parse(saved));
+      } else {
+        // 저장된 유저 데이터가 없으면 API 호출
+        api.get('/social/user')
+          .then(res => {
+            if (res.data.message === 'success') {
+              setUser(res.data.data);
+              localStorage.setItem('UserData', JSON.stringify(res.data.data));
+            }
+          })
+          .catch(err => {
+            console.error('유저 정보 불러오기 실패:', err);
+          });
+      }
+    }
+  }, []);
 
-	// 로그아웃 처리 함수: localStorage에서 토큰을 제거하고 isLoggedIn 상태를 false로 설정합니다.
-	const logout = () => {
-		localStorage.removeItem('LoginStatus')
-		setIsLoggedIn(false)
-	}
+  const login = (status: string, userData?: User) => {
+    localStorage.setItem('LoginStatus', status);
+    setIsLoggedIn(true);
 
-  // Context.Provider를 사용하여 하위 컴포넌트에 상태와 함수를 제공합니다.
+    if (userData) {
+      setUser(userData);
+      localStorage.setItem('UserData', JSON.stringify(userData));
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('LoginStatus');
+    localStorage.removeItem('UserData');
+    localStorage.removeItem('accessToken');
+    document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    setIsLoggedIn(false);
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Context 값을 쉽게 사용하기 위한 커스텀 훅을 생성합니다.
+// 커스텀 훅
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    // AuthProvider 내에서 useAuth 훅을 사용하지 않으면 에러를 발생시킵니다.
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };

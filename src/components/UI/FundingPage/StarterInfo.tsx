@@ -4,7 +4,11 @@ import UserImage from '../../../assets/images/default_profile.png'
 import FollowImage from '../../../assets/images/Heart.svg'
 import StarterScore from './StarterScore'
 
-const StarterInfo = (): JSX.Element => {
+interface props {
+	starter: string | undefined
+}
+
+const StarterInfo = ({starter}:props): JSX.Element => {
 	const [isFollowed, setIsFollowed] = useState<boolean>(false)
 	const [follower, setFollower] = useState<number>(0)
 
@@ -17,7 +21,7 @@ const StarterInfo = (): JSX.Element => {
 			<RowBox>
 				<StarterProfile src={UserImage} />
 				<div style={{ marginLeft: '10px' }}>
-					<StarterName>이름입니다</StarterName>
+					<StarterName>{starter}</StarterName>
 					<StarterFollower>{follower} 명 팔로우 중</StarterFollower>
 				</div>
 				<FollowStarter onClick={handleFllow} isFollowed={isFollowed}>

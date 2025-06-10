@@ -2,7 +2,17 @@ import React, { JSX, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { FundingCommu, FundingNews, FundingStory } from './FundingStory'
 
-const FundingContent = (): JSX.Element => {
+interface IProjectData {
+	story: any[]
+	notice: any[]
+	community: any[]
+}
+
+interface props {
+	projectData: IProjectData | null
+}
+
+const FundingContent = ( {projectData}:props ): JSX.Element => {
 	const [activeSection, setActiveSection] = useState<'story' | 'news' | 'commu'>('story')
 
 	const storyRef = useRef<HTMLDivElement>(null)
@@ -58,6 +68,7 @@ const FundingContent = (): JSX.Element => {
 		}
 	}, [])
 
+	// 탭 클릭 시 해당 탭 최 상단으로 이동
 	const handleTabClick = (section: 'story' | 'news' | 'commu') => {
 		const container = containerRef.current
 		let targetRef: HTMLDivElement | null = null
@@ -89,10 +100,10 @@ const FundingContent = (): JSX.Element => {
 			</TabBox>
 			<MainContent ref={containerRef}>
 				<Section ref={storyRef}>
-					<FundingStory />
+					<FundingStory story={projectData?.story} />
 				</Section>
-				<Section ref={newsRef}><FundingNews/></Section>
-				<Section ref={commuRef}><FundingCommu/></Section>
+				<Section ref={newsRef}><FundingNews notice={projectData?.notice}/></Section>
+				<Section ref={commuRef}><FundingCommu community={projectData?.community}/></Section>
 			</MainContent>
 		</FundingContentWrapper>
 	)

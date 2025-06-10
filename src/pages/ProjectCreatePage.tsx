@@ -3,24 +3,25 @@ import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
 import Swal from 'sweetalert2';
+import { useCreateStore } from '../store/store';
 
 
 interface ProjectFormData {
   title: string;
-  category: string;
+  category: number | null;
 }
 
 const categories = [
-  { value: "1", label: "테크/가전", icon: "bi-cpu" },
-  { value: "2", label: "라이프스타일", icon: "bi-house" },
-  { value: "3", label: "패션/잡화", icon: "bi-bag" },
-  { value: "4", label: "뷰티/헬스", icon: "bi-heart-pulse" },
-  { value: "5", label: "취미/DIY", icon: "bi-brush" },
-  { value: "6", label: "게임", icon: "bi-controller" },
-  { value: "7", label: "교육/키즈", icon: "bi-book" },
-  { value: "8", label: "반려동물", icon: "bi-star" },
-  { value: "9", label: "여행/레저", icon: "bi-airplane" },
-  { value: "10", label: "푸드/음료", icon: "bi-cup-straw" },
+  { value: 1, label: "테크/가전", icon: "bi-cpu" },
+  { value: 2, label: "라이프스타일", icon: "bi-house" },
+  { value: 3, label: "패션/잡화", icon: "bi-bag" },
+  { value: 4, label: "뷰티/헬스", icon: "bi-heart-pulse" },
+  { value: 5, label: "취미/DIY", icon: "bi-brush" },
+  { value: 6, label: "게임", icon: "bi-controller" },
+  { value: 7, label: "교육/키즈", icon: "bi-book" },
+  { value: 8, label: "반려동물", icon: "bi-star" },
+  { value: 9, label: "여행/레저", icon: "bi-airplane" },
+  { value: 10, label: "푸드/음료", icon: "bi-cup-straw" },
 ];
 
 const ProjectCreatePage: React.FC = () => {
@@ -28,10 +29,11 @@ const ProjectCreatePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<ProjectFormData>({
     title: "",
-    category: ""
+    category: null
   });
+  const {setTitle, setTag1} = useCreateStore()
 
-  const isFormValid = formData.title.trim() !== '' && formData.category !== '';
+  const isFormValid = formData.title.trim() !== '' && formData.category !== null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -49,11 +51,11 @@ const ProjectCreatePage: React.FC = () => {
       title: '개인정보 수집 및 이용 동의',
       html: `
         <div style="text-align: left; padding: 0 10px;">
-          
+
 
           <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
             <p style="font-weight: bold; margin-bottom: 10px;">개인정보 수집 및 이용 동의</p>
-            
+
             <div style="max-height: 400px; overflow-y: auto; margin-bottom: 15px; padding: 10px; background: white; border: 1px solid #eee; border-radius: 4px;">
               <h3>1. 수집하는 개인정보 항목</h3>
               <div>
@@ -61,17 +63,17 @@ const ProjectCreatePage: React.FC = () => {
                 <ul>
                   <li>필수항목: 대표자 정보 (이름, 이메일주소, 휴대전화 번호, 본인인증값(DI)), 정산대금 입금 계좌정보(은행명, 예금주명, 계좌번호), 뒷자리 마스킹된 신분증 사본(생년월일, 주소), 담당자정보(이메일, 전화번호, 담당자와 대표자가 다른 경우에 한함)</li>
                 </ul>
-                
+
                 <h4><개인사업자 메이커 / 법인사업자 메이커></h4>
                 <ul>
                   <li>필수항목: 대표자 정보 (이름, 이메일주소, 휴대전화 번호, 본인인증정보(DI), 생년월일, 사업장 소재지, 성별, 공동대표인 경우 대표 전부의 정보를 의미), 정산대금 입금 계좌정보(은행명, 예금주명, 계좌번호), 담당자정보(이메일, 전화번호, 담당자와 대표자가 다른 경우에 한함)</li>
                 </ul>
-                
+
                 <p>회사는 부가가치세법 제16조에 따른 세금계산서 교부를 위해 개인 메이커에 대해 아래와 같은 개인정보를 수집합니다.</p>
                 <ul>
                   <li>주민등록번호</li>
                 </ul>
-                
+
                 <p>또한 서비스 이용 과정에서 서비스 이용기록, 접속로그, 쿠키, IP주소, 기기정보 등이 생성되어 저장될 수 있습니다.</p>
               </div>
 
@@ -107,17 +109,20 @@ const ProjectCreatePage: React.FC = () => {
     if (!isConfirmed) {
       return; // 사용자가 취소한 경우
     }
-    
+
     setIsLoading(true);
-    
+
     // ✅ 여기서 라벨 값 찾아서 함께 넘김
     const selectedCategory = categories.find(cat => cat.value === formData.category);
     const categoryLabel = selectedCategory?.label || formData.category;
-    
+
+    setTitle(formData.title)
+    setTag1(formData.category)
+
     // 1초 대기 (로딩 효과를 보여주기 위함)
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    navigate('/projectinfo', {
+
+    navigate('/project/info', {
       state: {
       ...formData,
       categoryLabel: categoryLabel
@@ -127,7 +132,7 @@ const ProjectCreatePage: React.FC = () => {
 
 
   const [userName, setUserName] = useState<string>('사용자');
-  
+
   useEffect(() => {
     const savedName = localStorage.getItem('userName');
     if (savedName) {
@@ -146,7 +151,7 @@ const ProjectCreatePage: React.FC = () => {
       <WelcomeMessage>{userName}님, 환영합니다!</WelcomeMessage>
       <Form onSubmit={handleSubmit}>
         <Title>프로젝트 생성</Title>
-        
+
         <FormGroup>
           <Label>
             프로젝트 제목<RequiredAsterisk>*</RequiredAsterisk>
@@ -166,7 +171,7 @@ const ProjectCreatePage: React.FC = () => {
             </CharCount>
           </InputWrapper>
         </FormGroup>
-        
+
         <FormGroup>
           <Label>
             카테고리<RequiredAsterisk>*</RequiredAsterisk>
@@ -187,17 +192,17 @@ const ProjectCreatePage: React.FC = () => {
   </CategoryList>
 </InputWrapper>
 
-          
-           
-          
+
+
+
           <CategoryHelpText>
             <InfoIcon>i</InfoIcon>
             <span>프로젝트 성격에 맞는 카테고리를 선택해주세요.</span>
           </CategoryHelpText>
         </FormGroup>
-        
-        <SubmitButton 
-          type="submit" 
+
+        <SubmitButton
+          type="submit"
           disabled={!isFormValid}
           $isActive={isFormValid}
         >
@@ -361,12 +366,12 @@ const inputStyles = `
 const Input = styled.input`
   ${inputStyles}
   padding-right: 80px; // 글자 수 표시를 위한 공간 확보
-  
+
   &:focus {
     outline: none;
     border-color: #a66bff;
   }
-  
+
   &::placeholder {
     color: #999;
   }
@@ -381,7 +386,7 @@ const Select = styled.select`
   appearance: none;
   background: #fff url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 12px center/16px;
   cursor: pointer;
-  
+
   &:focus {
     outline: none;
     border-color: #a66bff;
@@ -438,7 +443,7 @@ const SubmitButton = styled.button<{ $isActive: boolean }>`
   cursor: pointer;
   margin-top: 20px;
   transition: all 0.2s ease;
-  
+
   &:hover {
     ${props => props.$isActive && `
       background-color: #a66bff;
@@ -446,11 +451,11 @@ const SubmitButton = styled.button<{ $isActive: boolean }>`
       box-shadow: 0 4px 12px rgba(166, 107, 255, 0.3);
     `}
   }
-  
+
   &:focus {
     outline: none;
   }
-  
+
   &:active {
     background-color: ${props => props.$isActive ? '#8c4dff' : '#f0f0f0'};
     transform: ${props => props.$isActive ? 'translateY(0)' : 'none'};

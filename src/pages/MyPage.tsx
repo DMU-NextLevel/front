@@ -11,7 +11,7 @@ const MyPage = () => {
   });
 
   const formatHomePhoneNumber = (input: string) => {
-    const numbersOnly = input.replace(/\D/g, '').slice(0, 7); 
+    const numbersOnly = input.replace(/\D/g, '').slice(0, 7)
     if (numbersOnly.length < 4) return numbersOnly;
      return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
      };
@@ -129,8 +129,7 @@ const MyPage = () => {
     setEditFields((prev) => ({ ...prev,[field]: true}));
   };
 
-
-  const fieldMap: Record<string, string> = {
+const fieldMap: Record<string, string> = {
     name: 'name',
     nickname: 'nickName',
     phone: 'number',
@@ -142,7 +141,7 @@ const MyPage = () => {
   const handleSaveClick = async (field: string) => {
     try {
       const newValue = tempUserInfo[field as keyof typeof tempUserInfo];
-  
+
       if (field === 'email') {
         await Swal.fire({
           icon: 'error',
@@ -151,7 +150,7 @@ const MyPage = () => {
         });
         return;
       }
-  
+
       // ✅ 여기가 핵심: API 요청 보내기
       const response = await fetch('https://api.nextlevel.r-e.kr/social/user', {
         method: 'PUT',
@@ -161,17 +160,17 @@ const MyPage = () => {
         credentials: 'include',
         body: JSON.stringify({ name: fieldMap[field], value: newValue }),
       });
-  
+
       const result = await response.json();
-  
+
       if (result.message !== 'success') {
         throw new Error('업데이트 실패');
       }
-  
+
       // 성공 시 상태 반영
       setEditFields((prev) => ({ ...prev, [field]: false }));
       setUserInfo((prev) => ({ ...prev, [field]: newValue }));
-  
+
       await Swal.fire({
         icon: 'success',
         title: '변경되었습니다!',
@@ -187,7 +186,7 @@ const MyPage = () => {
       });
     }
   };
-  
+
 
 
   const handleResetClick = () => {
@@ -275,7 +274,9 @@ const MyPage = () => {
 
 
   //이게 프로필 이미지 변경 api로 적음
-  
+
+   //이게 프로필 이미지 변경 api로 적음
+
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -289,24 +290,24 @@ const MyPage = () => {
     };
 
     const formData = new FormData();
-    formData.append('img', file); 
-  
+    formData.append('img', file);
+
     try {
       const res = await fetch('https://api.nextlevel.r-e.kr/social/user/img', {
         method: 'PUT',
         credentials: 'include',
         body: formData,
       });
-  
+
       const result = await res.json();
-  
+
       if (result.message !== 'success') {
         throw new Error('업로드 실패');
       }
-  
+
       const uploadedUrl = result.imageUrl;
       setTempProfileImage(uploadedUrl);
-  
+
       await Swal.fire({
         icon: 'success',
         title: '이미지가 변경되었습니다!',
@@ -323,32 +324,45 @@ const MyPage = () => {
       });
     }
   };
-  
 
   const filteredProducts = selectedFilter === '전체'
   ? products
   : products.filter(p => p.tags.includes(selectedFilter));
 
-  return (
-    <Container>
-      {showRecentView && (
-        <RecentOverlay>
-          <OverlayHeader>
-            <h2>나의 활동</h2>
-            <CloseButton 
-              onClick={() =>{ 
-                const hasChanges = 
-                  JSON.stringify(userInfo) !== JSON.stringify(tempUserInfo) ||
-                  profileImage !==  tempProfileImage;
 
-                  if (hasChanges){
-                    Swal.fire({
-                      icon: 'warning',
-                      title: '변경 사항이 저장되지 않았습니다',
-                      text: '입력한 내용이 저장되지 않은 채 창이 닫힙니다.',
-                      confirmButtonColor: '#a66cff',
-                    });
-                  }
+  const openPaymentWindow = (amount:number) => {
+		const width = 700
+		const height = 900
+		const left = window.screenX + (window.outerWidth - width) / 2
+		const top = window.screenY + (window.outerHeight - height) / 2
+
+		const url = `/popup-payment?amount=${amount}`
+
+      window.open(
+    url,
+    'toss_payment_popup',
+    `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no`
+  );
+	}
+
+  return (
+		<Container>
+			{showRecentView && (
+				<RecentOverlay>
+					<OverlayHeader>
+						<h2>나의 활동</h2>
+						<CloseButton
+							onClick={() => {
+								const hasChanges = JSON.stringify(userInfo) !== JSON.stringify(tempUserInfo) || profileImage !== tempProfileImage
+
+								if (hasChanges) {
+									Swal.fire({
+										icon: 'warning',
+										title: '변경 사항이 저장되지 않았습니다',
+										text: '입력한 내용이 저장되지 않은 채 창이 닫힙니다.',
+										confirmButtonColor: '#a66cff',
+									})
+								}
 
                   setShowSettingsOverlay(false);
                 }}
@@ -363,9 +377,9 @@ const MyPage = () => {
               </TabGroup>
               <FilterGroup>
                 {['전체', ...allTags].map((cat) => (
-                  <FilterBtn 
-                  key={cat} 
-                  active={selectedFilter ===cat} 
+                  <FilterBtn
+                  key={cat}
+                  active={selectedFilter ===cat}
                   onClick={() => setSelectedFilter(cat)}
                 >
                   {cat}
@@ -390,7 +404,7 @@ const MyPage = () => {
   </ProductCardOverlay>
 ))}
 
-                 
+
             </ProductColumn>
           </ScrollableContent>
         </RecentOverlay>
@@ -407,7 +421,7 @@ const MyPage = () => {
         <p>충전하실 금액을 선택하세요</p>
         <ChargeOptions>
           {[1000, 5000, 10000, 20000].map((amount) => (
-            <ChargeBtn key={amount} onClick={() => handleCharge(amount)}>
+            <ChargeBtn key={amount} onClick={() => openPaymentWindow(amount)}>
               {amount.toLocaleString()}P
             </ChargeBtn>
           ))}
@@ -473,199 +487,187 @@ const MyPage = () => {
         )}
       </Content>
       {editFields[field as keyof typeof editFields] ? (
-        <ChangeBtn onClick={() => handleSaveClick(field)}>
-        변경완료
-      </ChangeBtn>
+        <ChangeBtn onClick={() => {
+          handleSaveClick(field)
+        }}>변경완료</ChangeBtn>
       ) : (
         <ChangeBtn onClick={() => handleEditClick(field)}>변경</ChangeBtn>
       )}
     </InfoItem>
   ))}
 
-  <InfoItem>
-  <Label>집전화번호</Label>
-  <FlexRow>
-    <AreaSelect
-      name="area"
-      value={homePhone.area}
-      onChange={handleHomePhoneChange}
-    >
-      <option value="02">02 (서울)</option>
-      <option value="031">031 (경기)</option>
-      <option value="032">032 (인천)</option>
-      <option value="033">033 (강원)</option>
-      <option value="041">041 (충남)</option>
-      <option value="042">042 (대전)</option>
-      <option value="043">043 (충북)</option>
-      <option value="044">044 (세종)</option>
-      <option value="051">051 (부산)</option>
-      <option value="052">052 (울산)</option>
-      <option value="053">053 (대구)</option>
-      <option value="054">054 (경북)</option>
-      <option value="055">055 (경남)</option>
-      <option value="061">061 (전남)</option>
-      <option value="062">062 (광주)</option>
-      <option value="063">063 (전북)</option>
-      <option value="064">064 (제주)</option>
+						<InfoItem>
+							<Label>집전화번호</Label>
+							<FlexRow>
+								<AreaSelect name='area' value={homePhone.area} onChange={handleHomePhoneChange}>
+									<option value='02'>02 (서울)</option>
+									<option value='031'>031 (경기)</option>
+									<option value='032'>032 (인천)</option>
+									<option value='033'>033 (강원)</option>
+									<option value='041'>041 (충남)</option>
+									<option value='042'>042 (대전)</option>
+									<option value='043'>043 (충북)</option>
+									<option value='044'>044 (세종)</option>
+									<option value='051'>051 (부산)</option>
+									<option value='052'>052 (울산)</option>
+									<option value='053'>053 (대구)</option>
+									<option value='054'>054 (경북)</option>
+									<option value='055'>055 (경남)</option>
+									<option value='061'>061 (전남)</option>
+									<option value='062'>062 (광주)</option>
+									<option value='063'>063 (전북)</option>
+									<option value='064'>064 (제주)</option>
+								</AreaSelect>
+								<HomePhoneInput name='number' type='text' maxLength={8} placeholder='전화번호를 입력해주세요.' value={homePhone.number} onChange={handleHomePhoneChange} />
+							</FlexRow>
+						</InfoItem>
+					</ScrollableContent>
+					<OverlayFooter>
+						<ChangeBtn onClick={handleResetClick}>초기화</ChangeBtn>
 
-    </AreaSelect>
-    <HomePhoneInput
-      name="number"
-      type="text"
-      maxLength={8}
-      placeholder="전화번호를 입력해주세요."
-      value={homePhone.number}
-      onChange={handleHomePhoneChange}
-    />
-  </FlexRow>
-</InfoItem>
+						<ChangeBtn
+							onClick={async () => {
+								const { name, nickname, phone, email } = tempUserInfo
 
-</ScrollableContent>
-  <OverlayFooter>
+								if (!name.trim() || !nickname.trim() || !phone.trim() || !email.trim()) {
+									await Swal.fire({
+										icon: 'error',
+										title: '필수 항목을 입력해주세요.',
+										text: '이름, 닉네임, 전화번호, 이메일은 필수입니다.',
+										confirmButtonColor: '#a66cff',
+									})
+									return
+								}
 
-  <ChangeBtn onClick={handleResetClick}>초기화</ChangeBtn>
+								const result = await Swal.fire({
+									title: '변경사항을 저장할까요?',
+									text: '입력한 정보가 저장됩니다.',
+									icon: 'question',
+									showCancelButton: true,
+									confirmButtonText: '저장',
+									cancelButtonText: '취소',
+									confirmButtonColor: '#A66CFF',
+									cancelButtonColor: '#ddd',
+								})
 
-  <ChangeBtn 
-    onClick={async () => {
+								if (result.isConfirmed) {
+									setUserInfo(tempUserInfo)
+									setProfileImage(tempProfileImage)
+									setEditFields({
+										name: false,
+										nickname: false,
+										phone: false,
+										email: false,
+										password: false,
+										passwordcf: false,
+									})
 
-      const {name, nickname, phone, email } = tempUserInfo;
+									await Swal.fire({
+										icon: 'success',
+										title: '정보가 변경되었습니다!',
+										showConfirmButton: false,
+										timer: 1500,
+									})
 
-      if( !name.trim() || !nickname.trim() || !phone.trim() || !email.trim()) {
-        await Swal.fire({
-          icon:'error',
-          title: '필수 항목을 입력해주세요.',
-          text: '이름, 닉네임, 전화번호, 이메일은 필수입니다.',
-          confirmButtonColor:'#a66cff',
-        });
-        return;
-      }
+									setShowSettingsOverlay(false)
+								}
+							}}>
+							완료
+						</ChangeBtn>
+					</OverlayFooter>
+				</SettingsOverlay>
+			)}
 
-      const result = await Swal.fire({
-        title: '변경사항을 저장할까요?',
-        text: '입력한 정보가 저장됩니다.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: '저장',
-        cancelButtonText: '취소',
-        confirmButtonColor: '#A66CFF',
-        cancelButtonColor: '#ddd',
-  });
+			<Sidebar>
+				{/* 탭 버튼 */}
+				<TopTab>
+					<TabButton active={activeTab === '서포터'} onClick={() => setActiveTab('서포터')}>
+						서포터
+					</TabButton>
+					<TabButton active={activeTab === '메이커'} onClick={() => setActiveTab('메이커')}>
+						메이커
+					</TabButton>
+				</TopTab>
 
-  if (result.isConfirmed) {
-    setUserInfo(tempUserInfo);
-    setProfileImage(tempProfileImage);
-    setEditFields({
-      name: false,
-      nickname: false,
-      phone: false,
-      email: false,
-      password: false,
-      passwordcf: false,
-    });
+				{/* 프로필 영역 */}
+				<ProfileBox>
+					<ImageInputLabel>
+						<AvatarImg
+							src={
+								profileImage ||
+								'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA2MjVfMTkz%2FMDAxNzE5MjkxMTA5MzY4.6JsIEfv3ged1X5Tm8X64E27sIL935yGSV-9T_pNE9sUg.txCrKMz0Emxy98jwwxnmWi8mqcU91uaLyXx88Z1X1iQg.JPEG%2FB7A00E50-ABFD-43A4-AE4C-9901F147A4DC.jpeg&type='
+							}
+							alt='프로필'
+						/>
+					</ImageInputLabel>
+					<HiddenFileInput id='profile-upload' type='file' accept='image/*' onChange={handleImageChange} />
+					<Name>{userInfo.name}</Name>
+					<SettingsBtn onClick={() => handleClick('내 정보 설정')}>내 정보 설정</SettingsBtn>
+				</ProfileBox>
 
-    await Swal.fire({
-      icon: 'success',
-      title: '정보가 변경되었습니다!',
-      showConfirmButton: false,
-      timer: 1500,
-    });
-
-    setShowSettingsOverlay(false);
-  }
-}}>
-  완료
-</ChangeBtn>
-
-
-</OverlayFooter>
-
- </SettingsOverlay>
- 
-      )}
-
-      <Sidebar>
-  {/* 탭 버튼 */}
-  <TopTab>
-    <TabButton active={activeTab === '서포터'} onClick={() => setActiveTab('서포터')}>서포터</TabButton>
-    <TabButton active={activeTab === '메이커'} onClick={() => setActiveTab('메이커')}>메이커</TabButton>
-  </TopTab>
-
-  {/* 프로필 영역 */}
-  <ProfileBox>
-    <ImageInputLabel>
-      <AvatarImg src={profileImage || 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA2MjVfMTkz%2FMDAxNzE5MjkxMTA5MzY4.6JsIEfv3ged1X5Tm8X64E27sIL935yGSV-9T_pNE9sUg.txCrKMz0Emxy98jwwxnmWi8mqcU91uaLyXx88Z1X1iQg.JPEG%2FB7A00E50-ABFD-43A4-AE4C-9901F147A4DC.jpeg&type='} alt="프로필" /> 
-    </ImageInputLabel>
-    <HiddenFileInput id="profile-upload" type="file" accept="image/*" onChange={handleImageChange} />
-    <Name>{userInfo.name}</Name>
-    <SettingsBtn onClick={() => handleClick('내 정보 설정')}>내 정보 설정</SettingsBtn>
-  </ProfileBox>
-
-  {/* 탭에 따라 다른 메뉴 출력 */}
-  {activeTab === '서포터' ? (
-    <ActivityMenu>
-      {['최근본', '포인트 충전', '좋아요', '팔로잉', '펀딩 목록'].map((item) => (
-        <MenuButton key={item} onClick={() => handleClick(item)}>
-          {item} {item === '친구초대' && <span className="highlight">5,000P</span>}
-        </MenuButton>
-      ))}
-    </ActivityMenu>
-  ) : (
-    <ActivityMenu>
-      {['내 프로젝트', '정산 관리', '문의 답변'].map((item) => (
-        <MenuButton key={item} onClick={() => alert(`${item} 클릭됨`)}>{item}</MenuButton>
-      ))}
-    </ActivityMenu>
-  )}
-</Sidebar>
-
+				{/* 탭에 따라 다른 메뉴 출력 */}
+				{activeTab === '서포터' ? (
+					<ActivityMenu>
+						{['최근본', '포인트 충전', '좋아요', '팔로잉', '펀딩 목록'].map((item) => (
+							<MenuButton key={item} onClick={() => handleClick(item)}>
+								{item} {item === '친구초대' && <span className='highlight'>5,000P</span>}
+							</MenuButton>
+						))}
+					</ActivityMenu>
+				) : (
+					<ActivityMenu>
+						{['내 프로젝트', '정산 관리', '문의 답변'].map((item) => (
+							<MenuButton key={item} onClick={() => alert(`${item} 클릭됨`)}>
+								{item}
+							</MenuButton>
+						))}
+					</ActivityMenu>
+				)}
+			</Sidebar>
 
       <Main>
         <Greeting>
           <h2>{userInfo.name}님 안녕하세요.</h2>
           <InviteBox>당신의 아이디어, 펀딩으로 연결하세요!</InviteBox>
           <StatGrid>
-            
+
   {['펀딩+', '스토어', '지지서명', '알림신청', '포인트', '쿠폰'].map((label) => {
     let value: React.ReactNode;
 
-    if (label === '지지서명' || label === '알림신청') {
-      value = <button onClick={() => handleClick(label)}>보기</button>;
-    } else if (label === '포인트') {
-      value = <strong>{point.toLocaleString()}P</strong>;
-    } else if (label === '펀딩+') {
-      value = <strong>1</strong>;
-    } else if (label === '스토어') {
-      value = <strong>0</strong>;
-    } else if (label === '쿠폰') {
-      value = <strong>2장</strong>;
-    }
+							if (label === '지지서명' || label === '알림신청') {
+								value = <button onClick={() => handleClick(label)}>보기</button>
+							} else if (label === '포인트') {
+								value = <strong>{point.toLocaleString()}P</strong>
+							} else if (label === '펀딩+') {
+								value = <strong>1</strong>
+							} else if (label === '스토어') {
+								value = <strong>0</strong>
+							} else if (label === '쿠폰') {
+								value = <strong>2장</strong>
+							}
 
-    return (
-      <StatItem key={label}>
-        <span>{label}</span>
-        {value}
-      </StatItem>
-    );
-  })}
-</StatGrid>
+							return (
+								<StatItem key={label}>
+									<span>{label}</span>
+									{value}
+								</StatItem>
+							)
+						})}
+					</StatGrid>
+				</Greeting>
 
-        </Greeting>
-
-        <SectionTitle>최근 본 프로젝트 👀</SectionTitle>
-        <ProductList>
-          {[...Array(5)].map((_, i) => (
-            <ProductCardNormal key={i}>
-              <img
-                src="https://shop-phinf.pstatic.net/20220615_163/1655256234926pHmSR_JPEG/56392121446286841_1599012163.jpg?type=m510"
-                alt={`상품${i + 1}`}
-              />
-              <div className="discount">28,000원</div>
-            </ProductCardNormal>
-          ))}
-        </ProductList>
-      </Main>
-    </Container>
-  );
+				<SectionTitle>최근 본 프로젝트 👀</SectionTitle>
+				<ProductList>
+					{[...Array(5)].map((_, i) => (
+						<ProductCardNormal key={i}>
+							<img src='https://shop-phinf.pstatic.net/20220615_163/1655256234926pHmSR_JPEG/56392121446286841_1599012163.jpg?type=m510' alt={`상품${i + 1}`} />
+							<div className='discount'>28,000원</div>
+						</ProductCardNormal>
+					))}
+				</ProductList>
+			</Main>
+		</Container>
+	)
 };
 
 export default MyPage;

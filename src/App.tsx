@@ -4,8 +4,7 @@ import { HeaderMain, HeaderSub } from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import IDFindPage from './pages/IDFindPage';
 import Signup from './pages/Signup';
-import Login from './pages/Login';
-import A from './pages/a';
+import Login from './pages/Login'
 import MyPage from './pages/MyPage';
 import MainPage from './pages/MainPage'
 import FundingPage from './pages/FundingPage'
@@ -16,6 +15,16 @@ import ProjectMediaPage from './pages/ProjectMediaPage';
 import ProjectIntroductionPage from './pages/ProjectIntroductionPage';
 import { AuthProvider } from './hooks/AuthContext'
 import ScrollToTop from './hooks/ScrollToTop';
+import NoticeBoard from './pages/NoticeBoard';
+import NoticeDetail from './pages/NoticeDetail';
+import NoticeWrite from './pages/NoticeWrite';
+import NoticeEdit from './pages/NoticeEdit';
+import ProfileHeader from './pages/ProfileHeader';
+import Creater from './pages/Creater';
+import {PopupPaymentPage} from './components/UI/TossPayments';
+import {SuccessPage} from './components/UI/TossPayments';
+import {FailPage} from './components/UI/TossPayments';
+
 
 
 function App() {
@@ -29,7 +38,7 @@ function App() {
 
 const AppWrapper = () => {
 	const location = useLocation()
-	const hideLayout = ['/login', '/signup']
+	const hideLayout = ['/login', '/signup','/popup-payment', '/popup-payment-success']
 	const mainPage = ['/']
 	return (
 		<AuthProvider>
@@ -40,8 +49,21 @@ const AppWrapper = () => {
 				<Route path='/signup' element={<Signup />} />
 				<Route path='/idfind' element={<IDFindPage />} />
 				<Route path='/mypage' element={<MyPage />} />
-				<Route path='/funding' element={<FundingPage />} />
+				<Route path='/project/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
+				<Route path='/project/create' element={<ProjectCreatePage />} />
+				<Route path='/project/info' element={<ProjectInfoPage />} />
+				<Route path='/project/introduction' element={<ProjectIntroductionPage />} />
+				<Route path='/project/media' element={<ProjectMediaPage />} />
+				<Route path='/creater' element={<Creater />} />
+				<Route path='/popup-payment' element={<PopupPaymentPage />} />
+				<Route path='/popup-payment-success' element={<SuccessPage />} />
+				<Route path='/fail' element={<FailPage />} />
+				<Route path='/notice' element={<NoticeBoard />} />
+				<Route path='/notice/:id' element={<NoticeDetail />} />
+				<Route path='/notice/write' element={<NoticeWrite />} />
+				<Route path='/notice/edit/:id' element={<NoticeEdit />} />
+				<Route path='/profile' element={<ProfileHeader />} />
 				<Route path='/project/create' element={<ProjectCreatePage />} />
 				<Route path='/projectinfo' element={<ProjectInfoPage />} />
 				<Route path='/project/introduction' element={<ProjectIntroductionPage />} />

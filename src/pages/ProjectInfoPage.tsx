@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useCreateStore } from '../store/store';
 
 // css 시작!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 const Container = styled.div`
@@ -27,7 +28,7 @@ const Title = styled.h2`
   text-align: center;
   position: relative;
   padding-bottom: 1rem;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -62,7 +63,7 @@ const SectionTitle = styled.h3`
   text-align: center;
   position: relative;
   padding-bottom: 1rem;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -186,13 +187,13 @@ const SubmitButton = styled(Button)<{ $isActive: boolean }>`
   cursor: ${props => props.$isActive ? 'pointer' : 'not-allowed'};
   opacity: 1;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background: ${props => props.$isActive ? '#8a5cff' : '#f0f0f0'};
     transform: ${props => props.$isActive ? 'translateY(-2px)' : 'none'};
     box-shadow: ${props => props.$isActive ? '0 4px 12px rgba(166, 107, 255, 0.3)' : 'none'};
   }
-  
+
   &:active {
     transform: ${props => props.$isActive ? 'translateY(0)' : 'none'};
   }
@@ -224,7 +225,7 @@ const ConfirmButton = styled.button`
   &:hover {
     background-color: #8a5cff;
   }
-  
+
   &:disabled {
     background-color: #e0e0e0;
     cursor: not-allowed;
@@ -248,6 +249,7 @@ const categories = [
 const ProjectInfoPage: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
+    const {setExpired, setGoal} = useCreateStore()
 
   const categoryLabel = categories.find(c => c.value === state?.category)?.label || state?.categoryLabel || state?.category || '';
   const [formData, setFormData] = useState({
@@ -257,33 +259,33 @@ const ProjectInfoPage: React.FC = () => {
     endDate: '',
     targetAmount: '',
     location: '',
-    
+
     // 프로젝트 소개 섹션
     overview: '',
     reason: '',
-    
+
     // 프로젝트 상세 섹션
     background: '',
     targetAudience: '',
     uniqueValue: '',
-    
+
     // 프로젝트 계획 섹션
     executionPlan: '',
     schedule: '',
     budgetPlan: '',
-    
+
     // 팀 소개 섹션
     team: '',
     teamExpertise: '',
     teamRoles: '',
-    
+
     // 기타..
     future: ''
   });
 
   useEffect(() => {
     if (!state?.title || !state?.category) {
-      navigate('/create-project');
+      navigate('/project/create');
     }
   }, [navigate, state]);
 
@@ -338,13 +340,13 @@ const ProjectInfoPage: React.FC = () => {
         cancelButtonText: '취소'
       }).then((result: { isConfirmed: boolean }) => {
         if (result.isConfirmed) {
-          
+
           const input = document.querySelector('input[name="targetAmount"]') as HTMLInputElement;
           if (input) {
             input.blur();
           }
-          
-         
+
+
           Swal.fire({
             icon: 'success',
             title: '설정 완료',
@@ -399,13 +401,20 @@ const ProjectInfoPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    navigate('/project/introduction', { 
-      state: { 
-        ...state, 
+    navigate('/project/introduction', {
+      state: {
+        ...state,
         ...formData
-      } 
+      }
     });
   };
+
+  const nextClick = () => {
+    setExpired(formData.endDate)
+    setGoal(parseNumber(formData.targetAmount))
+
+    navigate('/project/media', { state: formData })
+  }
 
   return (
     <Container>
@@ -441,15 +450,15 @@ const ProjectInfoPage: React.FC = () => {
           <FormGroup>
             <Label required>목표 금액</Label>
             <InputWrapper>
-              <Input 
-                type="text" 
-                inputMode="numeric" 
-                pattern="[0-9,]*" 
-                name="targetAmount" 
-                value={formData.targetAmount} 
-                onChange={handleChange} 
-                placeholder="5,000원 ~ 100,000,000원" 
-                required 
+              <Input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9,]*"
+                name="targetAmount"
+                value={formData.targetAmount}
+                onChange={handleChange}
+                placeholder="5,000원 ~ 100,000,000원"
+                required
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -457,8 +466,8 @@ const ProjectInfoPage: React.FC = () => {
                   }
                 }}
               />
-              <ConfirmButton 
-                type="button" 
+              <ConfirmButton
+                type="button"
                 onClick={handleConfirmClick}
                 disabled={!formData.targetAmount}
               >
@@ -475,14 +484,14 @@ const ProjectInfoPage: React.FC = () => {
         </Section>
 
 
-        
+
 
 
         <ButtonGroup>
           <BackButton type="button" onClick={() => navigate(-1)}>이전</BackButton>
-          <SubmitButton 
+          <SubmitButton
             type="button"
-            onClick={() => navigate('/project/media', { state: formData })}
+            onClick={nextClick}
             $isActive={isFormValid()}
             disabled={!isFormValid()}
           >
