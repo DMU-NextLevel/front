@@ -272,12 +272,12 @@ const ProjectMediaPage: React.FC = () => {
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // 파일 크기 검사 (5MB 이하)
-      if (file.size > 5 * 1024 * 1024) {
+      // 파일 크기 검사 (1MB 이하)
+      if (file.size > 1 * 1024 * 1024) {
         Swal.fire({
           icon: 'error',
           title: '파일 크기 초과',
-          text: '대표 이미지는 5MB 이하의 파일만 업로드 가능합니다.',
+          text: '대표 이미지는 1MB 이하의 파일만 업로드 가능합니다.',
           confirmButtonColor: '#a66bff',
           confirmButtonText: '확인'
         });
@@ -314,13 +314,13 @@ const ProjectMediaPage: React.FC = () => {
 
       const validFiles = Array.from(files).slice(0, remainingSlots);
 
-      // 파일 크기 검사 (각 파일 5MB 이하)
-      const oversizedFiles = validFiles.filter(file => file.size > 5 * 1024 * 1024);
+      // 파일 크기 검사 (각 파일 1MB 이하)
+      const oversizedFiles = validFiles.filter(file => file.size > 1 * 1024 * 1024);
       if (oversizedFiles.length > 0) {
         Swal.fire({
           icon: 'error',
           title: '파일 크기 초과',
-          text: '이미지 파일은 5MB 이하여야 합니다.',
+          text: '이미지 파일은 1MB 이하여야 합니다.',
           confirmButtonColor: '#a66bff',
           confirmButtonText: '확인'
         });
@@ -367,7 +367,7 @@ const ProjectMediaPage: React.FC = () => {
         const fileName = file.name.toLowerCase();
         const isValidFormat = fileName.endsWith('.mp4') || fileName.endsWith('.webm') ||
                            file.type === 'video/mp4' || file.type === 'video/webm';
-        const isSizeValid = file.size <= 5 * 1024 * 1024; // 5MB
+        const isSizeValid = file.size <= 1 * 1024 * 1024; // 1MB
         return !isValidFormat || !isSizeValid;
       });
 
@@ -375,7 +375,7 @@ const ProjectMediaPage: React.FC = () => {
         Swal.fire({
           icon: 'error',
           title: '파일 오류',
-          text: '동영상은 MP4, WebM 형식만 가능하며, 최대 5MB까지 업로드 가능합니다.',
+          text: '동영상은 MP4, WebM 형식만 가능하며, 최대 1MB까지 업로드 가능합니다.',
           confirmButtonColor: '#a66bff',
           confirmButtonText: '확인'
         });

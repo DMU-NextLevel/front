@@ -78,17 +78,6 @@ const Login = ({setLoginType}:props) => {
   const handleIdfind = () => {
     navigate('/idfind')
   }
-  const handleSocialGoogle = () => {
-    window.location.href = `${baseUrl}/oauth2/authorization/google`;
-  }
-
-  const handleSocialNaver = () => {
-    window.location.href = `${baseUrl}/oauth2/authorization/naver`;
-  }
-
-  const handleSocialKakao = () => {
-    window.location.href = `${baseUrl}/oauth2/authorization/kakao`;
-  }
 
   return (
     <>
@@ -145,7 +134,7 @@ const Login = ({setLoginType}:props) => {
             </div>
 
             <div style={styles.bottomText}>
-              아직 위드유 계정이 없으신가요?
+              아직 텀블벅 계정이 없으신가요?
               <span onClick={handleSignup}  style={styles.link}>회원가입</span>
               <br />
               혹시 비밀번호를 잊으셨나요?
@@ -159,7 +148,6 @@ const Login = ({setLoginType}:props) => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            onClick={handleSocialKakao}
           ></motion.div>
 
           <motion.img
@@ -169,7 +157,6 @@ const Login = ({setLoginType}:props) => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            onClick={handleSocialNaver}
           />
 
           <motion.div
