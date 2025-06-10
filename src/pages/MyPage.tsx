@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Swal from 'sweetalert2';
+import { api, testApi } from '../AxiosInstance';
 
 const MyPage = () => {
 
@@ -213,6 +214,48 @@ const MyPage = () => {
       document.body.style.overflow = '';
     };
   }, [showRecentView, showSettingsOverlay, showPointOverlay]);
+
+  useEffect(() => {
+    api.get('/social/user')
+      .then(response => {
+        const user = response.data.data;
+
+        setUserInfo({
+          name: user.name || '',
+          nickname: user.nickName || '',
+          phone: user.number || '',
+          email: user.email || '',
+          password: '비밀번호 변경하기',
+          passwordcf: '비밀번호 확인',
+        });
+
+        setTempUserInfo({
+          name: user.name || '',
+          nickname: user.nickName || '',
+          phone: user.number || '',
+          email: user.email || '',
+          password: '비밀번호 변경하기',
+          passwordcf: '비밀번호 확인',
+        });
+
+        setPoint(user.point || 0);
+
+        const areaParts = user.areaNumber?.split('-') || [];
+        setHomePhone({
+          area: areaParts[0] || '02',
+          number: areaParts.slice(1).join('') || '',
+        });
+
+        if (user.img) {
+          const imageUrl = `https://api.nextlevel.r-e.kr/img/${user.img}`;
+          setProfileImage(imageUrl);
+          setTempProfileImage(imageUrl);
+        }
+      })
+      .catch(error => {
+        console.error('유저 정보 불러오기 실패:', error);
+      });
+  }, []);
 
   const handleClick = (label: string) => {
     setShowRecentView(false);
@@ -718,9 +761,14 @@ const Avatar = styled.div`
 const AvatarImg = styled.img`
   width: 105px;
   height: 105px;
+  min-width: 105px;
+  min-height: 105px;
+  max-width: 105px;
+  max-height: 105px;
   border-radius: 50%;
   object-fit: cover;
-  pointer-events:none;
+  pointer-events: none;
+  display: block;
 `;
 
 const FlexRow = styled.div`
