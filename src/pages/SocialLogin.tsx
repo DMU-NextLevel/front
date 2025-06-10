@@ -14,11 +14,9 @@ const SocialLogin = ({ loginType }: Props) => {
     const calledRef = useRef(false); // 인증 중복 방지
 
     useEffect(() => {
-			if (!code || !loginType) return
-            console.log('소셜 로그인 시도중')
+			if (!code || !loginType || calledRef.current) return
+			console.log('소셜 로그인 시도중')
 
-			// 테스트 환경에서 단 한 번만 호출되도록
-			if (process.env.NODE_ENV === 'development' && !calledRef.current) {
 				calledRef.current = true
 				console.log('OAuth code:', code)
 				console.log('로그인 타입:', loginType)
@@ -40,7 +38,6 @@ const SocialLogin = ({ loginType }: Props) => {
 					.catch((err) => {
 						alert('로그인 실패')
 					})
-			}
 		}, [loginType, code, navigate])
 
     return null;
