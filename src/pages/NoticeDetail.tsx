@@ -111,7 +111,7 @@ const NoticeDetail: React.FC = () => {
     if (!confirm) return;
     
     try {
-      const res = await api.delete(`/admin/notice/${id}`);
+      const res = await api.post(`/admin/notice/${id}`);
       if (res.data.message === 'success') {
         alert('삭제가 완료되었습니다.');
         navigate('/notice');
@@ -136,7 +136,7 @@ const NoticeDetail: React.FC = () => {
           <span>{formatDate(article.createdAt)}</span>
         </Meta>
 
-        {!roleLoading && role === 'USER' && (
+        {!roleLoading && role === 'ADMIN' && (
           <div style={{ display: 'flex', gap: '8px' }}>
             <ArticleOptionItem onClick={() => alert('수정 기능 연결 예정')}>수정</ArticleOptionItem>
             <ArticleOptionItem onClick={() => handleDelete()}>삭제</ArticleOptionItem>
@@ -144,7 +144,15 @@ const NoticeDetail: React.FC = () => {
         )}
       </ArticleOption>
 
+
+      <div
+  dangerouslySetInnerHTML={{
+    __html: article.content.replace(/<img src="(.*?)"/g, `<img src="http://localhost:8080/img/$1"`),
+  }}
+/>
+      <hr/>
       <Content>{article.content}</Content>
+
       <Divider />
 
       <Button onClick={() => navigate('/notice')}>목록으로 돌아가기</Button>

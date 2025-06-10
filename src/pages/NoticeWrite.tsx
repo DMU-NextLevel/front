@@ -168,8 +168,7 @@ const SubmitButton = styled.button`
 const NoticeWrite: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
 
   const { role, loading } = useUserRole();
 
@@ -187,9 +186,14 @@ const NoticeWrite: React.FC = () => {
 
 
   const insertImage = (file: File) => {
+    const fileName = file.name;
     const reader = new FileReader();
     reader.onload = () => {
-      editor?.chain().focus().setImage({ src: reader.result as string }).run();
+      // 1. base64 삽입 → 에디터에서는 시각적 확인
+      editor?.commands.insertContent(`<img src="${reader.result}" data-filename="${fileName}" />`);
+      
+      // 2. 파일 저장
+      setUploadedImages(prev => [...prev, file]);
     };
     reader.readAsDataURL(file);
   };
@@ -205,19 +209,26 @@ const NoticeWrite: React.FC = () => {
     }
   };
 
-  const extractImagesFromContent = (html: string): string[] => {
+  const extractImagesFromContent = (html: string): { base64: string, fileName: string }[] => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const imgTags = doc.querySelectorAll('img');
-    return Array.from(imgTags).map(img => img.src);
+    
+    const images = Array.from(imgTags).map(img => ({
+      base64: img.getAttribute('src') || '',
+      fileName: img.getAttribute('data-filename') || '',
+    }));
+    
+    return images;
   };
+  
   
 
   const handleSave = async () => {
     const title = (document.getElementById('title') as HTMLInputElement)?.value;
-    const content = editor?.getHTML();
+    const rawContent = editor?.getHTML();
   
-    if (!title || !content) {
+    if (!title || !rawContent) {
       alert('제목과 내용을 모두 입력해주세요.');
       return;
     }
@@ -227,20 +238,28 @@ const NoticeWrite: React.FC = () => {
       return;
     }
   
-    const images = extractImagesFromContent(content); // base64 또는 URL
+    // DOMParser를 사용해서 이미지 src를 fileName으로 변환
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawContent, 'text/html');
+    const imgTags = doc.querySelectorAll('img');
+  
+    imgTags.forEach(img => {
+      const filename = img.getAttribute('data-filename');
+      if (filename) {
+        img.setAttribute('src', filename); // base64 → 파일명
+        img.removeAttribute('data-filename'); // 불필요한 속성 제거
+      }
+    });
+  
+    const finalContent = doc.body.innerHTML;
   
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('content', content);
+    formData.append('content', finalContent); // 🧨 base64 제거된 최종 HTML
   
-    if (images.length === 0) {
-      // 이미지가 없더라도 빈 배열임을 명시
-      formData.append('images', '');
-    } else {
-      images.forEach((img) => {
-        formData.append('images', img);
-      });
-    }
+    uploadedImages.forEach(file => {
+      formData.append('imgs', file);
+    });
   
     try {
       const res = await axios.post('http://localhost:8080/admin/notice', formData, {
@@ -260,6 +279,8 @@ const NoticeWrite: React.FC = () => {
     }
   };
   
+  
+
  
 
   return (
