@@ -25,11 +25,15 @@ const SocialLogin = ({ loginType }: Props) => {
             api
                 .post(`/login/oauth2/code/${loginType}?code=${code}`)
                 .then((r) => {
-                    console.log("서버 응답:", r.data);
+                    alert('로그인 성공')
                     // 예시: 로그인 성공 후 메인 페이지로
+                    if (window.opener && !window.opener.closed) {
+											window.opener.postMessage('social-success', window.location.origin)
+										}
                     navigate("/");
                 })
                 .catch((err) => {
+                    alert('로그인 실패')
                     console.error("인증 실패:", err);
                 });
         }

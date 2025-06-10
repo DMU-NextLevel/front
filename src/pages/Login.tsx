@@ -19,6 +19,7 @@ const Login = ({setLoginType}:props) => {
   const [password, setPassword] = useState<string>('')
   const navigate = useNavigate();
   const { login } = useAuth()
+  const baseUrl = process.env.REACT_APP_API_BASE_URL
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -48,14 +49,26 @@ const Login = ({setLoginType}:props) => {
   }
 
   const socialLogin = (type:string) => {
-    if (type === 'kakao') {
-      window.open('http://localhost:8080/oauth2/authorization/kakao')
-    } else if (type === 'naver') {
-      window.open('http://localhost:8080/oauth2/authorization/naver')
-    } else if (type === 'google') {
-      window.open('http://localhost:8080/oauth2/authorization/google')
-    }
-    setLoginType(type)
+    const width = 700
+		const height = 900
+		const left = window.screenX + (window.outerWidth - width) / 2
+		const top = window.screenY + (window.outerHeight - height) / 2
+
+		const url = `${baseUrl}/oauth2/authorization/${type}`
+
+		window.open(url, 'toss_payment_popup', `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no`)
+
+		const messageListener = (event: MessageEvent) => {
+			// 신뢰할 수 있는 도메인인지 확인 (XSS 방어)
+			if (event.origin !== window.location.origin) return
+
+			if (event.data === 'social-success') {
+				window.removeEventListener('message', messageListener)
+				setLoginType(type)
+        //navigate('/')
+			}
+		}
+    window.addEventListener('message', messageListener)
   }
 
   const handleSignup = () => {
