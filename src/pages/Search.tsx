@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import { api, testApi } from '../AxiosInstance';
 import noImage from '../assets/images/noImage.jpg';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/AuthContext';

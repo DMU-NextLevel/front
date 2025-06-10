@@ -6,6 +6,10 @@ import styled from 'styled-components'
 import bannerImg from '../../../assets/images/withU_testBanner1.jpg';
 import bannerMov2 from '../../../assets/images/withU_testBanner2.mp4';
 import bannerMov3 from '../../../assets/images/withU_testBanner3.mp4';
+import banner1 from '../../../assets/images/withU_Banner1.mp4';	
+import banner2 from '../../../assets/images/withU_Banner2.mp4';
+import banner3 from '../../../assets/images/withU_Banner3.mp4';
+
 
 const SimpleSlider: React.FC = () => {
 	const sliderRef = useRef<Slider>(null);
@@ -33,7 +37,7 @@ const SimpleSlider: React.FC = () => {
 		}
 	};
 	
-
+	
 	return (
 		<SliderWrapper>
 			{/* 좌우 클릭 영역 */}
@@ -43,7 +47,9 @@ const SimpleSlider: React.FC = () => {
 			<Slider ref={sliderRef} {...settings}>
 				<Slide><SlideImage src={bannerImg} alt="배너1" /></Slide>
 				<Slide><SlideVideo src={bannerMov3} autoPlay  muted playsInline /></Slide>
-				<Slide><SlideVideo src={bannerMov2} autoPlay muted playsInline /></Slide>
+				<Slide><SlideVideo src={banner2} autoPlay muted playsInline /></Slide>
+				{/* <Slide><SlideVideo src={banner1} autoPlay muted playsInline /></Slide> */}
+				<Slide><SlideVideo src={banner3} autoPlay muted playsInline /></Slide>
 			</Slider>
 
 			{/* 커스텀 버튼 */}
@@ -59,8 +65,8 @@ export default SimpleSlider
 const SliderWrapper = styled.div`
 	width: 100%;
 	max-width: 100%;
-	height: 500px;
-	max-height: 500px;
+	height: 600px;
+	max-height: 600px;
 	position: relative;
 	overflow: hidden;
 `
@@ -71,6 +77,7 @@ const SlideImage = styled.img`
 	object-fit: cover;
 `
 
+
 const SlideVideo = styled.video`
 	width: 100%;
 	height: 100%;
@@ -80,7 +87,7 @@ const SlideVideo = styled.video`
 
 const Slide = styled.div`
 	width: 100%;
-	height: 500px;
+	height: 600px;
 	display: flex;
 	justify-content: center;
 	align-items: center;

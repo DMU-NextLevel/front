@@ -147,7 +147,7 @@
 									<Name>{user?.name || '익명'}</Name>
 									</Banner>
 									<Email>{user?.email}</Email>
-									<Department>{user?.socialProvider || '일반 사용자'}</Department>
+									<Department>{role=="ADMIN" ? '관리자' : '일반 사용자'}</Department>
 									<Settings>
 									<SettingItem onClick={handleProfileClick}>
 										<i className="fas fa-user"></i>

@@ -14,6 +14,7 @@ import ScrollToTop from './hooks/ScrollToTop';
 import NoticeBoard from './pages/NoticeBoard';
 import NoticeDetail from './pages/NoticeDetail';
 import NoticeWrite from './pages/NoticeWrite';
+import NoticeEdit from './pages/NoticeEdit';
 import ProfileHeader from './pages/ProfileHeader';
 
 function App() {
@@ -43,6 +44,7 @@ const AppWrapper = () => {
 				<Route path='/notice' element={<NoticeBoard />} />
 				<Route path='/notice/:id' element={<NoticeDetail />} />
 				<Route path='/notice/write' element={<NoticeWrite />} />
+				<Route path='/notice/edit/:id' element={<NoticeEdit />} />
 				<Route path='/profile' element={<ProfileHeader />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}

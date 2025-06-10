@@ -1,35 +1,23 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Image as BaseImage } from '@tiptap/extension-image';
-import styled from 'styled-components';
+import Image from '@tiptap/extension-image';
 import Underline from '@tiptap/extension-underline';
 import Strike from '@tiptap/extension-strike';
 import Blockquote from '@tiptap/extension-blockquote';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
-import { useUserRole } from '../hooks/useUserRole';
+import styled from 'styled-components';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../AxiosInstance';
 
-// ✅ CustomImage 확장 (data-filename 유지)
-const CustomImage = BaseImage.extend({
-  addAttributes() {
-    return {
-      ...this.parent?.(),
-      'data-filename': {
-        default: null,
-        parseHTML: element => element.getAttribute('data-filename'),
-        renderHTML: attributes => {
-          if (!attributes['data-filename']) return {};
-          return {
-            'data-filename': attributes['data-filename'],
-          };
-        },
-      },
-    };
-  },
-});
+type NoticeArticle = {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  imgs?: string[];
+};
 
-// 스타일 정의
 const Container = styled.div`
   margin: 0 auto;
   margin: 40px 15%;
@@ -56,11 +44,17 @@ const Label = styled.label`
 
 const Input = styled.input`
   width: 100%;
+  box-sizing: border-box;
   padding: 12px 14px;
   font-size: 15px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
+
+  &:focus {
+    outline: none;
+    border-color: #d1d5db;
+  }
 `;
 
 const Toolbar = styled.div`
@@ -72,6 +66,8 @@ const Toolbar = styled.div`
   border: 1px solid #e5e7eb;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 `;
 
 const Button = styled.button<{ active?: boolean }>`
@@ -87,15 +83,12 @@ const Button = styled.button<{ active?: boolean }>`
   &:hover {
     background: ${({ active }) => (active ? '#1d4ed8' : '#f3f4f6')};
   }
-
-  &:active {
-    transform: scale(0.98);
-  }
 `;
 
 const EditorBox = styled.div`
   border: 1px solid #e5e7eb;
-  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   background: #fff;
@@ -107,7 +100,6 @@ const EditorBox = styled.div`
 const StyledEditorContent = styled(EditorContent)`
   width: 100%;
   height: 100%;
-
   .ProseMirror {
     min-height: 300px;
     outline: none;
@@ -115,7 +107,6 @@ const StyledEditorContent = styled(EditorContent)`
     line-height: 1.6;
     font-size: 16px;
   }
-
   img {
     max-width: 100%;
     border-radius: 6px;
@@ -144,31 +135,51 @@ const SubmitButton = styled.button`
   }
 `;
 
-const NoticeWrite: React.FC = () => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+function generateEditorContentWithImages(article?: NoticeArticle): string {
+  if (!article) return '<p></p>';
+  const content = article.content || '<p></p>';
+  const imagesHtml = (article.imgs || [])
+    .map((src) => `<img src="${src}" />`)
+    .join('');
+  return `${content}${imagesHtml}`;
+}
 
-  // ✅ 파일 + 이름 같이 저장
-  const [uploadedImages, setUploadedImages] = useState<{ file: File; name: string }[]>([]);
-  const { role, loading } = useUserRole();
+const NoticeEdit: React.FC = () => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const article = location.state?.article as NoticeArticle | undefined;
+
+  const [title, setTitle] = useState(article?.title || '');
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
 
   const editor = useEditor({
     extensions: [
       StarterKit,
-      CustomImage.configure({ inline: false, allowBase64: true }),
+      Image.configure({ inline: false, allowBase64: true }),
       Underline,
       Strike,
       Blockquote,
       HorizontalRule,
     ],
-    content: '<p></p>',
+    content: generateEditorContentWithImages(article),
   });
+
+  useEffect(() => {
+    if (!article) {
+      alert('게시글 정보를 불러오지 못했습니다.');
+      navigate('/notice');
+    }
+  }, [article, navigate]);
 
   const insertImage = (file: File) => {
     const fileName = file.name;
     const reader = new FileReader();
     reader.onload = () => {
-      editor?.commands.insertContent(`<img src="${reader.result}" data-filename="${fileName}" />`);
-      setUploadedImages((prev) => [...prev, { file, name: fileName }]);
+      editor?.commands.insertContent(`<img src="${api.defaults.baseURL}img/${reader.result}" data-filename="${fileName}" />`);
+      setUploadedImages((prev) => [...prev, file]);
     };
     reader.readAsDataURL(file);
   };
@@ -183,68 +194,59 @@ const NoticeWrite: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const title = (document.getElementById('title') as HTMLInputElement)?.value;
-    const rawContent = editor?.getHTML();
+    if (!editor) return;
 
-    if (!title || !rawContent) {
-      alert('제목과 내용을 모두 입력해주세요.');
-      return;
-    }
-
-    if (role !== 'ADMIN' && !loading) {
-      alert('관리자만 공지사항을 작성할 수 있습니다.');
-      return;
-    }
-
+    const rawContent = editor.getHTML();
     const parser = new DOMParser();
     const doc = parser.parseFromString(rawContent, 'text/html');
     const imgTags = doc.querySelectorAll('img');
 
-    const usedFilenames: string[] = [];
-
     imgTags.forEach((img, index) => {
       const filename = img.getAttribute('data-filename') || `image-${index}.png`;
-      usedFilenames.push(filename);
       img.setAttribute('src', '');
       img.removeAttribute('data-filename');
     });
 
-    const finalContent = doc.body.innerHTML;
+    const processedContent = doc.body.innerHTML;
 
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('content', finalContent);
+    formData.append('content', processedContent);
 
-    uploadedImages.forEach(({ file, name }) => {
-      if (usedFilenames.includes(name)) {
-        formData.append('imgs', file);
-      }
+    uploadedImages.forEach((file) => {
+      formData.append('imgs', file);
     });
 
     try {
-      const res = await api.post('/admin/notice', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      console.log('전송 폼 데이터:', formData);
+      const res = await api.post(`/admin/notice/${id}`, formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (res.data.message === 'success') {
-        alert('공지사항이 성공적으로 등록되었습니다!');
-        window.location.href = '/notice';
+        alert('공지사항이 성공적으로 수정되었습니다.');
+        navigate(`/notice/${id}`, {
+          state: { ...article, title, content: processedContent },
+        });
       } else {
-        alert(`등록 실패: ${res.data.message}`);
+        alert(`수정 실패: ${res.data.message}`);
       }
     } catch (err) {
-      console.error('공지사항 등록 중 오류:', err);
-      alert('공지사항 등록 중 오류가 발생했습니다.');
+      console.error('수정 중 오류:', err);
+      alert('수정 중 오류가 발생했습니다.');
     }
   };
 
   return (
     <Container>
-      <PageTitle>공지사항 작성</PageTitle>
+      <PageTitle>공지사항 수정</PageTitle>
 
       <FormGroup>
         <Label htmlFor="title">제목</Label>
-        <Input id="title" placeholder="공지 제목을 입력하세요" />
+        <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
       </FormGroup>
 
       <FormGroup>
@@ -279,9 +281,9 @@ const NoticeWrite: React.FC = () => {
         </EditorBox>
       </FormGroup>
 
-      <SubmitButton onClick={handleSave}>공지사항 저장</SubmitButton>
+      <SubmitButton onClick={handleSave}>수정 완료</SubmitButton>
     </Container>
   );
 };
 
-export default NoticeWrite;
+export default NoticeEdit;

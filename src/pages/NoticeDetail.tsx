@@ -123,6 +123,20 @@ const NoticeDetail: React.FC = () => {
       alert('삭제 중 오류가 발생했습니다.');
     }
   };
+  // 🧩 이미지 삽입된 content HTML에 실제 이미지 경로 삽입
+  const getProcessedContent = () => {
+    const parser = new DOMParser(); 
+    const doc = parser.parseFromString(article.content, 'text/html');
+    const imgTags = doc.querySelectorAll('img');
+
+    imgTags.forEach((img, idx) => {
+      if (article.imgs && article.imgs[idx]) {
+        img.setAttribute('src', `${api.defaults.baseURL}img/${article.imgs[idx]}`);
+      }
+    });
+
+    return { __html: doc.body.innerHTML };
+  };
 
   return (
     <Container>
@@ -132,28 +146,29 @@ const NoticeDetail: React.FC = () => {
           {article.imgs && article.imgs.length > 0 && (
             <AuthorImage src={`https://placehold.co/80x80?text=WU`} alt="작성자 이미지" />
           )}
-          <span>관리자</span>
+          <span>위드유</span>
           <span>{formatDate(article.createdAt)}</span>
         </Meta>
 
         {!roleLoading && role === 'ADMIN' && (
           <div style={{ display: 'flex', gap: '8px' }}>
-            <ArticleOptionItem onClick={() => alert('수정 기능 연결 예정')}>수정</ArticleOptionItem>
+            <ArticleOptionItem onClick={() => navigate(`/notice/edit/${article.id}`, {
+              state: {
+                article,
+              },
+            })}>수정</ArticleOptionItem>
             <ArticleOptionItem onClick={() => handleDelete()}>삭제</ArticleOptionItem>
           </div>
         )}
       </ArticleOption>
 
 
-      <div
-  dangerouslySetInnerHTML={{
-    __html: article.content.replace(/<img src="(.*?)"/g, `<img src="http://localhost:8080/img/$1"`),
-  }}
-/>
+      <div style={{ margin: '40px 0' }} dangerouslySetInnerHTML={getProcessedContent()} />
       <hr/>
-      <Content>{article.content}</Content>
+      { // 원본 content 보여주기
+      /* <Content>{article.content}</Content> */}
 
-      <Divider />
+  
 
       <Button onClick={() => navigate('/notice')}>목록으로 돌아가기</Button>
     </Container>
