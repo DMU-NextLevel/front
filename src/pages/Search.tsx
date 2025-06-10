@@ -45,6 +45,7 @@ const Search: React.FC = () => {
 
   const [order, setOrder] = useState('RECOMMEND');
   const [page, setPage] = useState('0');
+  const baseUrl = process.env.REACT_APP_API_BASE_URL
   //const [tag, setTag] = useState('');
   const orderIndex = orderOptions.findIndex(opt => opt.value === order);
 
@@ -240,8 +241,6 @@ const Search: React.FC = () => {
                       onClick={() => handleLikeToggle(item.id, item.isRecommend)}
                     />
                   </CardTopWrapper>
-                  </a>
-                  {/* id:{item.id} */}
                   </a>
                   {/* id:{item.id} */}
                   <CardContent>

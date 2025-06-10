@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import bannerImage from '../assets/images/banner.png';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../AxiosInstance';
-import { api } from '../AxiosInstance';
 import { useAuth } from '../hooks/AuthContext';
 
 const Login = () => {

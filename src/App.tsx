@@ -20,6 +20,11 @@ import NoticeDetail from './pages/NoticeDetail';
 import NoticeWrite from './pages/NoticeWrite';
 import NoticeEdit from './pages/NoticeEdit';
 import ProfileHeader from './pages/ProfileHeader';
+import Creater from './pages/Creater';
+import {PopupPaymentPage} from './components/UI/TossPayments';
+import {SuccessPage} from './components/UI/TossPayments';
+import {FailPage} from './components/UI/TossPayments';
+
 
 function App() {
 	return (

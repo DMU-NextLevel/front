@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer';
@@ -16,18 +15,6 @@ const RecommendedProject = () => {
   );
 
   const navigate = useNavigate()
-
-  const [projects, setProjects] = useState<any[]>([]);
-      useEffect(() => {
-        const loadProjects = async () => {
-          const data = await fetchProjectsFromServer({ order: "COMPLETION", pageCount: 6 });
-          console.log("📦 서버에서 받아온 프로젝트:", data);
-          if (Array.isArray(data)) {
-            setProjects(data);
-          }
-        };
-        loadProjects();
-      }, []);
   const [projects, setProjects] = useState<any[]>([]);
       useEffect(() => {
         const loadProjects = async () => {
