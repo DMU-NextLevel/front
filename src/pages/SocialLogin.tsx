@@ -15,6 +15,7 @@ const SocialLogin = ({ loginType }: Props) => {
 
     useEffect(() => {
 			if (!code || !loginType) return
+            console.log('소셜 로그인 시도중')
 
 			// 테스트 환경에서 단 한 번만 호출되도록
 			if (process.env.NODE_ENV === 'development' && !calledRef.current) {

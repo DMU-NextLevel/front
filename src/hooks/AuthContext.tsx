@@ -63,21 +63,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		api
 			.get('/public/login/token')
 			.then((res) => {
-        console.log(res.data.data)
+        console.log('토큰 조회' + res.data.data)
 				if (res.data.data !== 'no login') {
 					setIsLoggedIn(true)
+          console.log('토큰이 존재하므로 유저 정보 조회시작')
           api.get('/social/user', {withCredentials: true}).then(
             (res) => {
               if(res.data.message === 'success') {
+                console.log('유저 정보 조회 성공')
                 setUser(res.data.data)
               }
             })
 				} else {
+          console.log('토큰 존재 안함')
 					setUser(null)
 					setIsLoggedIn(false)
 				}
 			})
 			.catch(() => {
+        console.log('토큰 조회 에러 발생')
 				setUser(null)
 				setIsLoggedIn(false)
 			})
@@ -85,6 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     refreshAuth()
+    console.log('토큰을 조회합니다....')
   }, [])
 
 	const login = (status: string, userData?: User) => {
