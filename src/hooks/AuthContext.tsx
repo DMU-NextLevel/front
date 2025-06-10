@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 	const refreshAuth = () => {
 		// 로그인 여부와 무관하게 항상 유저 정보 요청
 		api
-			.get('/social/user')
+			.get('/social/user', { withCredentials: true })
 			.then((res) => {
 				if (res.data.message === 'success') {
 					setUser(res.data.data)
