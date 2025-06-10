@@ -64,12 +64,6 @@ const AppWrapper = () => {
 				<Route path='/notice/write' element={<NoticeWrite />} />
 				<Route path='/notice/edit/:id' element={<NoticeEdit />} />
 				<Route path='/profile' element={<ProfileHeader />} />
-				<Route path='/project/create' element={<ProjectCreatePage />} />
-				<Route path='/projectinfo' element={<ProjectInfoPage />} />
-				<Route path='/project/introduction' element={<ProjectIntroductionPage />} />
-				<Route path='/project/media' element={<ProjectMediaPage />} />
-
-
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
