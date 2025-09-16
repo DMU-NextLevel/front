@@ -16,7 +16,7 @@ const NoticeDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>()
 	const location = useLocation()
 	const navigate = useNavigate()
-	
+
 	const [prevNotice, setPrevNotice] = useState<NoticeArticle | null>(null)
 	const [nextNotice, setNextNotice] = useState<NoticeArticle | null>(null)
 
@@ -31,11 +31,11 @@ const NoticeDetail: React.FC = () => {
 	useEffect(() => {
 		const fetchAdjacentNotices = async () => {
 			if (!id) return
-			
+
 			try {
 				const response = await api.get('/public/notice')
 				const notices = response.data.data as NoticeArticle[]
-				
+
 				const currentIndex = notices.findIndex(notice => notice.id === parseInt(id))
 				if (currentIndex !== -1) {
 					// 다음글 (더 최신글)
@@ -105,10 +105,10 @@ const NoticeDetail: React.FC = () => {
 						</h1>
 						<div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500'>
 							<div className='flex items-center gap-2'>
-								<img 
-									src={`https://placehold.co/32x32?text=WU`} 
-									alt='작성자 이미지' 
-									className='w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200' 
+								<img
+									src={`https://placehold.co/32x32?text=WU`}
+									alt='작성자 이미지'
+									className='w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200'
 								/>
 								<span className='font-medium'>위드유</span>
 							</div>
@@ -148,12 +148,12 @@ const NoticeDetail: React.FC = () => {
 
 			{/* Content Section - Responsive */}
 			<div className='bg-white py-6 sm:py-8'>
-				<div 
+				<div
 					className='prose prose-sm sm:prose-base lg:prose-lg max-w-none text-gray-800 leading-relaxed
 					[&_img]:w-full [&_img]:rounded-lg [&_img]:my-4 [&_img]:border [&_img]:border-gray-200
 					[&_p]:mb-4 [&_h1]:text-xl [&_h1]:sm:text-2xl [&_h2]:text-lg [&_h2]:sm:text-xl
 					[&_h3]:text-base [&_h3]:sm:text-lg [&_ul]:ml-4 [&_ol]:ml-4'
-					dangerouslySetInnerHTML={getProcessedContent()} 
+					dangerouslySetInnerHTML={getProcessedContent()}
 				/>
 			</div>
 
@@ -162,7 +162,7 @@ const NoticeDetail: React.FC = () => {
 				<div className='space-y-0 border border-gray-200 rounded-lg overflow-hidden mb-6 sm:mb-8'>
 					{/* 다음글 */}
 					{nextNotice ? (
-						<div 
+						<div
 							onClick={() => navigate(`/notice/${nextNotice.id}`, { state: nextNotice })}
 							className='flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200 border-b border-gray-200 gap-2 sm:gap-0'>
 							<div className='flex items-start sm:items-center gap-3 min-w-0 flex-1'>
@@ -196,7 +196,7 @@ const NoticeDetail: React.FC = () => {
 
 					{/* 이전글 */}
 					{prevNotice ? (
-						<div 
+						<div
 							onClick={() => navigate(`/notice/${prevNotice.id}`, { state: prevNotice })}
 							className='flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200 gap-2 sm:gap-0'>
 							<div className='flex items-start sm:items-center gap-3 min-w-0 flex-1'>
