@@ -64,8 +64,8 @@ export default SimpleSlider
 
 // styled-components
 const SliderWrapper = styled.div`
-	width: 100%;
-	max-width: 100%;
+	padding: 0;
+	
 	height: 630px;
 	max-height: 630px;
 	position: relative;
