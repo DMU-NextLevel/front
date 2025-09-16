@@ -131,7 +131,7 @@ const NoticeDetail: React.FC = () => {
 
     imgTags.forEach((img, idx) => {
       if (article.imgs && article.imgs[idx]) {
-        img.setAttribute('src', `${api.defaults.baseURL}img/${article.imgs[idx]}`);
+        img.setAttribute('src', `${api.defaults.baseURL}/img/${article.imgs[idx]}`);
       }
     });
 
