@@ -1,65 +1,23 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-
-
-const BannerWrapper = styled.div`
-  margin: 40px auto 0 auto;
-  text-align: left;
-  background-image: url('/123.png');  // <-- public 폴더 기준 경로
-  background-size: cover;
-  background-position: center;
-`;
-
-const BannerContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;  
-`;
-
-const Title = styled.h2`
-  font-size: 28px;
-  font-weight: bold;
-  color: white;
-  background: linear-gradient(to right, #9b5de5, #5a58f1);
-  padding: 12px 24px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-`;
-
-
-const TitleButton = styled.h2`
-  font-size: 28px;
-  font-weight: bold;
-  color: white;
-  background: linear-gradient(to right, #9b5de5, #5a58f1);
-  padding: 12px 24px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  cursor: pointer;
-  user-select: none;
-  transition: opacity 0.3s;
-
-  &:hover {
-    opacity: 0.85;
-  }
-`;
+import React, { useState } from 'react'
 
 const FollowProjectBanner = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+	const handleLogin = () => {
+		setIsLoggedIn(true)
+	}
 
-  return (
-    <BannerWrapper>
-      <BannerContent>
-        <TitleButton onClick={handleLogin}>
-          {isLoggedIn ? '팔로워 / 위더 프로젝트 보기' : 'WithU 로그인 후 보기'}
-        </TitleButton>
-      </BannerContent>
-    </BannerWrapper>
-  );
-};
+	return (
+		<div className='mt-10 mx-auto text-left bg-gradient-to-r from-purple-400 to-blue-400 bg-cover bg-center'>
+			<div className='flex flex-col items-center'>
+				<h2
+					className='text-3xl font-bold text-white bg-gradient-to-r from-purple-500 to-blue-500 py-3 px-6 rounded-xl mb-4 cursor-pointer select-none transition-opacity duration-300 hover:opacity-85'
+					onClick={handleLogin}>
+					{isLoggedIn ? '팔로워 / 위더 프로젝트 보기' : 'WithU 로그인 후 보기'}
+				</h2>
+			</div>
+		</div>
+	)
+}
 
-export default FollowProjectBanner;
+export default FollowProjectBanner

@@ -1,257 +1,68 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled, { keyframes } from "styled-components";
-import { useNavigate } from 'react-router-dom';
-import noImage from '../../../assets/images/noImage.jpg';
-import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer';
-
-
+import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import noImage from '../../../assets/images/noImage.jpg'
+import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
 
 const NewProject: React.FC = () => {
-  const baseUrl = process.env.REACT_APP_API_BASE_URL
-  const navigate = useNavigate()
-  const [projects, setProjects] = useState<any[]>([]);
-    useEffect(() => {
-      const loadProjects = async () => {
-        const data = await fetchProjectsFromServer({ order: "CREATED", desc: true, pageCount: 4 });
-        console.log("📦 서버에서 받아온 프로젝트:", data);
-        if (Array.isArray(data)) {
-          setProjects(data);
-        }
-      };
-      loadProjects();
-    }, []);
+	const baseUrl = process.env.REACT_APP_API_BASE_URL
+	const navigate = useNavigate()
+	const [projects, setProjects] = useState<any[]>([])
+	useEffect(() => {
+		const loadProjects = async () => {
+			const data = await fetchProjectsFromServer({ order: 'CREATED', desc: true, pageCount: 4 })
+			console.log('📦 서버에서 받아온 프로젝트:', data)
+			if (Array.isArray(data)) {
+				setProjects(data)
+			}
+		}
+		loadProjects()
+	}, [])
 
-  return (
-    <Container>
-        <Title>신규 프로젝트</Title>
-        <TextLine>
-          <Text>신규 프로젝트를 만나보세요!</Text>
-          <LinkToRecommand href="/search?order=USER">신규 프로젝트 더보기<i className="bi bi-arrow-right-circle"></i></LinkToRecommand>
-        </TextLine>
-        {projects.length == 0 && <p>프로젝트가 없습니다.</p>}
-        <CardList>
-        {projects.map((item, index) => {
-          const isLast = index === projects.length - 1;
-          return (
-            <Card key={item.id}>
-                <a href={`/project/${item.id}`}>
-                  <CardTopWrapper>
-                    <StyledImage
-                      src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
-                      alt={item.title}
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = noImage;
-                      }}
-                    />
-                  </CardTopWrapper>
-                  </a>
-                  {/* id:{item.id}|
-                  page:{item.pageCount} */}
-                  <CardContent>
-                    <InfoRow>{item.completionRate}% 달성</InfoRow>
-                    <a href={`/project/${item.id}`}>
-                    <TitleRow>{item.title}</TitleRow>
-                    </a>
-                    <CreaterRow>회사이름</CreaterRow>
-                    {/* <InfoRow>추천 수: {item.recommendCount}</InfoRow> */}
-                    <TagLow>
-                      <Tag>{item.tags[0]}</Tag>
-                      {item.tags[0] && <Tag>{item.tags[1]}</Tag>}
-                    </TagLow>
+	return (
+		<div className='my-10'>
+			<h2 className='text-2xl m-0 font-bold'>신규 프로젝트</h2>
+			<div className='flex justify-between items-center mb-2.5'>
+				<p className='text-sm text-gray-500 m-0 py-0'>신규 프로젝트를 만나보세요!</p>
+				<a href='/search?order=USER' className='text-gray-700 no-underline text-sm hover:text-purple-500'>
+					신규 프로젝트 더보기<i className='bi bi-arrow-right-circle ml-1'></i>
+				</a>
+			</div>
+			{projects.length == 0 && <p>프로젝트가 없습니다.</p>}
+			<div className='grid grid-cols-4 gap-5 mt-5'>
+				{projects.map((item, index) => {
+					const isLast = index === projects.length - 1
+					return (
+						<div key={item.id} className='bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100'>
+							<a href={`/project/${item.id}`}>
+								<div className='w-full h-[180px] overflow-hidden'>
+									<img
+										src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
+										alt={item.title}
+										onError={(e) => {
+											e.currentTarget.onerror = null
+											e.currentTarget.src = noImage
+										}}
+										className='w-full h-full object-cover transition-transform duration-300 hover:scale-105'
+									/>
+								</div>
+							</a>
+							<div className='p-4'>
+								<p className='text-purple-600 text-sm font-semibold mb-1'>{item.completionRate}% 달성</p>
+								<a href={`/project/${item.id}`} className='no-underline'>
+									<h3 className='text-gray-800 text-base font-medium mb-2 leading-tight'>{item.title}</h3>
+								</a>
+								<p className='text-gray-500 text-sm mb-3'>회사이름</p>
+								<div className='flex gap-2'>
+									{item.tags[0] && <span className='px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded'>{item.tags[0]}</span>}
+									{item.tags[1] && <span className='px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded'>{item.tags[1]}</span>}
+								</div>
+							</div>
+						</div>
+					)
+				})}
+			</div>
+		</div>
+	)
+}
 
-                  </CardContent>
-            </Card>
-          );
-        })}
-      </CardList>
-
-
-
-    </Container>
-  );
-};
-
-export default NewProject;
-
-
-const Container = styled.div`
-  margin: 40px 0;
-
-`;
-
-const Title = styled.h2`
-  font-size: 24px;
-  margin : 0;
-
-`;
-
-const TextLine = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const Text = styled.p`
-  font-size: 14px;
-  color: #888;
-  margin: 0;
-  padding: 0 0px;
-
-`;
-
-const LinkToRecommand = styled.a`
-  font-size: 14px;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0.6em 0.6em;
-  font-weight: bold;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.1s;
-  &:hover {
-    text-decoration: none;
-    cursor: pointer;
-    color: #A66CFF;
-    font-size: 14px;
-  }
-`;
-
-const CardList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 3열 */
-  gap: 20px;
-`;
-
-const StyledImage = styled.img`
-  width: 100%;
-  height: 150px;
-  border-radius: 10px;
-  object-fit: cover;
-`;
-
-const NoImage = styled.div`
-  color: #888;
-  font-size: 16px;
-`;
-
-const TextSection = styled.div`
-  margin-top: 12px;
-  padding: 0 4px;
-`;
-
-const Percent = styled.div`
-  color: #A66CFF;
-  font-weight: bold;
-  font-size: 16px;
-`;
-
-const ProjectTitle = styled.div`
-  font-weight: 500;
-  font-size: 14px;
-  margin-top: 4px;
-  min-height: 40px;
-`;
-
-const InfoRow = styled.div`
-  color: #A66CFF;
-  font-weight: bold;
-  font-size: 16px;
-`;
-
-const TitleRow = styled.div`
-  font-weight: 500;
-  font-size: 14px;
-  margin-top: 4px;
-  min-height: 40px;
-`;
-
-const CreaterRow = styled.div`
-  font-size: 12px;
-  color: #999;
-  margin: 4px 0 0 0;
-  cursor: pointer;
-  hover {
-    color: #A66CFF;
-    font-weight: bold;
-    transition: all 0.2s ease;
-  }
-`;
-
-const TagLow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-`;
-
-const Tag = styled.span`
-  background: #f2f2f2;
-  padding: 4px 6px;
-  font-size: 10px;
-  border-radius: 6px;
-  color: #555;
-  &:hover {
-    background: #A66CFF;
-    color: white;
-    font-weight: bold;
-    transition: all 0.2s ease;
-  }
-`;
-
-const Card = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border-radius: 10px;
-`;
-
-
-const CardTopWrapper = styled.div`
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const HeartIcon = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-`;
-
-const Tooltip = styled.div<{ percent: number }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-weight: bold;
-  font-size: 12px;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 5px;
-  z-index: 1;
-`;
-
-
-const CardContent = styled.div`
-  padding: 8px;
-  a{
-    text-decoration: none;
-    color: inherit;
-  }
-`;
-
-const Thumbnail = styled.img`
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 10px;
-`;
-
+export default NewProject

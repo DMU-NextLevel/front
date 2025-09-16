@@ -1,55 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import 'bootstrap-icons/font/bootstrap-icons.min.css';
-import Swal from 'sweetalert2';
-import { useCreateStore } from '../store/store';
-
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import 'bootstrap-icons/font/bootstrap-icons.min.css'
+import Swal from 'sweetalert2'
+import { useCreateStore } from '../store/store'
 
 interface ProjectFormData {
-  title: string;
-  category: number | null;
+	title: string
+	category: number | null
 }
 
 const categories = [
-  { value: 1, label: "테크/가전", icon: "bi-cpu" },
-  { value: 2, label: "라이프스타일", icon: "bi-house" },
-  { value: 3, label: "패션/잡화", icon: "bi-bag" },
-  { value: 4, label: "뷰티/헬스", icon: "bi-heart-pulse" },
-  { value: 5, label: "취미/DIY", icon: "bi-brush" },
-  { value: 6, label: "게임", icon: "bi-controller" },
-  { value: 7, label: "교육/키즈", icon: "bi-book" },
-  { value: 8, label: "반려동물", icon: "bi-star" },
-  { value: 9, label: "여행/레저", icon: "bi-airplane" },
-  { value: 10, label: "푸드/음료", icon: "bi-cup-straw" },
-];
+	{ value: 1, label: '테크/가전', icon: 'bi-cpu' },
+	{ value: 2, label: '라이프스타일', icon: 'bi-house' },
+	{ value: 3, label: '패션/잡화', icon: 'bi-bag' },
+	{ value: 4, label: '뷰티/헬스', icon: 'bi-heart-pulse' },
+	{ value: 5, label: '취미/DIY', icon: 'bi-brush' },
+	{ value: 6, label: '게임', icon: 'bi-controller' },
+	{ value: 7, label: '교육/키즈', icon: 'bi-book' },
+	{ value: 8, label: '반려동물', icon: 'bi-star' },
+	{ value: 9, label: '여행/레저', icon: 'bi-airplane' },
+	{ value: 10, label: '푸드/음료', icon: 'bi-cup-straw' },
+]
 
 const ProjectCreatePage: React.FC = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<ProjectFormData>({
-    title: "",
-    category: null
-  });
-  const {setTitle, setTag1} = useCreateStore()
+	const navigate = useNavigate()
+	const [isLoading, setIsLoading] = useState(false)
+	const [formData, setFormData] = useState<ProjectFormData>({
+		title: '',
+		category: null,
+	})
+	const { setTitle, setTag1 } = useCreateStore()
 
-  const isFormValid = formData.title.trim() !== '' && formData.category !== null;
+	const isFormValid = formData.title.trim() !== '' && formData.category !== null
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value } = e.target
+		setFormData((prev) => ({
+			...prev,
+			[name]: value,
+		}))
+	}
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("프로젝트 생성 데이터:", formData);
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
+		console.log('프로젝트 생성 데이터:', formData)
 
-    const { isConfirmed } = await Swal.fire({
-      title: '개인정보 수집 및 이용 동의',
-      html: `
+		const { isConfirmed } = await Swal.fire({
+			title: '개인정보 수집 및 이용 동의',
+			html: `
         <div style="text-align: left; padding: 0 10px;">
 
 
@@ -97,368 +95,121 @@ const ProjectCreatePage: React.FC = () => {
           </div>
         </div>
       `,
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonColor: '#a66bff',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: '동의하고 계속하기',
-      cancelButtonText: '취소',
-      reverseButtons: true
-    });
+			icon: 'info',
+			showCancelButton: true,
+			confirmButtonColor: '#a66bff',
+			cancelButtonColor: '#6c757d',
+			confirmButtonText: '동의하고 계속하기',
+			cancelButtonText: '취소',
+			reverseButtons: true,
+		})
 
-    if (!isConfirmed) {
-      return; // 사용자가 취소한 경우
-    }
+		if (!isConfirmed) {
+			return // 사용자가 취소한 경우
+		}
 
-    setIsLoading(true);
+		setIsLoading(true)
 
-    // ✅ 여기서 라벨 값 찾아서 함께 넘김
-    const selectedCategory = categories.find(cat => cat.value === formData.category);
-    const categoryLabel = selectedCategory?.label || formData.category;
+		// ✅ 여기서 라벨 값 찾아서 함께 넘김
+		const selectedCategory = categories.find((cat) => cat.value === formData.category)
+		const categoryLabel = selectedCategory?.label || formData.category
 
-    setTitle(formData.title)
-    setTag1(formData.category)
+		setTitle(formData.title)
+		setTag1(formData.category)
 
-    // 1초 대기 (로딩 효과를 보여주기 위함)
-    await new Promise(resolve => setTimeout(resolve, 1000));
+		// 1초 대기 (로딩 효과를 보여주기 위함)
+		await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    navigate('/project/info', {
-      state: {
-      ...formData,
-      categoryLabel: categoryLabel
-    }
-  });
-};
+		navigate('/project/info', {
+			state: {
+				...formData,
+				categoryLabel: categoryLabel,
+			},
+		})
+	}
 
+	const [userName, setUserName] = useState<string>('사용자')
 
-  const [userName, setUserName] = useState<string>('사용자');
+	useEffect(() => {
+		const savedName = localStorage.getItem('userName')
+		if (savedName) {
+			setUserName(savedName)
+		}
+	}, [])
 
-  useEffect(() => {
-    const savedName = localStorage.getItem('userName');
-    if (savedName) {
-      setUserName(savedName);
-    }
-  }, []);
+	return (
+		<div className='max-w-4xl mx-auto mt-12 p-16 bg-white rounded-xl shadow-lg'>
+			{isLoading && (
+				<div className='fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-70 flex flex-col justify-center items-center z-[1000]'>
+					<div className='w-12 h-12 border-4 border-gray-200 border-t-purple-500 rounded-full animate-spin'></div>
+					<div className='mt-5 text-white text-xl font-medium'>프로젝트 생성 중...</div>
+				</div>
+			)}
+			<div className='text-xl font-medium text-gray-800 mb-7 py-5 px-5 bg-gray-50 rounded-lg text-center'>{userName}님, 환영합니다!</div>
+			<form onSubmit={handleSubmit} className='flex flex-col items-center mx-auto w-full gap-8'>
+				<h1 className='text-3xl font-semibold m-0 mb-8 pb-5 border-b-2 border-gray-100'>프로젝트 생성</h1>
 
-  return (
-    <Container>
-      {isLoading && (
-        <LoadingOverlay>
-          <LoadingSpinner />
-          <LoadingText>프로젝트 생성 중...</LoadingText>
-        </LoadingOverlay>
-      )}
-      <WelcomeMessage>{userName}님, 환영합니다!</WelcomeMessage>
-      <Form onSubmit={handleSubmit}>
-        <Title>프로젝트 생성</Title>
+				<div className='mb-7 text-left'>
+					<label className='flex items-center text-lg font-medium text-gray-800 mb-3'>
+						프로젝트 제목<span className='text-red-500 ml-1 text-base'>*</span>
+					</label>
+					<div className='relative w-[600px] mx-auto'>
+						<input
+							type='text'
+							name='title'
+							value={formData.title}
+							onChange={handleChange}
+							placeholder='프로젝트 제목을 입력해주세요!'
+							maxLength={40}
+							required
+							className='w-full h-[70px] px-5 pr-20 border-2 border-gray-300 rounded-lg text-lg transition-colors duration-200 bg-white box-border focus:outline-none focus:border-purple-500 placeholder:text-gray-500'
+						/>
+						<span className='absolute right-4 top-1/2 transform -translate-y-1/2 text-sm text-gray-600 bg-white bg-opacity-90 px-2 py-0.5 rounded-xl'>
+							{formData.title.length}/40
+						</span>
+					</div>
+				</div>
 
-        <FormGroup>
-          <Label>
-            프로젝트 제목<RequiredAsterisk>*</RequiredAsterisk>
-          </Label>
-          <InputWrapper>
-            <Input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="프로젝트 제목을 입력해주세요!"
-              maxLength={40}
-              required
-            />
-            <CharCount>
-              {formData.title.length}/40
-            </CharCount>
-          </InputWrapper>
-        </FormGroup>
+				<div className='mb-7 text-left'>
+					<label className='flex items-center text-lg font-medium text-gray-800 mb-3'>
+						카테고리<span className='text-red-500 ml-1 text-base'>*</span>
+					</label>
+					<div className='relative w-[600px] mx-auto'>
+						<div className='grid grid-cols-2 gap-3 w-full'>
+							{categories.map((cat) => (
+								<button
+									key={cat.value}
+									type='button'
+									onClick={() => setFormData((prev) => ({ ...prev, category: cat.value }))}
+									className={`flex items-center py-3 px-4 border-2 rounded-lg text-base cursor-pointer gap-2.5 w-full transition-all duration-200 ${
+										formData.category === cat.value ? 'border-purple-500 bg-purple-50' : 'border-gray-300 bg-white hover:bg-purple-50'
+									}`}>
+									<i className={`bi ${cat.icon} text-lg`}></i>
+									<span>{cat.label}</span>
+								</button>
+							))}
+						</div>
+					</div>
 
-        <FormGroup>
-          <Label>
-            카테고리<RequiredAsterisk>*</RequiredAsterisk>
-          </Label>
-          <InputWrapper>
-            <CategoryList>
-             {categories.map(cat => (
-                <CategoryListItem
-                 key={cat.value}
-                 type="button"
-                onClick={() => setFormData(prev => ({ ...prev, category: cat.value }))}
-                 $selected={formData.category === cat.value}
-      >
-        <i className={`bi ${cat.icon}`}></i>
-        <span>{cat.label}</span>
-      </CategoryListItem>
-    ))}
-  </CategoryList>
-</InputWrapper>
+					<div className='flex items-center mt-2 py-2 px-3 bg-gray-50 rounded-md text-sm text-gray-600 leading-relaxed'>
+						<span className='flex items-center justify-center w-4 h-4 mr-2 bg-purple-500 text-white rounded-full text-xs font-bold leading-none'>i</span>
+						<span>프로젝트 성격에 맞는 카테고리를 선택해주세요.</span>
+					</div>
+				</div>
 
+				<button
+					type='submit'
+					disabled={!isFormValid}
+					className={`w-full h-16 text-xl font-semibold border-none rounded-lg cursor-pointer mt-5 transition-all duration-200 ease ${
+						isFormValid
+							? 'bg-purple-500 text-white hover:bg-purple-600 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/30 focus:outline-none active:bg-purple-600 active:translate-y-0'
+							: 'bg-gray-200 text-gray-500'
+					}`}>
+					제출하기
+				</button>
+			</form>
+		</div>
+	)
+}
 
-
-
-          <CategoryHelpText>
-            <InfoIcon>i</InfoIcon>
-            <span>프로젝트 성격에 맞는 카테고리를 선택해주세요.</span>
-          </CategoryHelpText>
-        </FormGroup>
-
-        <SubmitButton
-          type="submit"
-          disabled={!isFormValid}
-          $isActive={isFormValid}
-        >
-          제출하기
-        </SubmitButton>
-      </Form>
-    </Container>
-  );
-};
-
-export default ProjectCreatePage;
-
-const CategoryHelpText = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 8px;
-  padding: 8px 12px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  font-size: 14px;
-  color: #666;
-  line-height: 1.4;
-`;
-
-const InfoIcon = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  margin-right: 8px;
-  background-color: #a66bff;
-  color: white;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 1;
-`;
-
-
-
-
-
-const Container = styled.div`
-  max-width: 800px;
-  margin: 3rem auto;
-  padding: 3rem 4rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
-  width: 100%;
-  gap: 2rem;
-`;
-
-const WelcomeMessage = styled.div`
-  font-size: 22px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 30px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  text-align: center;
-`;
-
-const Title = styled.h1`
-  font-size: 28px;
-  font-weight: 600;
-  margin: 0 0 32px 0;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #f0f0f0;
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 30px;
-  text-align: left;
-`;
-
-const RequiredAsterisk = styled.span`
-  color: #ff4d4f;
-  margin-left: 4px;
-  font-size: 16px;
-`;
-
-const Label = styled.label`
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 12px;
-`;
-
-const CharCount = styled.span`
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: #666;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2px 8px;
-  border-radius: 12px;
-`;
-
-const CategoryList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  width: 100%;
-`;
-
-const CategoryListItem = styled.button<{ $selected?: boolean }>`
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border: 2px solid ${({ $selected }) => ($selected ? '#a66bff' : '#ddd')};
-  border-radius: 8px;
-  background: ${({ $selected }) => ($selected ? '#f3e9ff' : '#fff')};
-  color: #333;
-  font-size: 16px;
-  cursor: pointer;
-  gap: 10px;
-  width: 100%;
-  transition: 0.2s;
-
-  i {
-    font-size: 18px;
-  }
-
-  &:hover {
-    background: #f3e9ff;
-  }
-`;
-
-
-const InputWrapper = styled.div`
-  position: relative;
-  width: 600px;
-  margin: 0 auto;
-`;
-
-const inputStyles = `
-  width: 100%;
-  height: 70px;
-  padding: 0 20px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  font-size: 18px;
-  transition: border-color 0.2s;
-  background-color: #fff;
-  box-sizing: border-box;`;
-
-const Input = styled.input`
-  ${inputStyles}
-  padding-right: 80px; // 글자 수 표시를 위한 공간 확보
-
-  &:focus {
-    outline: none;
-    border-color: #a66bff;
-  }
-
-  &::placeholder {
-    color: #999;
-  }
-`;
-
-const Select = styled.select`
-  ${inputStyles}
-  appearance: none;
-  appearance: none;
-  background: #fff url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 20px center/16px;
-  cursor: pointer;
-  appearance: none;
-  background: #fff url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 12px center/16px;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-    border-color: #a66bff;
-  }
-`;
-
-// 로딩 애니메이션
-const spin = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-const LoadingOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const LoadingSpinner = styled.div`
-  width: 50px;
-  height: 50px;
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #a66bff;
-  border-radius: 50%;
-  animation: ${spin} 1s linear infinite;
-`;
-
-const LoadingText = styled.div`
-  margin-top: 20px;
-  color: white;
-  font-size: 1.2rem;
-  font-weight: 500;
-`;
-
-
-
-const SubmitButton = styled.button<{ $isActive: boolean }>`
-  width: 100%;
-  height: 64px;
-  background-color: ${props => props.$isActive ? '#a66bff' : '#f0f0f0'};
-  color: ${props => props.$isActive ? 'white' : '#999'};
-  font-size: 20px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 20px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    ${props => props.$isActive && `
-      background-color: #a66bff;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(166, 107, 255, 0.3);
-    `}
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  &:active {
-    background-color: ${props => props.$isActive ? '#8c4dff' : '#f0f0f0'};
-    transform: ${props => props.$isActive ? 'translateY(0)' : 'none'};
-    outline: none;
-  }
-`;
+export default ProjectCreatePage

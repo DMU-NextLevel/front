@@ -1,108 +1,40 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from 'react'
 
 interface Props {
-  point: number;
-  onClose: () => void;
-  openPaymentWindow: (amount: number) => void;
+	point: number
+	onClose: () => void
+	openPaymentWindow: (amount: number) => void
 }
 
 const PointOverlay: React.FC<Props> = ({ point, onClose, openPaymentWindow }) => {
-  return (
-    <Overlay>
-      <OverlayHeader>
-        <h2>포인트 충전</h2>
-        <CloseButton onClick={onClose}>×</CloseButton>
-      </OverlayHeader>
-      <OverlayContent>
-        <PointAmount>
-          현재 보유 포인트: <strong>{point.toLocaleString()}P</strong>
-        </PointAmount>
-        <ChargeBox>
-          <p>충전하실 금액을 선택하세요</p>
-          <ChargeOptions>
-            {[1000, 5000, 10000, 20000].map((amount) => (
-              <ChargeBtn key={amount} onClick={() => openPaymentWindow(amount)}>
-                {amount.toLocaleString()}P
-              </ChargeBtn>
-            ))}
-          </ChargeOptions>
-        </ChargeBox>
-      </OverlayContent>
-    </Overlay>
-  );
-};
+	return (
+		<div className='fixed top-1/2 left-1/2 w-[500px] transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-2xl shadow-2xl z-[1000]'>
+			<div className='flex justify-between items-center mb-5'>
+				<h2 className='text-xl font-bold'>포인트 충전</h2>
+				<button className='text-2xl border-none bg-transparent cursor-pointer' onClick={onClose}>
+					×
+				</button>
+			</div>
+			<div className='mt-5'>
+				<div className='text-lg font-bold mb-8'>
+					현재 보유 포인트: <strong>{point.toLocaleString()}P</strong>
+				</div>
+				<div className='bg-gray-50 rounded-xl p-5 text-center'>
+					<p>충전하실 금액을 선택하세요</p>
+					<div className='mt-4 flex justify-center gap-3'>
+						{[1000, 5000, 10000, 20000].map((amount) => (
+							<button
+								key={amount}
+								className='py-2.5 px-4 rounded-lg bg-purple-500 text-white border-none cursor-pointer font-bold text-sm hover:bg-purple-600'
+								onClick={() => openPaymentWindow(amount)}>
+								{amount.toLocaleString()}P
+							</button>
+						))}
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
 
-export default PointOverlay;
-
-/* ---------------------- Styled Components ---------------------- */
-const Overlay = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 500px;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-  z-index: 1000;
-`;
-
-const OverlayHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-
-  h2 {
-    font-size: 22px;
-    font-weight: bold;
-  }
-`;
-
-const CloseButton = styled.button`
-  font-size: 24px;
-  border: none;
-  background: none;
-  cursor: pointer;
-`;
-
-const OverlayContent = styled.div`
-  margin-top: 20px;
-`;
-
-const PointAmount = styled.div`
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 30px;
-`;
-
-const ChargeBox = styled.div`
-  background: #f9f9f9;
-  border-radius: 10px;
-  padding: 20px;
-  text-align: center;
-`;
-
-const ChargeOptions = styled.div`
-  margin-top: 15px;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-`;
-
-const ChargeBtn = styled.button`
-  padding: 10px 16px;
-  border-radius: 8px;
-  background: #A66CFF;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-
-  &:hover {
-    background: #8e4ae0;
-  }
-`;
+export default PointOverlay

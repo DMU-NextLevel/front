@@ -1,5 +1,4 @@
 import React, { JSX, useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
 import { FundingCommu, FundingNews, FundingStory } from './FundingStory'
 
 interface IProjectData {
@@ -12,7 +11,7 @@ interface props {
 	projectData: IProjectData | null
 }
 
-const FundingContent = ( {projectData}:props ): JSX.Element => {
+const FundingContent = ({ projectData }: props): JSX.Element => {
 	const [activeSection, setActiveSection] = useState<'story' | 'news' | 'commu'>('story')
 
 	const storyRef = useRef<HTMLDivElement>(null)
@@ -86,84 +85,49 @@ const FundingContent = ( {projectData}:props ): JSX.Element => {
 	}
 
 	return (
-		<FundingContentWrapper>
-			<TabBox>
-				<TabButton isActive={activeSection === 'story'} onClick={() => handleTabClick('story')}>
+		<div className='flex flex-col w-4/5 border-4 border-gray-100 rounded-2xl'>
+			<div className='flex flex-row w-full'>
+				<button
+					className={`${activeSection === 'story' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center bg-white ${
+						activeSection === 'story' ? 'text-black' : 'text-gray-300'
+					} text-lg font-bold cursor-pointer border-none rounded-3xl relative transition-all duration-300 ease-in-out after:content-[''] after:absolute after:left-0 after:bottom-0 ${
+						activeSection === 'story' ? 'after:w-full' : 'after:w-0'
+					} after:h-1 after:bg-purple-500 after:transition-all after:duration-300`}
+					onClick={() => handleTabClick('story')}>
 					스토리
-				</TabButton>
-				<TabButton isActive={activeSection === 'news'} onClick={() => handleTabClick('news')}>
+				</button>
+				<button
+					className={`${activeSection === 'news' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center bg-white ${
+						activeSection === 'news' ? 'text-black' : 'text-gray-300'
+					} text-lg font-bold cursor-pointer border-none rounded-3xl relative transition-all duration-300 ease-in-out after:content-[''] after:absolute after:left-0 after:bottom-0 ${
+						activeSection === 'news' ? 'after:w-full' : 'after:w-0'
+					} after:h-1 after:bg-purple-500 after:transition-all after:duration-300`}
+					onClick={() => handleTabClick('news')}>
 					새 소식
-				</TabButton>
-				<TabButton isActive={activeSection === 'commu'} onClick={() => handleTabClick('commu')}>
+				</button>
+				<button
+					className={`${activeSection === 'commu' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center bg-white ${
+						activeSection === 'commu' ? 'text-black' : 'text-gray-300'
+					} text-lg font-bold cursor-pointer border-none rounded-3xl relative transition-all duration-300 ease-in-out after:content-[''] after:absolute after:left-0 after:bottom-0 ${
+						activeSection === 'commu' ? 'after:w-full' : 'after:w-0'
+					} after:h-1 after:bg-purple-500 after:transition-all after:duration-300`}
+					onClick={() => handleTabClick('commu')}>
 					커뮤니티
-				</TabButton>
-			</TabBox>
-			<MainContent ref={containerRef}>
-				<Section ref={storyRef}>
+				</button>
+			</div>
+			<div className='w-full h-[94vh] overflow-y-auto scroll-smooth' ref={containerRef}>
+				<div className='w-full py-12 min-h-[600px] flex justify-center' ref={storyRef}>
 					<FundingStory story={projectData?.story} />
-				</Section>
-				<Section ref={newsRef}><FundingNews notice={projectData?.notice}/></Section>
-				<Section ref={commuRef}><FundingCommu community={projectData?.community}/></Section>
-			</MainContent>
-		</FundingContentWrapper>
+				</div>
+				<div className='w-full py-12 min-h-[600px] flex justify-center' ref={newsRef}>
+					<FundingNews notice={projectData?.notice} />
+				</div>
+				<div className='w-full py-12 min-h-[600px] flex justify-center' ref={commuRef}>
+					<FundingCommu community={projectData?.community} />
+				</div>
+			</div>
+		</div>
 	)
 }
 
 export default FundingContent
-
-const FundingContentWrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	width: 80%;
-	border: 3px solid #f3f3f3;
-	border-radius: 15px;
-`
-
-const MainContent = styled.div`
-	width: 100%;
-	height: 94vh;
-	overflow-y: auto;
-	scroll-behavior: smooth;
-`
-
-const Section = styled.div`
-	width: 100%;
-	padding: 50px 0;
-	min-height: 600px;
-	display: flex;
-	justify-content: center;
-`
-
-const TabBox = styled.div`
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-`
-
-const TabButton = styled.button<{ isActive: boolean }>`
-	flex: ${({ isActive }) => (isActive ? 2.0 : 1)};
-	height: 60px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: white;
-	color: ${({isActive}) => (isActive ? '' : '#cdcdcd' )};
-	font-size: 18px;
-	font-weight: bold;
-	cursor: pointer;
-	border: none;
-	border-radius: 20px;
-	position: relative;
-	transition: all 0.3s ease;
-
-	&::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		bottom: 0;
-		width: ${({ isActive }) => (isActive ? '100%' : '0')};
-		height: 4px;
-		background-color: #a66cff;
-		transition: width 0.3s ease;
-	}
-`
