@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import MainBanner from "../components/UI/MainPage/MainBanner";
 import RecommendProject from "../components/UI/MainPage/RecommendProject";
 import PromoBanner from "../components/UI/MainPage/PromoBanner";
@@ -28,70 +27,25 @@ const MainPage: React.FC = () => {
   const [tag, setTag] = useState('');
 
   return (
+    <div className="ml-0 mr-auto flex flex-col box-border text-gray-700">
+      <MainBanner />
 
-    <MainWrapper>
-        <MainBanner />
-
-        <MainContentWrapper>
-          <CategorySelector categories={categories} />
-          <Line />
-          <MainContentLine1>
-            <RecommendProject />
-            <RankingList />
-          </MainContentLine1>
-          <Line />
-          <NewProject />
-          <Line />
-          <br/>
-          <RealTimeFeed />
-          <PromoBanner />
-        </MainContentWrapper>
-    </MainWrapper>
+      <div className="mx-[15%] p-0 xl:mx-[10%] lg:mx-[2%]">
+        <CategorySelector categories={categories} />
+        <hr className="absolute left-0 right-0 h-px bg-gray-100 border-none mx-auto" />
+        <div className="w-full flex justify-between mx-auto p-0 box-border">
+          <RecommendProject />
+          <RankingList />
+        </div>
+        <hr className="absolute left-0 right-0 h-px bg-gray-100 border-none mx-auto" />
+        <NewProject />
+        <hr className="absolute left-0 right-0 h-px bg-gray-100 border-none mx-auto" />
+        <br/>
+        <RealTimeFeed />
+        <PromoBanner />
+      </div>
+    </div>
   );
 };
 
 export default MainPage;
-
-
-
-const MainWrapper = styled.div`
-
-  margin-left: 0;        // 👈 왼쪽 정렬
-  margin-right: auto;    // 👈 오른쪽 여백만 자동
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  color:rgb(58, 58, 58);
-`;
-
-const MainContentWrapper = styled.div`
-  margin: 0 15%;
-  padding: 0;
-
-  @media (max-width: 1500px) {
-    margin: 0 10%;
-  }
-  @media (max-width: 1200px) {
-    margin: 0 2%;
-`;
-
-
-const MainContentLine1 = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin: 0 auto;
-  padding: 0;
-  box-sizing: border-box;
-`;
-
-
-const Line = styled.hr`
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background-color:rgb(246, 246, 246);
-  border: none;
-  margin: 0 auto;
-`;

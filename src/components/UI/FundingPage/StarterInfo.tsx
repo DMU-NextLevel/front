@@ -1,5 +1,4 @@
-import React, { JSX, useState } from "react";
-import styled from "styled-components";
+import React, { JSX, useState } from 'react'
 import UserImage from '../../../assets/images/default_profile.png'
 import FollowImage from '../../../assets/images/Heart.svg'
 import StarterScore from './StarterScore'
@@ -8,7 +7,7 @@ interface props {
 	starter: string | undefined
 }
 
-const StarterInfo = ({starter}:props): JSX.Element => {
+const StarterInfo = ({ starter }: props): JSX.Element => {
 	const [isFollowed, setIsFollowed] = useState<boolean>(false)
 	const [follower, setFollower] = useState<number>(0)
 
@@ -17,82 +16,29 @@ const StarterInfo = ({starter}:props): JSX.Element => {
 	}
 
 	return (
-		<StarterInfoWrapper>
-			<RowBox>
-				<StarterProfile src={UserImage} />
-				<div style={{ marginLeft: '10px' }}>
-					<StarterName>{starter}</StarterName>
-					<StarterFollower>{follower} 명 팔로우 중</StarterFollower>
+		<div className='flex flex-col justify-center p-[5%] w-[90%] min-h-[120px] border-4 border-gray-100 rounded-2xl gap-8'>
+			<div className='flex w-full h-[30%] items-center'>
+				<img src={UserImage} className='w-10 h-10 rounded-full' />
+				<div className='ml-2.5'>
+					<p className='text-base font-bold m-0'>{starter}</p>
+					<p className='text-xs m-0 text-purple-500'>{follower} 명 팔로우 중</p>
 				</div>
-				<FollowStarter onClick={handleFllow} isFollowed={isFollowed}>
-					<img src={FollowImage} alt='❤️' />
+				<button
+					className={`flex flex-row w-25 h-10 border-none rounded-xl items-center justify-center gap-2.5 ml-auto hover:cursor-pointer ${
+						isFollowed ? 'bg-purple-500' : 'bg-gray-100'
+					}`}
+					onClick={handleFllow}>
+					<img src={FollowImage} alt='❤️' className='w-5' />
 					<p>팔로우</p>
-				</FollowStarter>
-			</RowBox>
-			<RowBox>
+				</button>
+			</div>
+			<div className='flex w-full h-[30%] items-center'>
 				<StarterScore title='평판' score={80} />
 				<StarterScore title='소통' score={10} />
 				<StarterScore title='인기' score={100} />
-			</RowBox>
-		</StarterInfoWrapper>
+			</div>
+		</div>
 	)
 }
 
 export default StarterInfo
-
-const StarterInfoWrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	padding: 5%;
-	width: 90%;
-	min-height: 120px;
-	border: 3px solid #f3f3f3;
-	border-radius: 15px;
-	gap: 30px;
-`
-
-const StarterProfile = styled.img`
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-`
-
-const StarterName = styled.p`
-	font-size: 16px;
-	font-weight: bold;
-	margin: 0px;
-`
-
-const StarterFollower = styled.p`
-	font-size: 12px;
-	margin: 0px;
-	color: #a66cff;
-`
-
-const FollowStarter = styled.button<{ isFollowed: boolean }>`
-	display: flex;
-	flex-direction: row;
-	width: 100px;
-	height: 40px;
-	border: none;
-	border-radius: 10px;
-	align-items: center;
-	justify-content: center;
-	gap: 10px;
-	margin-left: auto;
-	img {
-		width: 20px;
-	}
-	&:hover {
-		cursor: pointer;
-	}
-	background-color: ${({ isFollowed }) => (isFollowed ? '#a66cff' : '#f3f3f3')};
-`
-
-const RowBox = styled.div`
-    display: flex;
-    width:100%;
-    height:30%;
-    align-items: center;
-`
