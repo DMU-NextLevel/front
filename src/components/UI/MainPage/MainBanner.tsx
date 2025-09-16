@@ -2,17 +2,15 @@ import React, { useRef } from 'react'
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-import styled from 'styled-components'
-import bannerImg from '../../../assets/images/withU_testBanner1.jpg';
-import bannerMov2 from '../../../assets/images/withU_testBanner2.mp4';
-import bannerMov3 from '../../../assets/images/withU_testBanner3.mp4';
-import banner1 from '../../../assets/images/withU_Banner1.mp4';	
-import banner2 from '../../../assets/images/withU_Banner2.mp4';
-import banner3 from '../../../assets/images/withU_Banner3.mp4';
-
+import bannerImg from '../../../assets/images/withU_testBanner1.jpg'
+import bannerMov2 from '../../../assets/images/withU_testBanner2.mp4'
+import bannerMov3 from '../../../assets/images/withU_testBanner3.mp4'
+import banner1 from '../../../assets/images/withU_Banner1.mp4'
+import banner2 from '../../../assets/images/withU_Banner2.mp4'
+import banner3 from '../../../assets/images/withU_Banner3.mp4'
 
 const SimpleSlider: React.FC = () => {
-	const sliderRef = useRef<Slider>(null);
+	const sliderRef = useRef<Slider>(null)
 
 	const settings = {
 		arrows: false,
@@ -25,121 +23,56 @@ const SimpleSlider: React.FC = () => {
 		autoplaySpeed: 5000,
 		pauseOnHover: true,
 		afterChange: (current: number) => {
-			const videos = document.querySelectorAll('video');
+			const videos = document.querySelectorAll('video')
 			videos.forEach((video, index) => {
 				if (index === current) {
-					video.play().catch(() => {}); // play 실패 무시
+					video.play().catch(() => {}) // play 실패 무시
 				} else {
-					video.pause();
-					video.currentTime = 0; // 처음으로 되돌림
+					video.pause()
+					video.currentTime = 0 // 처음으로 되돌림
 				}
-			});
-		}
-	};
-	
-	
+			})
+		},
+	}
+
 	return (
-		<SliderWrapper>
+		<div className='w-full max-w-full h-[630px] max-h-[630px] relative overflow-hidden'>
 			{/* 좌우 클릭 영역 */}
-			<ClickAreaLeft onClick={() => sliderRef.current?.slickPrev()} />
-			<ClickAreaRight onClick={() => sliderRef.current?.slickNext()} />
+			<div className='absolute top-0 left-0 w-[15%] h-full z-[5] cursor-pointer' onClick={() => sliderRef.current?.slickPrev()} />
+			<div className='absolute top-0 right-0 w-[15%] h-full z-[5] cursor-pointer' onClick={() => sliderRef.current?.slickNext()} />
 
 			<Slider ref={sliderRef} {...settings}>
-				<Slide><SlideImage src={bannerImg} alt="배너1" /></Slide>
-				<Slide><SlideVideo src={bannerMov3} autoPlay  muted playsInline /></Slide>
-				<Slide><SlideVideo src={banner2} autoPlay muted playsInline /></Slide>
-				{/* <Slide><SlideVideo src={banner1} autoPlay muted playsInline /></Slide> */}
-				<Slide><SlideVideo src={banner3} autoPlay muted playsInline /></Slide>
+				<div className='w-full h-[630px] flex justify-center items-center'>
+					<img src={bannerImg} alt='배너1' className='w-full h-full object-cover' />
+				</div>
+				<div className='w-full h-[630px] flex justify-center items-center'>
+					<video src={bannerMov3} autoPlay muted playsInline className='w-full h-full object-cover pointer-events-none' />
+				</div>
+				<div className='w-full h-[630px] flex justify-center items-center'>
+					<video src={banner2} autoPlay muted playsInline className='w-full h-full object-cover pointer-events-none' />
+				</div>
+				{/* <div className="w-full h-[630px] flex justify-center items-center">
+					<video src={banner1} autoPlay muted playsInline className="w-full h-full object-cover pointer-events-none" />
+				</div> */}
+				<div className='w-full h-[630px] flex justify-center items-center'>
+					<video src={banner3} autoPlay muted playsInline className='w-full h-full object-cover pointer-events-none' />
+				</div>
 			</Slider>
 
 			{/* 커스텀 버튼 */}
-			<CustomButton onClick={() => sliderRef.current?.slickPrev()}>{'<'}</CustomButton>
-			<CustomButtonRight onClick={() => sliderRef.current?.slickNext()}>{'>'}</CustomButtonRight>
-		
-		</SliderWrapper>
+			<button
+				className='absolute top-1/2 left-5 -translate-y-1/2 bg-black bg-opacity-50 text-white border-none rounded-full w-[30px] h-[30px] flex justify-center items-center cursor-pointer text-lg z-10 hover:bg-opacity-70'
+				onClick={() => sliderRef.current?.slickPrev()}>
+				{'<'}
+			</button>
+			<button
+				className='absolute top-1/2 right-5 -translate-y-1/2 bg-black bg-opacity-50 text-white border-none rounded-full w-[30px] h-[30px] flex justify-center items-center cursor-pointer text-lg z-10 hover:bg-opacity-70'
+				onClick={() => sliderRef.current?.slickNext()}>
+				{'>'}
+			</button>
+		</div>
 	)
 }
 
 export default SimpleSlider
-
-// styled-components
-const SliderWrapper = styled.div`
-	padding: 0;
-	
-	height: 630px;
-	max-height: 630px;
-	position: relative;
-	overflow: hidden;
-`
-
-const SlideImage = styled.img`
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-`
-
-
-const SlideVideo = styled.video`
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	pointer-events: none;
-`
-
-const Slide = styled.div`
-	width: 100%;
-	height: 630px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-`
-
-// 좌우 클릭 영역
-const ClickAreaLeft = styled.div`
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 15%;
-	height: 100%;
-	z-index: 5;
-	cursor: pointer;
-`
-
-const ClickAreaRight = styled.div`
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 15%;
-	height: 100%;
-	z-index: 5;
-	cursor: pointer;
-`
-
-// 커스텀 버튼
-const CustomButton = styled.button`
-	position: absolute;
-	top: 50%;
-	left: 20px;
-	transform: translateY(-50%);
-	background-color: rgba(0, 0, 0, 0.5);
-	color: white;
-	border: none;
-	border-radius: 50%;
-	width: 30px;
-	height: 30px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	cursor: pointer;
-	font-size: 18px;
-	z-index: 10;
-	&:hover {
-		background-color: rgba(0, 0, 0, 0.7);
-	}
-`
-
-const CustomButtonRight = styled(CustomButton)`
-	left: auto;
-	right: 20px;
-`
 

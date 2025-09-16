@@ -1,178 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer';
-import noImage from '../../../assets/images/noImage.jpg';
+import { useNavigate } from 'react-router-dom'
+import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
+import noImage from '../../../assets/images/noImage.jpg'
 
+const RankingList: React.FC = () => {
+	const baseUrl = process.env.REACT_APP_API_BASE_URL
+	const navigate = useNavigate()
+	const [projects, setProjects] = useState<any[]>([])
+	useEffect(() => {
+		const loadProjects = async () => {
+			const data = await fetchProjectsFromServer({ order: 'RECOMMEND', pageCount: 6 })
+			console.log('📦 서버에서 받아온 프로젝트:', data)
+			if (Array.isArray(data)) {
+				setProjects(data)
+			}
+		}
+		loadProjects()
+	}, [])
 
+	return (
+		<div className='w-[30%] bg-white py-10 pr-0 pl-10 border-l border-gray-100 ml-10'>
+			<h2 className='text-2xl font-bold mb-5 text-gray-800'>실시간 랭킹</h2>
 
-const RankingList:React.FC = () => {
-
-  const baseUrl = process.env.REACT_APP_API_BASE_URL
-  const navigate = useNavigate()
-  const [projects, setProjects] = useState<any[]>([]);
-        useEffect(() => {
-          const loadProjects = async () => {
-            const data = await fetchProjectsFromServer({ order: "RECOMMEND", pageCount: 6 });
-            console.log("📦 서버에서 받아온 프로젝트:", data);
-            if (Array.isArray(data)) {
-              setProjects(data);
-            }
-          };
-          loadProjects();
-        }, []);
-
-  return (
-    <Wrapper>
-      <Title>실시간 랭킹</Title>
-      
-      <List>
-        {projects.map((item, index) => (
-          <ImageTextItem onClick={() => navigate(`/project/${item.id}`)} key={item.id}>
-            <RankNumber>{index + 1}</RankNumber>
-            <Info>
-              <ProjectTitle>{item.title}</ProjectTitle>
-              <Percent>{item.completionRate}% 달성</Percent>
-            </Info>
-            <ImageWrapper>
-              {item.titleImg ? (
-                <img src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
-                alt={item.title}
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = noImage;
-                }} />
-              ) : (
-                <NoImage>이미지 없음</NoImage>
-              )}
-            </ImageWrapper>
-          </ImageTextItem>
-          
-          
-        ))}
-      </List>
-      <div style={{ textAlign: 'right', marginBottom: '10px', margin: '0' }}>
-        
-      </div>
-    </Wrapper>
-  );
-};
-
-
-
-// 전체 컨테이너
-const Wrapper = styled.div` 
-  width: 30%;
-  background: #fff;
-  padding: 40px 0px 0px 40px;
-  border-left: 1px solid rgb(246, 246, 246);
-  margin-left : 40px;
-`;
-
-// 랭킹 박스
-const ImageTextItem = styled.div`
-  display: flex;
-  align-items: flex-start;  
-  margin-bottom: 12px;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  cursor: pointer;
-  `;
-
-// 랭킹 숫자
-const RankNumber = styled.div`
-  font-weight: bold;
-  font-size: 22px;
-  width: 20px;
-  color: #333;
-  margin-top: 6px;
-  margin-right: 10px;
-`;
-
-
-// 제목
-const Title = styled.h2`
-  font-size: 24px;
-  margin: 0 0 20px 0;
-  
-`;
-
-// 리스트 전체
-const List = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 10px 0 0 0;
-`;
-
-// 개별 아이템
-const Item = styled.li`
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-`;
-
-// 이미지 감싸는 박스
-const ImageWrapper = styled.div`
-  width: 100px;
-  height: 70px;
-  background-color: #f0f0f0;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: #999;
-  margin-right: 12px;
-  flex-shrink: 0;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 3px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
-  }
-  &:hover {
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
-    filter: brightness(1.05);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  
-  &:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-`;
-
-
-const NoImage = styled.div`
-  text-align: center;
-`;
-
-// 텍스트 영역
-const Info = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 220px;
-  margin-right: 10px;
-`;
-
-// 달성률
-const Percent = styled.span`
-  color: #7b61ff;
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 4px;
-`;
-
-// 제목
-const ProjectTitle = styled.span`
-  font-size: 14px;
-  line-height: 1.3;
-  
-`;
+			<div>
+				{projects.map((item, index) => (
+					<div onClick={() => navigate(`/project/${item.id}`)} key={item.id} className='flex items-start mb-3 justify-between cursor-pointer'>
+						<div className='w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0'>{index + 1}</div>
+						<div className='flex-1 mr-3'>
+							<h3 className='text-gray-800 text-sm font-medium mb-1 leading-tight'>{item.title}</h3>
+							<p className='text-purple-600 text-xs font-semibold'>{item.completionRate}% 달성</p>
+						</div>
+						<div className='w-12 h-12 flex-shrink-0'>
+							{item.titleImg ? (
+								<img
+									src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
+									alt={item.title}
+									onError={(e) => {
+										e.currentTarget.onerror = null
+										e.currentTarget.src = noImage
+									}}
+									className='w-full h-full object-cover rounded'
+								/>
+							) : (
+								<div className='w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs rounded'>이미지 없음</div>
+							)}
+						</div>
+					</div>
+				))}
+			</div>
+			<div className='text-right mb-2.5 m-0'></div>
+		</div>
+	)
+}
 
 export default RankingList;

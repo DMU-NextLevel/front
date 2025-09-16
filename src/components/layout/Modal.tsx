@@ -1,44 +1,26 @@
-import React, { JSX } from "react";
-import styled from "styled-components";
+import React, { JSX } from 'react'
 
 interface props {
-    children: React.ReactNode
-    onClose: () => void
+	children: React.ReactNode
+	onClose: () => void
 }
 
-const Modal = ({ children, onClose }:props): JSX.Element => {
-    const handleOverlayClick = () => {
-        onClose()
-    }
+const Modal = ({ children, onClose }: props): JSX.Element => {
+	const handleOverlayClick = () => {
+		onClose()
+	}
 
-    const handleContentClick = (e:React.MouseEvent) => {
-        e.stopPropagation()
-    }
+	const handleContentClick = (e: React.MouseEvent) => {
+		e.stopPropagation()
+	}
 
-    return(
-        <Overlay onClick={handleOverlayClick}>
-            <Content onClick={handleContentClick}>
-                {children}
-            </Content>
-        </Overlay>
-    )
+	return (
+		<div className='fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-[1000]' onClick={handleOverlayClick}>
+			<div className='z-[1001]' onClick={handleContentClick}>
+				{children}
+			</div>
+		</div>
+	)
 }
 
 export default Modal
-
-const Overlay = styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-`
-
-const Content = styled.div`
-    z-index: 1001;
-`
