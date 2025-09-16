@@ -1,108 +1,55 @@
-import React, { JSX, useEffect, useState } from "react";
-import styled from "styled-components";
+import React, { JSX, useEffect, useState } from 'react'
 
 interface props {
-    id: Number,
-    price: string,
-    title: string,
-    description: string,
-    date: string
-    checked: Number|null
-    setSelectReward: React.Dispatch<React.SetStateAction<Number|null>>
+	id: Number
+	price: string
+	title: string
+	description: string
+	date: string
+	checked: Number | null
+	setSelectReward: React.Dispatch<React.SetStateAction<Number | null>>
 }
 
-const FundingReward = ( {id, price, title, description, date, checked, setSelectReward}:props ):JSX.Element => {
-    const [check, setCheck] = useState<boolean>(false)
+const FundingReward = ({ id, price, title, description, date, checked, setSelectReward }: props): JSX.Element => {
+	const [check, setCheck] = useState<boolean>(false)
 
-    const onCheck = () => {
-       if (checked === id) {
-            setSelectReward(null)
-        } else {
-            setSelectReward(id)
-        }
-    }
+	const onCheck = () => {
+		if (checked === id) {
+			setSelectReward(null)
+		} else {
+			setSelectReward(id)
+		}
+	}
 
-    useEffect(() => {
-        if(checked === id) {
-            setCheck(true)
-        } else {
-            setCheck(false)
-        }
-    },[checked, id])
+	useEffect(() => {
+		if (checked === id) {
+			setCheck(true)
+		} else {
+			setCheck(false)
+		}
+	}, [checked, id])
 
-    return(
-        <FundingRewardWraper>
-            <Bar/>
-            <Row>
-                <CheckBox type="checkbox" onChange={onCheck} checked={check}/>
-                <Price checked = {check}>{price}</Price>
-            </Row>
-            <Title checked = {check}>{title}</Title>
-            <Description checked={check}>{description}</Description>
-            <Date checked={check}>{date}</Date>
-        </FundingRewardWraper>
-    )
+	return (
+		<div className='m-5'>
+			<div className='w-4/5 border-b-4 border-gray-100 rounded-3xl mb-5 mx-auto' />
+			<div className='flex flex-row gap-2.5 items-center'>
+				<input
+					type='checkbox'
+					onChange={onCheck}
+					checked={check}
+					className={`appearance-none border-2 border-gray-300 rounded-md p-1 w-8 h-8 cursor-pointer ${
+						check
+							? "border-transparent bg-purple-500 bg-[url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e\")] bg-full bg-center bg-no-repeat"
+							: ''
+					}`}
+				/>
+				<span className={`font-bold text-xl text-purple-500 ${check ? 'opacity-100' : 'opacity-50'}`}>{price}</span>
+			</div>
+			<p className={`font-bold text-xl text-purple-500 ${check ? 'opacity-100' : 'opacity-50'}`}>{title}</p>
+			<p className={`text-gray-500 ${check ? 'opacity-100' : 'opacity-50'}`}>{description}</p>
+			<p className={`text-gray-500 ${check ? 'opacity-100' : 'opacity-50'}`}>{date}</p>
+		</div>
+	)
 }
 
 export default FundingReward
-
-const FundingRewardWraper = styled.div`
-    margin: 20px;
-`
-
-const Row = styled.div`
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-`
-
-const CheckBox = styled.input`
-    appearance: none;
-    border: 1.5px solid gainsboro;
-    border-radius: 0.35rem;
-    padding: 0.25em;
-    width: 2em;
-    height: 2em;
-    cursor: pointer;
-    &:checked {
-            border-color: transparent;
-    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e");
-    background-size: 100% 100%;
-    background-position: 50%;
-    background-repeat: no-repeat;
-    background-color: #a66cff;
-`
-
-const Price = styled.span<{checked:boolean}>`
-    font-weight: bold;
-    font-size: 20px;
-    color: #a66cff;
-    opacity: ${({checked}) => checked ? '1' : '0.5'};
-`
-
-const Title = styled.p<{checked:boolean}>`
-    font-weight: bold;
-    font-size: 20px;
-    color: #a66cff;
-    opacity: ${({checked}) => checked ? '1' : '0.5'};
-`
-
-const Description = styled.p<{checked:boolean}>`
-    color: grey;
-    opacity: ${({checked}) => checked ? '1' : '0.5'};
-`
-
-const Date = styled.p<{checked:boolean}>`
-    color: grey;
-    opacity: ${({checked}) => checked ? '1' : '0.5'};
-`
-
-const Bar = styled.div`
-	width: 80%;
-	border-bottom:3px solid #f3f3f3;
-	border-radius: 20px;
-	margin-bottom: 20px;
-    margin-left: auto;
-    margin-right: auto;
-`

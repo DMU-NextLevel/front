@@ -1,5 +1,4 @@
 import React, { JSX } from 'react'
-import styled from 'styled-components'
 import ExamImage from '../../../assets/images/nextlevel.png'
 import LikeImage from '../../../assets/images/Like.svg'
 
@@ -22,150 +21,33 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 	}
 
 	return (
-		<FundingInfoWrapper>
-			<InfoImage src={`${baseUrl}/img/${image}`} />
-			<InfoTagWrapper>
-				<Tag>고양이</Tag>
-				<Tag>장난감</Tag>
-			</InfoTagWrapper>
-			<Title>{title}</Title>
-			<Description>
-				{description}
-			</Description>
-			<Rate>
-				<PeopleNum>
-					<span>{peopleNum}</span>명 참여
-				</PeopleNum>
-				<Amount>
-					<span>{amount}</span>원 달성
-				</Amount>
-			</Rate>
-			<RowBox>
-				<ColumBox>
-					<Like src={LikeImage} />
-					<Liker>{likeNum}</Liker>
-				</ColumBox>
-				<PayButton onClick={PayClick}>스타터와 함께하기</PayButton>
-			</RowBox>
-		</FundingInfoWrapper>
+		<div className='flex flex-col w-[90%] rounded-2xl border-4 border-gray-100 p-[5%]'>
+			<img src={`${baseUrl}/img/${image}`} className='w-full h-75' />
+			<div className='flex items-center h-12 gap-2.5'>
+				<p className='flex min-w-[50px] w-auto h-2.5 p-2.5 m-0 bg-gray-100 items-center justify-center text-xs font-bold rounded-xl'>고양이</p>
+				<p className='flex min-w-[50px] w-auto h-2.5 p-2.5 m-0 bg-gray-100 items-center justify-center text-xs font-bold rounded-xl'>장난감</p>
+			</div>
+			<p className='text-xl font-bold my-1.5'>{title}</p>
+			<p className='text-sm my-1.5 text-gray-500'>{description}</p>
+			<div className='flex flex-col my-2.5'>
+				<p className='my-1.5'>
+					<span className='text-purple-500 font-bold text-xl mr-1.5'>{peopleNum}</span>명 참여
+				</p>
+				<p className='my-1.5'>
+					<span className='font-bold text-xl mr-1.5'>{amount}</span>원 달성
+				</p>
+			</div>
+			<div className='flex w-full h-[75px] gap-5'>
+				<div className='flex flex-col items-center'>
+					<img src={LikeImage} className='w-12 h-12 mb-1.5 hover:cursor-pointer' />
+					<p className='flex justify-center text-sm m-0 text-gray-500'>{likeNum}</p>
+				</div>
+				<button className='bg-purple-500 text-white border-none rounded-xl text-xl font-bold w-full h-12 hover:cursor-pointer' onClick={PayClick}>
+					스타터와 함께하기
+				</button>
+			</div>
+		</div>
 	)
 }
 
 export default FundingInfo
-
-const FundingInfoWrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	width: 90%;
-	border-radius: 15px;
-	border: 3px solid #f3f3f3;
-	padding: 5%;
-`
-
-const InfoImage = styled.img`
-	width: 100%;
-	height: 300px;
-`
-
-const InfoTagWrapper = styled.div`
-	display: flex;
-	align-items: center;
-	height: 50px;
-	gap: 10px;
-`
-
-const Tag = styled.p`
-	display: flex;
-	min-width: 50px;
-	width: auto;
-	height: 10px;
-	padding: 10px;
-	margin: 0;
-	background-color: #f3f3f3;
-	align-items: center;
-	justify-content: center;
-	font-size: 12px;
-	font-weight: bold;
-	border-radius: 10px;
-`
-
-const Title = styled.p`
-	font-size: 20px;
-	font-weight: bold;
-	margin: 5px 0;
-`
-
-const Description = styled.p`
-	font-size: 14px;
-	margin: 5px 0;
-	color: #8c8c8c;
-`
-
-const Rate = styled.div`
-	display: flex;
-	flex-direction: column;
-	margin: 10px 0;
-`
-
-const PeopleNum = styled.p`
-	margin: 5px 0;
-	span {
-		color: #a66cff;
-		font-weight: bold;
-		font-size: 20px;
-		margin-right: 5px;
-	}
-`
-
-const Amount = styled.p`
-	margin: 5px 0;
-	span {
-		font-weight: bold;
-		font-size: 20px;
-		margin-right: 5px;
-	}
-`
-
-const RowBox = styled.div`
-	display: flex;
-	width: 100%;
-	height: 75px;
-	gap: 20px;
-`
-
-const ColumBox = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-`
-
-const Like = styled.img`
-	width: 50px;
-	height: 50px;
-	margin-bottom: 5px;
-	&:hover {
-		cursor: pointer;
-	}
-`
-
-const Liker = styled.p`
-	display: flex;
-	justify-content: center;
-	font-size: 14px;
-	margin: 0;
-	color: #8c8c8c;
-`
-
-const PayButton = styled.button`
-	background-color: #a66cff;
-	color: white;
-	border: none;
-	border-radius: 10px;
-	font-size: 20px;
-	font-weight: bold;
-	width: 100%;
-	height: 50px;
-	&:hover {
-		cursor: pointer;
-	}
-`

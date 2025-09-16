@@ -1,5 +1,4 @@
 import React, { JSX } from 'react'
-import styled from 'styled-components'
 import NewsContent from './NewsContent'
 import FundingMessage from './FundingMessage'
 
@@ -19,15 +18,15 @@ interface commuProps {
 
 export const FundingStory = ({ story }: storyProps): JSX.Element => {
 	return (
-		<InfoWrapper>
-			<StoryInfo>📢 프로젝트 스토리</StoryInfo>
-			<Bar />
-			<div style={{minHeight:'800px'}}>
+		<div className="flex flex-col items-center w-[90%]">
+			<p className="text-xl font-bold mr-auto">📢 프로젝트 스토리</p>
+			<div className="w-4/5 border-b-4 border-gray-100 rounded-3xl mb-5 mx-auto" />
+			<div style={{ minHeight: '800px' }}>
 				{story?.map((story) => (
-					<StoryContent key={story.id} src={`${baseUrl}/img/${story}`} />
+					<img key={story.id} src={`${baseUrl}/img/${story}`} className="w-full" />
 				))}
 			</div>
-		</InfoWrapper>
+		</div>
 	)
 }
 
@@ -42,13 +41,13 @@ export const FundingNews = ({ notice }: newsProps): JSX.Element => {
 	]
 
 	return (
-		<InfoWrapper>
-			<StoryInfo>우리 프로젝트는 현재 이렇게 진행중이에요</StoryInfo>
-			<Bar />
+		<div className="flex flex-col items-center w-[90%]">
+			<p className="text-xl font-bold mr-auto">우리 프로젝트는 현재 이렇게 진행중이에요</p>
+			<div className="w-4/5 border-b-4 border-gray-100 rounded-3xl mb-5 mx-auto" />
 			{exam.map((news) => (
 				<NewsContent title={news.title} content={news.content} />
 			))}
-		</InfoWrapper>
+		</div>
 	)
 }
 
@@ -69,46 +68,13 @@ export const FundingCommu = ({ community }: commuProps): JSX.Element => {
 	]
 
 	return (
-		<CommuWrapper>
-			<StoryInfo>저희 소통해요</StoryInfo>
-			<Bar />
+		<div className="flex flex-col w-[90%] pb-[600px]">
+			<p className="text-xl font-bold mr-auto">저희 소통해요</p>
+			<div className="w-4/5 border-b-4 border-gray-100 rounded-3xl mb-5 mx-auto" />
 			{exam.map((commu) => (
 				<FundingMessage isSender={commu.isSender} message={commu.message} date={commu.date} userName={commu.userName} />
 			))}
-		</CommuWrapper>
+		</div>
 	)
 }
-
-const InfoWrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 90%;
-`
-
-const Bar = styled.div`
-	width: 80%;
-	border-bottom:3px solid #f3f3f3;
-	border-radius: 20px;
-	margin-bottom: 20px;
-	margin-left: auto;
-	margin-right: auto;
-`
-
-const CommuWrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	width:90%;
-	padding-bottom: 600px;
-`
-
-const StoryInfo = styled.p`
-	font-size: 20px;
-	font-weight: bold;
-	margin-right: auto;
-`
-
-const StoryContent = styled.img`
-	width: 100%;
-`
 

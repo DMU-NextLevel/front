@@ -1,5 +1,4 @@
 import React, { JSX, useEffect, useState } from 'react'
-import styled from 'styled-components'
 import FundingInfo from '../components/UI/FundingPage/FundingInfo'
 import StarterInfo from '../components/UI/FundingPage/StarterInfo'
 import FundingContent from '../components/UI/FundingPage/FundingContent'
@@ -12,11 +11,11 @@ interface IUserData {
 	title: string | undefined
 	description: string | undefined
 	image: string | undefined
-	peopleNum : number | undefined	// 참여 수
-	amount: number | undefined	//총액
-	likeNum: number | undefined	//추천수
+	peopleNum: number | undefined // 참여 수
+	amount: number | undefined //총액
+	likeNum: number | undefined //추천수
 	starter: string | undefined
-	completionRate: number | undefined	//달성률
+	completionRate: number | undefined //달성률
 }
 
 interface IProjectData {
@@ -26,7 +25,7 @@ interface IProjectData {
 }
 
 const FundingPage = (): JSX.Element => {
-	const {no} = useParams<{no:string}>()
+	const { no } = useParams<{ no: string }>()
 	const [payOpen, setPayOpen] = useState<boolean>(false)
 	const [searchParams] = useSearchParams()
 	const [userData, setUserData] = useState<IUserData | null>(null)
@@ -45,41 +44,38 @@ const FundingPage = (): JSX.Element => {
 					amount: res.data.data.sum,
 					likeNum: res.data.data.recommendCount,
 					starter: res.data.data.authorNickName,
-					completionRate: res.data.data.completionRate
+					completionRate: res.data.data.completionRate,
 				})
 			})
-
-		} catch(e:any) {
+		} catch (e: any) {
 			console.log(e)
 			alert('프로젝트 정보 불러오기 실패')
 		}
-	},[no])
+	}, [no])
 
 	// 프로젝트 스토리, 새소식, 커뮤니티 조회
 	useEffect(() => {
 		try {
-			api.get(`/public/project/${no}/all`).then(
-				(res) => {
-					const dataRoot = res.data.data
-					setProjectData({
-						story: dataRoot.story.imgs,
-						notice: dataRoot.notice.notices,
-						community: dataRoot.community.communities
-					})
-				}
-			)
-		} catch (e:any) {
+			api.get(`/public/project/${no}/all`).then((res) => {
+				const dataRoot = res.data.data
+				setProjectData({
+					story: dataRoot.story.imgs,
+					notice: dataRoot.notice.notices,
+					community: dataRoot.community.communities,
+				})
+			})
+		} catch (e: any) {
 			console.log(e)
 		}
-	},[no])
+	}, [no])
 
 	useEffect(() => {
 		console.log(projectData)
-	},[projectData])
+	}, [projectData])
 
 	return (
-		<FundingPageWrapper>
-			<ColumBox>
+		<div className='flex pl-[2%] gap-[2%] mx-[15%]'>
+			<div className='flex flex-col items-center w-[26%] min-w-[380px] gap-[2%]'>
 				<FundingInfo
 					setPayOpen={setPayOpen}
 					title={userData?.title ?? ''}
@@ -91,33 +87,15 @@ const FundingPage = (): JSX.Element => {
 					likeNum={userData?.likeNum ?? 0}
 				/>
 				<StarterInfo starter={userData?.starter} />
-			</ColumBox>
-			<FundingContent
-				projectData={projectData}
-			/>
+			</div>
+			<FundingContent projectData={projectData} />
 			{payOpen && (
 				<Modal onClose={() => setPayOpen(false)}>
 					<FundingModal />
 				</Modal>
 			)}
-		</FundingPageWrapper>
+		</div>
 	)
 }
 
 export default FundingPage
-
-const FundingPageWrapper = styled.div`
-	display: flex;
-	padding-left: 2%;
-	gap: 2%;
-	margin: 0px 15%;
-`
-
-const ColumBox = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 26%;
-	min-width: 380px;
-	gap: 2%;
-`

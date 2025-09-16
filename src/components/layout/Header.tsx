@@ -1,74 +1,70 @@
-	import React, { useEffect, useRef, useState } from 'react'
-	import styled from 'styled-components'
-	import LogoImage from '../../assets/images/withuLogo.png'
-	import CategoryImage from '../../assets/images/category.png'
-	import UserImage from '../../assets/images/default_profile.png'
-	import { useNavigate } from 'react-router-dom'
-	import { useAuth } from '../../hooks/AuthContext'
-	import { useUserRole } from '../../hooks/useUserRole'
+import React, { useEffect, useRef, useState } from 'react'
+import LogoImage from '../../assets/images/withuLogo.png'
+import CategoryImage from '../../assets/images/category.png'
+import UserImage from '../../assets/images/default_profile.png'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/AuthContext'
+import { useUserRole } from '../../hooks/useUserRole'
 
+interface HeaderBaseProps {
+	isLoggedIn: boolean
+	showCategoryMenu?: boolean
+	onLogoClick?: () => void
+	onLoginClick?: () => void
+	onProfileClick?: () => void
+	onProjectCreate?: () => void
+	onCategoryClick?: () => void
+	showSearchBar?: boolean
+	showNotification?: boolean
+}
 
-	interface HeaderBaseProps {
-		isLoggedIn: boolean
-		showCategoryMenu?: boolean
-		onLogoClick?: () => void
-		onLoginClick?: () => void
-		onProfileClick?: () => void
-		onProjectCreate?: () => void
-		onCategoryClick?: () => void
-		showSearchBar?: boolean
-		showNotification?: boolean
+const categories = [
+	{ label: '테크/가전', icon: 'bi bi-cpu', tag: '1' },
+	{ label: '라이프스타일', icon: 'bi bi-house', tag: '2' },
+	{ label: '패션/잡화', icon: 'bi bi-bag', tag: '3' },
+	{ label: '뷰티/헬스', icon: 'bi bi-heart-pulse', tag: '4' },
+	{ label: '취미/DIY', icon: 'bi bi-brush', tag: '5' },
+	{ label: '게임', icon: 'bi bi-controller', tag: '6' },
+	{ label: '교육/키즈', icon: 'bi bi-book', tag: '7' },
+	{ label: '반려동물', icon: 'bi bi-star', tag: '8' },
+	{ label: '여행/레저', icon: 'bi bi-airplane', tag: '9' },
+	{ label: '푸드/음료', icon: 'bi bi-cup-straw', tag: '10' },
+]
+
+// 링크 설정 객체
+const searchLinks = {
+	RECOMMEND: '/search?order=RECOMMEND',
+	NEW: '/search?order=NEW',
+	EXPIRED: '/search?order=EXPIRED',
+	COMPLETED: '/search?order=COMPLETED',
+}
+
+// 링크 생성 함수
+const createSearchLink = (type: keyof typeof searchLinks) => {
+	return searchLinks[type]
+}
+
+export const HeaderMain: React.FC = () => {
+	const [isOpen, setIsOpen] = useState<boolean>(false)
+	const { isLoggedIn, logout, user } = useAuth()
+	const [showNotification, setShowNotification] = useState<boolean>(false)
+	const notificationRef = useRef<HTMLDivElement>(null)
+	const navigate = useNavigate()
+	const [keyword, setKeyword] = useState('')
+	const { role, loading } = useUserRole()
+	const [isHovered, setIsHovered] = useState(false)
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault()
+		if (keyword.trim()) {
+			window.location.href = `/search?search=${encodeURIComponent(keyword.trim())}`
+		}
 	}
 
-	const categories = [
-		{ label: '테크/가전', icon: 'bi bi-cpu', tag: '1' },
-		{ label: '라이프스타일', icon: 'bi bi-house', tag: '2' },
-		{ label: '패션/잡화', icon: 'bi bi-bag', tag: '3' },
-		{ label: '뷰티/헬스', icon: 'bi bi-heart-pulse', tag: '4' },
-		{ label: '취미/DIY', icon: 'bi bi-brush', tag: '5' },
-		{ label: '게임', icon: 'bi bi-controller', tag: '6' },
-		{ label: '교육/키즈', icon: 'bi bi-book', tag: '7' },
-		{ label: '반려동물', icon: 'bi bi-star', tag: '8' },
-		{ label: '여행/레저', icon: 'bi bi-airplane', tag: '9' },
-		{ label: '푸드/음료', icon: 'bi bi-cup-straw', tag: '10' },
-	];
-
-	// 링크 설정 객체
-	const searchLinks = {
-		RECOMMEND: '/search?order=RECOMMEND',
-		NEW: '/search?order=NEW',
-		EXPIRED: '/search?order=EXPIRED',
-		COMPLETED: '/search?order=COMPLETED'
-	};
-
-	// 링크 생성 함수
-	const createSearchLink = (type: keyof typeof searchLinks) => {
-		return searchLinks[type];
-	};
-
-
-
-	export const HeaderMain: React.FC = () => {
-		const [isOpen, setIsOpen] = useState<boolean>(false)
-		const {isLoggedIn, logout, user} = useAuth()
-		const [showNotification, setShowNotification] = useState<boolean>(false)
-		const notificationRef = useRef<HTMLDivElement>(null)
-		const navigate = useNavigate()
-		const [keyword, setKeyword] = useState('');
-		const { role, loading } = useUserRole();
-		const [isHovered, setIsHovered] = useState(false);
-
-		const handleSubmit = (e: React.FormEvent) => {
-			e.preventDefault();
-			if (keyword.trim()) {
-			window.location.href = `/search?search=${encodeURIComponent(keyword.trim())}`;
-			}
-		};
-
-		const handleLogout = () => {
-			logout();
-			window.location.href = '/login';
-		}
+	const handleLogout = () => {
+		logout()
+		window.location.href = '/login'
+	}
 
 	const handleLogoClick = () => {
 		navigate('/')
@@ -113,175 +109,243 @@
 			document.removeEventListener('mousedown', handleClickOutside)
 		}
 
-			return () => {
-				document.removeEventListener('mousedown', handleClickOutside)
-			}
-		}, [showNotification])
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside)
+		}
+	}, [showNotification])
 
-		return (
-			<HeaderWrapper>
-				<TopHeader>
-					<Logo src={LogoImage} onClick={handleLogoClick} />
-					{!isLoggedIn ? (
-							<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px' }}>
-								<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
-								<HeaderLink onClick={handleSignupClick}>회원가입</HeaderLink>
+	return (
+		<div className='px-[15%] xl:px-[10%] lg:px-[2%]'>
+			<div className='flex flex-row items-center mt-4 w-full'>
+				<img src={LogoImage} alt='logo' onClick={handleLogoClick} className='w-[150px] h-[35px] transition-all duration-300 cursor-pointer hover:scale-105' />
+				{!isLoggedIn ? (
+					<div className='flex ml-auto items-center gap-0'>
+						<div
+							onClick={handleLoginClick}
+							className="relative text-gray-800 text-base font-medium py-2.5 px-2.5 mx-1 border-b-2 border-transparent transition-all duration-300 cursor-pointer hover:text-purple-500 hover:scale-[1.02] after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[3px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full">
+							로그인
+						</div>
+						<div
+							onClick={handleSignupClick}
+							className="relative text-gray-800 text-base font-medium py-2.5 px-2.5 mx-1 border-b-2 border-transparent transition-all duration-300 cursor-pointer hover:text-purple-500 hover:scale-[1.02] after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[3px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full">
+							회원가입
+						</div>
+					</div>
+				) : (
+					<div className='flex ml-auto items-center gap-[30px]'>
+						<div className='relative'>
+							<div onClick={toggleNotification}>
+								<i
+									className={`text-2xl text-gray-600 transition-all duration-300 cursor-pointer hover:text-gray-600 hover:scale-110 ${
+										showNotification ? 'bi bi-bell-fill' : 'bi bi-bell'
+									}`}></i>
 							</div>
-						) : (
-							<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
-								<NotificationWrapper>
-									<Notification onClick={toggleNotification}>
-										<i className={showNotification ? 'bi bi-bell-fill' : 'bi bi-bell'}></i>
-									</Notification>
-									{showNotification && <NotificationBox ref={notificationRef}>새 알림이 없습니다</NotificationBox>}
-								</NotificationWrapper>
-								<AvatarWrapper
-								  onMouseEnter={() => setIsHovered(true)}
-								  onMouseLeave={() => setIsHovered(false)}
-								>
-								<UserProfile src={UserImage} onClick={handleProfileClick} />
-								<ProfilePopup visible={isHovered}>
-									<Banner>
-									<i className="fas fa-volume-up" style={{ fontSize: '18px', float: 'right' }} />
-									<BannerImg src={user?.img || UserImage} alt="프로필" />
-									<Name>{user?.nickName || '익명'}</Name>
-									</Banner>
-									<Email>{user?.email}</Email>
-									<Department>{role=="ADMIN" ? '관리자' : '일반 사용자'}</Department>
-									<Settings>
-									<SettingItem onClick={handleProfileClick}>
-										<i className="fas fa-user"></i>
-										마이페이지
-									</SettingItem>
-									<SettingItem onClick={handleLogout}>
-										<i className="fas fa-th"></i>
-										로그아웃
-									</SettingItem>
-									<SettingItem onClick={handleProfileClick}>
-										<i className="fas fa-cog"></i>
-										내정보 변경
-									</SettingItem>
-									</Settings>
-								</ProfilePopup>
-								</AvatarWrapper>
-							</div>
-						)}
-				</TopHeader>
-				<HeaderNavbar>
-
-					<CategoryMenu onClick={handleCategoryClick}>
-
-						<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
-					</CategoryMenu>
-
-					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
-					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
-					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
-					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
-
-
-
-					<SearchBar onSubmit={handleSubmit}>
-						<SearchInput
-								type="text"
-								placeholder="검색어를 입력하세요"
-								value={keyword}
-								onChange={(e) => setKeyword(e.target.value)}
+							{showNotification && (
+								<div ref={notificationRef} className='absolute top-full right-0 mt-2.5 w-[250px] h-[300px] bg-gray-100 rounded-2xl shadow-lg p-5 z-[100]'>
+									새 알림이 없습니다
+								</div>
+							)}
+						</div>
+						<div className='relative inline-block' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+							<img
+								src={UserImage}
+								alt='profile'
+								onClick={handleProfileClick}
+								className='w-[30px] h-[30px] rounded-full transition-all duration-300 cursor-pointer hover:scale-110'
 							/>
-						<SearchButton type="submit">
-							<i className="bi bi-search"></i>
-						</SearchButton>
-					</SearchBar>
+							<div
+								className={`absolute top-[35px] right-0 w-[280px] bg-white rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.12)] p-5 z-[100] transition-all duration-[0.25s] ${
+									isHovered ? 'opacity-100 visible translate-y-0 pointer-events-auto' : 'opacity-0 invisible -translate-y-2.5 pointer-events-none'
+								}`}>
+								<div className='bg-gradient-to-r from-[#5e60ce] to-[#4361ee] rounded-t-[10px] p-5 text-center text-white'>
+									<i className='fas fa-volume-up text-lg float-right' />
+									<img src={user?.img || UserImage} alt='프로필' className='w-[60px] h-[60px] rounded-full mt-2.5' />
+									<div className='font-bold text-[17px] mt-2.5'>{user?.nickName || '익명'}</div>
+								</div>
+								<div className='text-sm text-gray-700 mt-2.5'>{user?.email}</div>
+								<div className='text-[13px] text-gray-500 mb-4'>{role == 'ADMIN' ? '관리자' : '일반 사용자'}</div>
+								<div className='flex justify-around mt-3'>
+									<div onClick={handleProfileClick} className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+										<i className='fas fa-user text-lg mb-1'></i>
+										마이페이지
+									</div>
+									<div onClick={handleLogout} className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+										<i className='fas fa-th text-lg mb-1'></i>
+										로그아웃
+									</div>
+									<div onClick={handleProfileClick} className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+										<i className='fas fa-cog text-lg mb-1'></i>
+										내정보 변경
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
+			</div>
+			<div className='flex text-xl font-bold h-20 items-center'>
+				<div className='cursor-pointer' onClick={handleCategoryClick}>
+					<div className="relative px-5 py-2.5 text-lg font-extrabold text-gray-800 whitespace-nowrap cursor-pointer flex items-center justify-center after:content-[''] after:absolute after:-bottom-5 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[5px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full md:text-sm md:px-1 md:py-2 md:mx-2">
+						<img src={CategoryImage} alt='' className='w-[18px] h-[18px] pr-[5px]' /> 메뉴
+					</div>
+				</div>
 
+				<div className="relative px-5 py-2.5 text-lg font-extrabold text-gray-800 whitespace-nowrap cursor-pointer flex items-center justify-center after:content-[''] after:absolute after:-bottom-5 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[5px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full md:text-sm md:px-1 md:py-2 md:mx-2">
+					<a href={createSearchLink('RECOMMEND')} className='no-underline text-gray-800'>
+						인기
+					</a>
+				</div>
+				<div className="relative px-5 py-2.5 text-lg font-extrabold text-gray-800 whitespace-nowrap cursor-pointer flex items-center justify-center after:content-[''] after:absolute after:-bottom-5 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[5px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full md:text-sm md:px-1 md:py-2 md:mx-2">
+					<a href={createSearchLink('NEW')} className='no-underline text-gray-800'>
+						신규
+					</a>
+				</div>
+				<div className="relative px-5 py-2.5 text-lg font-extrabold text-gray-800 whitespace-nowrap cursor-pointer flex items-center justify-center after:content-[''] after:absolute after:-bottom-5 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[5px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full md:text-sm md:px-1 md:py-2 md:mx-2">
+					<a href={createSearchLink('EXPIRED')} className='no-underline text-gray-800'>
+						마감임박
+					</a>
+				</div>
+				<button
+					onClick={handleProjectCreate}
+					className='bg-purple-500 text-white border-none rounded-lg cursor-pointer text-base w-[150px] h-10 font-bold transition-colors duration-300 justify-between hover:bg-purple-800'>
+					프로젝트 시작하기
+				</button>
 
-
-				</HeaderNavbar>
-				{
-					<CategoryListLayout isOpen={isOpen}>
-					<CategorySection style={{ border: 'none', padding: '0px 20px 0 20px'}}>
-						<CategorySectionButton>
-							<i className="bi bi-bookmark-check"></i><div>팔로우 프로젝트</div>
-						</CategorySectionButton>
-						<CategorySectionButton onClick={() => navigate('/creater')} bgColor="rgb(233, 236, 239)"  hoverColor="rgb(206, 208, 211)">
-							<i className="bi bi-buildings"></i><div>위더 스튜디오</div>
-						</CategorySectionButton>
-						<CategorySectionButton bgColor="rgb(230, 246, 255)"  hoverColor="rgb(216, 228, 234)">
-							<i className="bi bi-box2"></i><div>즐겨찾기</div>
-						</CategorySectionButton>
-					</CategorySection>
-					<CategorySection>
-						<h3>카테고리</h3>
-						<CategoryList>
-							{categories.map((cat) => (
-								<CategoryListItem
+				<form
+					onSubmit={handleSubmit}
+					className='w-[250px] h-10 bg-white flex items-center rounded-[50px] border border-gray-400 ml-auto px-3 shadow-[inset_0_0_0_2px_transparent] transition-all duration-300 hover:bg-gray-100 hover:shadow-[inset_0_0_0_2px_rgba(166,108,255,0.33)] hover:scale-[1.02] focus-within:shadow-[inset_0_0_0_2px_#a66cff]'>
+					<input
+						type='text'
+						placeholder='검색어를 입력하세요'
+						value={keyword}
+						onChange={(e) => setKeyword(e.target.value)}
+						className='bg-transparent border-none h-[35px] w-[90%] text-[15px] text-gray-800 pl-2 transition-colors duration-300 focus:outline-none focus:text-gray-900 placeholder:text-gray-500 placeholder:transition-opacity placeholder:duration-200'
+					/>
+					<button type='submit' className='w-5 font-bold cursor-pointer border-none bg-transparent transition-all duration-300 hover:scale-110'>
+						<i className='bi bi-search'></i>
+					</button>
+				</form>
+			</div>
+			<div className={`overflow-hidden transition-all duration-[0.6s] ease flex justify-center ${isOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+				<div className='my-10 px-5 pr-12 pl-5 border-none min-w-[150px] text-sm lg:text-[13px]'>
+					<div className='bg-yellow-50 flex items-center border-none rounded-lg cursor-pointer text-sm text-left w-[200px] py-2.5 px-0 pl-5 font-bold transition-colors duration-100 mb-2.5 hover:bg-yellow-200'>
+						<i className='bi bi-bookmark-check bg-white p-[5px] text-black rounded-[5px] text-[22px] mr-2.5'></i>
+						<div>팔로우 프로젝트</div>
+					</div>
+					<div
+						onClick={() => navigate('/creater')}
+						className='bg-gray-200 flex items-center border-none rounded-lg cursor-pointer text-sm text-left w-[200px] py-2.5 px-0 pl-5 font-bold transition-colors duration-100 mb-2.5 hover:bg-gray-300'>
+						<i className='bi bi-buildings bg-white p-[5px] text-black rounded-[5px] text-[22px] mr-2.5'></i>
+						<div>위더 스튜디오</div>
+					</div>
+					<div className='bg-blue-50 flex items-center border-none rounded-lg cursor-pointer text-sm text-left w-[200px] py-2.5 px-0 pl-5 font-bold transition-colors duration-100 mb-2.5 hover:bg-blue-100'>
+						<i className='bi bi-box2 bg-white p-[5px] text-black rounded-[5px] text-[22px] mr-2.5'></i>
+						<div>즐겨찾기</div>
+					</div>
+				</div>
+				<div className='my-10 px-5 pr-12 pl-5 border-l border-gray-300 min-w-[150px] text-sm lg:text-[13px]'>
+					<h3 className='text-gray-800 text-sm font-semibold p-0 m-0 mb-4'>카테고리</h3>
+					<div className='grid mt-0.5 grid-cols-2 gap-y-4 gap-x-10 min-w-[100px]'>
+						{categories.map((cat) => (
+							<p
 								key={cat.tag}
 								onClick={() =>
 									navigate(`/search?tag=${cat.tag}`, {
-									  state: cat.tag
+										state: cat.tag,
 									})
-								  }
-								>
+								}
+								className='text-left m-0 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
 								<i className={cat.icon}></i> {cat.label}
-								</CategoryListItem>
-							))}
-						</CategoryList>
-					</CategorySection>
-					<CategorySection>
-						<h3>프로젝트</h3>
-						<NavSection>
-							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>인기 프로젝트 보기</a></NavSectionItem>
-							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>추천 프로젝트</a></NavSectionItem>
-							<NavSectionItem><a href={createSearchLink('NEW')}>신규 프로젝트</a></NavSectionItem>
-							<NavSectionItem><a href={createSearchLink('EXPIRED')}>마감 임박 프로젝트</a></NavSectionItem>
-							<NavSectionItem><a href={createSearchLink('COMPLETED')}>완료된 프로젝트</a></NavSectionItem>
-						</NavSection>
-						</CategorySection>
-						<CategorySection>
-							<h3>도구/서비스</h3>
-							<NavSection>
-								<NavSectionItem><a href="/notice">공지사항</a></NavSectionItem>
-								<NavSectionItem><a href="">고객센터</a></NavSectionItem>
-								<NavSectionItem><a href="/mypage">마이페이지</a></NavSectionItem>
-								<NavSectionItem><a href="">정책 & 약관</a></NavSectionItem>
+							</p>
+						))}
+					</div>
+				</div>
+				<div className='my-10 px-5 pr-12 pl-5 border-l border-gray-300 min-w-[150px] text-sm lg:text-[13px]'>
+					<h3 className='text-gray-800 text-sm font-semibold p-0 m-0 mb-4'>프로젝트</h3>
+					<div className='block mt-0.5 grid-cols-2 gap-y-3 gap-x-5 min-w-[100px]'>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href={createSearchLink('RECOMMEND')} className='no-underline text-gray-800'>
+								인기 프로젝트 보기
+							</a>
+						</p>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href={createSearchLink('RECOMMEND')} className='no-underline text-gray-800'>
+								추천 프로젝트
+							</a>
+						</p>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href={createSearchLink('NEW')} className='no-underline text-gray-800'>
+								신규 프로젝트
+							</a>
+						</p>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href={createSearchLink('EXPIRED')} className='no-underline text-gray-800'>
+								마감 임박 프로젝트
+							</a>
+						</p>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href={createSearchLink('COMPLETED')} className='no-underline text-gray-800'>
+								완료된 프로젝트
+							</a>
+						</p>
+					</div>
+				</div>
+				<div className='my-10 px-5 pr-12 pl-5 border-l border-gray-300 min-w-[150px] text-sm lg:text-[13px]'>
+					<h3 className='text-gray-800 text-sm font-semibold p-0 m-0 mb-4'>도구/서비스</h3>
+					<div className='block mt-0.5 grid-cols-2 gap-y-3 gap-x-5 min-w-[100px]'>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href='/notice' className='no-underline text-gray-800'>
+								공지사항
+							</a>
+						</p>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href='' className='no-underline text-gray-800'>
+								고객센터
+							</a>
+						</p>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href='/mypage' className='no-underline text-gray-800'>
+								마이페이지
+							</a>
+						</p>
+						<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+							<a href='' className='no-underline text-gray-800'>
+								정책 & 약관
+							</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
 
-						</NavSection>
-					</CategorySection>
+export const HeaderSub: React.FC = () => {
+	const [isOpen, setIsOpen] = useState<boolean>(false)
+	const { isLoggedIn, logout, user } = useAuth()
+	const [showNotification, setShowNotification] = useState<boolean>(false)
+	const notificationRef = useRef<HTMLDivElement>(null)
+	const navigate = useNavigate()
+	const [isHoveringCategory, setIsHoveringCategory] = useState(false)
+	const [keyword, setKeyword] = useState('')
+	const [isHovered, setIsHovered] = useState(false)
 
-					</CategoryListLayout>
-				}
-
-
-
-			</HeaderWrapper>
-		)
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault()
+		if (keyword.trim()) {
+			window.location.href = `/search?search=${encodeURIComponent(keyword.trim())}`
+		}
 	}
 
-	export const HeaderSub: React.FC = () => {
-		const [isOpen, setIsOpen] = useState<boolean>(false)
-		const {isLoggedIn, logout, user} = useAuth()
-		const [showNotification, setShowNotification] = useState<boolean>(false)
-		const notificationRef = useRef<HTMLDivElement>(null)
-		const navigate = useNavigate()
-		const [isHoveringCategory, setIsHoveringCategory] = useState(false)
-		const [keyword, setKeyword] = useState('');
-		const [isHovered, setIsHovered] = useState(false);
+	const handleLogoClick = () => {
+		navigate('/')
+		setIsOpen(false)
+	}
 
-		const handleSubmit = (e: React.FormEvent) => {
-			e.preventDefault();
-			if (keyword.trim()) {
-			window.location.href = `/search?search=${encodeURIComponent(keyword.trim())}`;
-			}
-		};
-
-		const handleLogoClick = () => {
-			navigate('/')
-			setIsOpen(false)
-		}
-
-		const handleLogout = () => {
-			logout();
-			window.location.href = '/login';
-		}
+	const handleLogout = () => {
+		logout()
+		window.location.href = '/login'
+	}
 
 	const handleLoginClick = () => {
 		navigate('/login')
@@ -306,7 +370,6 @@
 
 	const toggleNotification = () => {
 		setShowNotification((prev) => !prev)
-
 	}
 
 	useEffect(() => {
@@ -329,616 +392,208 @@
 
 	return (
 		<div>
-			<SubHeaderWrapper>
-				<HeaderNavbar >
-				<Logo src={LogoImage} onClick={handleLogoClick} />
-					<CategoryMenu onClick={handleCategoryClick}>
+			<div className='px-[15%] xl:px-[10%] lg:px-[2%] border-b border-gray-300 shadow-md mb-10'>
+				<div className='flex text-xl font-bold h-20 items-center'>
+					<img src={LogoImage} alt='logo' onClick={handleLogoClick} className='w-[150px] h-[35px] transition-all duration-300 cursor-pointer hover:scale-105' />
+					<div className='cursor-pointer' onClick={handleCategoryClick}>
+						<div className="relative px-5 py-2.5 text-lg font-extrabold text-gray-800 whitespace-nowrap cursor-pointer flex items-center justify-center after:content-[''] after:absolute after:-bottom-5 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[5px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full md:text-sm md:px-1 md:py-2 md:mx-2">
+							<img src={CategoryImage} alt='' className='w-[18px] h-[18px] pr-[5px]' /> 메뉴
+						</div>
+					</div>
+					<div className="relative px-5 py-2.5 text-lg font-extrabold text-gray-800 whitespace-nowrap cursor-pointer flex items-center justify-center after:content-[''] after:absolute after:-bottom-5 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[5px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full md:text-sm md:px-1 md:py-2 md:mx-2">
+						<a href={createSearchLink('RECOMMEND')} className='no-underline text-gray-800'>
+							인기
+						</a>
+					</div>
+					<div className="relative px-5 py-2.5 text-lg font-extrabold text-gray-800 whitespace-nowrap cursor-pointer flex items-center justify-center after:content-[''] after:absolute after:-bottom-5 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[5px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full md:text-sm md:px-1 md:py-2 md:mx-2">
+						<a href={createSearchLink('NEW')} className='no-underline text-gray-800'>
+							신규
+						</a>
+					</div>
+					<div className="relative px-5 py-2.5 text-lg font-extrabold text-gray-800 whitespace-nowrap cursor-pointer flex items-center justify-center after:content-[''] after:absolute after:-bottom-5 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[5px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full md:text-sm md:px-1 md:py-2 md:mx-2">
+						<a href={createSearchLink('EXPIRED')} className='no-underline text-gray-800'>
+							마감임박
+						</a>
+					</div>
 
-						<NavItem><Category src={CategoryImage} alt='' /> 메뉴</NavItem>
-					</CategoryMenu>
-					<NavItem><a href={createSearchLink('RECOMMEND')}>인기</a></NavItem>
-					<NavItem><a href={createSearchLink('NEW')}>신규</a></NavItem>
-					<NavItem><a href={createSearchLink('EXPIRED')}>마감임박</a></NavItem>
+					<button
+						onClick={handleProjectCreate}
+						className='bg-purple-500 text-white border-none rounded-lg cursor-pointer text-base w-[150px] h-10 font-bold transition-colors duration-300 justify-between hover:bg-purple-800'>
+						프로젝트 시작하기
+					</button>
 
-
-
-					<ProjectButton onClick={handleProjectCreate}>프로젝트 시작하기</ProjectButton>
-
-
-
-						<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px', marginRight: '20px' }}>
-						<SearchBar onSubmit={handleSubmit}>
-							<SearchInput
-									type="text"
-									placeholder="검색어를 입력하세요"
-									value={keyword}
-									onChange={(e) => setKeyword(e.target.value)}
-								/>
-							<SearchButton type="submit">
-								<i className="bi bi-search"></i>
-							</SearchButton>
-						</SearchBar>
-							{!isLoggedIn ? (
-									<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '0px' }}>
-										<HeaderLink onClick={handleLoginClick}>로그인</HeaderLink>
-										<HeaderLink onClick={handleSignupClick}>회원가입</HeaderLink>
-									</div>
-								) : (
-									<div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: '30px' }}>
-										<NotificationWrapper>
-											<Notification onClick={toggleNotification}>
-												<i className={showNotification ? 'bi bi-bell-fill' : 'bi bi-bell'}></i>
-											</Notification>
-											{showNotification && <NotificationBox ref={notificationRef}>새 알림이 없습니다</NotificationBox>}
-										</NotificationWrapper>
-										<AvatarWrapper
-								  onMouseEnter={() => setIsHovered(true)}
-								  onMouseLeave={() => setIsHovered(false)}
-								>
-								<UserProfile src={UserImage} onClick={handleProfileClick} />
-								<ProfilePopup visible={isHovered}>
-									<Banner>
-									<i className="fas fa-volume-up" style={{ fontSize: '18px', float: 'right' }} />
-									<BannerImg src={user?.img || UserImage} alt="프로필" />
-									<Name>{user?.name || '익명'}</Name>
-									</Banner>
-									<Email>{user?.email}</Email>
-									<Department>{user?.socialProvider || '일반 사용자'}</Department>
-									<Settings>
-									<SettingItem onClick={handleProfileClick}>
-										<i className="fas fa-user"></i>
-										마이페이지
-									</SettingItem>
-									<SettingItem onClick={handleLogout}>
-										<i className="fas fa-th"></i>
-										로그아웃
-									</SettingItem>
-									<SettingItem onClick={handleProfileClick}>
-										<i className="fas fa-cog"></i>
-										내정보 변경
-									</SettingItem>
-									</Settings>
-								</ProfilePopup>
-								</AvatarWrapper>
-									</div>
-								)}
+					<div className='flex ml-auto items-center gap-0 mr-5'>
+						<form
+							onSubmit={handleSubmit}
+							className='w-[250px] h-10 bg-white flex items-center rounded-[50px] border border-gray-400 ml-auto px-3 shadow-[inset_0_0_0_2px_transparent] transition-all duration-300 hover:bg-gray-100 hover:shadow-[inset_0_0_0_2px_rgba(166,108,255,0.33)] hover:scale-[1.02] focus-within:shadow-[inset_0_0_0_2px_#a66cff]'>
+							<input
+								type='text'
+								placeholder='검색어를 입력하세요'
+								value={keyword}
+								onChange={(e) => setKeyword(e.target.value)}
+								className='bg-transparent border-none h-[35px] w-[90%] text-[15px] text-gray-800 pl-2 transition-colors duration-300 focus:outline-none focus:text-gray-900 placeholder:text-gray-500 placeholder:transition-opacity placeholder:duration-200'
+							/>
+							<button type='submit' className='w-5 font-bold cursor-pointer border-none bg-transparent transition-all duration-300 hover:scale-110'>
+								<i className='bi bi-search'></i>
+							</button>
+						</form>
+						{!isLoggedIn ? (
+							<div className='flex ml-auto items-center gap-0'>
+								<div
+									onClick={handleLoginClick}
+									className="relative text-gray-800 text-base font-medium py-2.5 px-2.5 mx-1 border-b-2 border-transparent transition-all duration-300 cursor-pointer hover:text-purple-500 hover:scale-[1.02] after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[3px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full">
+									로그인
+								</div>
+								<div
+									onClick={handleSignupClick}
+									className="relative text-gray-800 text-base font-medium py-2.5 px-2.5 mx-1 border-b-2 border-transparent transition-all duration-300 cursor-pointer hover:text-purple-500 hover:scale-[1.02] after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[3px] after:bg-purple-500 after:transition-[width] after:duration-[0.25s] hover:after:w-full">
+									회원가입
+								</div>
 							</div>
-					</HeaderNavbar>
-					{
-					<CategoryListLayout isOpen={isOpen}>
-					<CategorySection style={{ border: 'none', padding: '0px 20px 0 20px'}}>
-						<CategorySectionButton>
-							<i className="bi bi-bookmark-check"></i><div>팔로우 프로젝트</div>
-						</CategorySectionButton>
-						<CategorySectionButton onClick={() => navigate('/creater')} bgColor="rgb(233, 236, 239)"  hoverColor="rgb(206, 208, 211)">
-							<i className="bi bi-buildings"></i><div>위더 스튜디오</div>
-						</CategorySectionButton>
-						<CategorySectionButton bgColor="rgb(230, 246, 255)"  hoverColor="rgb(216, 228, 234)">
-							<i className="bi bi-box2"></i><div>즐겨찾기</div>
-						</CategorySectionButton>
-					</CategorySection>
-					<CategorySection>
-						<h3>카테고리</h3>
-						<CategoryList>
+						) : (
+							<div className='flex ml-auto items-center gap-[30px]'>
+								<div className='relative'>
+									<div onClick={toggleNotification}>
+										<i
+											className={`text-2xl text-gray-600 transition-all duration-300 cursor-pointer hover:text-gray-600 hover:scale-110 ${
+												showNotification ? 'bi bi-bell-fill' : 'bi bi-bell'
+											}`}></i>
+									</div>
+									{showNotification && (
+										<div ref={notificationRef} className='absolute top-full right-0 mt-2.5 w-[250px] h-[300px] bg-gray-100 rounded-2xl shadow-lg p-5 z-[100]'>
+											새 알림이 없습니다
+										</div>
+									)}
+								</div>
+								<div className='relative inline-block' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+									<img
+										src={UserImage}
+										alt='profile'
+										onClick={handleProfileClick}
+										className='w-[30px] h-[30px] rounded-full transition-all duration-300 cursor-pointer hover:scale-110'
+									/>
+									<div
+										className={`absolute top-[35px] right-0 w-[280px] bg-white rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.12)] p-5 z-[100] transition-all duration-[0.25s] ${
+											isHovered ? 'opacity-100 visible translate-y-0 pointer-events-auto' : 'opacity-0 invisible -translate-y-2.5 pointer-events-none'
+										}`}>
+										<div className='bg-gradient-to-r from-[#5e60ce] to-[#4361ee] rounded-t-[10px] p-5 text-center text-white'>
+											<i className='fas fa-volume-up text-lg float-right' />
+											<img src={user?.img || UserImage} alt='프로필' className='w-[60px] h-[60px] rounded-full mt-2.5' />
+											<div className='font-bold text-[17px] mt-2.5'>{user?.name || '익명'}</div>
+										</div>
+										<div className='text-sm text-gray-700 mt-2.5'>{user?.email}</div>
+										<div className='text-[13px] text-gray-500 mb-4'>{user?.socialProvider || '일반 사용자'}</div>
+										<div className='flex justify-around mt-3'>
+											<div onClick={handleProfileClick} className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+												<i className='fas fa-user text-lg mb-1'></i>
+												마이페이지
+											</div>
+											<div onClick={handleLogout} className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+												<i className='fas fa-th text-lg mb-1'></i>
+												로그아웃
+											</div>
+											<div onClick={handleProfileClick} className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+												<i className='fas fa-cog text-lg mb-1'></i>
+												내정보 변경
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						)}
+					</div>
+				</div>
+				<div className={`overflow-hidden transition-all duration-[0.6s] ease flex justify-center ${isOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+					<div className='my-10 px-5 pr-12 pl-5 border-none min-w-[150px] text-sm lg:text-[13px]'>
+						<div className='bg-yellow-50 flex items-center border-none rounded-lg cursor-pointer text-sm text-left w-[200px] py-2.5 px-0 pl-5 font-bold transition-colors duration-100 mb-2.5 hover:bg-yellow-200'>
+							<i className='bi bi-bookmark-check bg-white p-[5px] text-black rounded-[5px] text-[22px] mr-2.5'></i>
+							<div>팔로우 프로젝트</div>
+						</div>
+						<div
+							onClick={() => navigate('/creater')}
+							className='bg-gray-200 flex items-center border-none rounded-lg cursor-pointer text-sm text-left w-[200px] py-2.5 px-0 pl-5 font-bold transition-colors duration-100 mb-2.5 hover:bg-gray-300'>
+							<i className='bi bi-buildings bg-white p-[5px] text-black rounded-[5px] text-[22px] mr-2.5'></i>
+							<div>위더 스튜디오</div>
+						</div>
+						<div className='bg-blue-50 flex items-center border-none rounded-lg cursor-pointer text-sm text-left w-[200px] py-2.5 px-0 pl-5 font-bold transition-colors duration-100 mb-2.5 hover:bg-blue-100'>
+							<i className='bi bi-box2 bg-white p-[5px] text-black rounded-[5px] text-[22px] mr-2.5'></i>
+							<div>즐겨찾기</div>
+						</div>
+					</div>
+					<div className='my-10 px-5 pr-12 pl-5 border-l border-gray-300 min-w-[150px] text-sm lg:text-[13px]'>
+						<h3 className='text-gray-800 text-sm font-semibold p-0 m-0 mb-4'>카테고리</h3>
+						<div className='grid mt-0.5 grid-cols-2 gap-y-4 gap-x-10 min-w-[100px]'>
 							{categories.map((cat) => (
-								<CategoryListItem
-								key={cat.tag}
-								onClick={() =>
-									navigate(`/search?tag=${cat.tag}`, {
-									  state: cat.tag
-									})
-								  }
-								>
-								<i className={cat.icon}></i> {cat.label}
-								</CategoryListItem>
+								<p
+									key={cat.tag}
+									onClick={() =>
+										navigate(`/search?tag=${cat.tag}`, {
+											state: cat.tag,
+										})
+									}
+									className='text-left m-0 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+									<i className={cat.icon}></i> {cat.label}
+								</p>
 							))}
-						</CategoryList>
-					</CategorySection>
-					<CategorySection>
-						<h3>프로젝트</h3>
-						<NavSection>
-							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>인기 프로젝트 보기</a></NavSectionItem>
-							<NavSectionItem><a href={createSearchLink('RECOMMEND')}>추천 프로젝트</a></NavSectionItem>
-							<NavSectionItem><a href={createSearchLink('NEW')}>신규 프로젝트</a></NavSectionItem>
-							<NavSectionItem><a href={createSearchLink('EXPIRED')}>마감 임박 프로젝트</a></NavSectionItem>
-							<NavSectionItem><a href={createSearchLink('COMPLETED')}>완료된 프로젝트</a></NavSectionItem>
-						</NavSection>
-					</CategorySection>
-					<CategorySection>
-						<h3>도구/서비스</h3>
-						<NavSection>
-								<NavSectionItem><a href="">공지사항</a></NavSectionItem>
-								<NavSectionItem><a href="">고객센터</a></NavSectionItem>
-								<NavSectionItem><a href="/mypage">마이페이지</a></NavSectionItem>
-								<NavSectionItem><a href="">정책 & 약관</a></NavSectionItem>
-
-						</NavSection>
-					</CategorySection>
-
-					</CategoryListLayout>
-				}
-				</SubHeaderWrapper>
+						</div>
+					</div>
+					<div className='my-10 px-5 pr-12 pl-5 border-l border-gray-300 min-w-[150px] text-sm lg:text-[13px]'>
+						<h3 className='text-gray-800 text-sm font-semibold p-0 m-0 mb-4'>프로젝트</h3>
+						<div className='block mt-0.5 grid-cols-2 gap-y-3 gap-x-5 min-w-[100px]'>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href={createSearchLink('RECOMMEND')} className='no-underline text-gray-800'>
+									인기 프로젝트 보기
+								</a>
+							</p>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href={createSearchLink('RECOMMEND')} className='no-underline text-gray-800'>
+									추천 프로젝트
+								</a>
+							</p>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href={createSearchLink('NEW')} className='no-underline text-gray-800'>
+									신규 프로젝트
+								</a>
+							</p>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href={createSearchLink('EXPIRED')} className='no-underline text-gray-800'>
+									마감 임박 프로젝트
+								</a>
+							</p>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href={createSearchLink('COMPLETED')} className='no-underline text-gray-800'>
+									완료된 프로젝트
+								</a>
+							</p>
+						</div>
+					</div>
+					<div className='my-10 px-5 pr-12 pl-5 border-l border-gray-300 min-w-[150px] text-sm lg:text-[13px]'>
+						<h3 className='text-gray-800 text-sm font-semibold p-0 m-0 mb-4'>도구/서비스</h3>
+						<div className='block mt-0.5 grid-cols-2 gap-y-3 gap-x-5 min-w-[100px]'>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href='' className='no-underline text-gray-800'>
+									공지사항
+								</a>
+							</p>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href='' className='no-underline text-gray-800'>
+									고객센터
+								</a>
+							</p>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href='/mypage' className='no-underline text-gray-800'>
+									마이페이지
+								</a>
+							</p>
+							<p className='text-left m-0 mb-4 p-0 transition-all duration-300 shadow-none text-gray-800 cursor-pointer hover:text-purple-700 hover:scale-105'>
+								<a href='' className='no-underline text-gray-800'>
+									정책 & 약관
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
 			</div>
-		)
-	}
-
-	const HeaderWrapper = styled.div`
-		padding: 0 15%;
-		@media (max-width: 1500px) {
-			padding: 0 10%;
-		}
-		@media (max-width: 1200px) {
-			padding: 0 2%;
-
-	`;
-
-	const SubHeaderWrapper = styled.div`
-		padding: 0 15%;
-		border-bottom: 1px solidrgb(215, 215, 215);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 아래 방향 그림자 */
-		margin-bottom : 40px;
-	`;
-
-const TopHeader = styled.div`
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	margin-top: 15px;
-	width: 100%;
-`
-
-
-const Logo = styled.img`
-	width: 150px;
-	height: 35px;
-	transition: all 0.3s ease;
-	&:hover {
-		cursor: pointer;
-		transform: scale(1.05);
-		transition: all 0.3s ease;
-	}
-`
-
-const HeaderLink = styled.div`
-	color: #333;
-	font-size: 16px;
-	font-weight: 500;
-	padding: 10px 10px;
-	margin: 0 5px;
-	border-bottom: 2px solid transparent;
-	transition: all 0.3s ease;
-
-	&:hover {
-		cursor: pointer;
-		color : #a66cff;
-		transform: scale(1.02);
-		transition: all 0.3s ease;
-	}
-		&::after {
-		content: '';
-		position: absolute;
-		bottom: 0px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 0%;
-		height: 3px;
-		background-color: #a66cff;
-		transition: width 0.25s ease;
-	}
-
-	&:hover::after {
-		width: 100%;
-	}
-`
-
-
-const HeaderNavbar = styled.div`
-	display: flex;
-	font-size: 20px;
-	font-weight: bold;
-	height: 80px;
-	align-items: center;
-
-`
-
-const NavItem = styled.p`
-	position: relative;
-	padding: 10px 20px;
-	font-size: 18px;
-	font-weight: 800;
-	color: #222;
-	white-space: nowrap;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	&::after {
-		content: '';
-		position: absolute;
-		bottom: -20px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 0%;
-		height: 5px;
-		background-color: #a66cff;
-		transition: width 0.25s ease;
-	}
-
-	&:hover::after {
-		width: 100%;
-	}
-
-	@media (max-width: 768px) {
-		font-size: 14px;
-		padding: 8px 4px;
-		margin: 0 8px;
-	}
-	a {
-		text-decoration: none;
-		color: #222;
-	}
-`
-
-const Category = styled.img`
-	width: 18px;
-	height: 18px;
-	padding-right: 5px;
-`
-
-const CategoryMenu = styled.p`
-
-	&:hover {
-		cursor: pointer;
-	}
-`
-
-const ProjectButton = styled.button`
-	background-color: #a66cff;
-	color: white;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: 16px;
-	width: 150px;
-	height: 40px;
-	font-weight: bold;
-	transition: background-color 0.3s;
-	justify-content: between-space;
-	&:hover {
-		background-color:rgb(91, 48, 160);
-	}
-`;
-
-
-	const SearchBar = styled.form`
-	width: 250px;
-	height: 40px;
-	background-color: #fff;
-	display: flex;
-	align-items: center;
-	border-radius: 50px;
-	border: 1px solid	rgb(209, 208, 208);
-	margin-left: auto;
-	padding: 0 12px;
-	box-shadow: inset 0 0 0 2px transparent;
-	transition: 0.3s ease, background-color 0.3s ease;
-
-&:hover {
-	background-color: #f5f5f5;
-	box-shadow: inset 0 0 0 2px #a66cff55;
-	transform: scale(1.02);
+		</div>
+	)
 }
-
-&:focus-within {
-	box-shadow: inset 0 0 0 2px #a66cff;
-}
-`
-
-const SearchInput = styled.input`
-	background-color: transparent;
-	border: none;
-	height: 35px;
-	width: 90%;
-	font-size: 15px;
-	color: #333;
-	padding-left: 8px;
-	transition: color 0.3s ease;
-
-	&:focus {
-		outline: none;
-		color: #111;
-	}
-
-		&::placeholder {
-			color: #999;
-			transition: opacity 0.2s ease;
-		}
-	`
-	const Search = styled.img`
-		width: 20px;
-		cursor: pointer;
-		transition: filter 0.3s ease, transform 0.2s ease;
-		&:hover {
-			transform: scale(1.1)	;
-		}
-	`
-	const SearchButton = styled.button`
-	width: 20px;
-	font-weight: bold;
-	cursor: pointer;
-	border: none;
-	background-color: transparent;
-	transition: filter 0.3s ease, transform 0.2s ease;
-	&:hover {
-		transform: scale(1.1)	;
-	}
-`
-
-
-const CategoryListLayout = styled.div<{ isOpen: boolean }>`
-	overflow: hidden;
-	max-height: ${({ isOpen }) => (isOpen ? '400px' : '0')};
-	opacity: ${({ isOpen }) => (isOpen ? '1' : '0')};
-	transition: max-height 0.6s ease, opacity 0.6s ease;
-	display: flex;
-	justify-content: center;
-
-	`
-	const CategorySection = styled.div`
-		margin: 40px 0 ;
-		padding:  0 50px 0 20px;
-		border-left: 1px solid #ddd;
-		min-width : 150px;
-		font-size: 14px;
-		h3 {
-			color: #333;
-			font-size: 14px;
-			font-weight: 600;
-			padding: 0;
-			margin: 0 0 15px 0;
-			}
-		@media (max-width: 1200px) {
-			font-size: 13px;
-		}
-	`
-	const CategoryList = styled.div`
-		display: grid;
-		margin-top: 2px;
-
-		grid-template-columns: repeat(2, 1fr);
-		row-gap: 15px;
-		column-gap: 40px;
-		min-width: 100px;
-
-	`;
-	const CategorySectionButton = styled.div<{
-		bgColor?: string;
-		hoverColor?: string;
-	  }>`
-		background: ${({ bgColor }) => bgColor || 'rgb(255, 248, 231)'};
-		display: flex;
-		align-items: center;
-		border: none;
-		border-radius: 8px;
-		cursor: pointer;
-		font-size: 14px;
-		text-align: left;
-		width: 200px;
-		padding: 10px 0px 10px 20px;
-		font-weight: bold;
-		transition: background-color 0.1s;
-		margin-bottom: 10px;
-
-		&:hover {
-		  background-color: ${({ hoverColor }) => hoverColor || 'rgb(238, 232, 217)'};
-		}
-
-		div {
-		  align-items: center;
-		  justify-content: center;
-		}
-
-		i {
-		  background: white;
-		  padding: 5px;
-		  color: black;
-		  border-radius: 5px;
-		  font-size: 22px;
-		  margin-right: 10px;
-		}
-	  `;
-
-
-
-
-
-	const CategoryListItem = styled.p`
-		text-align: left;
-		margin: 0 0;
-		padding:  0;
-		transition: all 0.3s ease;
-		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-		color: #333;
-
-	&:hover {
-		cursor: pointer;
-		color: #6a1b9a;
-		transform: scale(1.05);
-		transition: all 0.3s ease;
-	}
-
-		a {
-			text-decoration: none;
-			color: #333;
-		}
-
-	`
-
-const NavSection = styled.div`
-	display: block;
-	margin-top: 2px;
-
-		grid-template-columns: repeat(2, 1fr);
-		row-gap: 12px;
-		column-gap: 20px;
-		min-width: 100px;
-
-
-		a{
-			text-decoration: none;
-			color: #333;
-		}
-	`;
-	const NavSectionItem = styled.p`
-		text-align: left;
-		margin: 0 0 15px 0;
-		padding:  0;
-
-		transition: all 0.3s ease;
-		box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-		color: #333;
-
-	&:hover {
-		cursor: pointer;
-		color: #6a1b9a;
-		transform: scale(1.05);
-		transition: all 0.3s ease;
-	}
-
-	a {
-		text-decoration: none;
-		color: #333;
-	}
-`;
-
-const UserProfile = styled.img`
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
-	transition: all 0.3s ease;
-	&:hover {
-		cursor: pointer;
-		transform: scale(1.1);
-		transition: all 0.3s ease;
-	}
-`
-
-const Notification = styled.div`
-	i {
-		font-size: 25px;
-		color: #555;
-		transition: color 0.3s ease, font-size 0.3s ease, transform 0.3s ease;
-
-		&:hover {
-			cursor: pointer;
-			color:#555;
-			transform: scale(1.1);
-			transition: all 0.3s ease;
-		}
-	}
-`
-
-
-const NotificationWrapper = styled.div`
-	position: relative;
-`
-
-const NotificationBox = styled.div`
-	position: absolute;
-	top: 100%;
-	right: 0;
-	margin-top: 10px;
-	width: 250px;
-	height: 300px;
-	background-color: #f2f2f2;
-	border-radius: 15px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	padding: 20px;
-	z-index: 100;
-`
-
-
-
-
-
-/////////////////////////////////
-
-const AvatarWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-`;
-
-const ProfilePopup = styled.div<{ visible: boolean }>`
-  position: absolute;
-  top: 35px;
-  right: 0;
-  width: 280px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  padding: 20px 20px 20px 20px;
-  z-index: 100;
-  opacity: ${({ visible }) => (visible ? 1 : 0)};
-  visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
-  transform: translateY(${({ visible }) => (visible ? '0' : '-10px')});
-  transition: all 0.25s ease;
-  pointer-events: ${({ visible }) => (visible ? 'auto' : 'none')};
-`;
-
-const Banner = styled.div`
-  background: linear-gradient(to right, #5e60ce, #4361ee);
-  border-radius: 10px 10px 0 0;
-  padding: 20px;
-  text-align: center;
-  color: white;
-`;
-
-const BannerImg = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-top: 10px;
-`;
-
-const Name = styled.div`
-  font-weight: bold;
-  font-size: 17px;
-  margin-top: 10px;
-`;
-
-const Email = styled.div`
-  font-size: 14px;
-  color: #374151;
-  margin-top: 10px;
-`;
-
-const Department = styled.div`
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 16px;
-`;
-
-const Settings = styled.div`
-  display: flex;
-  justify-content: space-around;
-  margin-top: 12px;
-`;
-
-const SettingItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 12px;
-  color: #4b5563;
-  cursor: pointer;
-
-  i {
-	font-size: 18px;
-	margin-bottom: 4px;
-  }
-
-  &:hover {
-	color: #2563eb;
-  }
-`;
