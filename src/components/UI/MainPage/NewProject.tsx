@@ -59,7 +59,7 @@ const NewProject: React.FC = () => {
 			}
 		`
 		document.head.appendChild(style)
-		
+
 		return () => {
 			document.head.removeChild(style)
 		}

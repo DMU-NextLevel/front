@@ -175,7 +175,7 @@ export const HeaderMain: React.FC = () => {
 	return (
 		<div className='relative'>
 			{/* 헤더 */}
-			<header 
+			<header
 				ref={headerRef}
 				className={`w-full ${location.pathname === '/' && !isScrolled ? (isMenuHovered ? 'bg-white backdrop-blur-xl text-gray-900' : 'bg-transparent backdrop-blur-0 text-white') : 'bg-white backdrop-blur-xl text-gray-900'} ${location.pathname === '/' && !isScrolled ? '' : 'border-b border-gray-200/50'} fixed top-0 left-0 right-0 z-50 transition-all duration-300`}
 				style={{
@@ -186,7 +186,7 @@ export const HeaderMain: React.FC = () => {
 				<div className='px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]'>
 					<div className='flex items-center h-14'>
 						{/* 왼쪽: 로고 */}
-						<div 
+						<div
 							onClick={() => navigate('/')}
 							className='cursor-pointer hover:opacity-80 transition-opacity flex items-center'
 						>
@@ -215,7 +215,7 @@ export const HeaderMain: React.FC = () => {
 							<a href={createSearchLink('NEW')} className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-gray-900 hover:text-gray-600 hover:bg-gray-100'} `}>
 								신규
 							</a>
-							<button 
+							<button
 								onClick={(e) => {
 									e.preventDefault()
 									alert('페이지가 준비중입니다')
@@ -224,8 +224,8 @@ export const HeaderMain: React.FC = () => {
 							>
 								마감임박
 							</button>
-							
-						
+
+
 						{/* 프로젝트 시작 버튼 - 마감임박 우측에 배치 */}
 						<button
 							onClick={() => navigate('/creater')}
@@ -236,19 +236,19 @@ export const HeaderMain: React.FC = () => {
 					</nav>						{/* 오른쪽 영역 */}
 						<div className='ml-auto flex items-center space-x-4'>
 							{/* 검색창 - 데스크톱에서만 표시 */}
-							<form 
+							<form
 								ref={searchFormRef}
 								onSubmit={handleSubmit}
 								className={`hidden lg:flex items-center h-10 ${isSearchExpanded ? 'w-[350px] xl:w-[400px]' : 'w-10'} ${location.pathname === '/' && !isScrolled ? 'bg-transparent' : 'bg-white/80'} rounded-full backdrop-blur-sm transition-all duration-500 ease-out ${isSearchExpanded ? (!isScrolled && location.pathname === '/' ? 'border border-white/50' : 'border border-gray-300/50') : 'border border-transparent'}`}>
 								{/* 검색 아이콘 */}
-								<button 
-									type='button' 
+								<button
+									type='button'
 									className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${isSearchExpanded ? 'rotate-0' : 'rotate-90'} ${location.pathname === '/' && !isScrolled ? 'text-white hover:bg-white/20' : 'text-gray-600 hover:bg-gray-100'}`}
 									onClick={() => setIsSearchExpanded(!isSearchExpanded)}
 								>
 									<i className='bi bi-search text-lg'></i>
 								</button>
-								
+
 								{/* 검색 입력창 */}
 								<div className={`overflow-hidden transition-all duration-500 ease-out ${isSearchExpanded ? 'w-full opacity-100' : 'w-0 opacity-0'}`}>
 									<input
@@ -340,7 +340,7 @@ export const HeaderMain: React.FC = () => {
 												<i className='bi bi-star-fill text-xs text-yellow-300'></i>
 											</div>
 										</div>
-										
+
 										{/* 사용자 정보 섹션 */}
 										<div className='mt-4 space-y-3'>
 											<div className='flex items-center text-sm text-gray-700 px-2'>
@@ -364,7 +364,7 @@ export const HeaderMain: React.FC = () => {
 												<span>포인트: {user?.point || 0}P</span>
 											</div>
 										</div>
-										
+
 										{/* 구분선 */}
 										<div className='mt-4 mb-3 border-t border-gray-100'></div>
 										<div className='flex justify-around'>
@@ -388,7 +388,7 @@ export const HeaderMain: React.FC = () => {
 							</div>
 
 							{/* 모바일: 햄버거 메뉴 버튼 */}
-							<button 
+							<button
 								className='lg:hidden flex items-center justify-center w-10 h-10 text-gray-700 hover:text-gray-900 transition-colors'
 								onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 							>
@@ -398,14 +398,14 @@ export const HeaderMain: React.FC = () => {
 					</div>
 				</div>
 			</header>
-			
+
 			{/* 헤더 높이만큼 여백 추가 */}
 			<div className='h-14'></div>
 
 			{/* 모바일 메뉴 */}
 			<div className={`lg:hidden fixed left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-gray-200/50 z-40 ${
-				isMobileMenuOpen 
-					? 'opacity-100 visible transform translate-y-0 transition-all duration-200 ease-out' 
+				isMobileMenuOpen
+					? 'opacity-100 visible transform translate-y-0 transition-all duration-200 ease-out'
 					: 'opacity-0 invisible transform -translate-y-2 transition-all duration-150 ease-in pointer-events-none'
 			}`}
 			style={{ top: '56px', maxHeight: 'calc(100vh - 56px)' }}>
@@ -440,7 +440,7 @@ export const HeaderMain: React.FC = () => {
 									<i className='bi bi-plus-circle text-blue-600 text-lg'></i>
 									<span className='text-sm font-medium text-gray-900'>프로젝트 시작</span>
 								</button>
-								<button 
+								<button
 									onClick={(e) => {
 										e.preventDefault()
 										alert('페이지가 준비중입니다')
@@ -458,21 +458,21 @@ export const HeaderMain: React.FC = () => {
 						<div>
 							<h4 className='text-sm font-semibold text-gray-900 mb-3'>프로젝트</h4>
 							<div className='space-y-2'>
-								<a 
-									href={createSearchLink('RECOMMEND')} 
+								<a
+									href={createSearchLink('RECOMMEND')}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 									onClick={() => setIsMobileMenuOpen(false)}
 								>
 									인기 프로젝트
 								</a>
-								<a 
-									href={createSearchLink('NEW')} 
+								<a
+									href={createSearchLink('NEW')}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 									onClick={() => setIsMobileMenuOpen(false)}
 								>
 									신규 프로젝트
 								</a>
-								<button 
+								<button
 									onClick={(e) => {
 										e.preventDefault()
 										alert('페이지가 준비중입니다')
@@ -482,7 +482,7 @@ export const HeaderMain: React.FC = () => {
 								>
 									마감 임박 프로젝트
 								</button>
-								<button 
+								<button
 									onClick={(e) => {
 										e.preventDefault()
 										alert('페이지가 준비중입니다')
@@ -519,7 +519,7 @@ export const HeaderMain: React.FC = () => {
 						<div>
 							<h4 className='text-sm font-semibold text-gray-900 mb-3'>도구 & 서비스</h4>
 							<div className='space-y-2'>
-								<button 
+								<button
 									onClick={() => {
 										navigate('/notice')
 										setIsMobileMenuOpen(false)
@@ -528,14 +528,14 @@ export const HeaderMain: React.FC = () => {
 								>
 									공지사항
 								</button>
-								<button 
+								<button
 									onClick={() => setIsMobileMenuOpen(false)}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 								>
 									고객센터
 								</button>
 								{isLoggedIn && (
-									<button 
+									<button
 										onClick={() => {
 											navigate('/mypage')
 											setIsMobileMenuOpen(false)
@@ -591,11 +591,11 @@ export const HeaderMain: React.FC = () => {
 									<div className='font-medium text-gray-900'>{user?.nickName || '익명'}</div>
 									<div className='text-sm text-gray-500'>{role == 'ADMIN' ? '관리자' : '일반 사용자'}</div>
 								</div>
-								<button 
+								<button
 									onClick={() => {
 										handleLogout()
 										setIsMobileMenuOpen(false)
-									}} 
+									}}
 									className='text-gray-500 hover:text-gray-700 transition-colors p-2'
 								>
 									<i className='bi bi-box-arrow-right text-lg'></i>
@@ -607,10 +607,10 @@ export const HeaderMain: React.FC = () => {
 			</div>
 
 			{/* 모바일 메뉴 배경 오버레이 */}
-			<div 
+			<div
 				className={`lg:hidden fixed inset-0 bg-black/20 z-30 ${
-					isMobileMenuOpen 
-						? 'opacity-100 visible transition-opacity duration-200 ease-out' 
+					isMobileMenuOpen
+						? 'opacity-100 visible transition-opacity duration-200 ease-out'
 						: 'opacity-0 invisible transition-opacity duration-150 ease-in'
 				}`}
 				onClick={() => setIsMobileMenuOpen(false)}
@@ -619,8 +619,8 @@ export const HeaderMain: React.FC = () => {
 			{/* 애플 스타일 메가 메뉴 */}
 			<div
 				className={`${location.pathname === '/' && !isScrolled ? 'bg-gradient-to-b from-transparent to-black/20 text-white' : 'bg-white backdrop-blur-xl text-gray-900'} fixed left-0 right-0 border-b border-gray-200/50 z-40 ${
-					isMenuOpen 
-						? 'opacity-100 visible transform translate-y-0 transition-all duration-200 ease-out' 
+					isMenuOpen
+						? 'opacity-100 visible transform translate-y-0 transition-all duration-200 ease-out'
 						: 'opacity-0 invisible transform -translate-y-1 transition-all duration-150 ease-in pointer-events-none'
 				}`}
 				style={{ top: menuHeight }}
@@ -642,7 +642,7 @@ export const HeaderMain: React.FC = () => {
 									<i className='bi bi-plus-circle text-blue-600 text-lg'></i>
 									<span className={`text-sm font-medium ${location.pathname === '/' && !isScrolled ? 'text-white' : 'text-gray-900'}`}>프로젝트 시작</span>
 								</button>
-								<button 
+								<button
 									onClick={(e) => {
 										e.preventDefault()
 										alert('페이지가 준비중입니다')
@@ -689,7 +689,7 @@ export const HeaderMain: React.FC = () => {
 								<a href={createSearchLink('NEW')} className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}>
 									신규 프로젝트
 								</a>
-								<button 
+								<button
 									onClick={(e) => {
 										e.preventDefault()
 										alert('페이지가 준비중입니다')
@@ -698,7 +698,7 @@ export const HeaderMain: React.FC = () => {
 								>
 									마감 임박 프로젝트
 								</button>
-								<button 
+								<button
 									onClick={(e) => {
 										e.preventDefault()
 										alert('페이지가 준비중입니다')
@@ -746,10 +746,10 @@ export const HeaderMain: React.FC = () => {
 			</div>
 
 			{/* Apple 스타일 배경 오버레이 */}
-			<div 
+			<div
 				className={`fixed inset-0 bg-black/5 z-30 ${
-					isMenuOpen 
-						? 'opacity-100 visible transition-opacity duration-200 ease-out' 
+					isMenuOpen
+						? 'opacity-100 visible transition-opacity duration-200 ease-out'
 						: 'opacity-0 invisible transition-opacity duration-150 ease-in'
 				}`}
 				onClick={() => setIsMenuOpen(false)}

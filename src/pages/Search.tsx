@@ -32,7 +32,7 @@ type ProjectItem = {
   summary?: string
   intro?: string
   likeCount?: number
-  viewCount?: number
+viewCount?: number
   isLiked?: boolean // 좋아요 상태 추가
   author?: {
     name: string
@@ -163,7 +163,7 @@ const Search: React.FC = () => {
 			} else {
 				setLoadingMore(true) // 추가 페이지 로딩
 			}
-			
+
 			// 완료된 프로젝트 로드 (첫 페이지일 때만)
 			const loadCompletedProjects = async () => {
 				if (page === 0) {
@@ -193,17 +193,17 @@ const Search: React.FC = () => {
 								'전문가의 노하우가 담긴 고품질 콘텐츠와 서비스를 만나보세요.',
 								'모든 연령대가 함께 즐길 수 있는 재미있고 유익한 경험을 제공합니다.'
 							]
-							
+
 							const completedWithIntro = data.projects.map((project: any, index: number) => ({
 								...project,
 								shortDescription: project.content ||
-									project.shortDescription || 
-									project.description || 
-									project.summary || 
-									project.intro || 
+									project.shortDescription ||
+									project.description ||
+									project.summary ||
+									project.intro ||
 									dummyDescriptions[index % dummyDescriptions.length]
 							}))
-							
+
 							setCompletedProjects(completedWithIntro)
 						} else {
 							setCompletedProjects([])
@@ -219,7 +219,7 @@ const Search: React.FC = () => {
 					}
 				}
 			}
-			
+
 			const loadProjects = async () => {
 				const data = await fetchProjectsFromServer({
 					order: order || 'RECOMMEND',
@@ -233,7 +233,7 @@ const Search: React.FC = () => {
 				if (data && data.projects && Array.isArray(data.projects)) {
 					// totalCount 설정
 					setTotalCount(data.totalCount || 0)
-					
+
 					// 더미 소개 텍스트 배열
 					const dummyDescriptions = [
 						'혁신적인 아이디어로 새로운 가치를 창조하는 프로젝트입니다. 많은 관심과 참여 부탁드려요!창의적인 디자인과 실용성을 결합한 제품으로, 새로운 경험을 선사합니다',
@@ -252,18 +252,18 @@ const Search: React.FC = () => {
 					const projectsWithIntro = data.projects.map((project: any, index: number) => ({
 						...project,
 						shortDescription: project.content ||
-							project.shortDescription || 
-							project.description || 
-							project.summary || 
-							project.intro || 
+							project.shortDescription ||
+							project.description ||
+							project.summary ||
+							project.intro ||
 							dummyDescriptions[(page * 12 + index) % dummyDescriptions.length]
 					}))
-					
+
 					// 데이터가 8개 미만이면 다음 페이지가 없음
 					if (data.projects.length < 8) {
 						setHasNextPage(false)
 					}
-					
+
 					if (append) {
 						// 기존 데이터에 추가
 						setProjects(prev => [...prev, ...projectsWithIntro])
@@ -372,7 +372,7 @@ const Search: React.FC = () => {
 			{/* 모바일/데스크톱 모두 메인페이지와 동일한 카테고리바 디자인 적용 */}
 
 
-			
+
 			{/* 검색 섹션 - 좌측 정렬 */}
 			<div className='mt-8 mb-6'>
 				<div className='flex flex-col lg:flex-row lg:items-center gap-4'>
@@ -421,7 +421,7 @@ const Search: React.FC = () => {
 					</div>
 				</div>
 			</div>
-			
+
 			<div className="mt-4">
 				<CategoryBar
 					categories={categories}
@@ -430,9 +430,9 @@ const Search: React.FC = () => {
 					className="px-0 py-0"
 				/>
 			</div>
-			
 
-			
+
+
 			<div className='relative flex bg-gray-100 rounded-2xl mb-5 overflow-hidden'>
 				<div
 					className='absolute top-0 left-0 w-1/4 h-full bg-purple-500 border-2 border-blue-400 rounded-2xl transition-transform duration-300 ease z-0'
@@ -664,7 +664,7 @@ const Search: React.FC = () => {
 												{item.title}
 											</h3>
 										</a>
-										
+
 										{/* 작성자와 시작일/진행률을 한 줄에 배치 */}
 										<div className='flex items-center justify-between text-xs mb-2'>
 											{/* 좌측: 작성자 */}
@@ -822,7 +822,7 @@ const Search: React.FC = () => {
 											<div className='invisible py-4 px-0 space-y-3'>
 												<div className='flex flex-wrap gap-2'>
 													{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-														<span 
+														<span
 															key={`completed-hidden-${tagIndex}`}
 															className='inline-flex items-center text-xs font-medium text-white bg-gray-600 px-2.5 py-1 rounded-full'
 														>
@@ -832,7 +832,7 @@ const Search: React.FC = () => {
 												</div>
 											</div>
 										</div>
-										
+
 										<div className='relative z-10 p-4'>
 											<a href={`/project/${item.id}`} className='block'>
 												{/* 이미지 영역 */}
@@ -869,14 +869,14 @@ const Search: React.FC = () => {
 													</div>
 												</div>
 											</a>
-											
+
 											<div className='space-y-2 relative'>
 												<a href={`/project/${item.id}`} className='block group/title'>
 													<h3 className='text-base font-bold text-gray-900 leading-tight line-clamp-2 hover:scale-[1.02] transition-all duration-250 ease-out'>
 														{item.title}
 													</h3>
 												</a>
-												
+
 												{/* 작성자와 상태 표시 */}
 												<div className='flex items-center justify-between text-xs mb-2'>
 													<div className='text-gray-400 font-bold'>
@@ -886,13 +886,13 @@ const Search: React.FC = () => {
 														<span className='text-green-600 font-semibold'>완료됨</span>
 													</div>
 												</div>
-												
+
 												{/* 호버 시 확장 내용 */}
 												<div className='absolute left-0 right-0 top-full opacity-0 group-hover:opacity-100 transition-all duration-250 z-20' style={{ marginTop: '-1px' }}>
 													<div className='py-4 px-0 space-y-3'>
 														<div className='flex flex-wrap gap-2'>
 															{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-																<span 
+																<span
 																	key={`completed-${tagIndex}`}
 																	className='inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-full transition-all duration-250 ease-out cursor-pointer'
 																>
@@ -900,7 +900,7 @@ const Search: React.FC = () => {
 																</span>
 															))}
 														</div>
-													</div>	
+													</div>
 												</div>
 											</div>
 										</div>
