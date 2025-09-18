@@ -25,6 +25,7 @@ import { PopupPaymentPage } from './components/UI/TossPayments'
 import { SuccessPage } from './components/UI/TossPayments'
 import { FailPage } from './components/UI/TossPayments'
 import SocialLogin from './pages/SocialLogin'
+import SocketTest from './pages/SocketTest'
 
 function App() {
 	return (
@@ -67,6 +68,7 @@ const AppWrapper = () => {
 				<Route path={`/google/callback`} element={<SocialLogin loginType={'google'} />} />
 				<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
 				<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
+				<Route path={`/socket-test`} element={<SocketTest />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
