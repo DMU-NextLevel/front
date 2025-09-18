@@ -39,6 +39,10 @@ const IntegratedSseTestComponent: React.FC = () => {
           setMessages(prevMessages => [...prevMessages, event.data]);
         };
 
+        eventSource.addEventListener("CONNECT", function (event) {
+            console.log("connect:", event.data);
+        });
+
         eventSource.onerror = (error) => {
           console.error('❌ SSE 연결 오류 발생:', error);
           setConnectionStatus('error');
