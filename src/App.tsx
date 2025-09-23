@@ -25,6 +25,7 @@ import { PopupPaymentPage } from './components/UI/TossPayments'
 import { SuccessPage } from './components/UI/TossPayments'
 import { FailPage } from './components/UI/TossPayments'
 import SocialLogin from './pages/SocialLogin'
+import SocialPage from './pages/SocialPage'
 
 function App() {
 	return (
@@ -39,10 +40,14 @@ const AppWrapper = () => {
 	const [loginType, setLoginType] = useState<string>('')
 	const location = useLocation()
 	const hideLayout = ['/login', '/signup', '/popup-payment', '/popup-payment-success', '/kakao/callback', '/naver/callback', '/google/callback']
+	const hideLayoutPatterns = ['/socialpage']
 	const mainPage = ['/']
+
+	const shouldHideLayout = hideLayout.includes(location.pathname) || hideLayoutPatterns.some((pattern) => location.pathname.startsWith(pattern))
+
 	return (
 		<AuthProvider>
-			{!hideLayout.includes(location.pathname) ? mainPage.includes(location.pathname) ? <HeaderMain /> : <HeaderSub /> : null}
+			{!shouldHideLayout ? mainPage.includes(location.pathname) ? <HeaderMain /> : <HeaderSub /> : null}
 			<Routes>
 				<Route path='/' element={<MainPage />} />
 				<Route path='/login' element={<Login setLoginType={setLoginType} />} />
@@ -67,8 +72,9 @@ const AppWrapper = () => {
 				<Route path={`/google/callback`} element={<SocialLogin loginType={'google'} />} />
 				<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
 				<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
+				<Route path='/socialpage/:id' element={<SocialPage />} />
 			</Routes>
-			{!hideLayout.includes(location.pathname) && <Footer />}
+			{!shouldHideLayout && <Footer />}
 		</AuthProvider>
 	)
 }
