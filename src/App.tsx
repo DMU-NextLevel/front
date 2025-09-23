@@ -33,6 +33,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminProjects from './pages/Admin/AdminProjects'
 import AdminNotices from './pages/Admin/AdminNotices'
+import SocialPage from './pages/SocialPage'
 
 // AOS 초기화
 declare global {
@@ -125,6 +126,7 @@ return (
 					<Route path='projects' element={<AdminProjects />} />
 					<Route path='notices' element={<AdminNotices />} />
 				</Route>
+				<Route path='/socialpage/:id' element={<SocialPage />} />
 			</Routes>
 			{!shouldHideLayout && <Footer />}
 		</AuthProvider>
