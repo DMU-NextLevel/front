@@ -19,18 +19,18 @@ const RankingList: React.FC = () => {
 	}, [])
 
 	return (
-		<div className='w-[30%] bg-white py-10 pr-0 pl-10 border-l border-gray-100 ml-10'>
-			<h2 className='text-2xl font-bold mb-5 text-gray-800'>실시간 랭킹</h2>
+		<div className='w-full lg:w-[30%] bg-white py-6 md:py-8 lg:py-10 pr-0 lg:pl-10 lg:border-l border-gray-100 lg:ml-10 mt-6 lg:mt-0'>
+			<h2 className='text-xl md:text-2xl font-bold mb-4 md:mb-5 text-gray-800'>실시간 랭킹</h2>
 
-			<div>
+			<div className='space-y-5'>
 				{projects.map((item, index) => (
-					<div onClick={() => navigate(`/project/${item.id}`)} key={item.id} className='flex items-start mb-3 justify-between cursor-pointer'>
+					<div onClick={() => navigate(`/project/${item.id}`)} key={item.id} className='flex items-start justify-between cursor-pointer'>
 						<div className='w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0'>{index + 1}</div>
 						<div className='flex-1 mr-3'>
-							<h3 className='text-gray-800 text-sm font-medium mb-1 leading-tight'>{item.title}</h3>
+							<h3 className='text-gray-800 text-xs sm:text-sm font-medium mb-1 leading-tight line-clamp-2'>{item.title}</h3>
 							<p className='text-purple-600 text-xs font-semibold'>{item.completionRate}% 달성</p>
 						</div>
-						<div className='w-12 h-12 flex-shrink-0'>
+						<div className='w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-16 flex-shrink-0'>
 							{item.titleImg ? (
 								<img
 									src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}

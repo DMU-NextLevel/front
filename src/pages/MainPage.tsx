@@ -28,12 +28,14 @@ const MainPage: React.FC = () => {
 
   return (
     <div className="ml-0 mr-auto flex flex-col box-border text-gray-700">
-      <MainBanner />
+      <div className="w-full mx-auto max-w-[1200px] xl:max-w-[1280px] 2xl:max-w-[1440px] px-4 sm:px-6 md:px-8">
+        <MainBanner />
+      </div>
 
-      <div className="mx-[15%] p-0 xl:mx-[10%] lg:mx-[2%]">
+      <div className="w-full mx-auto max-w-[1200px] xl:max-w-[1280px] 2xl:max-w-[1440px] px-4 sm:px-6 md:px-8">
         <CategorySelector categories={categories} />
         <hr className="absolute left-0 right-0 h-px bg-gray-100 border-none mx-auto" />
-        <div className="w-full flex justify-between mx-auto p-0 box-border">
+        <div className="w-full flex flex-col lg:flex-row justify-between mx-auto p-0 box-border gap-8">
           <RecommendProject />
           <RankingList />
         </div>

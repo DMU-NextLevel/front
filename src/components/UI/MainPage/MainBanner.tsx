@@ -36,37 +36,37 @@ const SimpleSlider: React.FC = () => {
 	}
 
 	return (
-		<div className='w-full max-w-full h-[630px] max-h-[630px] relative overflow-hidden'>
+		<div className='w-full max-w-full relative overflow-hidden h-[240px] sm:h-[300px] md:h-[420px] lg:h-[560px] xl:h-[630px]'>
 			{/* 좌우 클릭 영역 */}
-			<div className='absolute top-0 left-0 w-[15%] h-full z-[5] cursor-pointer' onClick={() => sliderRef.current?.slickPrev()} />
-			<div className='absolute top-0 right-0 w-[15%] h-full z-[5] cursor-pointer' onClick={() => sliderRef.current?.slickNext()} />
+			<div className='absolute top-0 left-0 w-[25%] sm:w-[20%] lg:w-[15%] h-full z-[5] cursor-pointer' onClick={() => sliderRef.current?.slickPrev()} />
+			<div className='absolute top-0 right-0 w-[25%] sm:w-[20%] lg:w-[15%] h-full z-[5] cursor-pointer' onClick={() => sliderRef.current?.slickNext()} />
 
 			<Slider ref={sliderRef} {...settings}>
-				<div className='w-full h-[630px] flex justify-center items-center'>
+				<div className='w-full h-[240px] sm:h-[300px] md:h-[420px] lg:h-[560px] xl:h-[630px] flex justify-center items-center'>
 					<img src={bannerImg} alt='배너1' className='w-full h-full object-cover' />
 				</div>
-				<div className='w-full h-[630px] flex justify-center items-center'>
+				<div className='w-full h-[240px] sm:h-[300px] md:h-[420px] lg:h-[560px] xl:h-[630px] flex justify-center items-center'>
 					<video src={bannerMov3} autoPlay muted playsInline className='w-full h-full object-cover pointer-events-none' />
 				</div>
-				<div className='w-full h-[630px] flex justify-center items-center'>
+				<div className='w-full h-[240px] sm:h-[300px] md:h-[420px] lg:h-[560px] xl:h-[630px] flex justify-center items-center'>
 					<video src={banner2} autoPlay muted playsInline className='w-full h-full object-cover pointer-events-none' />
 				</div>
 				{/* <div className="w-full h-[630px] flex justify-center items-center">
 					<video src={banner1} autoPlay muted playsInline className="w-full h-full object-cover pointer-events-none" />
 				</div> */}
-				<div className='w-full h-[630px] flex justify-center items-center'>
+				<div className='w-full h-[240px] sm:h-[300px] md:h-[420px] lg:h-[560px] xl:h-[630px] flex justify-center items-center'>
 					<video src={banner3} autoPlay muted playsInline className='w-full h-full object-cover pointer-events-none' />
 				</div>
 			</Slider>
 
 			{/* 커스텀 버튼 */}
 			<button
-				className='absolute top-1/2 left-5 -translate-y-1/2 bg-black bg-opacity-50 text-white border-none rounded-full w-[30px] h-[30px] flex justify-center items-center cursor-pointer text-lg z-10 hover:bg-opacity-70'
+				className='absolute top-1/2 left-3 sm:left-5 -translate-y-1/2 bg-black bg-opacity-50 text-white border-none rounded-full w-7 h-7 sm:w-[30px] sm:h-[30px] flex justify-center items-center cursor-pointer text-base sm:text-lg z-10 hover:bg-opacity-70'
 				onClick={() => sliderRef.current?.slickPrev()}>
 				{'<'}
 			</button>
 			<button
-				className='absolute top-1/2 right-5 -translate-y-1/2 bg-black bg-opacity-50 text-white border-none rounded-full w-[30px] h-[30px] flex justify-center items-center cursor-pointer text-lg z-10 hover:bg-opacity-70'
+				className='absolute top-1/2 right-3 sm:right-5 -translate-y-1/2 bg-black bg-opacity-50 text-white border-none rounded-full w-7 h-7 sm:w-[30px] sm:h-[30px] flex justify-center items-center cursor-pointer text-base sm:text-lg z-10 hover:bg-opacity-70'
 				onClick={() => sliderRef.current?.slickNext()}>
 				{'>'}
 			</button>
