@@ -35,37 +35,38 @@ const RecommendedProject = () => {
 	}, [])
 
 	return (
-		<div className='w-[70%] max-w-6xl py-10 mx-auto'>
-			<h2 className='text-2xl mb-5 m-0 font-bold'>취향 맞춤 프로젝트</h2>
-			<div className='flex justify-between items-center mb-5'>
-				<p className='text-gray-600 text-base m-0'>당신을 위한 추천 프로젝트</p>
+		<div className='w-full lg:w-[70%] max-w-6xl py-6 md:py-8 lg:py-10 mx-auto'>
+			<h2 className='text-xl md:text-2xl mb-3 md:mb-5 m-0 font-bold'>취향 맞춤 프로젝트</h2>
+			<div className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4 md:mb-5'>
+				<p className='text-gray-600 text-sm md:text-base m-0'>당신을 위한 추천 프로젝트</p>
 				<div>
 					<a href='/search?order=RECOMMEND' className='text-gray-700 no-underline text-sm flex items-center gap-1 hover:text-purple-500'>
 						추천 프로젝트 보러가기 <ArrowRightCircleIcon size={15} color='#' />
 					</a>
 				</div>
 			</div>
-			<div className='grid grid-cols-3 gap-5'>
+			<div className='flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none gap-4 md:gap-5 pb-2 md:pb-0 grid-cols-1 sm:grid-cols-2 md:grid-cols-3'>
 				{projects.map((project) => (
-					<div key={project.id} onClick={() => navigate(`/project/${project.id}`)} className='cursor-pointer'>
-						<div className='w-full h-[200px] overflow-hidden rounded-lg mb-3'>
-							{project.titleImg ? (
+					console.log(project.titleImg),
+					<div key={project.id} onClick={() => navigate(`/project/${project.id}`)} className='cursor-pointer shrink-0 min-w-[240px] max-w-[240px] sm:min-w-0 sm:max-w-none snap-start'>
+						<div className='w-full relative pb-[56.25%] overflow-hidden rounded-lg mb-3'>
+							{project.titleImg.uri ? (
 								<img
-									src={project.titleImg ? `${baseUrl}/img/${project.titleImg}` : noImage}
+									src={project.titleImg.uri ? `${baseUrl}/img/${project.titleImg.uri}` : noImage}
 									alt={project.title}
 									onError={(e) => {
 										e.currentTarget.onerror = null
 										e.currentTarget.src = noImage
 									}}
-									className='w-full h-full object-cover transition-transform duration-300 hover:scale-105'
+									className='absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105'
 								/>
 							) : (
-								<div className='w-full h-full bg-gray-200 flex items-center justify-center text-gray-500'>이미지 없음</div>
+								<div className='absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500'>이미지 없음</div>
 							)}
 						</div>
 						<div>
-							<p className='text-purple-600 text-sm font-semibold mb-1'>{project.completionRate}% 달성</p>
-							<h3 className='text-gray-800 text-base font-semibold m-0'>{project.title}</h3>
+							<p className='text-purple-600 text-xs sm:text-sm font-semibold mb-1'>{project.completionRate}% 달성</p>
+							<h3 className='text-gray-800 text-sm md:text-base font-semibold m-0 line-clamp-2'>{project.title}</h3>
 						</div>
 					</div>
 				))}
@@ -75,7 +76,3 @@ const RecommendedProject = () => {
 }
 
 export default RecommendedProject
-
-
-
-

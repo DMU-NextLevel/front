@@ -130,25 +130,25 @@ const RealTimeFeed: React.FC = () => {
 	}
 
 	return (
-		<div className='bg-white border border-indigo-100 rounded-2xl p-5 my-8 shadow-lg relative overflow-hidden h-40'>
-			<div className='flex justify-between items-center mb-4'>
-				<h3 className='text-xl font-bold text-gray-800 m-0'>실시간 피드</h3>
-				<span className='text-base cursor-pointer opacity-70 transition-all duration-200 hover:opacity-100 hover:rotate-180'>🔄</span>
+		<div className='bg-white border border-indigo-100 rounded-2xl p-4 md:p-5 my-6 md:my-8 shadow-lg relative overflow-hidden h-[160px] sm:h-[180px] md:h-[200px]'>
+			<div className='flex justify-between items-center mb-3 md:mb-4'>
+				<h3 className='text-lg md:text-xl font-bold text-gray-800 m-0'>실시간 피드</h3>
+				<span className='text-sm md:text-base cursor-pointer opacity-70 transition-all duration-200 hover:opacity-100 hover:rotate-180'>🔄</span>
 			</div>
-			<div className='h-45 overflow-hidden relative' onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+			<div className='h-full overflow-hidden relative' onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
 				<ul ref={listRef} className={`list-none m-0 p-0 animate-scroll-up ${isPaused ? '[animation-play-state:paused]' : '[animation-play-state:running]'}`}>
 					{feeds.map((feed) => (
-						<li key={feed.id} className='py-3 px-2 flex items-start transition-all duration-200 rounded-lg mb-1 hover:bg-slate-50 hover:translate-x-1'>
+						<li key={feed.id} className='py-2.5 md:py-3 px-2 flex items-start transition-all duration-200 rounded-lg mb-1 hover:bg-slate-50 hover:translate-x-1'>
 							<FeedIcon type={feed.type} />
 							<div className='flex flex-col flex-1'>
-								<p className='m-0 text-sm font-medium text-gray-700 leading-snug'>{feed.message}</p>
-								<span className='text-xs text-gray-400 mt-0.5'>{getRelativeTime(feed.timestamp)}</span>
+								<p className='m-0 text-xs sm:text-sm font-medium text-gray-700 leading-snug line-clamp-2'>{feed.message}</p>
+								<span className='text-[10px] sm:text-xs text-gray-400 mt-0.5'>{getRelativeTime(feed.timestamp)}</span>
 							</div>
 						</li>
 					))}
 				</ul>
 			</div>
-			<div className='absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none'></div>
+			<div className='absolute bottom-0 left-0 right-0 h-10 md:h-12 bg-gradient-to-t from-white to-transparent pointer-events-none'></div>
 		</div>
 	)
 }
