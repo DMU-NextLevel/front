@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'
-import { HeaderMain, HeaderSub } from './components/layout/Header'
+import { HeaderMain } from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import IDFindPage from './pages/IDFindPage'
 import Signup from './pages/Signup'
@@ -26,6 +26,13 @@ import { SuccessPage } from './components/UI/TossPayments'
 import { FailPage } from './components/UI/TossPayments'
 import SocialLogin from './pages/SocialLogin'
 
+// AOS 초기화
+declare global {
+	interface Window {
+		AOS: any
+	}
+}
+
 function App() {
 	return (
 		<Router>
@@ -39,10 +46,42 @@ const AppWrapper = () => {
 	const [loginType, setLoginType] = useState<string>('')
 	const location = useLocation()
 	const hideLayout = ['/login', '/signup', '/popup-payment', '/popup-payment-success', '/kakao/callback', '/naver/callback', '/google/callback']
-	const mainPage = ['/']
+
+	// AOS 초기화
+	useEffect(() => {
+		if (window.AOS) {
+			window.AOS.init({
+				duration: 800,
+				easing: 'ease-out-cubic',
+				once: false,  // 매번 실행되도록 변경
+				offset: 50,
+				disable: false, // 모든 디바이스에서 활성화
+				startEvent: 'DOMContentLoaded',
+				useClassNames: false,
+				disableMutationObserver: false,
+				debounceDelay: 50,
+				throttleDelay: 99
+			})
+		}
+	}, [])
+
+	// 라우트 변경시마다 AOS 새로고침 - 더 강력한 방법
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			if (window.AOS) {
+				window.AOS.refreshHard(); // 완전 재초기화
+				setTimeout(() => {
+					window.AOS.refresh(); // 한번 더 refresh
+				}, 100);
+			}
+		}, 50);
+		
+		return () => clearTimeout(timer);
+	}, [location.pathname])
+
 	return (
 		<AuthProvider>
-			{!hideLayout.includes(location.pathname) ? mainPage.includes(location.pathname) ? <HeaderMain /> : <HeaderSub /> : null}
+			{!hideLayout.includes(location.pathname) && <HeaderMain />}
 			<Routes>
 				<Route path='/' element={<MainPage />} />
 				<Route path='/login' element={<Login setLoginType={setLoginType} />} />
