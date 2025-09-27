@@ -36,14 +36,14 @@ const CategorySelector: React.FC<Props> = ({ categories }) => {
 	}
 
 	return (
-		<div className='flex overflow-x-auto h-20 px-5 py-3 items-center justify-between'>
+		<div className='flex overflow-x-auto h-16 sm:h-18 md:h-20 px-3 sm:px-4 md:px-5 py-2 md:py-3 items-center gap-4 sm:gap-6 md:gap-8 scrollbar-hide snap-x snap-mandatory'>
 			{categories.map((cat) => (
 				<div
 					key={cat.tag}
 					onClick={() => handleClick(cat.tag)}
-					className='flex flex-col items-center text-[13px] min-w-[80px] text-gray-700 cursor-pointer transition-all duration-200 hover:text-purple-500 hover:font-bold hover:-translate-y-0.5'>
-					<i className={`${cat.icon} text-[22px] mb-1.5`}></i>
-					<span>{cat.label}</span>
+					className='flex flex-col items-center text-[11px] sm:text-[12px] md:text-[13px] min-w-[64px] sm:min-w-[72px] md:min-w-[80px] text-gray-700 cursor-pointer transition-all duration-200 hover:text-purple-500 hover:font-bold hover:-translate-y-0.5 snap-start'>
+					<i className={`${cat.icon} text-[18px] sm:text-[20px] md:text-[22px] mb-1 sm:mb-1.5`}></i>
+					<span className='whitespace-nowrap'>{cat.label}</span>
 				</div>
 			))}
 		</div>
