@@ -8,6 +8,7 @@ import noImage from '../assets/images/noImage.jpg'
 type Notice = {
 	id: number
 	title: string
+	content?: string
 	createdAt: string
 	imgs: string[]
 }
@@ -18,8 +19,10 @@ const NoticeBoard: React.FC = () => {
 	const baseUrl = process.env.REACT_APP_API_BASE_URL
 	const [searchInput, setSearchInput] = useState('')
 	const [searchTerm, setSearchTerm] = useState('')
+	const [searchType, setSearchType] = useState<'title' | 'titleContent'>('title')
 	const [currentPage, setCurrentPage] = useState(1)
 	const [noticeList, setNoticeList] = useState<Notice[]>([])
+	const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
 	const { isLoggedIn } = useAuth()
 	const { role, loading } = useUserRole()
 	const navigate = useNavigate()
@@ -54,6 +57,13 @@ const NoticeBoard: React.FC = () => {
 		}
 	}
 
+	// 검색 타입이 변경될 때마다 현재 검색어로 재검색
+	useEffect(() => {
+		if (searchTerm) {
+			setCurrentPage(1)
+		}
+	}, [searchType])
+
 	const handleCreate = () => {
 		navigate('/notice/write')
 	}
@@ -62,11 +72,30 @@ const NoticeBoard: React.FC = () => {
 		navigate(`/notice/${notice.id}`, { state: notice })
 	}
 
-	const filteredNotices = noticeList.filter((notice) => notice.title.toLowerCase().includes(searchTerm.toLowerCase()))
+	const handleSortChange = (newSortOrder: 'newest' | 'oldest') => {
+		setSortOrder(newSortOrder)
+		setCurrentPage(1)
+	}
 
-	const totalPages = Math.ceil(filteredNotices.length / PAGE_SIZE)
+	const filteredAndSortedNotices = noticeList
+		.filter((notice) => {
+			const lowerSearchTerm = searchTerm.toLowerCase()
+			if (searchType === 'title') {
+				return notice.title.toLowerCase().includes(lowerSearchTerm)
+			} else {
+				return notice.title.toLowerCase().includes(lowerSearchTerm) || 
+				       (notice.content && notice.content.toLowerCase().includes(lowerSearchTerm))
+			}
+		})
+		.sort((a, b) => {
+			const dateA = new Date(a.createdAt).getTime()
+			const dateB = new Date(b.createdAt).getTime()
+			return sortOrder === 'newest' ? dateB - dateA : dateA - dateB
+		})
+
+	const totalPages = Math.ceil(filteredAndSortedNotices.length / PAGE_SIZE)
 	const startIndex = (currentPage - 1) * PAGE_SIZE
-	const currentNotices = filteredNotices.slice(startIndex, startIndex + PAGE_SIZE)
+	const currentNotices = filteredAndSortedNotices.slice(startIndex, startIndex + PAGE_SIZE)
 
 	const formatDate = (isoDate: string) => {
 		const d = new Date(isoDate)
@@ -74,75 +103,164 @@ const NoticeBoard: React.FC = () => {
 	}
 
 	return (
-		<div className='max-w-4xl mx-auto p-8'>
-			<h1 className='text-2xl font-bold mb-6'>공지사항</h1>
+		<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white min-h-screen'>
+			<div className='mb-8'>
+				<div className='flex items-center justify-between mb-4'>
+					<h1 className='text-3xl font-bold text-gray-900'>공지사항</h1>
+				</div>
+				<div className='flex items-center justify-between text-sm text-gray-600'>
+					<div className='flex items-center gap-4'>
+						<span className='bg-gray-900 text-white px-3 py-1 rounded text-xs font-medium'>전체</span>
+						<div className='flex items-center bg-gray-100 rounded-lg p-1'>
+							<button
+								onClick={() => handleSortChange('newest')}
+								className={`px-3 py-1 text-xs rounded-md font-medium transition-all duration-200 ${
+									sortOrder === 'newest' 
+										? 'bg-white text-gray-900 shadow-sm' 
+										: 'text-gray-600 hover:text-gray-900'
+								}`}>
+								최신 순
+							</button>
+							<button
+								onClick={() => handleSortChange('oldest')}
+								className={`px-3 py-1 text-xs rounded-md font-medium transition-all duration-200 ${
+									sortOrder === 'oldest' 
+										? 'bg-white text-gray-900 shadow-sm' 
+										: 'text-gray-600 hover:text-gray-900'
+								}`}>
+								오래된 순
+							</button>
+						</div>
+					</div>
+					<div className='flex items-center gap-4'>
+						<span>전체 <span className='font-bold'>{filteredAndSortedNotices.length}</span>건 | 페이지 <span className='font-bold'>{currentPage}</span> / <span className='font-bold'>{totalPages}</span></span>
+						<div className='flex items-center gap-1'>
+							<select
+								value={searchType}
+								onChange={(e) => setSearchType(e.target.value as 'title' | 'titleContent')}
+								className='px-3 py-2 text-sm text-center border border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none bg-white'>
+								<option value='title'>제목</option>
+								<option value='titleContent'>제목+내용</option>
+							</select>
+							<div className='relative w-80'>
+								<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+									<svg className='w-4 h-4 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+										<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+									</svg>
+								</div>
+								<input
+									type='text'
+									placeholder='검색어를 입력하세요'
+									value={searchInput}
+									onChange={(e) => setSearchInput(e.target.value)}
+									onKeyDown={handleKeyDown}
+									className='w-full pl-9 pr-9 py-2 text-sm border border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-200'
+								/>
+								{searchInput && (
+									<button
+										onClick={handleReset}
+										className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200'>
+										<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+											<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+										</svg>
+									</button>
+								)}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-			{filteredNotices.length === 0 ? (
-				<div className='text-center py-10 text-gray-400 text-base'>검색 결과가 없습니다.</div>
+			{filteredAndSortedNotices.length === 0 ? (
+				<div className='text-center py-20 text-gray-400 text-base'>검색 결과가 없습니다.</div>
 			) : (
 				<>
-					<ul className='list-none p-0'>
-						{currentNotices.map((notice) => (
-							<li key={notice.id} onClick={() => handleNoticeClick(notice)} className='flex justify-between items-center py-5 border-b border-gray-200 cursor-pointer'>
-								<div className='flex-1'>
-									<p className='text-base font-semibold mb-1'>{notice.title}</p>
-									<p className='text-xs text-gray-500'>{formatDate(notice.createdAt)}</p>
+					<div className='space-y-0 border-t border-gray-200'>
+						{currentNotices.map((notice, index) => (
+							<div 
+								key={notice.id} 
+								onClick={() => handleNoticeClick(notice)} 
+								className='border-b border-gray-100 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors duration-200'>
+								<div className='flex items-stretch justify-between'>
+									<div className='flex-1 pr-6 py-3.5'>
+										<div className='flex items-center gap-2 mb-2'>
+											<span className='text-xs text-blue-600 font-medium'>공지</span>
+										</div>
+										<h3 className='text-lg font-semibold text-gray-900 mb-2 leading-relaxed hover:text-blue-600 transition-colors duration-200'>
+											{notice.title}
+										</h3>
+										<div className='text-sm text-gray-400'>
+											{formatDate(notice.createdAt)}
+										</div>
+									</div>
+									{notice.imgs?.length > 0 && (
+										<div className='flex-shrink-0'>
+											<img
+												src={`${baseUrl}/img/${notice.imgs[0]}`}
+												alt={`공지 썸네일 - ${notice.title}`}
+												className='w-32 h-full object-cover rounded border border-gray-200'
+												onError={(e) => {
+													e.currentTarget.onerror = null
+													e.currentTarget.src = noImage
+												}}
+											/>
+										</div>
+									)}
 								</div>
-								{notice.imgs?.length > 0 && (
-									<img
-										src={`${baseUrl}/img/${notice.imgs[0]}`}
-										alt={`공지 썸네일 - ${notice.title}`}
-										className='w-20 h-20 object-cover rounded ml-4'
-										onError={(e) => {
-											e.currentTarget.onerror = null
-											e.currentTarget.src = noImage
-										}}
-									/>
-								)}
-							</li>
+							</div>
 						))}
-					</ul>
+					</div>
 
 					{totalPages > 1 && (
-						<div className='flex justify-center mt-8 gap-2'>
-							{Array.from({ length: totalPages }, (_, i) => (
-								<button
-									key={i}
-									className={`py-1.5 px-3 text-sm border-none rounded cursor-pointer font-medium transition-colors duration-200 ${
-										i + 1 === currentPage ? 'bg-black text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-800 hover:text-white'
-									}`}
-									onClick={() => setCurrentPage(i + 1)}>
-									{i + 1}
-								</button>
-							))}
+						<div className='flex justify-center items-center mt-12 gap-1'>
+							<button className='w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200'>
+								&lt;
+							</button>
+							{Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+								let pageNum;
+								if (totalPages <= 7) {
+									pageNum = i + 1;
+								} else if (currentPage <= 4) {
+									pageNum = i + 1;
+								} else if (currentPage >= totalPages - 3) {
+									pageNum = totalPages - 6 + i;
+								} else {
+									pageNum = currentPage - 3 + i;
+								}
+								
+								return (
+									<button
+										key={pageNum}
+										className={`w-8 h-8 flex items-center justify-center text-sm transition-colors duration-200 ${
+											pageNum === currentPage 
+												? 'bg-gray-900 text-white rounded' 
+												: 'text-gray-600 hover:text-gray-900'
+										}`}
+										onClick={() => setCurrentPage(pageNum)}>
+										{pageNum}
+									</button>
+								);
+							})}
+							<button className='w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200'>
+								&gt;
+							</button>
 						</div>
 					)}
 				</>
 			)}
 
 			{!loading && role === 'ADMIN' && (
-				<button className='py-2 px-4 text-sm bg-gray-800 text-white border-none rounded cursor-pointer hover:bg-black transition-colors duration-200' onClick={handleCreate}>
-					공지사항 작성
-				</button>
+				<div className='mt-8 text-center'>
+					<button 
+						onClick={handleCreate}
+						className='inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md'>
+						<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
+						</svg>
+						글쓰기
+					</button>
+				</div>
 			)}
-
-			<br />
-			<div className='mt-10 flex gap-2 mb-5 justify-center'>
-				<input
-					type='text'
-					placeholder='제목 검색'
-					value={searchInput}
-					onChange={(e) => setSearchInput(e.target.value)}
-					onKeyDown={handleKeyDown}
-					className='w-1/5 py-2 px-3 text-sm border border-gray-300 rounded'
-				/>
-				<button className='py-2 px-4 text-sm bg-gray-800 text-white border-none rounded cursor-pointer hover:bg-black transition-colors duration-200' onClick={handleSearch}>
-					검색
-				</button>
-				<button className='py-2 px-4 text-sm bg-gray-800 text-white border-none rounded cursor-pointer hover:bg-black transition-colors duration-200' onClick={handleReset}>
-					초기화
-				</button>
-			</div>
 		</div>
 	)
 }
