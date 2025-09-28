@@ -145,6 +145,14 @@ const NoticeEdit: React.FC = () => {
 		}
 	}, [article, navigate])
 
+	// 에디터가 준비되고 article이 있을 때 내용 설정
+	useEffect(() => {
+		if (editor && article) {
+			const content = generateEditorContentWithImages(article)
+			editor.commands.setContent(content)
+		}
+	}, [editor, article])
+
 	const executeCommand = (command: () => void) => {
 		try {
 			command()
@@ -213,7 +221,6 @@ const NoticeEdit: React.FC = () => {
 		})
 
 		try {
-			console.log('전송 폼 데이터:', formData)
 			const res = await api.post(`/admin/notice/${id}`, formData, {
 				withCredentials: true,
 				headers: {
@@ -263,20 +270,20 @@ const NoticeEdit: React.FC = () => {
 	}
 
 	return (
-		<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white min-h-screen'>
-			{/* Header Section */}
-			<div className='mb-8'>
-				<div className='flex items-center justify-between mb-6'>
-					<h1 className='text-3xl font-bold text-gray-900'>공지사항 수정</h1>
+		<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 bg-white min-h-screen'>
+			{/* Header Section - Responsive */}
+			<div className='mb-6 sm:mb-8'>
+				<div className='flex items-center justify-between mb-4 sm:mb-6'>
+					<h1 className='text-2xl sm:text-3xl font-bold text-gray-900'>공지사항 수정</h1>
 				</div>
 				<hr className='border-gray-200' />
 			</div>
 
-			{/* Form Section */}
+			{/* Form Section - Responsive */}
 			<div className='bg-white'>
-				{/* Title Input */}
-				<div className='mb-8'>
-					<label htmlFor='title' className='block mb-3 text-lg font-semibold text-gray-900'>
+				{/* Title Input - Responsive */}
+				<div className='mb-6 sm:mb-8'>
+					<label htmlFor='title' className='block mb-2 sm:mb-3 text-base sm:text-lg font-semibold text-gray-900'>
 						제목
 					</label>
 					<input
@@ -284,186 +291,190 @@ const NoticeEdit: React.FC = () => {
 						value={title}
 						onChange={e => setTitle(e.target.value)}
 						placeholder='공지 제목을 입력하세요'
-						className='w-full py-4 px-4 text-base bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200'
+						className='w-full py-3 sm:py-4 px-3 sm:px-4 text-sm sm:text-base bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200'
 					/>
 				</div>
 
-				{/* Content Editor */}
-				<div className='mb-8'>
-					<label className='block mb-3 text-lg font-semibold text-gray-900'>본문 내용</label>
+				{/* Content Editor - Responsive */}
+				<div className='mb-6 sm:mb-8'>
+					<label className='block mb-2 sm:mb-3 text-base sm:text-lg font-semibold text-gray-900'>본문 내용</label>
 					
-					{/* Toolbar */}
-					<div className='flex flex-wrap gap-2 p-4 bg-gray-50 border border-gray-200 rounded-t-lg border-b-0'>
-						<button
-							type='button'
-							onClick={() => executeCommand(() => editor?.chain().focus().toggleBold().run())}
-							className={`flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-								editor?.isActive('bold') 
-									? 'bg-blue-600 text-white border-blue-600 shadow-md' 
-									: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
-							}`}
-							title="굵게">
-							<span className='font-bold'>B</span>
-						</button>
-						<button
-							type='button'
-							onClick={() => executeCommand(() => editor?.chain().focus().toggleItalic().run())}
-							className={`flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-								editor?.isActive('italic') 
-									? 'bg-blue-600 text-white border-blue-600 shadow-md' 
-									: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
-							}`}
-							title="기울임">
-							<span className='italic'>I</span>
-						</button>
-						<button
-							type='button'
-							onClick={() => executeCommand(() => editor?.chain().focus().toggleUnderline().run())}
-							className={`flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-								editor?.isActive('underline') 
-									? 'bg-blue-600 text-white border-blue-600 shadow-md' 
-									: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
-							}`}
-							title="밑줄">
-							<span className='underline'>U</span>
-						</button>
-						<button
-							type='button'
-							onClick={() => executeCommand(() => editor?.chain().focus().toggleStrike().run())}
-							className={`flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-								editor?.isActive('strike') 
-									? 'bg-blue-600 text-white border-blue-600 shadow-md' 
-									: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
-							}`}
-							title="취소선">
-							<span className='line-through'>S</span>
-						</button>
+					{/* Toolbar - Responsive */}
+					<div className='flex flex-wrap gap-1 sm:gap-2 p-2 sm:p-4 bg-gray-50 border border-gray-200 rounded-t-lg border-b-0 overflow-x-auto'>
+						{/* Basic Formatting */}
+						<div className='flex gap-1 sm:gap-2'>
+							<button
+								type='button'
+								onClick={() => executeCommand(() => editor?.chain().focus().toggleBold().run())}
+								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
+									editor?.isActive('bold') 
+										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
+								}`}
+								title="굵게">
+								<span className='font-bold'>B</span>
+							</button>
+							<button
+								type='button'
+								onClick={() => executeCommand(() => editor?.chain().focus().toggleItalic().run())}
+								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
+									editor?.isActive('italic') 
+										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
+								}`}
+								title="기울임">
+								<span className='italic'>I</span>
+							</button>
+							<button
+								type='button'
+								onClick={() => executeCommand(() => editor?.chain().focus().toggleUnderline().run())}
+								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
+									editor?.isActive('underline') 
+										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
+								}`}
+								title="밑줄">
+								<span className='underline'>U</span>
+							</button>
+							<button
+								type='button'
+								onClick={() => executeCommand(() => editor?.chain().focus().toggleStrike().run())}
+								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
+									editor?.isActive('strike') 
+										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
+								}`}
+								title="취소선">
+								<span className='line-through'>S</span>
+							</button>
+						</div>
 						
-						<div className='w-px h-10 bg-gray-200 mx-2'></div>
+						<div className='w-px h-6 sm:h-10 bg-gray-200 mx-1 sm:mx-2'></div>
 						
-						{/* 텍스트 사이즈 버튼들 */}
+						{/* Text Size Controls - Responsive */}
 						<div className="flex items-center space-x-1">
-							<span className="text-xs text-gray-500 mr-2">크기</span>
-							{['12px', '14px', '16px', '18px', '20px', '24px'].map((size) => (
-								<button
-									key={size}
-									type="button"
-									onClick={() => changeTextSize(size)}
-									className={`px-2 py-1 text-xs border rounded transition-all duration-200 ${
-										currentFontSize === size
-											? 'bg-blue-600 text-white border-blue-600 shadow-md'
-											: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200'
-									}`}
-									title={`글자 크기 ${size}`}
-								>
-									{size}
-								</button>
-							))}
+							<span className="hidden sm:inline text-xs text-gray-500 mr-1 sm:mr-2">크기</span>
+							<div className="flex gap-1">
+								{['12px', '14px', '16px', '18px', '20px', '24px'].map((size) => (
+									<button
+										key={size}
+										type="button"
+										onClick={() => changeTextSize(size)}
+										className={`px-1 sm:px-2 py-1 text-xs border rounded transition-all duration-200 ${
+											currentFontSize === size
+												? 'bg-blue-600 text-white border-blue-600 shadow-md'
+												: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200'
+										}`}
+										title={`글자 크기 ${size}`}
+									>
+										<span className="hidden sm:inline">{size}</span>
+										<span className="sm:hidden">{size.replace('px', '')}</span>
+									</button>
+								))}
+							</div>
 						</div>
 
-						<div className="w-px h-10 bg-gray-200 mx-2"></div>
+						<div className="w-px h-6 sm:h-10 bg-gray-200 mx-1 sm:mx-2"></div>
 
-						{/* 색상 팔레트 버튼들 */}
+						{/* Color Palette - Responsive */}
 						<div className="flex items-center space-x-1">
-							<span className="text-xs text-gray-500 mr-2">색상</span>
-							{[
-								{ color: '#000000', name: '검정' },
-								{ color: '#ef4444', name: '빨강' },
-								{ color: '#3b82f6', name: '파랑' },
-								{ color: '#22c55e', name: '초록' },
-								{ color: '#f59e0b', name: '노랑' },
-								{ color: '#8b5cf6', name: '보라' },
-								{ color: '#ec4899', name: '분홍' },
-								{ color: '#6b7280', name: '회색' }
-							].map(({ color, name }) => (
-								<button
-									key={color}
-									type="button"
-									onClick={() => changeTextColor(color)}
-									className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-										currentColor === color
-											? 'border-gray-800 shadow-lg scale-110'
-											: 'border-gray-300 hover:border-gray-500 hover:scale-105'
-									}`}
-									style={{ backgroundColor: color }}
-									title={`글자 색상: ${name}`}
-								/>
-							))}
+							<span className="hidden sm:inline text-xs text-gray-500 mr-1 sm:mr-2">색상</span>
+							<div className="flex gap-1">
+								{[
+									{ color: '#000000', name: '검정' },
+									{ color: '#ef4444', name: '빨강' },
+									{ color: '#3b82f6', name: '파랑' },
+									{ color: '#22c55e', name: '초록' },
+									{ color: '#f59e0b', name: '노랑' },
+									{ color: '#8b5cf6', name: '보라' },
+									{ color: '#ec4899', name: '분홍' },
+									{ color: '#6b7280', name: '회색' }
+								].map(({ color, name }) => (
+									<button
+										key={color}
+										type="button"
+										onClick={() => changeTextColor(color)}
+										className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 transition-all duration-200 ${
+											currentColor === color
+												? 'border-gray-800 shadow-lg scale-110'
+												: 'border-gray-300 hover:border-gray-500 hover:scale-105'
+										}`}
+										style={{ backgroundColor: color }}
+										title={`글자 색상: ${name}`}
+									/>
+								))}
+							</div>
 						</div>
 
-						<div className='w-px h-10 bg-gray-200 mx-2'></div>
-						
+						<div className='w-px h-6 sm:h-10 bg-gray-200 mx-1 sm:mx-2'></div>
 
+						{/* Additional Tools */}
+						<div className="flex gap-1 sm:gap-2">
+							<button
+								type='button'
+								onClick={() => {
+									executeCommand(() => editor?.chain().focus().setHorizontalRule().run());
+								}}
+								className='flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'
+								title="구분선">
+								—
+							</button>
+							<button
+								type='button'
+								onClick={() => {
+									handleImageUpload();
+								}}
+								className='flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'
+								title="이미지 업로드">
+								📷
+							</button>
+						</div>
 						
+						<div className='w-px h-6 sm:h-10 bg-gray-200 mx-1 sm:mx-2'></div>
 						
-						<button
-							type='button'
-							onClick={() => {
-								console.log('Horizontal rule button clicked');
-								console.log('Editor available:', !!editor);
-								executeCommand(() => editor?.chain().focus().setHorizontalRule().run());
-							}}
-							className='flex items-center justify-center w-10 h-10 text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'
-							title="구분선">
-							—
-						</button>
-						<button
-							type='button'
-							onClick={() => {
-								console.log('Image upload button clicked');
-								handleImageUpload();
-							}}
-							className='flex items-center justify-center w-10 h-10 text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'
-							title="이미지 업로드">
-							📷
-						</button>
-						
-						<div className='w-px h-10 bg-gray-200 mx-2'></div>
-						
-						<button
-							type='button'
-							onClick={() => {
-								console.log('Undo button clicked');
-								console.log('Editor available:', !!editor);
-								executeCommand(() => editor?.chain().focus().undo().run());
-							}}
-							className='flex items-center justify-center w-10 h-10 text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'
-							title="실행 취소">
-							↶
-						</button>
-						<button
-							type='button'
-							onClick={() => {
-								console.log('Redo button clicked');
-								console.log('Editor available:', !!editor);
-								executeCommand(() => editor?.chain().focus().redo().run());
-							}}
-							className='flex items-center justify-center w-10 h-10 text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'
-							title="다시 실행">
-							↷
-						</button>
+						{/* Undo/Redo */}
+						<div className="flex gap-1 sm:gap-2">
+							<button
+								type='button'
+								onClick={() => {
+									executeCommand(() => editor?.chain().focus().undo().run());
+								}}
+								className='flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'
+								title="실행 취소">
+								↶
+							</button>
+							<button
+								type='button'
+								onClick={() => {
+									executeCommand(() => editor?.chain().focus().redo().run());
+								}}
+								className='flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'
+								title="다시 실행">
+								↷
+							</button>
+						</div>
 
 						<input type='file' accept='image/*' ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
 					</div>
 
-					{/* Editor Content */}
+					{/* Editor Content - Responsive */}
 					<div className='border border-gray-200 rounded-b-lg bg-white'>
 						<EditorContent
 							editor={editor}
-							className='min-h-96 p-6 
-								[&_.ProseMirror]:min-h-80 [&_.ProseMirror]:outline-none [&_.ProseMirror]:leading-relaxed [&_.ProseMirror]:text-base 
-								[&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-4 [&_img]:border [&_img]:border-gray-200
+							className='min-h-64 sm:min-h-96 p-3 sm:p-6 
+								[&_.ProseMirror]:min-h-56 sm:[&_.ProseMirror]:min-h-80 [&_.ProseMirror]:outline-none [&_.ProseMirror]:leading-relaxed [&_.ProseMirror]:text-sm sm:[&_.ProseMirror]:text-base 
+								[&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2 sm:[&_img]:my-4 [&_img]:border [&_img]:border-gray-200
 								[&_span[style*="font-size"]]:inline
 								[&_span[style*="color"]]:inline'
 						/>
 					</div>
 				</div>
 
-				{/* Action Buttons */}
-				<div className='flex items-center justify-between pt-8 border-t border-gray-200'>
+				{/* Action Buttons - Responsive */}
+				<div className='flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 pt-6 sm:pt-8 border-t border-gray-200'>
 					<button
 						onClick={() => window.history.back()}
-						className='inline-flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all duration-200 border border-gray-200'>
+						className='w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all duration-200 border border-gray-200'>
 						<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
 							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M10 19l-7-7m0 0l7-7m-7 7h18' />
 						</svg>
@@ -472,7 +483,7 @@ const NoticeEdit: React.FC = () => {
 					
 					<button
 						onClick={handleSave}
-						className='inline-flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md'>
+						className='w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md'>
 						<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
 							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
 						</svg>

@@ -23,9 +23,22 @@ const NoticeBoard: React.FC = () => {
 	const [currentPage, setCurrentPage] = useState(1)
 	const [noticeList, setNoticeList] = useState<Notice[]>([])
 	const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
+	const [isMobile, setIsMobile] = useState(false)
 	const { isLoggedIn } = useAuth()
 	const { role, loading } = useUserRole()
 	const navigate = useNavigate()
+
+	// 화면 크기 감지
+	useEffect(() => {
+		const checkScreenSize = () => {
+			setIsMobile(window.innerWidth < 640)
+		}
+		
+		checkScreenSize()
+		window.addEventListener('resize', checkScreenSize)
+		
+		return () => window.removeEventListener('resize', checkScreenSize)
+	}, [])
 
 	useEffect(() => {
 		api
@@ -103,14 +116,30 @@ const NoticeBoard: React.FC = () => {
 	}
 
 	return (
-		<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white min-h-screen'>
-			<div className='mb-4'>
-				<div className='flex items-center justify-between mb-4'>
-					<h1 className='text-3xl font-bold text-gray-900'>공지사항</h1>
+		<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 bg-white min-h-screen'>
+			{/* Header Section - Responsive */}
+			<div className='mb-6 lg:mb-8'>
+				<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6'>
+					<h1 className='text-2xl sm:text-3xl font-bold text-gray-900'>공지사항</h1>
+					
+					{/* Desktop/Tablet Admin Button */}
+					{!loading && role === 'ADMIN' && (
+						<button 
+							onClick={handleCreate}
+							className='hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md'>
+							<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+								<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
+							</svg>
+							글쓰기
+						</button>
+					)}
 				</div>
-				<div className='flex items-center justify-between text-sm text-gray-600'>
-					<div className='flex items-center gap-4'>
-						<span className='bg-gray-900 text-white px-3 py-1 rounded text-xs font-medium'>전체</span>
+
+				{/* Controls Section - Responsive */}
+				<div className='flex flex-col lg:flex-row lg:items-center justify-between gap-4'>
+					{/* Left controls */}
+					<div className='flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4'>
+						<span className='bg-gray-900 text-white px-3 py-1 rounded text-xs font-medium w-fit'>전체</span>
 						<div className='flex items-center bg-gray-100 rounded-lg p-1'>
 							<button
 								onClick={() => handleSortChange('newest')}
@@ -132,9 +161,17 @@ const NoticeBoard: React.FC = () => {
 							</button>
 						</div>
 					</div>
-					<div className='flex items-center gap-4'>
-						<span>전체 <span className='font-bold'>{filteredAndSortedNotices.length}</span>건 | 페이지 <span className='font-bold'>{currentPage}</span> / <span className='font-bold'>{totalPages}</span></span>
-						<div className='flex items-center gap-1'>
+
+					{/* Right controls */}
+					<div className='flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4'>
+						{/* Stats - Hidden on mobile, visible on tablet+ */}
+						<span className='hidden sm:block text-sm text-gray-600'>
+							전체 <span className='font-bold'>{filteredAndSortedNotices.length}</span>건 | 
+							페이지 <span className='font-bold'>{currentPage}</span> / <span className='font-bold'>{totalPages}</span>
+						</span>
+						
+						{/* Search controls */}
+						<div className='flex items-center gap-2'>
 							<select
 								value={searchType}
 								onChange={(e) => setSearchType(e.target.value as 'title' | 'titleContent')}
@@ -142,7 +179,7 @@ const NoticeBoard: React.FC = () => {
 								<option value='title'>제목</option>
 								<option value='titleContent'>제목+내용</option>
 							</select>
-							<div className='relative w-80'>
+							<div className='relative w-full sm:w-64 lg:w-80'>
 								<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
 									<svg className='w-4 h-4 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
 										<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
@@ -169,24 +206,34 @@ const NoticeBoard: React.FC = () => {
 						</div>
 					</div>
 				</div>
+
+				{/* Mobile Stats */}
+				<div className='sm:hidden mt-3 text-sm text-gray-600 text-center'>
+					전체 <span className='font-bold'>{filteredAndSortedNotices.length}</span>건 | 
+					페이지 <span className='font-bold'>{currentPage}</span> / <span className='font-bold'>{totalPages}</span>
+				</div>
 			</div>
 
+			{/* Content Section - Responsive */}
 			{filteredAndSortedNotices.length === 0 ? (
-				<div className='text-center py-20 text-gray-400 text-base'>검색 결과가 없습니다.</div>
+				<div className='text-center py-16 sm:py-20 text-gray-400 text-base'>검색 결과가 없습니다.</div>
 			) : (
 				<>
+					{/* Notice List - Responsive */}
 					<div className='space-y-0 border-t border-gray-200'>
 						{currentNotices.map((notice, index) => (
 							<div 
 								key={notice.id} 
 								onClick={() => handleNoticeClick(notice)} 
-								className='border-b border-gray-100 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors duration-200'>
-								<div className='flex items-stretch justify-between'>
-									<div className='flex-1 pr-6 py-3.5'>
-										<div className='flex items-center gap-2 mb-2'>
+								className='border-b border-gray-100 py-3 sm:py-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200'>
+								
+								{/* Desktop/Tablet Layout */}
+								<div className='hidden sm:flex items-stretch justify-between'>
+									<div className='flex-1 pr-4 lg:pr-6 py-2 lg:py-3.5'>
+										<div className='flex items-center gap-2 mb-1 sm:mb-2'>
 											<span className='text-xs text-blue-600 font-medium'>공지</span>
 										</div>
-										<h3 className='text-lg font-semibold text-gray-900 mb-2 leading-relaxed hover:text-blue-600 transition-colors duration-200'>
+										<h3 className='text-base lg:text-lg font-semibold text-gray-900 mb-1 sm:mb-2 leading-relaxed hover:text-blue-600 transition-colors duration-200 line-clamp-2'>
 											{notice.title}
 										</h3>
 										<div className='text-sm text-gray-400'>
@@ -198,7 +245,7 @@ const NoticeBoard: React.FC = () => {
 											<img
 												src={`${baseUrl}/img/${notice.imgs[0]}`}
 												alt={`공지 썸네일 - ${notice.title}`}
-												className='w-32 h-full object-cover rounded border border-gray-200'
+												className='w-24 sm:w-28 lg:w-32 h-16 sm:h-20 lg:h-24 object-cover rounded border border-gray-200'
 												onError={(e) => {
 													e.currentTarget.onerror = null
 													e.currentTarget.src = noImage
@@ -207,25 +254,67 @@ const NoticeBoard: React.FC = () => {
 										</div>
 									)}
 								</div>
+
+								{/* Mobile Layout */}
+								<div className='sm:hidden space-y-3'>
+									<div className='flex items-start justify-between gap-3'>
+										<div className='flex-1 min-w-0'>
+											<div className='flex items-center gap-2 mb-2'>
+												<span className='text-xs text-blue-600 font-medium'>공지</span>
+											</div>
+											<h3 className='text-base font-semibold text-gray-900 mb-2 leading-relaxed hover:text-blue-600 transition-colors duration-200 line-clamp-2'>
+												{notice.title}
+											</h3>
+											<div className='text-sm text-gray-400'>
+												{formatDate(notice.createdAt)}
+											</div>
+										</div>
+										{notice.imgs?.length > 0 && (
+											<div className='flex-shrink-0'>
+												<img
+													src={`${baseUrl}/img/${notice.imgs[0]}`}
+													alt={`공지 썸네일 - ${notice.title}`}
+													className='w-20 h-16 object-cover rounded border border-gray-200'
+													onError={(e) => {
+														e.currentTarget.onerror = null
+														e.currentTarget.src = noImage
+													}}
+												/>
+											</div>
+										)}
+									</div>
+								</div>
 							</div>
 						))}
 					</div>
 
+					{/* Pagination - Responsive */}
 					{totalPages > 1 && (
-						<div className='flex justify-center items-center mt-12 gap-1'>
-							<button className='w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200'>
+						<div className='flex justify-center items-center mt-8 sm:mt-12 gap-1'>
+							{/* Previous Button */}
+							<button 
+								onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+								disabled={currentPage === 1}
+								className={`w-8 h-8 flex items-center justify-center text-sm transition-colors duration-200 ${
+									currentPage === 1 
+										? 'text-gray-300 cursor-not-allowed'
+										: 'text-gray-400 hover:text-gray-600'
+								}`}>
 								&lt;
 							</button>
-							{Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+							
+							{/* Page Numbers */}
+							{Array.from({ length: Math.min(totalPages, isMobile ? 5 : 7) }, (_, i) => {
+								const maxPages = isMobile ? 5 : 7;
 								let pageNum;
-								if (totalPages <= 7) {
+								if (totalPages <= maxPages) {
 									pageNum = i + 1;
-								} else if (currentPage <= 4) {
+								} else if (currentPage <= Math.floor(maxPages/2) + 1) {
 									pageNum = i + 1;
-								} else if (currentPage >= totalPages - 3) {
-									pageNum = totalPages - 6 + i;
+								} else if (currentPage >= totalPages - Math.floor(maxPages/2)) {
+									pageNum = totalPages - maxPages + 1 + i;
 								} else {
-									pageNum = currentPage - 3 + i;
+									pageNum = currentPage - Math.floor(maxPages/2) + i;
 								}
 								
 								return (
@@ -241,7 +330,16 @@ const NoticeBoard: React.FC = () => {
 									</button>
 								);
 							})}
-							<button className='w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200'>
+							
+							{/* Next Button */}
+							<button 
+								onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+								disabled={currentPage === totalPages}
+								className={`w-8 h-8 flex items-center justify-center text-sm transition-colors duration-200 ${
+									currentPage === totalPages 
+										? 'text-gray-300 cursor-not-allowed'
+										: 'text-gray-400 hover:text-gray-600'
+								}`}>
 								&gt;
 							</button>
 						</div>
@@ -249,8 +347,23 @@ const NoticeBoard: React.FC = () => {
 				</>
 			)}
 
+			{/* Mobile Admin Button - Below Pagination */}
 			{!loading && role === 'ADMIN' && (
-				<div className='mt-8 text-center'>
+				<div className='sm:hidden mt-8'>
+					<button 
+						onClick={handleCreate}
+						className='w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md'>
+						<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
+						</svg>
+						글쓰기
+					</button>
+				</div>
+			)}
+
+			{/* Desktop Admin Button */}
+			{!loading && role === 'ADMIN' && (
+				<div className='hidden sm:block mt-8 text-center'>
 					<button 
 						onClick={handleCreate}
 						className='inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md'>
