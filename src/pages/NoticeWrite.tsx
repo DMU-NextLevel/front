@@ -6,6 +6,8 @@ import Underline from '@tiptap/extension-underline'
 import Strike from '@tiptap/extension-strike'
 import Blockquote from '@tiptap/extension-blockquote'
 import HorizontalRule from '@tiptap/extension-horizontal-rule'
+import TextStyle from '@tiptap/extension-text-style'
+import { Mark, mergeAttributes } from '@tiptap/core'
 import { useUserRole } from '../hooks/useUserRole'
 import { api } from '../AxiosInstance'
 
@@ -28,17 +30,193 @@ const CustomImage = BaseImage.extend({
 	},
 })
 
+// ✅ 폰트 사이즈 Mark
+const FontSize = Mark.create({
+	name: 'fontSize',
+
+	addAttributes() {
+		return {
+			fontSize: {
+				default: null,
+				parseHTML: element => element.style.fontSize,
+				renderHTML: attributes => {
+					if (!attributes.fontSize) return {}
+					return {
+						style: `font-size: ${attributes.fontSize}`,
+					}
+				},
+			},
+		}
+	},
+
+	parseHTML() {
+		return [
+			{
+				tag: 'span[style*="font-size"]',
+			},
+		]
+	},
+
+	renderHTML({ HTMLAttributes }) {
+		return ['span', mergeAttributes(HTMLAttributes), 0]
+	},
+})
+
+// ✅ 텍스트 색상 Mark
+const TextColor = Mark.create({
+	name: 'textColor',
+
+	addAttributes() {
+		return {
+			color: {
+				default: null,
+				parseHTML: element => element.style.color,
+				renderHTML: attributes => {
+					if (!attributes.color) return {}
+					return {
+						style: `color: ${attributes.color}`,
+					}
+				},
+			},
+		}
+	},
+
+	parseHTML() {
+		return [
+			{
+				tag: 'span[style*="color"]',
+			},
+		]
+	},
+
+	renderHTML({ HTMLAttributes }) {
+		return ['span', mergeAttributes(HTMLAttributes), 0]
+	},
+})
+
 const NoticeWrite: React.FC = () => {
 	const fileInputRef = useRef<HTMLInputElement | null>(null)
 
 	// ✅ 파일 + 이름 같이 저장
 	const [uploadedImages, setUploadedImages] = useState<{ file: File; name: string }[]>([])
+	// 현재 적용할 스타일 상태
+	const [currentFontSize, setCurrentFontSize] = useState('')
+	const [currentColor, setCurrentColor] = useState('')
 	const { role, loading } = useUserRole()
 
 	const editor = useEditor({
-		extensions: [StarterKit, CustomImage.configure({ inline: false, allowBase64: true }), Underline, Strike, Blockquote, HorizontalRule],
-		content: '<p></p>',
+		extensions: [
+			StarterKit.configure({
+				heading: false, // 헤딩 기능 비활성화
+			}), 
+			CustomImage.configure({ 
+				inline: false, 
+				allowBase64: true 
+			}), 
+			Underline, 
+			Strike, 
+			Blockquote, 
+			HorizontalRule,
+			TextStyle, // 기본 TextStyle 유지
+			FontSize,  // 커스텀 폰트 사이즈 Mark
+			TextColor, // 커스텀 색상 Mark
+		],
+		content: '',
+		editorProps: {
+			attributes: {
+				class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4',
+			},
+		},
+		parseOptions: {
+			preserveWhitespace: 'full',
+		},
+		onCreate: ({ editor }) => {
+			console.log('Editor created successfully with extensions:', editor.extensionManager.extensions.map(ext => ext.name));
+		},
+		onUpdate: ({ editor }) => {
+			console.log('Editor updated, current selection:', editor.state.selection);
+			console.log('Editor HTML content:', editor.getHTML());
+		},
 	})
+
+	// 에디터 명령 실행 함수들
+	const executeCommand = (command: () => any) => {
+		if (!editor) {
+			console.log('Editor not available for command execution');
+			return;
+		}
+		try {
+			const result = command();
+			console.log('Command executed, result:', result);
+			return result;
+		} catch (error) {
+			console.error('Editor command failed:', error);
+		}
+	}
+
+	// 텍스트 색상 변경 함수
+	const changeTextColor = (color: string) => {
+		if (!editor) {
+			console.log('Editor not available');
+			return;
+		}
+
+		console.log('Changing text color to:', color);
+		const { from, to } = editor.state.selection
+		
+		if (from === to) {
+			// 선택된 텍스트가 없으면 다음에 입력할 텍스트의 색상을 설정
+			console.log('No selection, setting color for future text');
+			setCurrentColor(color)
+			if (color) {
+				const success = editor.chain().focus().setMark('textColor', { color }).run()
+				console.log('Set color mark result:', success);
+			} else {
+				editor.chain().focus().unsetMark('textColor').run()
+			}
+		} else {
+			// 선택된 텍스트가 있으면 해당 텍스트의 색상을 변경
+			console.log('Selection found, applying color to selected text');
+			if (color) {
+				const success = editor.chain().focus().setMark('textColor', { color }).run()
+				console.log('Applied color to selection result:', success);
+			} else {
+				editor.chain().focus().unsetMark('textColor').run()
+			}
+		}
+	}
+
+	// 텍스트 사이즈 변경 함수
+	const changeTextSize = (size: string) => {
+		if (!editor) {
+			console.log('Editor not available');
+			return;
+		}
+
+		console.log('Changing text size to:', size);
+		const { from, to } = editor.state.selection
+		
+		if (from === to) {
+			// 선택된 텍스트가 없으면 다음에 입력할 텍스트의 크기를 설정
+			console.log('No selection, setting size for future text');
+			setCurrentFontSize(size)
+			if (size) {
+				const success = editor.chain().focus().setMark('fontSize', { fontSize: size }).run()
+				console.log('Set fontSize mark result:', success);
+			} else {
+				editor.chain().focus().unsetMark('fontSize').run()
+			}
+		} else {
+			// 선택된 텍스트가 있으면 해당 텍스트의 크기를 변경
+			console.log('Selection found, applying size to selected text');
+			if (size) {
+				const success = editor.chain().focus().setMark('fontSize', { fontSize: size }).run()
+				console.log('Applied fontSize to selection result:', success);
+			} else {
+				editor.chain().focus().unsetMark('fontSize').run()
+			}
+		}
+	}
 
 	const insertImage = (file: File) => {
 		const fileName = file.name
@@ -116,130 +294,213 @@ const NoticeWrite: React.FC = () => {
 	}
 
 	return (
-		<div className='max-w-4xl mx-auto mt-10 px-[15%]'>
-			<h1 className='text-3xl font-bold mb-10'>공지사항 작성</h1>
-
+		<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white min-h-screen'>
+			{/* Header Section */}
 			<div className='mb-8'>
-				<label htmlFor='title' className='block mb-2.5 text-sm font-semibold text-gray-800'>
-					제목
-				</label>
-				<input
-					id='title'
-					placeholder='공지 제목을 입력하세요'
-					className='w-full box-border py-3 px-3.5 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:border-gray-400'
-				/>
+				<div className='flex items-center justify-between mb-6'>
+					<h1 className='text-3xl font-bold text-gray-900'>공지사항 작성</h1>
+				</div>
+				<hr className='border-gray-200' />
 			</div>
 
-			<div className='mb-8'>
-				<label className='block mb-2.5 text-sm font-semibold text-gray-800'>본문 내용</label>
-				<div className='flex flex-wrap gap-2.5 py-2.5 px-3 bg-gray-50 border border-gray-300 rounded-t-lg'>
-					<button
-						onClick={() => editor?.chain().focus().toggleBold().run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('bold') ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						<i className='bi bi-type-bold'></i>
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleItalic().run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('italic') ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						<i className='bi bi-type-italic'></i>
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleUnderline().run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('underline') ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						<i className='bi bi-type-underline'></i>
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleStrike().run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('strike') ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						<i className='bi bi-type-strikethrough'></i>
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('heading', { level: 1 }) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						H1
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('heading', { level: 2 }) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						H2
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('heading', { level: 3 }) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						H3
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleBulletList().run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('bulletList') ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						List
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleBlockquote().run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('blockquote') ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						Quote
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-						className={`py-2 px-3.5 text-sm font-medium border rounded-md cursor-pointer transition-colors duration-200 ${
-							editor?.isActive('codeBlock') ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-						}`}>
-						Code
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().setHorizontalRule().run()}
-						className='py-2 px-3.5 text-sm font-medium bg-white text-gray-700 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-100 transition-colors duration-200'>
-						구분선
-					</button>
-					<button
-						onClick={handleImageUpload}
-						className='py-2 px-3.5 text-sm font-medium bg-white text-gray-700 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-100 transition-colors duration-200'>
-						🖼 이미지 삽입
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().undo().run()}
-						className='py-2 px-3.5 text-sm font-medium bg-white text-gray-700 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-100 transition-colors duration-200'>
-						↺
-					</button>
-					<button
-						onClick={() => editor?.chain().focus().redo().run()}
-						className='py-2 px-3.5 text-sm font-medium bg-white text-gray-700 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-100 transition-colors duration-200'>
-						↻
-					</button>
-
-					<input type='file' accept='image/*' ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
-				</div>
-
-				<div className='border border-gray-300 border-t-0 rounded-b-lg bg-white p-4 h-96 overflow-y-auto'>
-					<EditorContent
-						editor={editor}
-						className='w-full h-full [&_.ProseMirror]:min-h-72 [&_.ProseMirror]:outline-none [&_.ProseMirror]:py-2 [&_.ProseMirror]:leading-relaxed [&_.ProseMirror]:text-base [&_img]:max-w-full [&_img]:rounded-md [&_img]:my-2.5'
+			{/* Form Section */}
+			<div className='bg-white'>
+				{/* Title Input */}
+				<div className='mb-8'>
+					<label htmlFor='title' className='block mb-3 text-lg font-semibold text-gray-900'>
+						제목
+					</label>
+					<input
+						id='title'
+						placeholder='공지 제목을 입력하세요'
+						className='w-full py-4 px-4 text-base bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200'
 					/>
 				</div>
-			</div>
 
-			<button
-				onClick={handleSave}
-				className='mt-10 w-full py-3.5 text-base font-semibold bg-blue-600 text-white border-none rounded-lg cursor-pointer hover:bg-blue-700 active:scale-98 transition-all duration-200'>
-				공지사항 저장
-			</button>
+				{/* Content Editor */}
+				<div className='mb-8'>
+					<label className='block mb-3 text-lg font-semibold text-gray-900'>본문 내용</label>
+					
+					{/* Toolbar */}
+					<div className='flex flex-wrap gap-2 p-4 bg-gray-50 border border-gray-200 rounded-t-lg border-b-0'>
+						<button
+							type='button'
+							onClick={() => executeCommand(() => editor?.chain().focus().toggleBold().run())}
+							className={`flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
+								editor?.isActive('bold') 
+									? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
+							}`}>
+							<span className='font-bold'>B</span>
+						</button>
+						<button
+							type='button'
+							onClick={() => executeCommand(() => editor?.chain().focus().toggleItalic().run())}
+							className={`flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
+								editor?.isActive('italic') 
+									? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
+							}`}>
+							<span className='italic'>I</span>
+						</button>
+						<button
+							type='button'
+							onClick={() => executeCommand(() => editor?.chain().focus().toggleUnderline().run())}
+							className={`flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
+								editor?.isActive('underline') 
+									? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
+							}`}>
+							<span className='underline'>U</span>
+						</button>
+						<button
+							type='button'
+							onClick={() => executeCommand(() => editor?.chain().focus().toggleStrike().run())}
+							className={`flex items-center justify-center w-10 h-10 text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
+								editor?.isActive('strike') 
+									? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
+							}`}>
+							<span className='line-through'>S</span>
+						</button>
+						
+						<div className='w-px h-10 bg-gray-200 mx-2'></div>
+						
+						{/* 텍스트 사이즈 버튼들 */}
+						<div className="flex items-center space-x-1">
+							<span className="text-xs text-gray-500 mr-2">크기</span>
+							{['12px', '14px', '16px', '18px', '20px', '24px'].map((size) => (
+								<button
+									key={size}
+									type="button"
+									onClick={() => changeTextSize(size)}
+									className={`px-2 py-1 text-xs border rounded transition-all duration-200 ${
+										currentFontSize === size
+											? 'bg-blue-600 text-white border-blue-600 shadow-md'
+											: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200'
+									}`}
+									title={`글자 크기 ${size}`}
+								>
+									{size}
+								</button>
+							))}
+						</div>
+
+						<div className="w-px h-10 bg-gray-200 mx-2"></div>
+
+						{/* 색상 팔레트 버튼들 */}
+						<div className="flex items-center space-x-1">
+							<span className="text-xs text-gray-500 mr-2">색상</span>
+							{[
+								{ color: '#000000', name: '검정' },
+								{ color: '#ef4444', name: '빨강' },
+								{ color: '#3b82f6', name: '파랑' },
+								{ color: '#22c55e', name: '초록' },
+								{ color: '#f59e0b', name: '노랑' },
+								{ color: '#8b5cf6', name: '보라' },
+								{ color: '#ec4899', name: '분홍' },
+								{ color: '#6b7280', name: '회색' }
+							].map(({ color, name }) => (
+								<button
+									key={color}
+									type="button"
+									onClick={() => changeTextColor(color)}
+									className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+										currentColor === color
+											? 'border-gray-800 shadow-lg scale-110'
+											: 'border-gray-300 hover:border-gray-500 hover:scale-105'
+									}`}
+									style={{ backgroundColor: color }}
+									title={`글자 색상: ${name}`}
+								/>
+							))}
+						</div>
+
+						<div className='w-px h-10 bg-gray-200 mx-2'></div>
+						
+
+						
+						
+						<button
+							type='button'
+							onClick={() => {
+								console.log('Horizontal rule button clicked');
+								console.log('Editor available:', !!editor);
+								executeCommand(() => editor?.chain().focus().setHorizontalRule().run());
+							}}
+							className='flex items-center justify-center w-10 h-10 text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'>
+							—
+						</button>
+						<button
+							type='button'
+							onClick={() => {
+								console.log('Image upload button clicked');
+								handleImageUpload();
+							}}
+							className='flex items-center justify-center w-10 h-10 text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'>
+							📷
+						</button>
+						
+						<div className='w-px h-10 bg-gray-200 mx-2'></div>
+						
+						<button
+							type='button'
+							onClick={() => {
+								console.log('Undo button clicked');
+								console.log('Editor available:', !!editor);
+								executeCommand(() => editor?.chain().focus().undo().run());
+							}}
+							className='flex items-center justify-center w-10 h-10 text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'>
+							↶
+						</button>
+						<button
+							type='button'
+							onClick={() => {
+								console.log('Redo button clicked');
+								console.log('Editor available:', !!editor);
+								executeCommand(() => editor?.chain().focus().redo().run());
+							}}
+							className='flex items-center justify-center w-10 h-10 text-sm font-medium bg-white text-gray-700 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all duration-200'>
+							↷
+						</button>
+
+						<input type='file' accept='image/*' ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
+					</div>
+
+					{/* Editor Content */}
+					<div className='border border-gray-200 rounded-b-lg bg-white'>
+						<EditorContent
+							editor={editor}
+							className='min-h-96 p-6 
+								[&_.ProseMirror]:min-h-80 [&_.ProseMirror]:outline-none [&_.ProseMirror]:leading-relaxed [&_.ProseMirror]:text-base 
+								[&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-4 [&_img]:border [&_img]:border-gray-200
+								[&_span[style*="font-size"]]:inline
+								[&_span[style*="color"]]:inline'
+						/>
+					</div>
+				</div>
+
+				{/* Action Buttons */}
+				<div className='flex items-center justify-between pt-8 border-t border-gray-200'>
+					<button
+						onClick={() => window.history.back()}
+						className='inline-flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all duration-200 border border-gray-200'>
+						<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M10 19l-7-7m0 0l7-7m-7 7h18' />
+						</svg>
+						취소
+					</button>
+					
+					<button
+						onClick={handleSave}
+						className='inline-flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md'>
+						<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+						</svg>
+						공지사항 저장
+					</button>
+				</div>
+			</div>
 		</div>
 	)
 }

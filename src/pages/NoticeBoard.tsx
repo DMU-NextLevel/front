@@ -104,7 +104,7 @@ const NoticeBoard: React.FC = () => {
 
 	return (
 		<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-white min-h-screen'>
-			<div className='mb-8'>
+			<div className='mb-4'>
 				<div className='flex items-center justify-between mb-4'>
 					<h1 className='text-3xl font-bold text-gray-900'>공지사항</h1>
 				</div>
