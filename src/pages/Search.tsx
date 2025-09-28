@@ -6,6 +6,8 @@ import { useSearchParams } from 'react-router-dom'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { fetchProjectsFromServer } from '../hooks/fetchProjectsFromServer'
+import PopularProjects from '../components/PopularProjects'
+import NewProject from '../components/UI/MainPage/NewProject'
 
 type ProjectItem = {
   id: number
@@ -119,6 +121,13 @@ const Search: React.FC = () => {
 			fetchProjects()
 		}
 	}, [page])
+
+	useEffect(() => {
+		AOS.init({
+			duration: 700,
+			once: true,
+		});
+	}, []);
 
 	const getRemainingDays = (expiredDateStr: string, createdDateStr: string): string => {
 		const today = new Date()
@@ -237,8 +246,9 @@ const Search: React.FC = () => {
 				))}
 			</div>
 			{loading && (
-				<div className='fixed top-20 left-0 right-0 bottom-0 w-full h-[calc(100%-80px)] bg-white bg-opacity-60 flex flex-col justify-center items-center z-[1000]'>
-					<div className='flex justify-center items-center mt-4'>
+				<div className='fixed inset-0 w-full min-h-screen flex flex-col justify-center items-center z-[1000]'>
+					<div className='absolute inset-0 bg-white bg-opacity-70 pointer-events-none'></div>
+					<div className='flex justify-center items-center mt-4 relative z-10'>
 						<span className='w-2.5 h-2.5 bg-purple-500 rounded-full mx-1.5 animate-wave'></span>
 						<span className='w-2.5 h-2.5 bg-purple-500 rounded-full mx-1.5 animate-wave' style={{ animationDelay: '0.15s' }}></span>
 						<span className='w-2.5 h-2.5 bg-purple-500 rounded-full mx-1.5 animate-wave' style={{ animationDelay: '0.3s' }}></span>
@@ -256,11 +266,14 @@ const Search: React.FC = () => {
 				)}
 			</div>
 			{projects.length === 0 && !loading && (
-				<div className='text-center py-32 text-gray-500'>
-					<i className='bi bi-search text-6xl font-bold'></i>
-					<p className='text-3xl text-gray-500 font-bold'>검색 결과가 없습니다.</p>
-				</div>
-			)}
+				<>
+					<div className='text-center py-16 text-gray-500 bg-white rounded-2xl min-h-[320px] flex flex-col justify-center items-center'>
+						<i className='bi bi-search text-4xl font-bold'></i>
+						<p className='text-xl text-gray-500 font-bold mt-2'>검색 결과가 없습니다.</p>
+					</div>
+
+				</>
+				)}
 			{projects.length > 0 && (
 				<div>
 					총 <strong>{projects.length}</strong>개의 프로젝트가 있습니다.
@@ -268,7 +281,7 @@ const Search: React.FC = () => {
 			)}
 			{/* {error && <ErrorText>{error}</ErrorText>} */}
 
-			<div className='grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-x-8 gap-y-14 justify-between relative z-0' style={{ overflow: 'visible' }}>
+			<div className='grid grid-cols-[repeat(auto-fill,minmax(310px,1fr))] gap-x-1 gap-y-8 justify-between relative z-0' style={{ overflow: 'visible' }}>
 				{projects.map((item, index) => {
 					const isLast = index === projects.length - 1
 					const rate = Math.max(0, Math.min(100, Math.round(item.completionRate ?? 0)))
@@ -313,10 +326,10 @@ const Search: React.FC = () => {
 										}}
 									>
 							{/* 호버 시 전체 확장된 카드의 통합 배경 */}
-							<div className='absolute inset-0 bg-white border border-transparent group-hover:border-gray-200 rounded-2xl group-hover:rounded-b-none group-hover:shadow-2xl transition-all duration-300 ease-out z-10'></div>
+							<div className='absolute inset-0 bg-white rounded-2xl group-hover:rounded-b-none transition-all duration-300 ease-out z-10'></div>
 											{/* 호버 시 카드 하단 확장 배경 - 위에서 아래로 내려오는 슬라이드 효과 */}
 											<div
-												className='absolute left-0 right-0 bg-white border-l border-r border-b border-gray-200 rounded-b-2xl max-h-0 group-hover:max-h-[200px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out shadow-2xl z-10'
+												className='absolute left-0 right-0 bg-white rounded-b-2xl max-h-0 group-hover:max-h-[200px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out z-10'
 												style={{ top: '100%', marginTop: '-1px', overflow: 'hidden' }}
 											>
 								{/* 숨겨진 내용으로 높이 결정 - 좌우 패딩 없이 */}
@@ -356,16 +369,16 @@ const Search: React.FC = () => {
 												}}
 											/>
 											<div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out' />
-											<button
-												className='absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-600 hover:text-red-500 hover:bg-white transition-all duration-300 ease-out shadow-sm opacity-0 group-hover:opacity-100'
-												onClick={(e) => {
-													e.preventDefault()
-													e.stopPropagation()
-													handleLikeToggle(item.id, item.isRecommend)
-												}}
-											>
-												<i className={`text-sm ${item.isRecommend ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
-											</button>
+																	<button
+																		className='absolute top-3 right-3 w-8 h-8 bg-white/80 border border-gray-300/60 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all duration-200 opacity-0 group-hover:opacity-100'
+																		onClick={(e) => {
+																			e.preventDefault()
+																			e.stopPropagation()
+																			handleLikeToggle(item.id, item.isRecommend)
+																		}}
+																	>
+																		<i className={`text-base ${item.isRecommend ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
+																	</button>
 										</div>
 										
 										   {/* 프로그래스바 - 이미지 바로 옆에 붙임 */}
@@ -380,7 +393,7 @@ const Search: React.FC = () => {
 											   </div>
 											   {/* 툴팁 말풍선 - 항상 오른쪽에 표시 */}
 											   <div className="absolute left-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover/progress:opacity-100 transition-all duration-200 ease-out z-[99999]">
-												   <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap relative flex items-center">
+												   <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap relative flex items-center">
 													   <span className="font-bold">{rate ?? 0}%</span>
 													   <span className="ml-2 text-gray-300">{item.userCount || 0}명 참여</span>
 													   {/* 오른쪽 화살표 */}
@@ -393,7 +406,7 @@ const Search: React.FC = () => {
 									
 									<div className='space-y-2 relative'>
 										<a href={`/project/${item.id}`} className='block group/title'>
-											<h3 className='text-lg font-bold text-gray-900 leading-tight	 line-clamp-2 group-hover:text-purple-600 group-hover/title:text-purple-700 group-hover/title:scale-[1.02] transition-all duration-250 ease-out'>
+											  <h3 className='text-lg font-bold text-gray-900 leading-tight line-clamp-2 hover:scale-[1.02] transition-all duration-250 ease-out'>
 												{item.title}
 											</h3>
 										</a>
@@ -418,7 +431,7 @@ const Search: React.FC = () => {
 													{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
 														<span 
 															key={tagIndex}
-															className='inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 hover:bg-purple-600 hover:text-white px-2.5 py-1 rounded-full transition-all duration-250 ease-out cursor-pointer'
+															className='inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-full transition-all duration-250 ease-out cursor-pointer'
 														>
 															{tag}
 														</span>
@@ -435,6 +448,15 @@ const Search: React.FC = () => {
 					)
 				})}
 			</div>
+			{/* 검색 결과가 없을 때 아래에 인기 프로젝트 영역 추가 */}
+			{projects.length === 0 && !loading && (
+				<>
+					<hr className="my-8" />
+					<div className="min-h-[400px] flex flex-col items-center justify-center gap-8">
+						<PopularProjects />
+					</div>
+				</>
+			)}
 		</div>
 	)
 }
