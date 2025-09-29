@@ -7,6 +7,7 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { fetchProjectsFromServer } from '../hooks/fetchProjectsFromServer'
 import CategoryBar from '../components/UI/shared/CategoryBar'
+import { api } from '../AxiosInstance'
 
 type ProjectItem = {
   id: number
@@ -25,6 +26,9 @@ type ProjectItem = {
   description?: string
   summary?: string
   intro?: string
+  likeCount?: number
+  viewCount?: number
+  isLiked?: boolean // 좋아요 상태 추가
 }
 
 const categories = [
@@ -185,22 +189,26 @@ const Search: React.FC = () => {
 		}
 	}
 
-	//좋아요 기능 추후 추가 예정
+	// 좋아요 토글 API 함수 (api 인스턴스, withCredentials만 사용)
+	const toggleProjectLike = async (projectId: number, like: boolean) => {
+		try {
+			const url = `${baseUrl}/social/user/like`;
+			const res = await api.post(url, { like, projectId }, { withCredentials: true })
+			if (res.data.message === 'success') {
+				setProjects((prev) =>
+					prev.map((p) =>
+						p.id === projectId ? { ...p, isLiked: like } : p
+					)
+				)
+			}
+		} catch (err) {
+			console.error('좋아요 토글 실패', err)
+		}
+	}
+
+	// 좋아요 버튼 클릭 핸들러
 	const handleLikeToggle = async (projectId: number, current: boolean) => {
-		// if (!isLoggedIn) {
-		//   navigate('/login');
-		//   return;
-		// }
-		// try {
-		//   if (current) {
-		//     await api.delete(`/project/like/${projectId}`);
-		//   } else {
-		//     await api.post(`/project/like/${projectId}`);
-		//   }
-		//   fetchProjects();
-		// } catch (e) {
-		//   console.error('좋아요 실패', e);
-		// }
+		await toggleProjectLike(projectId, !current)
 	}
 
 	return (
@@ -281,14 +289,15 @@ const Search: React.FC = () => {
 								<h3 className="text-base font-bold text-gray-900 line-clamp-2 mr-2">{item.title}</h3>
 								{/* 모바일 리스트 뷰 좋아요 버튼 스타일 수정: 항상 정사각형 원 유지 */}
 <button
-  className="w-8 h-8 min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] bg-white border border-gray-300 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all duration-200 shadow-sm"
+  className="w-8 h-8 flex items-center justify-center bg-transparent border-none shadow-none p-0 m-0 hover:text-red-500 group"
+  style={{ background: 'none', border: 'none', boxShadow: 'none' }}
   onClick={(e) => {
     e.preventDefault()
     e.stopPropagation()
-    handleLikeToggle(item.id, item.isRecommend)
+    handleLikeToggle(item.id, !!item.isRecommend)
   }}
 >
-  <i className={`text-base ${item.isRecommend ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
+  <i className={`text-base transition-all duration-200 group-hover:scale-150 group-hover:text-red-500 ${item.isRecommend ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
 </button>
 							</div>
 							<p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.shortDescription}</p>
@@ -395,17 +404,18 @@ const Search: React.FC = () => {
 												}}
 											/>
 											<div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out' />
-																	<button
-																		className='absolute top-3 right-3 w-8 h-8 min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] bg-white/80 border border-gray-300/60 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all duration-200 shadow-sm'
-																		style={{ boxShadow: '0 1px 4px 0 rgba(0,0,0,0.04)' }}
-																		onClick={(e) => {
-																			e.preventDefault()
-																			e.stopPropagation()
-																			handleLikeToggle(item.id, item.isRecommend)
-																		}}
-																	>
-																		<i className={`text-base ${item.isRecommend ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
-																	</button>
+																	{/* 데스크톱 카드 그리드 좋아요 버튼: 배경 원, 테두리, 그림자 모두 제거하고 하트 아이콘만 남김 */}
+<button
+  className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-transparent border-none shadow-none p-0 m-0 hover:text-red-500"
+  style={{ background: 'none', border: 'none', boxShadow: 'none' }}
+  onClick={(e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleLikeToggle(item.id, !!item.isLiked)
+  }}
+>
+  <i className={`text-base transition-all duration-200 hover:scale-125 hover:text-red-500 ${item.isLiked ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
+</button>
 										</div>
 										
 										   {/* 프로그래스바 - 이미지 바로 옆에 붙임 */}
