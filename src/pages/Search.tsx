@@ -6,8 +6,7 @@ import { useSearchParams } from 'react-router-dom'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { fetchProjectsFromServer } from '../hooks/fetchProjectsFromServer'
-import PopularProjects from '../components/PopularProjects'
-import NewProject from '../components/UI/MainPage/NewProject'
+import CategoryBar from '../components/UI/shared/CategoryBar'
 
 type ProjectItem = {
   id: number
@@ -122,13 +121,6 @@ const Search: React.FC = () => {
 		}
 	}, [page])
 
-	useEffect(() => {
-		AOS.init({
-			duration: 700,
-			once: true,
-		});
-	}, []);
-
 	const getRemainingDays = (expiredDateStr: string, createdDateStr: string): string => {
 		const today = new Date()
 		const expiredDate = new Date(expiredDateStr)
@@ -213,21 +205,14 @@ const Search: React.FC = () => {
 
 	return (
 		<div className="px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]">
-			<div className='flex overflow-x-auto h-20 px-5 py-3 items-center justify-between'>
-				{categories.map((cat) => (
-					<div
-						key={cat.tag}
-						onClick={() => setTag(cat.tag)}
-						className={`flex flex-col items-center text-[13px] min-w-[80px] text-gray-500 cursor-pointer transition-all duration-200 hover:text-purple-500 hover:font-bold hover:-translate-y-0.5 ${
-							tag === cat.tag ? 'text-purple-500 font-bold mx-2.5' : ''
-						}`}>
-						<i
-							className={`${cat.icon} text-[22px] mb-1.5 ${
-								tag === cat.tag ? 'bg-purple-500 text-white rounded-full p-1.5 w-[35px] h-[35px] flex justify-center items-center' : ''
-							}`}></i>
-						<span>{cat.label}</span>
-					</div>
-				))}
+			{/* 모바일/데스크톱 모두 메인페이지와 동일한 카테고리바 디자인 적용 */}
+			<div className="mt-4">
+				<CategoryBar
+					categories={categories}
+					value={tag}
+					onChange={(t: string) => setTag(t)}
+					className="px-0 py-0"
+				/>
 			</div>
 			<div className='relative flex bg-gray-100 rounded-2xl mb-5 overflow-hidden'>
 				<div
@@ -266,13 +251,10 @@ const Search: React.FC = () => {
 				)}
 			</div>
 			{projects.length === 0 && !loading && (
-				<>
-					<div className='text-center py-16 text-gray-500 bg-white rounded-2xl min-h-[320px] flex flex-col justify-center items-center'>
-						<i className='bi bi-search text-4xl font-bold'></i>
-						<p className='text-xl text-gray-500 font-bold mt-2'>검색 결과가 없습니다.</p>
-					</div>
-
-				</>
+				<div className='text-center py-16 text-gray-500 bg-white rounded-2xl min-h-[calc(100vh-180px)] flex flex-col justify-center items-center shadow-sm'>
+					<i className='bi bi-search text-4xl font-bold'></i>
+					<p className='text-xl text-gray-500 font-bold mt-2'>검색 결과가 없습니다.</p>
+				</div>
 				)}
 			{projects.length > 0 && (
 				<div>
@@ -281,7 +263,51 @@ const Search: React.FC = () => {
 			)}
 			{/* {error && <ErrorText>{error}</ErrorText>} */}
 
-			<div className='grid grid-cols-[repeat(auto-fill,minmax(310px,1fr))] gap-x-1 gap-y-8 justify-between relative z-0' style={{ overflow: 'visible' }}>
+			{/* 모바일 리스트 뷰 */}
+			<div className="block sm:hidden">
+				{projects.map((item) => (
+					<div key={item.id} className="flex items-center bg-white rounded-2xl shadow-sm mb-4 p-3">
+						<img
+							src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
+							alt={item.title}
+							className="w-24 h-24 object-cover rounded-xl mr-3"
+							onError={(e) => {
+								e.currentTarget.onerror = null
+								e.currentTarget.src = noImage
+							}}
+						/>
+						<div className="flex-1 flex flex-col justify-between h-full">
+							<div className="flex justify-between items-start">
+								<h3 className="text-base font-bold text-gray-900 line-clamp-2 mr-2">{item.title}</h3>
+								{/* 모바일 리스트 뷰 좋아요 버튼 스타일 수정: 항상 정사각형 원 유지 */}
+<button
+  className="w-8 h-8 min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] bg-white border border-gray-300 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all duration-200 shadow-sm"
+  onClick={(e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleLikeToggle(item.id, item.isRecommend)
+  }}
+>
+  <i className={`text-base ${item.isRecommend ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
+</button>
+							</div>
+							<p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.shortDescription}</p>
+							<div className="flex flex-wrap gap-1 mt-2">
+								{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag, tagIndex) => (
+									<span key={tagIndex} className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">{tag}</span>
+								))}
+							</div>
+							<div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+								<span>{getRemainingDays(item.expired, item.createdAt)}</span>
+								<span className="text-purple-600 font-semibold">{Math.round(item.completionRate ?? 0)}% funded</span>
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
+
+			{/* 데스크톱 카드 그리드 */}
+			<div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-4 gap-y-12 justify-between relative z-0" style={{ overflow: 'visible', zoom: 0.9 }}>
 				{projects.map((item, index) => {
 					const isLast = index === projects.length - 1
 					const rate = Math.max(0, Math.min(100, Math.round(item.completionRate ?? 0)))
@@ -326,10 +352,10 @@ const Search: React.FC = () => {
 										}}
 									>
 							{/* 호버 시 전체 확장된 카드의 통합 배경 */}
-							<div className='absolute inset-0 bg-white rounded-2xl group-hover:rounded-b-none transition-all duration-300 ease-out z-10'></div>
+							<div className='absolute inset-0 bg-white border border-transparent group-hover:border-gray-200 rounded-2xl group-hover:rounded-b-none group-hover:shadow-2xl transition-all duration-300 ease-out z-10'></div>
 											{/* 호버 시 카드 하단 확장 배경 - 위에서 아래로 내려오는 슬라이드 효과 */}
 											<div
-												className='absolute left-0 right-0 bg-white rounded-b-2xl max-h-0 group-hover:max-h-[200px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out z-10'
+												className='absolute left-0 right-0 bg-white border-l border-r border-b border-gray-200 rounded-b-2xl max-h-0 group-hover:max-h-[200px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out shadow-2xl z-10'
 												style={{ top: '100%', marginTop: '-1px', overflow: 'hidden' }}
 											>
 								{/* 숨겨진 내용으로 높이 결정 - 좌우 패딩 없이 */}
@@ -370,7 +396,8 @@ const Search: React.FC = () => {
 											/>
 											<div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out' />
 																	<button
-																		className='absolute top-3 right-3 w-8 h-8 bg-white/80 border border-gray-300/60 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all duration-200 opacity-0 group-hover:opacity-100'
+																		className='absolute top-3 right-3 w-8 h-8 min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] bg-white/80 border border-gray-300/60 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-all duration-200 shadow-sm'
+																		style={{ boxShadow: '0 1px 4px 0 rgba(0,0,0,0.04)' }}
 																		onClick={(e) => {
 																			e.preventDefault()
 																			e.stopPropagation()
@@ -393,7 +420,7 @@ const Search: React.FC = () => {
 											   </div>
 											   {/* 툴팁 말풍선 - 항상 오른쪽에 표시 */}
 											   <div className="absolute left-8 top-1/2 transform -translate-y-1/2 opacity-0 group-hover/progress:opacity-100 transition-all duration-200 ease-out z-[99999]">
-												   <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap relative flex items-center">
+												   <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap relative flex items-center">
 													   <span className="font-bold">{rate ?? 0}%</span>
 													   <span className="ml-2 text-gray-300">{item.userCount || 0}명 참여</span>
 													   {/* 오른쪽 화살표 */}
@@ -448,15 +475,7 @@ const Search: React.FC = () => {
 					)
 				})}
 			</div>
-			{/* 검색 결과가 없을 때 아래에 인기 프로젝트 영역 추가 */}
-			{projects.length === 0 && !loading && (
-				<>
-					<hr className="my-8" />
-					<div className="min-h-[400px] flex flex-col items-center justify-center gap-8">
-						<PopularProjects />
-					</div>
-				</>
-			)}
+
 		</div>
 	)
 }
