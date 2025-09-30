@@ -16,6 +16,9 @@ const NoticeDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>()
 	const location = useLocation()
 	const navigate = useNavigate()
+	
+	const [prevNotice, setPrevNotice] = useState<NoticeArticle | null>(null)
+	const [nextNotice, setNextNotice] = useState<NoticeArticle | null>(null)
 
 	const article = location.state as NoticeArticle | undefined
 
@@ -23,6 +26,34 @@ const NoticeDetail: React.FC = () => {
 		const d = new Date(isoDate)
 		return `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`
 	}
+
+	// 이전글/다음글 가져오기
+	useEffect(() => {
+		const fetchAdjacentNotices = async () => {
+			if (!id) return
+			
+			try {
+				const response = await api.get('/public/notice')
+				const notices = response.data.data as NoticeArticle[]
+				
+				const currentIndex = notices.findIndex(notice => notice.id === parseInt(id))
+				if (currentIndex !== -1) {
+					// 다음글 (더 최신글)
+					if (currentIndex > 0) {
+						setNextNotice(notices[currentIndex - 1])
+					}
+					// 이전글 (더 오래된 글)
+					if (currentIndex < notices.length - 1) {
+						setPrevNotice(notices[currentIndex + 1])
+					}
+				}
+			} catch (error) {
+				console.error('이전글/다음글 로딩 실패:', error)
+			}
+		}
+
+		fetchAdjacentNotices()
+	}, [id])
 
 	if (!article) {
 		return <div className='max-w-4xl mx-auto p-8'>공지 정보를 불러올 수 없습니다.</div>
@@ -56,7 +87,7 @@ const NoticeDetail: React.FC = () => {
 
 		imgTags.forEach((img, idx) => {
 			if (article.imgs && article.imgs[idx]) {
-				img.setAttribute('src', `${api.defaults.baseURL}img/${article.imgs[idx]}`)
+				img.setAttribute('src', `${api.defaults.baseURL}/img/${article.imgs[idx]}`)
 			}
 		})
 
@@ -64,47 +95,152 @@ const NoticeDetail: React.FC = () => {
 	}
 
 	return (
-		<div className='max-w-4xl mx-auto p-8'>
-			<h1 className='text-xl font-bold mb-3'>{article.title}</h1>
-			<div className='flex gap-3 mb-6 border-b border-gray-200 justify-between'>
-				<div className='flex items-center gap-3 text-sm text-gray-500 mb-3'>
-					{article.imgs && article.imgs.length > 0 && <img src={`https://placehold.co/80x80?text=WU`} alt='작성자 이미지' className='w-8 h-8 rounded-full object-cover' />}
-					<span>위드유</span>
-					<span>{formatDate(article.createdAt)}</span>
-				</div>
-
-				{!roleLoading && role === 'ADMIN' && (
-					<div className='flex gap-2'>
-						<div
-							className='py-2 px-3 text-sm text-gray-500 cursor-pointer hover:text-blue-600 transition-colors duration-200'
-							onClick={() =>
-								navigate(`/notice/edit/${article.id}`, {
-									state: {
-										article,
-									},
-								})
-							}>
-							수정
-						</div>
-						<div className='py-2 px-3 text-sm text-gray-500 cursor-pointer hover:text-blue-600 transition-colors duration-200' onClick={() => handleDelete()}>
-							삭제
+		<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 bg-white min-h-screen'>
+			{/* Header Section - Responsive */}
+			<div className='mb-6 sm:mb-8'>
+				<div className='flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-6'>
+					<div className='flex-1 min-w-0'>
+						<h1 className='text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-3 sm:mb-2 leading-tight break-words'>
+							{article.title}
+						</h1>
+						<div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500'>
+							<div className='flex items-center gap-2'>
+								<img 
+									src={`https://placehold.co/32x32?text=WU`} 
+									alt='작성자 이미지' 
+									className='w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200' 
+								/>
+								<span className='font-medium'>위드유</span>
+							</div>
+							<span className='hidden sm:inline text-gray-400'>•</span>
+							<span>{formatDate(article.createdAt)}</span>
 						</div>
 					</div>
-				)}
+
+					{/* Admin Controls - Responsive */}
+					{!roleLoading && role === 'ADMIN' && (
+						<div className='flex items-center gap-2 flex-shrink-0'>
+							<button
+								onClick={() =>
+									navigate(`/notice/edit/${article.id}`, {
+										state: { article },
+									})
+								}
+								className='flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 border border-gray-200 hover:border-blue-200'>
+								<svg className='w-4 h-4 inline mr-1' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
+								</svg>
+								<span>수정</span>
+							</button>
+							<button
+								onClick={handleDelete}
+								className='flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200 border border-red-200 hover:border-red-300'>
+								<svg className='w-4 h-4 inline mr-1' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
+								</svg>
+								<span>삭제</span>
+							</button>
+						</div>
+					)}
+				</div>
+				<hr className='border-gray-200' />
 			</div>
 
-			<div className='my-10' dangerouslySetInnerHTML={getProcessedContent()} />
-			<hr className='my-10 border-gray-200' />
-			{
-				// 원본 content 보여주기
-				/* <Content>{article.content}</Content> */
-			}
+			{/* Content Section - Responsive */}
+			<div className='bg-white py-6 sm:py-8'>
+				<div 
+					className='prose prose-sm sm:prose-base lg:prose-lg max-w-none text-gray-800 leading-relaxed
+					[&_img]:w-full [&_img]:rounded-lg [&_img]:my-4 [&_img]:border [&_img]:border-gray-200
+					[&_p]:mb-4 [&_h1]:text-xl [&_h1]:sm:text-2xl [&_h2]:text-lg [&_h2]:sm:text-xl
+					[&_h3]:text-base [&_h3]:sm:text-lg [&_ul]:ml-4 [&_ol]:ml-4'
+					dangerouslySetInnerHTML={getProcessedContent()} 
+				/>
+			</div>
 
-			<button
-				className='mt-10 bg-gray-50 border border-gray-300 py-2.5 px-5 rounded-md text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors duration-200'
-				onClick={() => navigate('/notice')}>
-				목록으로 돌아가기
-			</button>
+			{/* Previous/Next Navigation - Responsive */}
+			<div className='mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200'>
+				<div className='space-y-0 border border-gray-200 rounded-lg overflow-hidden mb-6 sm:mb-8'>
+					{/* 다음글 */}
+					{nextNotice ? (
+						<div 
+							onClick={() => navigate(`/notice/${nextNotice.id}`, { state: nextNotice })}
+							className='flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200 border-b border-gray-200 gap-2 sm:gap-0'>
+							<div className='flex items-start sm:items-center gap-3 min-w-0 flex-1'>
+								<div className='flex items-center gap-2 text-sm text-gray-500 flex-shrink-0'>
+									<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+										<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+									</svg>
+									<span className='font-medium'>다음글</span>
+								</div>
+								<h3 className='text-gray-900 font-medium hover:text-blue-600 transition-colors duration-200 text-sm sm:text-base line-clamp-2 min-w-0'>
+									{nextNotice.title}
+								</h3>
+							</div>
+							<span className='text-xs sm:text-sm text-gray-400 flex-shrink-0 sm:ml-4'>
+								{formatDate(nextNotice.createdAt)}
+							</span>
+						</div>
+					) : (
+						<div className='flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border-b border-gray-200 text-gray-400 gap-2 sm:gap-0'>
+							<div className='flex items-center gap-3'>
+								<div className='flex items-center gap-2 text-sm'>
+									<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+										<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+									</svg>
+									<span>다음글</span>
+								</div>
+								<span className='text-sm'>다음글이 없습니다</span>
+							</div>
+						</div>
+					)}
+
+					{/* 이전글 */}
+					{prevNotice ? (
+						<div 
+							onClick={() => navigate(`/notice/${prevNotice.id}`, { state: prevNotice })}
+							className='flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200 gap-2 sm:gap-0'>
+							<div className='flex items-start sm:items-center gap-3 min-w-0 flex-1'>
+								<div className='flex items-center gap-2 text-sm text-gray-500 flex-shrink-0'>
+									<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+										<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+									</svg>
+									<span className='font-medium'>이전글</span>
+								</div>
+								<h3 className='text-gray-900 font-medium hover:text-blue-600 transition-colors duration-200 text-sm sm:text-base line-clamp-2 min-w-0'>
+									{prevNotice.title}
+								</h3>
+							</div>
+							<span className='text-xs sm:text-sm text-gray-400 flex-shrink-0 sm:ml-4'>
+								{formatDate(prevNotice.createdAt)}
+							</span>
+						</div>
+					) : (
+						<div className='flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 text-gray-400 gap-2 sm:gap-0'>
+							<div className='flex items-center gap-3'>
+								<div className='flex items-center gap-2 text-sm'>
+									<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+										<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+									</svg>
+									<span>이전글</span>
+								</div>
+								<span className='text-sm'>이전글이 없습니다</span>
+							</div>
+						</div>
+					)}
+				</div>
+			</div>
+
+			{/* Navigation Section - Responsive */}
+			<div className='pt-4 sm:pt-4 border-t border-gray-200'>
+				<button
+					onClick={() => navigate('/notice')}
+					className='w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all duration-200 border border-gray-200'>
+					<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+						<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M10 19l-7-7m0 0l7-7m-7 7h18' />
+					</svg>
+					목록으로 돌아가기
+				</button>
+			</div>
 		</div>
 	)
 }
