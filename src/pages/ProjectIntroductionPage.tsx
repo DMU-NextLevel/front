@@ -77,26 +77,25 @@ const ProjectIntroductionPage: React.FC = () => {
 
 				console.log(projectData)
 
-				const response = await api.post('/api1/project', projectData)
+				await api.post('/api1/project', projectData)
 
-				if (response.status === 200) {
-					await Swal.fire({
-						icon: 'success',
-						title: '제출 완료',
-						text: '프로젝트가 성공적으로 제출되었습니다.',
-						confirmButtonColor: '#a66bff',
-						confirmButtonText: '확인',
-						timer: 1500,
-						timerProgressBar: true,
-					})
-					navigate('/')
-				}
+				await Swal.fire({
+					icon: 'success',
+					title: '제출 완료',
+					text: '프로젝트가 성공적으로 제출되었습니다.',
+					confirmButtonColor: '#a66bff',
+					confirmButtonText: '확인',
+					timer: 1500,
+					timerProgressBar: true,
+				})
+
+				navigate('/')
 			} catch (error) {
 				console.error('프로젝트 소개 저장 실패:', error)
 				await Swal.fire({
 					icon: 'error',
-					title: '저장에 실패했습니다.',
-					text: '다시 시도해주세요.',
+					title: '제출 실패',
+					text: '제출 중 오류가 발생했습니다. 다시 시도해주세요.',
 				})
 			}
 		}
