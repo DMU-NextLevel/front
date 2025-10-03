@@ -18,7 +18,7 @@ const HeroSection: React.FC = () => {
             <a href='/search?order=RECOMMEND' className='inline-flex items-center justify-center h-11 px-5 rounded-full bg-white text-gray-900 font-semibold shadow/50 hover:shadow transition-transform hover:-translate-y-0.5'>
               인기 프로젝트 보기
             </a>
-            <a href='/project/create' className='inline-flex items-center justify-center h-11 px-5 rounded-full bg-white/15 text-white font-semibold ring-1 ring-white/30 hover:bg-white/25 transition'>
+            <a href='/creater' className='inline-flex items-center justify-center h-11 px-5 rounded-full bg-white/15 text-white font-semibold ring-1 ring-white/30 hover:bg-white/25 transition'>
               프로젝트 시작하기
             </a>
           </div>
