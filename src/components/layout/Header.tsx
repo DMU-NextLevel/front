@@ -189,16 +189,15 @@ export const HeaderMain: React.FC = () => {
 								마감임박
 							</a>
 							
-							{/* 프로젝트 시작 버튼 - 마감임박 우측에 배치 */}
-							<button
-								onClick={() => navigate('/project/create')}
-								className='bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-blue-700 transition-colors'
-							>
-								프로젝트 시작
-							</button>
-						</nav>
-
-						{/* 오른쪽 영역 */}
+						
+						{/* 프로젝트 시작 버튼 - 마감임박 우측에 배치 */}
+						<button
+							onClick={() => navigate('/creater')}
+							className='bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-blue-700 transition-colors'
+						>
+							프로젝트 시작
+						</button>
+					</nav>						{/* 오른쪽 영역 */}
 						<div className='ml-auto flex items-center space-x-4'>
 							{/* 검색창 - 데스크톱에서만 표시 */}
 							<form

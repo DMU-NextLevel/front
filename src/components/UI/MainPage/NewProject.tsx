@@ -154,9 +154,6 @@ const NewProject: React.FC = () => {
 										<button className='w-9 h-9 grid place-items-center rounded-full bg-white/90 text-gray-800 hover:bg-white shadow'>
 											<i className='bi bi-heart' />
 										</button>
-										<button className='w-9 h-9 grid place-items-center rounded-full bg-white/90 text-gray-800 hover:bg-white shadow'>
-											<i className='bi bi-share' />
-										</button>
 									</div>
 									<div className='absolute inset-x-0 bottom-0 p-3 flex items-center gap-2'>
 										<span className='inline-flex items-center rounded-full text-xs px-2.5 py-1 bg-black/60 text-white backdrop-blur'>

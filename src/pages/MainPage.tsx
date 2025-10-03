@@ -35,11 +35,15 @@ const MainPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-  <div className="ml-0 mr-auto flex flex-col box-border text-gray-700 px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]">
+  <div className="ml-0 mr-auto flex flex-col box-border text-gray-700">
       {/* Modern hero and sections */}
       
       <div className="w-full px-0">
         <HeroSection />
+      </div>
+      
+      <div className="px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]">
+        <div className="w-full px-0">
         {/* New CategoryBar placed above existing CategorySelector */}
         <div className="mt-4">
           <CategoryBar
@@ -86,6 +90,7 @@ const MainPage: React.FC = () => {
         <BloomProjectGallery />
         <BloomStatistics />
       </div> */}
+      </div>
     </div>
   );
 };

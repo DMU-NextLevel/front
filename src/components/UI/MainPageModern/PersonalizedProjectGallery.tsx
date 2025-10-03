@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
 import { useAuth } from '../../../hooks/AuthContext'
 import noImage from '../../../assets/images/noImage.jpg'
+import { api } from '../../../AxiosInstance'
 
 const gradients = 'bg-gradient-to-br from-purple-600 via-pink-500 to-blue-500'
 const baseUrl = process.env.REACT_APP_API_BASE_URL
@@ -22,6 +23,7 @@ type ProjectItem = {
   description?: string
   summary?: string
   intro?: string
+  isLiked?: boolean // 좋아요 상태 추가
 }
 
 const formatWon = (n: number) => n.toLocaleString('ko-KR')
@@ -44,6 +46,32 @@ const PersonalizedProjectGallery: React.FC = () => {
   const { isLoggedIn } = useAuth()
   const [projects, setProjects] = useState<ProjectItem[]>([])
   const [loading, setLoading] = useState(false)
+
+  // 좋아요 토글 API 함수 (api 인스턴스, withCredentials만 사용)
+  const toggleProjectLike = async (projectId: number, like: boolean) => {
+    try {
+      const url = `${baseUrl}/social/user/like`;
+      const res = await api.post(url, { like, projectId }, { withCredentials: true })
+      if (res.data.message === 'success') {
+        setProjects((prev) =>
+          prev.map((p) =>
+            p.id === projectId ? { ...p, isLiked: like } : p
+          )
+        )
+      }
+    } catch (err) {
+      console.error('좋아요 토글 실패', err)
+    }
+  }
+
+  // 좋아요 버튼 클릭 핸들러
+  const handleLikeToggle = async (projectId: number, current: boolean) => {
+    if (!isLoggedIn) {
+      alert('로그인이 필요합니다.')
+      return
+    }
+    await toggleProjectLike(projectId, !current)
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -96,9 +124,6 @@ const PersonalizedProjectGallery: React.FC = () => {
                       e.currentTarget.src = noImage
                     }}
                   />
-                  <button className='absolute top-3 right-3 z-10 grid place-items-center w-9 h-9 rounded-full bg-white/90 text-gray-800 hover:bg-white shadow'>
-                    <i className={`bi ${p.isRecommend ? 'bi-heart-fill text-pink-500' : 'bi-heart'}`} />
-                  </button>
                   <div className='absolute inset-x-0 bottom-0 p-3 flex items-center gap-2'>
                     <span className='inline-flex items-center rounded-full text-xs px-2.5 py-1 bg-black/60 text-white backdrop-blur'>
                       {tagText}
@@ -111,10 +136,10 @@ const PersonalizedProjectGallery: React.FC = () => {
                   </div>
                 </div>
                 <div className='px-4 pt-3 pb-4'>
-                  <h3 className='text-base md:text-[1.05rem] font-bold leading-tight line-clamp-2 mb-0'>{p.title}</h3>
-                  <p className='mt-2 text-[13px] text-gray-500 leading-tight line-clamp-3'>{introText}</p>
+                  <h3 className='text-sm font-bold leading-tight line-clamp-2 mb-0'>{p.title}</h3>
+                  <p className='mt-2 text-xs text-gray-500 leading-tight line-clamp-3'>{introText}</p>
                   <div className='mt-5'>
-                    <div className='flex items-center justify-between text-sm font-semibold'>
+                    <div className='flex items-center justify-between text-xs font-semibold'>
                       <span className='text-purple-600'>{rate}% 달성</span>
                       <span className='text-gray-600'>추천 {p.recommendCount?.toLocaleString?.('ko-KR') ?? 0}</span>
                     </div>
