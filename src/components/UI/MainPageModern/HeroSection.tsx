@@ -4,9 +4,9 @@ const gradients = 'bg-gradient-to-br from-purple-600 via-pink-500 to-blue-500'
 
 const HeroSection: React.FC = () => {
   return (
-    <section className={`relative overflow-hidden rounded-2xl ${gradients} text-white`} data-aos='fade-up'>
+    <section className={`relative overflow-hidden w-full ${gradients} text-white`} data-aos='fade-up'>
       <div className='absolute inset-0 opacity-30' style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.6), transparent 40%), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.4), transparent 45%)' }} />
-      <div className='relative px-6 py-14 md:px-12 md:py-20 lg:px-16 lg:py-24'>
+      <div className='relative py-14 md:py-20 lg:py-24 px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]'>
         <div className='max-w-3xl'>
           <h1 className='text-3xl md:text-5xl font-extrabold tracking-tight leading-tight'>
             새로운 아이디어가 현실이 되는 곳
