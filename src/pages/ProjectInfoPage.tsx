@@ -19,7 +19,7 @@ const categories = [
 const ProjectInfoPage: React.FC = () => {
 	const navigate = useNavigate()
 	const { state } = useLocation()
-	const { setExpired, setGoal } = useCreateStore()
+	const { setExpired, setGoal, setStartAt } = useCreateStore()
 
 	const categoryLabel =
 		state?.category1Label || state?.category2Label || categories.find((c) => c.value === state?.category)?.label || state?.categoryLabel || state?.category || ''
@@ -173,6 +173,7 @@ const ProjectInfoPage: React.FC = () => {
 	}
 
 	const nextClick = () => {
+		setStartAt(formData.startDate)
 		setExpired(formData.endDate)
 		setGoal(parseNumber(formData.targetAmount))
 
