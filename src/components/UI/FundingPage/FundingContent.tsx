@@ -1,14 +1,13 @@
 import React, { JSX, useEffect, useRef, useState } from 'react'
 import { FundingCommu, FundingNews, FundingStory } from './FundingStory'
-
-interface IProjectData {
-	story: any[]
-	notice: any[]
-	community: any[]
-}
+import { ProjectCommunityData, ProjectNoticeData, ProjectStoryData } from '../../../types/project'
 
 interface props {
-	projectData: IProjectData | null
+	projectData: {
+		story: ProjectStoryData | null
+		notice: ProjectNoticeData | null
+		community: ProjectCommunityData | null
+	}
 }
 
 const FundingContent = ({ projectData }: props): JSX.Element => {
@@ -117,13 +116,13 @@ const FundingContent = ({ projectData }: props): JSX.Element => {
 			</div>
 			<div className='w-full h-[94vh] overflow-y-auto scroll-smooth' ref={containerRef}>
 				<div className='w-full py-12 min-h-[600px] flex justify-center' ref={storyRef}>
-					<FundingStory story={projectData?.story} />
+					<FundingStory story={projectData?.story?.imgs} />
 				</div>
 				<div className='w-full py-12 min-h-[600px] flex justify-center' ref={newsRef}>
-					<FundingNews notice={projectData?.notice} />
+					<FundingNews notice={projectData?.notice?.notices} />
 				</div>
 				<div className='w-full py-12 min-h-[600px] flex justify-center' ref={commuRef}>
-					<FundingCommu community={projectData?.community} />
+					<FundingCommu community={projectData?.community?.communities} />
 				</div>
 			</div>
 		</div>

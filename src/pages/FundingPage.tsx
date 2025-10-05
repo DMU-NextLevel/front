@@ -6,6 +6,7 @@ import FundingModal from '../components/UI/FundingPage/FundingModal'
 import Modal from '../components/layout/Modal'
 import { api } from '../AxiosInstance'
 import { useParams, useSearchParams } from 'react-router-dom'
+import { useProjectFetch } from '../apis/useProjectFetch'
 
 interface IUserData {
 	title: string | undefined
@@ -30,7 +31,8 @@ const FundingPage = (): JSX.Element => {
 	const [searchParams] = useSearchParams()
 	const [userData, setUserData] = useState<IUserData | null>(null)
 	const [projectData, setProjectData] = useState<IProjectData | null>(null)
-	const percent = searchParams.get('percent')
+	const percent = searchParams.get('percent') ?? ''
+	const { story, notice, community } = useProjectFetch({ projectId: no ?? '' })
 
 	// 프로젝트 상세조회
 	useEffect(() => {
@@ -53,22 +55,6 @@ const FundingPage = (): JSX.Element => {
 		}
 	}, [no])
 
-	// 프로젝트 스토리, 새소식, 커뮤니티 조회
-	useEffect(() => {
-		try {
-			api.get(`/public/project/${no}/all`).then((res) => {
-				const dataRoot = res.data.data
-				setProjectData({
-					story: dataRoot.story.imgs,
-					notice: dataRoot.notice.notices,
-					community: dataRoot.community.communities,
-				})
-			})
-		} catch (e: any) {
-			console.log(e)
-		}
-	}, [no])
-
 	useEffect(() => {
 		console.log(projectData)
 	}, [projectData])
@@ -88,7 +74,7 @@ const FundingPage = (): JSX.Element => {
 				/>
 				<StarterInfo starter={userData?.starter} />
 			</div>
-			<FundingContent projectData={projectData} />
+			<FundingContent projectData={{ story, notice, community }} />
 			{payOpen && (
 				<Modal onClose={() => setPayOpen(false)}>
 					<FundingModal />
