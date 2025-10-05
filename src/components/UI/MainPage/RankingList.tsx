@@ -1,178 +1,92 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer';
-import noImage from '../../../assets/images/noImage.jpg';
+import { useNavigate } from 'react-router-dom'
+import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
+import noImage from '../../../assets/images/noImage.jpg'
 
+type RankingListProps = {
+	/**
+	 * sidebar: 사용할 때 부모 레이아웃이 컬럼 폭을 관리 (7:3 등)
+	 * standalone: 기존 메인 하단 섹션에서 단독 배치 (기본값)
+	 */
+	variant?: 'sidebar' | 'standalone'
+}
 
+const RankingList: React.FC<RankingListProps> = ({ variant = 'standalone' }) => {
+	const baseUrl = process.env.REACT_APP_API_BASE_URL
+	const navigate = useNavigate()
+	const [projects, setProjects] = useState<any[]>([])
+	useEffect(() => {
+		const loadProjects = async () => {
+			const data = await fetchProjectsFromServer({ order: 'RECOMMEND', pageCount: 6 })
+			console.log('📦 서버에서 받아온 프로젝트:', data)
+			if (Array.isArray(data)) {
+				setProjects(data)
+			}
+		}
+		loadProjects()
+	}, [])
 
-const RankingList:React.FC = () => {
-
-  const baseUrl = process.env.REACT_APP_API_BASE_URL
-  const navigate = useNavigate()
-  const [projects, setProjects] = useState<any[]>([]);
-        useEffect(() => {
-          const loadProjects = async () => {
-            const data = await fetchProjectsFromServer({ order: "RECOMMEND", pageCount: 6 });
-            console.log("📦 서버에서 받아온 프로젝트:", data);
-            if (Array.isArray(data)) {
-              setProjects(data);
-            }
-          };
-          loadProjects();
-        }, []);
-
-  return (
-    <Wrapper>
-      <Title>실시간 랭킹</Title>
-      
-      <List>
-        {projects.map((item, index) => (
-          <ImageTextItem onClick={() => navigate(`/project/${item.id}`)} key={item.id}>
-            <RankNumber>{index + 1}</RankNumber>
-            <Info>
-              <ProjectTitle>{item.title}</ProjectTitle>
-              <Percent>{item.completionRate}% 달성</Percent>
-            </Info>
-            <ImageWrapper>
-              {item.titleImg ? (
-                <img src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
-                alt={item.title}
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = noImage;
-                }} />
-              ) : (
-                <NoImage>이미지 없음</NoImage>
-              )}
-            </ImageWrapper>
-          </ImageTextItem>
-          
-          
-        ))}
-      </List>
-      <div style={{ textAlign: 'right', marginBottom: '10px', margin: '0' }}>
-        
-      </div>
-    </Wrapper>
-  );
-};
-
-
-
-// 전체 컨테이너
-const Wrapper = styled.div` 
-  width: 30%;
-  background: #fff;
-  padding: 40px 0px 0px 40px;
-  border-left: 1px solid rgb(246, 246, 246);
-  margin-left : 40px;
-`;
-
-// 랭킹 박스
-const ImageTextItem = styled.div`
-  display: flex;
-  align-items: flex-start;  
-  margin-bottom: 12px;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  cursor: pointer;
-  `;
-
-// 랭킹 숫자
-const RankNumber = styled.div`
-  font-weight: bold;
-  font-size: 22px;
-  width: 20px;
-  color: #333;
-  margin-top: 6px;
-  margin-right: 10px;
-`;
-
-
-// 제목
-const Title = styled.h2`
-  font-size: 24px;
-  margin: 0 0 20px 0;
-  
-`;
-
-// 리스트 전체
-const List = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 10px 0 0 0;
-`;
-
-// 개별 아이템
-const Item = styled.li`
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-`;
-
-// 이미지 감싸는 박스
-const ImageWrapper = styled.div`
-  width: 100px;
-  height: 70px;
-  background-color: #f0f0f0;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: #999;
-  margin-right: 12px;
-  flex-shrink: 0;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 3px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
-  }
-  &:hover {
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
-    filter: brightness(1.05);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  
-  &:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-`;
-
-
-const NoImage = styled.div`
-  text-align: center;
-`;
-
-// 텍스트 영역
-const Info = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 220px;
-  margin-right: 10px;
-`;
-
-// 달성률
-const Percent = styled.span`
-  color: #7b61ff;
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 4px;
-`;
-
-// 제목
-const ProjectTitle = styled.span`
-  font-size: 14px;
-  line-height: 1.3;
-  
-`;
+	return (
+		<div
+			data-aos='fade-up'
+			data-aos-duration='600'
+			data-aos-easing='ease-out-cubic'
+			data-aos-once='true'
+			className={
+				variant === 'sidebar'
+					? 'w-full bg-transparent py-6 md:py-8 lg:py-10 pl-0 mt-6 lg:mt-0 h-full flex flex-col transform-gpu'
+					: 'w-full lg:w-[30%] bg-transparent py-6 md:py-8 lg:py-10 mt-6 lg:mt-0 h-full flex flex-col transform-gpu'
+			}
+			style={{ willChange: 'transform' }}
+		>
+			<h2 className='text-xl md:text-2xl font-bold text-gray-900 mb-3'>실시간 랭킹</h2>
+			<ul className='space-y-2.5 flex-1'>
+				{projects.map((item, index) => (
+					<li key={item.id}>
+						<button
+							onClick={() => navigate(`/project/${item.id}`)}
+							className='w-full flex items-start gap-2.5 px-1 py-2 rounded-lg text-left hover:bg-slate-50 transition-colors'>
+							<span className='inline-flex items-center justify-center w-7 h-7 text-purple-600 text-base font-bold'>
+								{index + 1}
+							</span>
+							<div className='min-w-0 flex-1'>
+								<p className='text-base md:text-[1.05rem] text-gray-800 font-medium leading-tight line-clamp-2'>
+									{item.title}
+								</p>
+								<p className='mt-0.5 text-sm text-purple-600 font-semibold'>{item.completionRate}% 달성</p>
+								{/* TODO: API 구현 후 item.description(또는 shortDescription/summary/intro)로 대체 */}
+								{(() => {
+									const desc =
+										(item && (item.shortDescription || item.description || item.summary || item.intro)) ||
+										'크리에이터의 스토리와 목표를 간단히 소개하는 영역입니다. 더보기에서 상세 내용을 확인해 보세요.'
+									return (
+										<p className='mt-0.5 text-[11px] md:text-xs text-gray-500 leading-snug line-clamp-2'>{desc}</p>
+									)
+								})()}
+							</div>
+							<div className='flex-shrink-0 w-24 sm:w-28 rounded-lg overflow-hidden bg-gray-50 ring-1 ring-gray-200 relative'>
+								<div className='w-full' style={{ aspectRatio: '16 / 9' }}>
+									{item.titleImg ? (
+										<img
+											src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
+											alt={item.title}
+											onError={(e) => {
+												e.currentTarget.onerror = null
+												e.currentTarget.src = noImage
+											}}
+											className='absolute inset-0 w-full h-full object-cover'
+										/>
+									) : (
+										<div className='absolute inset-0 flex items-center justify-center text-gray-400 text-[11px]'>이미지 없음</div>
+									)}
+								</div>
+							</div>
+						</button>
+					</li>
+				))}
+			</ul>
+		</div>
+	)
+}
 
 export default RankingList;

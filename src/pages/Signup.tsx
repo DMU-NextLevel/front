@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import signupImage from '../assets/images/Signup.png';
-import { api } from '../AxiosInstance'
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import signupImage from '../assets/images/Signup.png'
+import { api, apiWithoutCredentials } from '../AxiosInstance'
+import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
 	const [password, setPassword] = useState('')
@@ -16,7 +15,7 @@ const Signup = () => {
 	const [email, setEmail] = useState('')
 	const [emailError, setEmailError] = useState(false)
 	const [termsError, setTermsError] = useState(false)
-  	const [isNicknameValid, setIsNicknameVaild] = useState(false)
+	const [isNicknameValid, setIsNicknameVaild] = useState(false)
 	const [checkOn, setCheckOn] = useState<boolean>(false)
 	const navigate = useNavigate()
 
@@ -95,17 +94,17 @@ const Signup = () => {
 			setTermsError(false)
 		}
 
-    let formdata = new FormData()
+		let formdata = new FormData()
 
-    formdata.append('email', email)
-    formdata.append('key',emailCode)
-    formdata.append('password',password)
-    formdata.append('name',name)
-    formdata.append('nickName',nickname)
-    formdata.append('number', '010-1234-5678')
-    formdata.append('address', 'test')
+		formdata.append('email', email)
+		formdata.append('key', emailCode)
+		formdata.append('password', password)
+		formdata.append('name', name)
+		formdata.append('nickName', nickname)
+		formdata.append('number', '010-1234-5678')
+		formdata.append('address', 'test')
 		if (!nameError && !emailError && !passwordError && !termsError) {
-			api.post('/public/login', formdata)
+			apiWithoutCredentials.post('/public/login', formdata)
 			alert('회원가입 완료!')
 			navigate('/login')
 		}
@@ -113,300 +112,204 @@ const Signup = () => {
 
 	const handleSendCode = () => {
 		try {
-			api.post('/public/login/email', {
+			apiWithoutCredentials.post('/public/login/email', {
 				email,
 			})
-      alert('인증번호가 전송되었습니다.')
+			alert('인증번호가 전송되었습니다.')
 			setIsVerifying(true)
 			setTimer(300)
 		} catch (e: any) {
 			console.log(e)
-      alert('인증번호 전송 실패')
+			alert('인증번호 전송 실패')
 		}
 	}
 
 	const handleVerifyClick = () => {
-    try {
-      api.put('/public/login/email',{
-        email : email,
-        key : emailCode
-      })
-      alert('인증 완료!')
-      setIsVerifying(false)
-      setTimer(0)
-    } catch(e:any) {
-      console.log(e)
-      alert('이메일 인증 실패')
-    }
+		try {
+			apiWithoutCredentials.put('/public/login/email', {
+				email: email,
+				key: emailCode,
+			})
+			alert('인증 완료!')
+			setIsVerifying(false)
+			setTimer(0)
+		} catch (e: any) {
+			console.log(e)
+			alert('이메일 인증 실패')
+		}
 	}
 
 	const handleResendClick = () => {
-    try {
-      api.post('/public/login/email', {
+		try {
+			apiWithoutCredentials.post('/public/login/email', {
 				email,
 			})
-      alert('인증번호가 재전송되었습니다.')
-      setTimer(300)
-    } catch(e:any) {
-      console.log(e)
-      alert('인증번호 전송 실패')
-    }
+			alert('인증번호가 재전송되었습니다.')
+			setTimer(300)
+		} catch (e: any) {
+			console.log(e)
+			alert('인증번호 전송 실패')
+		}
 	}
 
-  const nicknameCheck = () => {
-    try {
-      api.get(`/public/login/nickName?nickName=${nickname}`).then((response) => {
-        if(response.status === 200) {
-          if(nickname.length > 0 && nickname !== takenNick) {
-            setIsNicknameVaild(true)
-			setCheckOn(true)
-          }
-        } else if(response.status === 409) {
-          if(nickname.length > 0 && nickname !== takenNick) {
-            setIsNicknameVaild(false)
-			setCheckOn(true)
-          }
-        }
-      })
-    } catch(e) {
-      console.log(e)
-      alert('닉네임 검증 오류')
-    }
-  }
+	const nicknameCheck = () => {
+		try {
+			apiWithoutCredentials.get(`/public/login/nickName?nickName=${nickname}`).then((response) => {
+				if (response.status === 200) {
+					if (nickname.length > 0 && nickname !== takenNick) {
+						setIsNicknameVaild(true)
+						setCheckOn(true)
+					}
+				} else if (response.status === 409) {
+					if (nickname.length > 0 && nickname !== takenNick) {
+						setIsNicknameVaild(false)
+						setCheckOn(true)
+					}
+				}
+			})
+		} catch (e) {
+			console.log(e)
+			alert('닉네임 검증 오류')
+		}
+	}
 
 	const takenNick = 'takenNick'
 
 	return (
-		<Container>
-			<Left>
-				<BrandingWrapper initial={{ x: -80, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.9, ease: 'easeInOut' }}>
-					with<span>U</span>, 새로운 펀딩의 시작점.
-				</BrandingWrapper>
-				<StyledImage src={signupImage} alt='Signup illustration' />
-			</Left>
+		<div className='flex h-screen font-sans'>
+			<div className='flex-1 bg-white flex flex-col justify-start items-center py-12 px-6'>
+				<motion.div
+					initial={{ x: -80, opacity: 0 }}
+					animate={{ x: 0, opacity: 1 }}
+					transition={{ duration: 0.9, ease: 'easeInOut' }}
+					className='text-5xl font-bold text-black mb-8 tracking-wider'>
+					with<span className='text-purple-500'>U</span>, 새로운 펀딩의 시작점.
+				</motion.div>
+				<img src={signupImage} alt='Signup illustration' className='w-4/5 max-w-3xl h-auto' />
+			</div>
 
-			<Right>
-				<Form>
-					<Title>이메일로 가입하기</Title>
+			<div className='flex-1 flex justify-center items-start overflow-y-auto h-screen py-8'>
+				<div className='w-full max-w-lg bg-white p-8 rounded-xl shadow-lg'>
+					<h1 className='text-3xl font-bold mb-12'>이메일로 가입하기</h1>
 
-					<Label>이름</Label>
-					<Input type='text' placeholder='사용하실 이름을 입력해주세요.' value={name} onChange={(e) => setName(e.target.value)} />
-					{nameError && <ErrorMessage>이름에는 한글만 적어주십시오.</ErrorMessage>}
+					<label className='text-base font-medium block mb-1.5'>이름</label>
+					<input
+						type='text'
+						placeholder='사용하실 이름을 입력해주세요.'
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						className='w-full py-3 px-3 text-base border border-gray-300 rounded-lg mb-5'
+					/>
+					{nameError && <p className='text-red-500 text-sm -mt-3 mb-5'>이름에는 한글만 적어주십시오.</p>}
 
-					<Label>닉네임</Label>
-					<Row>
-						<CodeInput type='text' placeholder='사용하실 닉네임을 입력해주세요.' value={nickname} onChange={(e) => setNickname(e.target.value)} />
-						<CheckButton onClick={nicknameCheck}>중복확인</CheckButton>
-					</Row>
-					{checkOn && <NicknameCheckMessage isValid={isNicknameValid}>{isNicknameValid ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.'}</NicknameCheckMessage>}
+					<label className='text-base font-medium block mb-1.5'>닉네임</label>
+					<div className='flex gap-2 mb-2.5'>
+						<input
+							type='text'
+							placeholder='사용하실 닉네임을 입력해주세요.'
+							value={nickname}
+							onChange={(e) => setNickname(e.target.value)}
+							className='flex-1 py-3 px-3 text-base border border-gray-300 rounded-lg mb-0'
+						/>
+						<button onClick={nicknameCheck} className='py-3 px-4 bg-purple-500 text-white border-none rounded-lg text-sm cursor-pointer'>
+							중복확인
+						</button>
+					</div>
+					{checkOn && (
+						<p className={`text-sm -mt-3 mb-5 ${isNicknameValid ? 'text-green-500' : 'text-red-500'}`}>
+							{isNicknameValid ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.'}
+						</p>
+					)}
 
-					<Label>이메일 주소</Label>
-					<Row>
-						<CodeInput type='email' placeholder='이메일 주소를 입력해주세요.' value={email} onChange={(e) => setEmail(e.target.value)} />
-						{emailError && <ErrorMessage>이메일 형식이 올바르지 않습니다.</ErrorMessage>}
-						<ResendButton onClick={handleSendCode}>확인</ResendButton>
-					</Row>
+					<label className='text-base font-medium block mb-1.5'>이메일 주소</label>
+					<div className='flex gap-2 mb-2.5'>
+						<input
+							type='email'
+							placeholder='이메일 주소를 입력해주세요.'
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							className='flex-1 py-3 px-3 text-base border border-gray-300 rounded-lg mb-0'
+						/>
+						<button onClick={handleSendCode} className='py-3 px-4 bg-purple-500 text-white border-none rounded-lg text-sm cursor-pointer'>
+							확인
+						</button>
+					</div>
+					{emailError && <p className='text-red-500 text-sm -mt-3 mb-5'>이메일 형식이 올바르지 않습니다.</p>}
 
-					<Label>이메일 인증번호</Label>
-					<Row>
-						<CodeInput type='text' placeholder='인증번호를 입력해주세요.' value={emailCode} onChange={(e) => setEmailCode(e.target.value)} />
+					<label className='text-base font-medium block mb-1.5'>이메일 인증번호</label>
+					<div className='flex gap-2 mb-2.5'>
+						<input
+							type='text'
+							placeholder='인증번호를 입력해주세요.'
+							value={emailCode}
+							onChange={(e) => setEmailCode(e.target.value)}
+							className='flex-1 py-3 px-3 text-base border border-gray-300 rounded-lg mb-0'
+						/>
 						{!isVerifying ? (
 							<></>
 						) : (
 							<>
-								<ResendButton onClick={handleVerifyClick}>인증</ResendButton>
-								<ResendButton onClick={handleResendClick}>재전송</ResendButton>
+								<button onClick={handleVerifyClick} className='py-3 px-4 bg-purple-500 text-white border-none rounded-lg text-sm cursor-pointer'>
+									인증
+								</button>
+								<button onClick={handleResendClick} className='py-3 px-4 bg-purple-500 text-white border-none rounded-lg text-sm cursor-pointer'>
+									재전송
+								</button>
 							</>
 						)}
-					</Row>
+					</div>
 
-					{isVerifying && <TimerText>남은 시간: {formatTime(timer)}</TimerText>}
+					{isVerifying && <div className='text-sm text-purple-500 mb-5 text-right'>남은 시간: {formatTime(timer)}</div>}
 
-					<Label>비밀번호</Label>
-					<Input type='password' placeholder='비밀번호를 입력해주세요.' value={password} onChange={(e) => setPassword(e.target.value)} />
-					<GuideText>※ 비밀번호는 8글자 이상으로 작성해주십시오.</GuideText>
+					<label className='text-base font-medium block mb-1.5'>비밀번호</label>
+					<input
+						type='password'
+						placeholder='비밀번호를 입력해주세요.'
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						className='w-full py-3 px-3 text-base border border-gray-300 rounded-lg mb-5'
+					/>
+					<p className='text-xs text-gray-500 -mt-4 mb-4'>※ 비밀번호는 8글자 이상으로 작성해주십시오.</p>
 
-					<Label>비밀번호 확인</Label>
-					<Input type='password' placeholder='비밀번호를 확인합니다.' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-					{passwordError && <ErrorMessage>{password.length < 8 ? '비밀번호는 8자 이상이어야 합니다.' : '비밀번호가 일치하지 않습니다.'}</ErrorMessage>}
+					<label className='text-base font-medium block mb-1.5'>비밀번호 확인</label>
+					<input
+						type='password'
+						placeholder='비밀번호를 확인합니다.'
+						value={confirmPassword}
+						onChange={(e) => setConfirmPassword(e.target.value)}
+						className='w-full py-3 px-3 text-base border border-gray-300 rounded-lg mb-5'
+					/>
+					{passwordError && <p className='text-red-500 text-sm -mt-3 mb-5'>{password.length < 8 ? '비밀번호는 8자 이상이어야 합니다.' : '비밀번호가 일치하지 않습니다.'}</p>}
 
-					<CheckboxWrapper>
+					<div className='mb-4'>
 						<input type='checkbox' checked={allAgree} onChange={handleAllAgreeChange} /> 전체동의
-					</CheckboxWrapper>
+					</div>
 
 					{termsList.map((text, idx) => (
-						<CheckboxWrapper key={idx}>
+						<div key={idx} className='mb-4'>
 							<input type='checkbox' checked={checkedTerms[idx]} onChange={() => handleTermChange(idx)} /> {text}
-							<a href='/a' style={{ color: '#A66CFF', marginLeft: 6 }}>
+							<a href='/a' className='text-purple-500 ml-1.5'>
 								보기
 							</a>
-						</CheckboxWrapper>
+						</div>
 					))}
 
-					{termsError && <ErrorMessage>필수 약관에 모두 동의해야 합니다.</ErrorMessage>}
+					{termsError && <p className='text-red-500 text-sm -mt-3 mb-5'>필수 약관에 모두 동의해야 합니다.</p>}
 
-					<Button onClick={handleSignup}>회원가입</Button>
+					<button onClick={handleSignup} className='bg-purple-500 text-white w-full text-lg py-3 rounded-lg border-none mt-6 cursor-pointer'>
+						회원가입
+					</button>
 
-					<p style={{ textAlign: 'center', marginTop: '16px', fontSize: '14px', color: '#666' }}>
+					<p className='text-center mt-4 text-sm text-gray-600'>
 						이미 계정이 있으신가요?{' '}
-						<a href='/login' style={{ color: '#A66CFF', textDecoration: 'none', fontWeight: 'bold' }}>
+						<a href='/login' className='text-purple-500 no-underline font-bold'>
 							로그인
 						</a>
 					</p>
-				</Form>
-			</Right>
-		</Container>
+				</div>
+			</div>
+		</div>
 	)
 }
 
 export default Signup
-
-const Container = styled.div`
-	display: flex;
-	height: 100vh;
-	font-family: 'Noto Sans KR', sans-serif;
-`
-
-const Left = styled.div`
-	flex: 1;
-	background: #fff;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	align-items: center;
-	padding: 48px 24px;
-`
-
-const BrandingWrapper = styled(motion.div)`
-	font-size: 54px;
-	font-weight: bold;
-	color: #000;
-	margin-bottom: 32px;
-	letter-spacing: 2px;
-
-	span {
-		color: #a66cff;
-	}
-`
-
-const StyledImage = styled.img`
-	width: 80%;
-	max-width: 750px;
-	height: auto;
-`
-
-const Right = styled.div`
-	flex: 1;
-	display: flex;
-	justify-content: center;
-	align-items: flex-start;
-	overflow-y: auto;
-	height: 100vh;
-	padding: 32px 0;
-`
-
-const Title = styled.h1`
-	font-size: 28px;
-	font-weight: bold;
-	margin-bottom: 48px;
-`
-
-const Form = styled.div`
-	width: 100%;
-	max-width: 420px;
-	background: #fff;
-	padding: 32px;
-	border-radius: 12px;
-	box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-`
-
-const Label = styled.label`
-	font-size: 16px;
-	font-weight: 500;
-	display: block;
-	margin-bottom: 6px;
-`
-
-const Input = styled.input`
-	width: 100%;
-	padding: 12px;
-	font-size: 16px;
-	border: 1px solid #ccc;
-	border-radius: 8px;
-	margin-bottom: 20px;
-`
-
-const Row = styled.div`
-	display: flex;
-	gap: 8px;
-	margin-bottom: 10px;
-`
-
-const CodeInput = styled(Input)`
-	flex: 1;
-	margin-bottom: 0;
-`
-
-const ResendButton = styled.button`
-	padding: 12px 16px;
-	background: #a66cff;
-	color: #fff;
-	border: none;
-	border-radius: 8px;
-	font-size: 14px;
-	cursor: pointer;
-`
-
-const CheckButton = styled.button`
-	padding: 12px 16px;
-	background: #a66cff;
-	color: #fff;
-	border: none;
-	border-radius: 8px;
-	font-size: 14px;
-	cursor: pointer;
-`
-
-const TimerText = styled.div`
-	font-size: 14px;
-	color: #a66cff;
-	margin-bottom: 20px;
-	text-align: right;
-`
-
-const CheckboxWrapper = styled.div`
-	margin-bottom: 16px;
-`
-
-const Button = styled.button`
-	background: #a66cff;
-	color: #fff;
-	width: 100%;
-	font-size: 18px;
-	padding: 12px;
-	border-radius: 8px;
-	border: none;
-	margin-top: 24px;
-	cursor: pointer;
-`
-
-const ErrorMessage = styled.p`
-	color: red;
-	font-size: 14px;
-	margin-top: -12px;
-	margin-bottom: 20px;
-`
-
-const GuideText = styled.p`
-	font-size: 12px;
-	color: #999;
-	margin-top: -16px;
-	margin-bottom: 16px;
-`
-
-const NicknameCheckMessage = styled.p<{ isValid: boolean }>`
-	font-size: 14px;
-	color: ${(props) => (props.isValid ? 'green' : 'red')};
-	margin-top: -12px;
-	margin-bottom: 20px;
-`

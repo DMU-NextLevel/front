@@ -1,143 +1,45 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-
-const Header = styled.header`
-  width: 100%;
-  height: 60px;
-  background: #f9fafb;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0 40px;
-  position: relative;
-`;
-
-const AvatarWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-`;
-
-const Avatar = styled.img`
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  cursor: pointer;
-`;
-
-const ProfilePopup = styled.div<{ visible: boolean }>`
-  position: absolute;
-  top: 50px;
-  right: 0;
-  width: 280px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  padding: 20px;
-  z-index: 100;
-  opacity: ${({ visible }) => (visible ? 1 : 0)};
-  visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
-  transform: translateY(${({ visible }) => (visible ? '0' : '-10px')});
-  transition: all 0.25s ease;
-  pointer-events: ${({ visible }) => (visible ? 'auto' : 'none')};
-`;
-
-const Banner = styled.div`
-  background: linear-gradient(to right, #5e60ce, #4361ee);
-  border-radius: 10px 10px 0 0;
-  padding: 20px;
-  text-align: center;
-  color: white;
-`;
-
-const BannerImg = styled.img`
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-top: 10px;
-`;
-
-const Name = styled.div`
-  font-weight: bold;
-  font-size: 17px;
-  margin-top: 10px;
-`;
-
-const Email = styled.div`
-  font-size: 14px;
-  color: #374151;
-  margin-top: 10px;
-`;
-
-const Department = styled.div`
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 16px;
-`;
-
-const Settings = styled.div`
-  display: flex;
-  justify-content: space-around;
-  margin-top: 12px;
-`;
-
-const SettingItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 12px;
-  color: #4b5563;
-  cursor: pointer;
-
-  i {
-    font-size: 18px;
-    margin-bottom: 4px;
-  }
-
-  &:hover {
-    color: #2563eb;
-  }
-`;
+import React, { useState } from 'react'
 
 const ProfileHeader: React.FC = () => {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  return (
-    <Header>
-      <AvatarWrapper
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <Avatar src="https://placehold.co/100x100?text=User" alt="사용자 프로필" />
-        <ProfilePopup visible={isHovered}>
-          <Banner>
-            <i className="fas fa-volume-up" style={{ fontSize: '18px', float: 'right' }} />
-            <BannerImg src="https://placehold.co/100x100?text=User" alt="프로필" />
-            <Name>위하고 사원</Name>
-          </Banner>
-          <Email>wehago@wehago.net</Email>
-          <Department>더존비즈온 &gt; DBP본부</Department>
-          <Settings>
-            <SettingItem>
-              <i className="fas fa-user"></i>
-              개인설정
-            </SettingItem>
-            <SettingItem>
-              <i className="fas fa-th"></i>
-              위젯설정
-            </SettingItem>
-            <SettingItem>
-              <i className="fas fa-building"></i>
-              회사설정
-            </SettingItem>
-            <SettingItem>
-              <i className="fas fa-cog"></i>
-              배경설정
-            </SettingItem>
-          </Settings>
-        </ProfilePopup>
-      </AvatarWrapper>
-    </Header>
-  );
-};
+	const [isHovered, setIsHovered] = useState(false)
 
-export default ProfileHeader;
+	return (
+		<header className='w-full h-15 bg-gray-50 flex justify-end items-center px-10 relative'>
+			<div className='relative inline-block' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+				<img src='https://placehold.co/100x100?text=User' alt='사용자 프로필' className='w-9 h-9 rounded-full cursor-pointer' />
+				<div
+					className={`absolute top-12 right-0 w-70 bg-white rounded-lg shadow-lg p-5 z-[100] transition-all duration-300 ease ${
+						isHovered ? 'opacity-100 visible translate-y-0 pointer-events-auto' : 'opacity-0 invisible -translate-y-2.5 pointer-events-none'
+					}`}>
+					<div className='bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg rounded-b-none py-5 text-center text-white'>
+						<i className='fas fa-volume-up text-lg float-right' />
+						<img src='https://placehold.co/100x100?text=User' alt='프로필' className='w-15 h-15 rounded-full mt-2.5' />
+						<div className='font-bold text-lg mt-2.5'>위하고 사원</div>
+					</div>
+					<div className='text-sm text-gray-700 mt-2.5'>wehago@wehago.net</div>
+					<div className='text-xs text-gray-500 mb-4'>더존비즈온 &gt; DBP본부</div>
+					<div className='flex justify-around mt-3'>
+						<div className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+							<i className='fas fa-user text-lg mb-1'></i>
+							개인설정
+						</div>
+						<div className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+							<i className='fas fa-th text-lg mb-1'></i>
+							위젯설정
+						</div>
+						<div className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+							<i className='fas fa-building text-lg mb-1'></i>
+							회사설정
+						</div>
+						<div className='flex flex-col items-center text-xs text-gray-600 cursor-pointer hover:text-blue-600'>
+							<i className='fas fa-cog text-lg mb-1'></i>
+							배경설정
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+	)
+}
+
+export default ProfileHeader

@@ -1,0 +1,1 @@
+This folder previously contained `RecommendProject.tsx` for the bottom popular projects section. The section and file are intentionally removed as per UX changes (replaced by NewProject slider). If you need to restore it, retrieve from VCS history on branch `feat/#55` prior to removal.
