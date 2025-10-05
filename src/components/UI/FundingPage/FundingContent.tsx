@@ -85,7 +85,7 @@ const FundingContent = ({ projectData }: props): JSX.Element => {
 
 	return (
 		<div className='flex flex-col w-4/5 border-4 border-gray-100 rounded-2xl'>
-			<div className='flex flex-row w-full'>
+			<div className='flex flex-row w-full h-14'>
 				<button
 					className={`${activeSection === 'story' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center bg-white ${
 						activeSection === 'story' ? 'text-black' : 'text-gray-300'
