@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import signupImage from '../assets/images/Signup.png'
-import { api } from '../AxiosInstance'
+import { api, apiWithoutCredentials } from '../AxiosInstance'
 import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
@@ -104,7 +104,7 @@ const Signup = () => {
 		formdata.append('number', '010-1234-5678')
 		formdata.append('address', 'test')
 		if (!nameError && !emailError && !passwordError && !termsError) {
-			api.post('/public/login', formdata)
+			apiWithoutCredentials.post('/public/login', formdata)
 			alert('회원가입 완료!')
 			navigate('/login')
 		}
@@ -112,7 +112,7 @@ const Signup = () => {
 
 	const handleSendCode = () => {
 		try {
-			api.post('/public/login/email', {
+			apiWithoutCredentials.post('/public/login/email', {
 				email,
 			})
 			alert('인증번호가 전송되었습니다.')
@@ -126,7 +126,7 @@ const Signup = () => {
 
 	const handleVerifyClick = () => {
 		try {
-			api.put('/public/login/email', {
+			apiWithoutCredentials.put('/public/login/email', {
 				email: email,
 				key: emailCode,
 			})
@@ -141,7 +141,7 @@ const Signup = () => {
 
 	const handleResendClick = () => {
 		try {
-			api.post('/public/login/email', {
+			apiWithoutCredentials.post('/public/login/email', {
 				email,
 			})
 			alert('인증번호가 재전송되었습니다.')
@@ -154,7 +154,7 @@ const Signup = () => {
 
 	const nicknameCheck = () => {
 		try {
-			api.get(`/public/login/nickName?nickName=${nickname}`).then((response) => {
+			apiWithoutCredentials.get(`/public/login/nickName?nickName=${nickname}`).then((response) => {
 				if (response.status === 200) {
 					if (nickname.length > 0 && nickname !== takenNick) {
 						setIsNicknameVaild(true)
