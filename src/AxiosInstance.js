@@ -6,3 +6,8 @@ export const api = axios.create({
 	baseURL: baseUrl,
 	withCredentials: true,
 })
+
+export const apiWithoutCredentials = axios.create({
+	baseURL: baseUrl,
+	withCredentials: false,
+})

@@ -21,7 +21,8 @@ const ProjectInfoPage: React.FC = () => {
 	const { state } = useLocation()
 	const { setExpired, setGoal } = useCreateStore()
 
-	const categoryLabel = categories.find((c) => c.value === state?.category)?.label || state?.categoryLabel || state?.category || ''
+	const categoryLabel =
+		state?.category1Label || state?.category2Label || categories.find((c) => c.value === state?.category)?.label || state?.categoryLabel || state?.category || ''
 	const [formData, setFormData] = useState({
 		title: state?.title || '',
 		category: categoryLabel,
@@ -54,7 +55,7 @@ const ProjectInfoPage: React.FC = () => {
 	})
 
 	useEffect(() => {
-		if (!state?.title || !state?.category) {
+		if (!state?.title || (!state?.category1 && !state?.category)) {
 			navigate('/project/create')
 		}
 	}, [navigate, state])
