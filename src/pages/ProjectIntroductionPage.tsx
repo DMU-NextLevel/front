@@ -7,7 +7,7 @@ import { api } from '../AxiosInstance'
 const ProjectIntroductionPage: React.FC = () => {
 	const navigate = useNavigate()
 	const { state } = useLocation()
-	const { title, content, tag1, tag2, titleImg, imgs, expired, goal } = useCreateStore()
+	const { title, content, tag1, tag2, titleImg, imgs, expired, goal, startAt } = useCreateStore()
 
 	const [formData, setFormData] = useState({
 		overview: state?.overview || '',
@@ -72,8 +72,9 @@ const ProjectIntroductionPage: React.FC = () => {
 				if (titleImg !== null)
 					projectData.append('titleImg', titleImg)
 				imgs.forEach((img) => projectData.append('imgs', img))
-				projectData.append('expired', expired)
+				projectData.append('expiredAt', expired)
 				projectData.append('goal', String(goal))
+				projectData.append('startAt', startAt)
 
 				console.log(projectData)
 

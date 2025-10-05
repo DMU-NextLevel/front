@@ -7,6 +7,7 @@ interface CreateState {
   imgs: File[]
   expired: string
   goal: number
+  startAt: string
   setTitle: (title: string) => void
   setContent: (content: string) => void
   setTag1: (tag1: number | null) => void
@@ -15,4 +16,5 @@ interface CreateState {
   setImgs: (files: File[]) => void
   setExpired: (date: string) => void
   setGoal: (goal: number) => void
+  setStartAt: (startAt: string) => void
 }
