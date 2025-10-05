@@ -1,7 +1,7 @@
 import React, { JSX, useEffect, useState } from 'react'
-import FundingReward from './FundingReward'
-import FundingPay from './FundingPay'
-import FundingFree from './FundingFree'
+import FundingReward from '../FundingReward'
+import FundingPay from '../FundingPay'
+import FundingFree from '../FundingFree'
 
 const exam = [
 	{

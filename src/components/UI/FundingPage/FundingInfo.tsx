@@ -5,7 +5,7 @@ import LikeImage from '../../../assets/images/Like.svg'
 interface props {
 	setPayOpen: React.Dispatch<React.SetStateAction<boolean>>
 	title: string
-	percent: string
+	percent: number
 	image: string
 	description: string
 	amount: number
@@ -21,7 +21,7 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 	}
 
 	return (
-		<div className='flex flex-col w-[90%] rounded-2xl border-4 border-gray-100 p-[5%]'>
+		<div className='flex flex-col w-[90%] rounded-2xl border-4 border-gray-100 p-[5%] shadow-md'>
 			<img src={`${baseUrl}/img/${image}`} className='w-full h-75' />
 			<div className='flex items-center h-12 gap-2.5'>
 				<p className='flex min-w-[50px] w-auto h-2.5 p-2.5 m-0 bg-gray-100 items-center justify-center text-xs font-bold rounded-xl'>고양이</p>

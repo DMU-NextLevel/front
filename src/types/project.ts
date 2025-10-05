@@ -1,3 +1,26 @@
+export interface ProjectDetailData {
+    id: number
+    title: string
+    content: string
+    titleImg: ProjectImage
+    createdAt: Date
+    expiredAt: Date
+    isExpired: boolean
+    authorNickName: string
+    isAuthor: boolean
+    goal: number
+    sum: number
+    completionRate: number
+    recommendCount: number
+    fundingCount: number
+    userCount: number
+}
+
+export type detailResponse<T> = {
+    message: string
+    data: T
+}
+
 interface ProjectImage {
     id: number
     uri: string
@@ -63,4 +86,10 @@ export interface ProjectCommunityData {
 export type communityResponse<T> = {
     message: string
     data: T
+}
+
+export interface NoticeAddData {
+    title: string
+    content: string
+    img: File | null
 }
