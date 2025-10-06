@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react"
-import { api, apiWithoutCredentials } from '../AxiosInstance'
+import { apiWithoutCredentials } from '../AxiosInstance'
 import {
 	communityResponse,
 	detailResponse,
-	NoticeAddData,
 	noticeResponse,
 	ProjectCommunityData,
 	ProjectDetailData,
@@ -54,66 +53,4 @@ export const useProjectFetch = ({ projectId }: ProjectFetchProps) => {
 	}, [projectId])
 
 	return { story, notice, community }
-}
-
-interface QuestionAddProps {
-	projectId: string
-	content: string
-}
-
-export const useQuestionAdd = () => {
-	const [isLoading, setIsLoading] = useState(false)
-	const [error, setError] = useState<string | null>(null)
-
-	const addQuestion = async ({ projectId, content }: QuestionAddProps) => {
-		setIsLoading(true)
-		setError(null)
-
-		try {
-			const response = await api.post(`/api1/project/${projectId}/community`, {
-				content: content,
-			})
-
-			return response.data
-		} catch (err) {
-			const errorMessage = err instanceof Error ? err.message : '질문 추가에 실패했습니다.'
-			setError(errorMessage)
-			throw err
-		} finally {
-			setIsLoading(false)
-		}
-	}
-
-	return { addQuestion, isLoading, error }
-}
-
-interface AnswerAddProps {
-	askId: string
-	content: string
-}
-
-export const useAnswerAdd = () => {
-	const [isLoading, setIsLoading] = useState(false)
-	const [error, setError] = useState<string | null>(null)
-
-	const addAnswer = async ({ askId, content }: AnswerAddProps) => {
-		setIsLoading(true)
-		setError(null)
-
-		try {
-			const response = await api.post(`/api1/project/${askId}/community/answer`, {
-				content: content,
-			})
-
-			return response.data
-		} catch (err) {
-			const errorMessage = err instanceof Error ? err.message : '답변 추가에 실패했습니다.'
-			setError(errorMessage)
-			throw err
-		} finally {
-			setIsLoading(false)
-		}
-	}
-
-	return { addAnswer, isLoading, error }
 }

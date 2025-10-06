@@ -23,7 +23,7 @@ export const FundingStory = ({ story }: storyProps): JSX.Element => {
 		<div className='flex flex-col w-[90%] max-w-4xl mx-auto'>
 			{/* 헤더 섹션 */}
 			<div className='flex items-center gap-3 mb-6'>
-				<div className='w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full'></div>
+				<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-300 rounded-full'></div>
 				<h2 className='text-2xl font-bold text-gray-800'>📢 프로젝트 스토리</h2>
 			</div>
 
@@ -67,7 +67,7 @@ export const FundingNews = ({ notice }: newsProps): JSX.Element => {
 			{/* 헤더 섹션 */}
 			<div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6'>
 				<div className='flex items-center gap-3'>
-					<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-600 rounded-full'></div>
+					<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-300 rounded-full'></div>
 					<h2 className='text-2xl font-bold text-gray-800'>우리 프로젝트는 현재 이렇게 진행중이에요</h2>
 				</div>
 				<button
@@ -118,7 +118,7 @@ export const FundingCommu = ({ community }: commuProps): JSX.Element => {
 			{/* 헤더 섹션 */}
 			<div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6'>
 				<div className='flex items-center gap-3'>
-					<div className='w-1 h-8 bg-gradient-to-b from-green-500 to-green-600 rounded-full'></div>
+					<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-300 rounded-full'></div>
 					<h2 className='text-2xl font-bold text-gray-800'>💬 저희 소통해요</h2>
 				</div>
 				<button
