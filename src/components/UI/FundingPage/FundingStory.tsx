@@ -3,6 +3,7 @@ import NewsContent from './NewsContent'
 import FundingMessage from './FundingMessage'
 import NoticeModal from './modals/NoticeModal'
 import QuestionModal from './modals/QuestionModal'
+import { StoryModal } from './modals/StoryModal'
 
 const baseUrl = process.env.REACT_APP_API_BASE_URL
 
@@ -19,12 +20,21 @@ interface commuProps {
 }
 
 export const FundingStory = ({ story }: storyProps): JSX.Element => {
+	const [isModalOpen, setIsModalOpen] = useState(false)
+
+	const handleEdit = () => {
+		setIsModalOpen(true)
+	}
+
 	return (
 		<div className='flex flex-col w-[90%] max-w-4xl mx-auto'>
 			{/* 헤더 섹션 */}
 			<div className='flex items-center gap-3 mb-6'>
-				<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-300 rounded-full'></div>
-				<h2 className='text-2xl font-bold text-gray-800'>📢 프로젝트 스토리</h2>
+				<div className='flex items-center gap-3 flex-1'>
+					<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-300 rounded-full'></div>
+					<h2 className='text-2xl font-bold text-gray-800'>📢 프로젝트 스토리</h2>
+				</div>
+				<button className='bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/25 hover:-translate-y-0.5' onClick={handleEdit}>수정하기</button>
 			</div>
 
 			{/* 구분선 */}
@@ -55,6 +65,7 @@ export const FundingStory = ({ story }: storyProps): JSX.Element => {
 					</div>
 				)}
 			</div>
+			<StoryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 		</div>
 	)
 }
