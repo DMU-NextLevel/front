@@ -29,6 +29,11 @@ import SupportNotice from './pages/Support/SupportNotice'
 import SupportFAQ from './pages/Support/SupportFAQ'
 import SupportInquiry from './pages/Support/SupportInquiry'
 import SupportNoticeDetail from './pages/Support/SupportNoticeDetail'
+import AdminLayout from './pages/Admin/AdminLayout'
+import AdminPage from './pages/Admin/AdminPage'
+import AdminDashboard from './pages/Admin/AdminDashboard'
+import AdminUsers from './pages/Admin/AdminUsers'
+import AdminProjects from './pages/Admin/AdminProjects'
 
 // AOS 초기화
 declare global {
@@ -49,7 +54,7 @@ function App() {
 const AppWrapper = () => {
 	const [loginType, setLoginType] = useState<string>('')
 	const location = useLocation()
-	const hideLayout = ['/login', '/signup', '/popup-payment', '/popup-payment-success', '/kakao/callback', '/naver/callback', '/google/callback', '/creater']
+	const hideLayout = ['/login', '/signup', '/popup-payment', '/popup-payment-success', '/kakao/callback', '/naver/callback', '/google/callback', '/creater', '/admin']
 
 	// AOS 초기화
 	useEffect(() => {
@@ -81,12 +86,14 @@ const AppWrapper = () => {
 		}, 50);
 		
 		return () => clearTimeout(timer);
-	}, [location.pathname])
+}, [location.pathname])
 
-	return (
-		<AuthProvider>
-			{!hideLayout.includes(location.pathname) && <HeaderMain />}
-			<Routes>
+const shouldHideLayout = hideLayout.includes(location.pathname) || location.pathname.startsWith('/admin')
+
+return (
+	<AuthProvider>
+		{!shouldHideLayout && <HeaderMain />}
+		<Routes>
 				<Route path='/' element={<MainPage />} />
 				<Route path='/login' element={<Login setLoginType={setLoginType} />} />
 				<Route path='/signup' element={<Signup />} />
@@ -111,9 +118,15 @@ const AppWrapper = () => {
 				<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
 				<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
 				<Route path='/support/notice' element={<SupportNotice />} />
-<Route path='/support/notice/:id' element={<SupportNoticeDetail />} />
-<Route path='/support/faq' element={<SupportFAQ />} />
-<Route path='/support/inquiry' element={<SupportInquiry />} />
+				<Route path='/support/notice/:id' element={<SupportNoticeDetail />} />
+				<Route path='/support/faq' element={<SupportFAQ />} />
+				<Route path='/support/inquiry' element={<SupportInquiry />} />
+				<Route path='/admin' element={<AdminLayout />}>
+				<Route index element={<AdminPage />} />
+					<Route path='dashboard' element={<AdminDashboard />} />
+					<Route path='users' element={<AdminUsers />} />
+					<Route path='projects' element={<AdminProjects />} />
+				</Route>
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
