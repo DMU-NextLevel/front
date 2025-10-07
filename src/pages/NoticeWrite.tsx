@@ -268,7 +268,7 @@ const NoticeWrite: React.FC = () => {
 
 			if (res.data.message === 'success') {
 				alert('공지사항이 성공적으로 등록되었습니다!')
-				window.location.href = '/notice'
+				window.location.href = '/support/notice'
 			} else {
 				alert(`등록 실패: ${res.data.message}`)
 			}
