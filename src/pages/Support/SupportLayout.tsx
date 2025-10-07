@@ -31,10 +31,10 @@ const SupportLayout: React.FC<SupportLayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      {/* 탭 메뉴 */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-        <div className="mx-auto px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]">
-          <div className="flex space-x-8">
+  {/* 탭 메뉴 (sticky 제거 — 스크롤 시 오버레이 현상 방지) */}
+  <div className="bg-white border-b border-gray-200 support-tab">
+        <div className="w-full">
+          <div className="flex justify-center space-x-8 py-0">
             <Link
               to="/support/notice"
               className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
@@ -72,7 +72,7 @@ const SupportLayout: React.FC<SupportLayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      {/* 컨텐츠 영역 */}
+  {/* 컨텐츠 영역 */}
       <div className="mx-auto px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%] py-12">
         <div className="animate-fadeIn">
           {children}

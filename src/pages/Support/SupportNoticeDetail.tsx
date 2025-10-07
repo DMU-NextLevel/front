@@ -28,6 +28,27 @@ const SupportNoticeDetail: React.FC = () => {
 		return `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`
 	}
 
+	// 페이지 로드 시, 메인 아티클 컨테이너가 뷰포트 최상단에 오도록 스크롤
+	useEffect(() => {
+		setTimeout(() => {
+			const target = document.getElementById('notice-article-top') as HTMLElement
+			if (!target) return
+
+			// 고정된 헤더나 sticky 탭이 있다면 그 높이만큼 보정
+			const header = document.querySelector('header') as HTMLElement | null
+			const stickyTab = document.querySelector('.support-tab') as HTMLElement | null
+			const headerHeight = header ? header.offsetHeight : 0
+			const stickyHeight = stickyTab ? stickyTab.offsetHeight : 0
+
+			// 타겟의 문서 기준 Y 좌표
+			const targetTop = target.getBoundingClientRect().top + window.scrollY
+			// 최종 스크롤 위치 계산 (헤더 + sticky 탭 높이만큼 빼서 타겟이 보이도록)
+			const finalScroll = Math.max(0, targetTop - headerHeight - stickyHeight)
+
+			window.scrollTo({ top: finalScroll, behavior: 'auto' })
+		}, 50)
+	}, [id])
+
 	// 이전글/다음글 가져오기
 	useEffect(() => {
 		const fetchAdjacentNotices = async () => {
@@ -102,7 +123,7 @@ const SupportNoticeDetail: React.FC = () => {
 
 	return (
 		<SupportLayout>
-			<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 bg-white'>
+			<div id='notice-article-top' className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12'>
 				{/* Header Section - Responsive */}
 				<div className='mb-6 sm:mb-8'>
 					<div className='flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-6'>
@@ -154,7 +175,7 @@ const SupportNoticeDetail: React.FC = () => {
 				</div>
 
 				{/* Content Section - Responsive */}
-				<div className='bg-white py-6 sm:py-8'>
+				<div className='py-6 sm:py-8'>
 					<div 
 						className='prose prose-sm sm:prose-base lg:prose-lg max-w-none text-gray-800 leading-relaxed
 						[&_img]:w-full [&_img]:rounded-lg [&_img]:my-4 [&_img]:border [&_img]:border-gray-200
@@ -240,7 +261,11 @@ const SupportNoticeDetail: React.FC = () => {
 				{/* Navigation Section - Responsive */}
 				<div className='pt-4 sm:pt-4 border-t border-gray-200'>
 					<button
-						onClick={() => navigate('/support/notice')}
+						onClick={() => {
+							// 스크롤 위치 복원을 위해 flag 설정
+							sessionStorage.setItem('shouldRestoreScroll', 'true')
+							navigate('/support/notice')
+						}}
 						className='w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-200'>
 						<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
 							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M10 19l-7-7m0 0l7-7m-7 7h18' />

@@ -29,6 +29,20 @@ const SupportNotice: React.FC = () => {
 	const { role, loading } = useUserRole()
 	const navigate = useNavigate()
 
+	// 스크롤 위치 저장 및 복원
+	useEffect(() => {
+		const shouldRestore = sessionStorage.getItem('shouldRestoreScroll')
+		if (shouldRestore === 'true') {
+			const scrollPos = sessionStorage.getItem('supportNoticeScrollPos')
+			if (scrollPos) {
+				setTimeout(() => {
+					window.scrollTo(0, parseInt(scrollPos))
+				}, 100)
+			}
+			sessionStorage.removeItem('shouldRestoreScroll')
+		}
+	}, [])
+
 	// 화면 크기 감지
 	useEffect(() => {
 		const checkScreenSize = () => {
@@ -83,6 +97,8 @@ const SupportNotice: React.FC = () => {
 	}
 
 	const handleNoticeClick = (notice: Notice) => {
+		// 현재 스크롤 위치 저장
+		sessionStorage.setItem('supportNoticeScrollPos', window.scrollY.toString())
 		navigate(`/support/notice/${notice.id}`, { state: notice })
 	}
 
