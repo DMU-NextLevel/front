@@ -221,7 +221,7 @@ const NoticeEdit: React.FC = () => {
 		})
 
 		try {
-			const res = await api.post(`/admin/notice/${id}`, formData, {
+			const res = await api.put(`/admin/notice/${id}`, formData, {
 				withCredentials: true,
 				headers: {
 					'Content-Type': 'multipart/form-data',

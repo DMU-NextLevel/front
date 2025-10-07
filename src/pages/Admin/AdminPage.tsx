@@ -46,6 +46,86 @@ interface AdminInfo {
   socialProvider?: string
 }
 
+type NoticeArticle = {
+  id: number
+  title: string
+  content: string
+  createdAt: string
+}
+
+// 최근 공지사항 컴포넌트
+const RecentNotices: React.FC = () => {
+  const navigate = useNavigate()
+  const [notices, setNotices] = useState<NoticeArticle[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchNotices()
+  }, [])
+
+  const fetchNotices = async () => {
+    try {
+      const response = await api.get('/public/notice')
+      if (response.data.message === 'success') {
+        // 최신순으로 정렬하고 최근 5개만 가져오기
+        const sortedNotices = response.data.data.sort((a: NoticeArticle, b: NoticeArticle) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        })
+        setNotices(sortedNotices.slice(0, 5))
+      }
+    } catch (error) {
+      console.error('공지사항 로딩 실패:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const formatDate = (isoDate: string) => {
+    const d = new Date(isoDate)
+    return `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+      </div>
+    )
+  }
+
+  if (notices.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <i className="bi bi-inbox text-3xl mb-2 block text-gray-300"></i>
+        <p className="text-sm">등록된 공지사항이 없습니다.</p>
+      </div>
+    )
+  }
+
+  return (
+    <ul className="space-y-2">
+      {notices.map((notice) => (
+        <li key={notice.id}>
+          <button
+            onClick={() => navigate(`/support/notice/${notice.id}`, { state: notice })}
+            className="w-full flex items-center justify-between p-3 rounded-lg text-left hover:bg-blue-50 transition-all group border border-transparent hover:border-blue-200"
+          >
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <i className="bi bi-megaphone text-blue-600 text-sm flex-shrink-0"></i>
+              <p className="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                {notice.title}
+              </p>
+            </div>
+            <span className="text-xs text-gray-500 flex-shrink-0 ml-3">
+              {formatDate(notice.createdAt)}
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 const AdminPage: React.FC = () => {
   const navigate = useNavigate()
   const [stats, setStats] = useState<DashboardStats>({
@@ -731,8 +811,7 @@ const AdminPage: React.FC = () => {
               </button>
             </div>
             {popularProjects.length > 0 ? (
-              <ul className="space-y-3">
-                {popularProjects.map((project, index) => (
+              <ul className="space-y-2">{popularProjects.map((project, index) => (
                   <li key={project.id}>
                     <button
                       onClick={() => navigate(`/admin/projects`)}
@@ -742,10 +821,10 @@ const AdminPage: React.FC = () => {
                         {index + 1}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="text-base text-gray-800 font-medium leading-tight line-clamp-2">
+                        <p className="text-sm font-medium text-gray-900 leading-tight line-clamp-2">
                           {project.title}
                         </p>
-                        <p className="mt-1 text-sm text-gray-60 0">
+                        <p className="mt-1 text-xs text-gray-500">
                           <span className="text-purple-600 font-semibold">{project.completionRate}%</span> · 후원자 {project.userCount?.toLocaleString() || 0}명
                         </p>
                       </div>
@@ -893,15 +972,17 @@ const AdminPage: React.FC = () => {
 
           {/* 공지사항 */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">공지</h3>
-            <div className="space-y-3">
-              <div className="text-sm">
-                <p className="font-medium text-gray-900 mb-1">[UPDATE 8차] 대시보드 전면 개편</p>
-                <p className="text-xs text-gray-500 line-clamp-2">
-                  대시보드가 전면 개편되었습니다. 더욱 직관적인 UI/UX로...
-                </p>
-              </div>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">공지</h2>
+              <button
+                onClick={() => navigate('/admin/notices')}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all border border-blue-200"
+              >
+                <i className="bi bi-gear text-sm"></i>
+                관리
+              </button>
             </div>
+            <RecentNotices />
           </div>
         </div>
       </div>

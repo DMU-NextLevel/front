@@ -57,6 +57,7 @@ const AdminLayout: React.FC = () => {
     { path: '/admin/dashboard', label: '통계 상세', icon: 'bi-graph-up' },
     { path: '/admin/users', label: '유저 관리', icon: 'bi-people' },
     { path: '/admin/projects', label: '프로젝트 관리', icon: 'bi-folder' },
+    { path: '/admin/notices', label: '공지사항 관리', icon: 'bi-megaphone' },
   ]
 
   return (

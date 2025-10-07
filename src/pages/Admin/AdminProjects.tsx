@@ -230,9 +230,47 @@ const AdminProjects: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fadeIn">
+      <style>{`
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-in;
+        }
+        .animate-slideInDown {
+          animation: slideInDown 0.5s ease-out;
+        }
+        .animate-delay-100 {
+          animation-delay: 0.1s;
+          animation-fill-mode: both;
+        }
+        
+        .animate-delay-200 {
+          animation-delay: 0.2s;
+          animation-fill-mode: both;
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+      
       {/* 헤더 */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center animate-slideInDown">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">프로젝트 관리</h1>
           <p className="text-sm text-gray-600 mt-1">전체 {projects.length}개</p>
@@ -247,7 +285,7 @@ const AdminProjects: React.FC = () => {
       </div>
 
       {/* 검색 및 필터 */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 animate-slideInDown animate-delay-100">
         <div className="flex flex-col gap-3">
           <div className="flex gap-3">
             <div className="flex-1">
@@ -294,7 +332,7 @@ const AdminProjects: React.FC = () => {
       </div>
 
       {/* 프로젝트 테이블 */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden animate-slideInDown animate-delay-200">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>

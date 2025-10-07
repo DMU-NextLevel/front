@@ -34,6 +34,7 @@ import AdminPage from './pages/Admin/AdminPage'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminProjects from './pages/Admin/AdminProjects'
+import AdminNotices from './pages/Admin/AdminNotices'
 
 // AOS 초기화
 declare global {
@@ -126,9 +127,10 @@ return (
 					<Route path='dashboard' element={<AdminDashboard />} />
 					<Route path='users' element={<AdminUsers />} />
 					<Route path='projects' element={<AdminProjects />} />
+					<Route path='notices' element={<AdminNotices />} />
 				</Route>
 			</Routes>
-			{!hideLayout.includes(location.pathname) && <Footer />}
+			{!shouldHideLayout && <Footer />}
 		</AuthProvider>
 	)
 }

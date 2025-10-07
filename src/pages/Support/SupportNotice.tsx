@@ -140,7 +140,7 @@ const SupportNotice: React.FC = () => {
 						)}
 					</div>
 
-					{/* Controls */}
+					{/* Controls */}    
 					<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50 p-4 rounded-lg'>
 						<div className='flex items-center gap-3'>
 							<span className='text-sm text-gray-600'>
