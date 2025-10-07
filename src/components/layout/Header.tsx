@@ -392,7 +392,7 @@ export const HeaderMain: React.FC = () => {
 							<div className='space-y-2'>
 								<button 
 									onClick={() => {
-										navigate('/notice')
+										navigate('/support/notice')
 										setIsMobileMenuOpen(false)
 									}}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
@@ -400,10 +400,13 @@ export const HeaderMain: React.FC = () => {
 									공지사항
 								</button>
 								<button 
-									onClick={() => setIsMobileMenuOpen(false)}
+									onClick={() => {
+										navigate('/support/faq')
+										setIsMobileMenuOpen(false)
+									}}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 								>
-									고객센터
+									FAQ
 								</button>
 								{isLoggedIn && (
 									<button 
@@ -566,13 +569,16 @@ export const HeaderMain: React.FC = () => {
 							</h3>
 							<div className='space-y-1'>
 								<button 
-									onClick={() => navigate('/notice')}
+									onClick={() => navigate('/support/notice')}
 									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
 								>
 									공지사항
 								</button>
-								<button className='block text-xs hover:text-blue-600 transition-colors py-0.5'>
-									고객센터
+								<button 
+									onClick={() => navigate('/support/faq')}
+									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
+								>
+									FAQ
 								</button>
 								<button 
 									onClick={() => navigate('/mypage')}

@@ -25,6 +25,10 @@ import { PopupPaymentPage } from './components/UI/TossPayments'
 import { SuccessPage } from './components/UI/TossPayments'
 import { FailPage } from './components/UI/TossPayments'
 import SocialLogin from './pages/SocialLogin'
+import SupportNotice from './pages/Support/SupportNotice'
+import SupportFAQ from './pages/Support/SupportFAQ'
+import SupportInquiry from './pages/Support/SupportInquiry'
+import SupportNoticeDetail from './pages/Support/SupportNoticeDetail'
 
 // AOS 초기화
 declare global {
@@ -106,6 +110,10 @@ const AppWrapper = () => {
 				<Route path={`/google/callback`} element={<SocialLogin loginType={'google'} />} />
 				<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
 				<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
+				<Route path='/support/notice' element={<SupportNotice />} />
+<Route path='/support/notice/:id' element={<SupportNoticeDetail />} />
+<Route path='/support/faq' element={<SupportFAQ />} />
+<Route path='/support/inquiry' element={<SupportInquiry />} />
 			</Routes>
 			{!hideLayout.includes(location.pathname) && <Footer />}
 		</AuthProvider>
