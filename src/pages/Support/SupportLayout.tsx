@@ -74,7 +74,9 @@ const SupportLayout: React.FC<SupportLayoutProps> = ({ children }) => {
 
       {/* 컨텐츠 영역 */}
       <div className="mx-auto px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%] py-12">
-        {children}
+        <div className="animate-fadeIn">
+          {children}
+        </div>
       </div>
 
       {/* 하단 도움말 섹션 */}

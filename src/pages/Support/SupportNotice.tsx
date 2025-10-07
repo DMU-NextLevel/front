@@ -118,101 +118,89 @@ const SupportNotice: React.FC = () => {
 
 	return (
 		<SupportLayout>
-			<div className='max-w-7xl mx-auto'>
+			<div>
 				{/* Header Section */}
-				<div className='mb-6 lg:mb-8'>
-					<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6'>
-						<h1 className='text-2xl sm:text-3xl font-bold text-gray-900'>공지사항</h1>
+				<div className='mb-8'>
+					<div className='flex items-center justify-between mb-6'>
+						<div>
+							<h2 className='text-2xl font-bold text-gray-900 mb-2'>공지사항</h2>
+							<p className='text-sm text-gray-500'>NextLevel의 주요 공지사항을 확인하세요</p>
+						</div>
 						
-						{/* Desktop/Tablet Admin Button */}
+						{/* Admin Button */}
 						{!loading && role === 'ADMIN' && (
 							<button 
 								onClick={handleCreate}
-								className='hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md'>
+								className='hidden sm:flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm'>
 								<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
 									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
 								</svg>
-								글쓰기
+								새 공지 작성
 							</button>
 						)}
 					</div>
 
-					{/* Controls Section */}
-					<div className='flex flex-col lg:flex-row lg:items-center justify-between gap-4'>
-						{/* Left controls */}
-						<div className='flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4'>
-							<span className='bg-purple-600 text-white px-3 py-1 rounded text-xs font-medium w-fit'>전체</span>
-							<div className='flex items-center bg-gray-100 rounded-lg p-1'>
+					{/* Controls */}
+					<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50 p-4 rounded-lg'>
+						<div className='flex items-center gap-3'>
+							<span className='text-sm text-gray-600'>
+								총 <span className='font-semibold text-purple-600'>{filteredAndSortedNotices.length}</span>개
+							</span>
+							<div className='h-4 w-px bg-gray-300'></div>
+							<div className='flex items-center gap-2'>
 								<button
 									onClick={() => handleSortChange('newest')}
-									className={`px-3 py-1 text-xs rounded-md font-medium transition-all duration-200 ${
+									className={`px-3 py-1.5 text-sm rounded-md font-medium transition-all ${
 										sortOrder === 'newest' 
-											? 'bg-white text-gray-900 shadow-sm' 
-											: 'text-gray-600 hover:text-gray-900'
+											? 'bg-purple-600 text-white' 
+											: 'bg-white text-gray-600 hover:bg-gray-100'
 									}`}>
-									최신 순
+									최신순
 								</button>
 								<button
 									onClick={() => handleSortChange('oldest')}
-									className={`px-3 py-1 text-xs rounded-md font-medium transition-all duration-200 ${
+									className={`px-3 py-1.5 text-sm rounded-md font-medium transition-all ${
 										sortOrder === 'oldest' 
-											? 'bg-white text-gray-900 shadow-sm' 
-											: 'text-gray-600 hover:text-gray-900'
+											? 'bg-purple-600 text-white' 
+											: 'bg-white text-gray-600 hover:bg-gray-100'
 									}`}>
-									오래된 순
+									과거순
 								</button>
 							</div>
 						</div>
 
-						{/* Right controls */}
-						<div className='flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4'>
-							{/* Stats */}
-							<span className='hidden sm:block text-sm text-gray-600'>
-								전체 <span className='font-bold'>{filteredAndSortedNotices.length}</span>건 | 
-								페이지 <span className='font-bold'>{currentPage}</span> / <span className='font-bold'>{totalPages}</span>
-							</span>
-							
-							{/* Search controls */}
-							<div className='flex items-center gap-2'>
-								<select
-									value={searchType}
-									onChange={(e) => setSearchType(e.target.value as 'title' | 'titleContent')}
-									className='px-3 py-2 text-sm text-center border border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none bg-white'>
-									<option value='title'>제목</option>
-									<option value='titleContent'>제목+내용</option>
-								</select>
-								<div className='relative w-full sm:w-64 lg:w-80'>
-									<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-										<svg className='w-4 h-4 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-											<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+						{/* Search */}
+						<div className='flex items-center gap-2'>
+							<select
+								value={searchType}
+								onChange={(e) => setSearchType(e.target.value as 'title' | 'titleContent')}
+								className='px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none bg-white'>
+								<option value='title'>제목</option>
+								<option value='titleContent'>제목+내용</option>
+							</select>
+							<div className='relative flex-1 sm:w-64'>
+								<input
+									type='text'
+									placeholder='검색어를 입력하세요'
+									value={searchInput}
+									onChange={(e) => setSearchInput(e.target.value)}
+									onKeyDown={handleKeyDown}
+									className='w-full pl-10 pr-10 py-2 text-sm border border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none bg-white'
+								/>
+								<svg className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+								</svg>
+								{searchInput && (
+									<button
+										onClick={handleReset}
+										className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'>
+										<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+											<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
 										</svg>
-									</div>
-									<input
-										type='text'
-										placeholder='검색어를 입력하세요'
-										value={searchInput}
-										onChange={(e) => setSearchInput(e.target.value)}
-										onKeyDown={handleKeyDown}
-										className='w-full pl-9 pr-9 py-2 text-sm border border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors duration-200'
-									/>
-									{searchInput && (
-										<button
-											onClick={handleReset}
-											className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200'>
-											<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-												<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-											</svg>
-										</button>
-									)}
-								</div>
+									</button>
+								)}
 							</div>
 						</div>
-					</div>
-
-					{/* Mobile Stats */}
-					<div className='sm:hidden mt-3 text-sm text-gray-600 text-center'>
-						전체 <span className='font-bold'>{filteredAndSortedNotices.length}</span>건 | 
-						페이지 <span className='font-bold'>{currentPage}</span> / <span className='font-bold'>{totalPages}</span>
 					</div>
 				</div>
 
@@ -346,32 +334,18 @@ const SupportNotice: React.FC = () => {
 					</>
 				)}
 
-				{/* Admin Button */}
+				{/* Mobile Admin Button */}
 				{!loading && role === 'ADMIN' && (
-					<>
-						{/* Mobile */}
-						<div className='sm:hidden mt-8'>
-							<button 
-								onClick={handleCreate}
-								className='w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm hover:shadow-md'>
-								<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
-								</svg>
-								글쓰기
-							</button>
-						</div>
-						{/* Desktop */}
-						<div className='hidden sm:block mt-8 text-center'>
-							<button 
-								onClick={handleCreate}
-								className='inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm hover:shadow-md'>
-								<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
-								</svg>
-								글쓰기
-							</button>
-						</div>
-					</>
+					<div className='sm:hidden mt-8'>
+						<button 
+							onClick={handleCreate}
+							className='w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm hover:shadow-md'>
+							<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+								<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
+							</svg>
+							글쓰기
+						</button>
+					</div>
 				)}
 			</div>
 		</SupportLayout>
