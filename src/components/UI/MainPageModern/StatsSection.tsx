@@ -35,7 +35,7 @@ const Stat: React.FC<{ label: string; value: number; suffix?: string; delay?: nu
 
   return (
     <div ref={ref} className='text-center'>
-      <div className='text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900'>
+      <div className='text-2xl md:text-3xl font-extrabold tracking-tight text-[#212529]'>
         {count.toLocaleString()}<span className='text-purple-600'>{suffix}</span>
       </div>
       <div className='mt-1 text-sm text-gray-500'>{label}</div>
@@ -48,7 +48,7 @@ const StatsSection: React.FC = () => {
     <section className='mt-12 md:mt-16' data-aos='fade-up'>
       {/* Top copy */}
       <header className='mb-4 md:mb-6 text-center'>
-        <h2 className='text-xl md:text-2xl font-extrabold tracking-tight text-gray-900'>
+        <h2 className='text-xl md:text-2xl font-extrabold tracking-tight text-[#212529]'>
           함께 만든 성장의 숫자
         </h2>
         <p className='mt-1 text-sm text-gray-500'>
@@ -80,7 +80,7 @@ const StatsSection: React.FC = () => {
           <div className='inline-flex items-center gap-2'>
             <a href='/search?order=RECOMMEND' className='text-purple-600 hover:text-purple-700 font-semibold'>인기 프로젝트 보기</a>
             <span className='text-gray-300'>·</span>
-            <a href='/creater' className='text-gray-700 hover:text-gray-900'>크리에이터 시작하기</a>
+            <a href='/creater' className='text-gray-700 hover:text-[#212529]'>크리에이터 시작하기</a>
           </div>
         </div>
       </div>

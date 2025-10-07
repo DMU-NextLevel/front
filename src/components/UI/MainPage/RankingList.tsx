@@ -68,7 +68,7 @@ const RankingList: React.FC<RankingListProps> = ({ variant = 'standalone' }) => 
 			}
 			style={{ willChange: 'transform' }}
 		>
-			<h2 className='text-xl md:text-2xl font-bold text-gray-900 mb-3'>실시간 랭킹</h2>
+			<h2 className='text-xl md:text-2xl font-bold text-[#212529] mb-3'>실시간 랭킹</h2>
 			<ul className='space-y-2.5 flex-1'>
 				{projects.map((item, index) => (
 					<li key={item.id}>
