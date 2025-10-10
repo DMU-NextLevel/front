@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import noImage from '../../../assets/images/noImage.jpg'
 import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
@@ -29,8 +29,23 @@ const NewProject: React.FC = () => {
 	const navigate = useNavigate()
 	const [projects, setProjects] = useState<any[]>([])
 	const sliderRef = useRef<HTMLDivElement | null>(null)
+	const tickingRef = useRef(false)
 	const [canPrev, setCanPrev] = useState(false)
 	const [canNext, setCanNext] = useState(true)
+
+	// optimized update using requestAnimationFrame; defined at top-level to satisfy hooks rules
+	const update = React.useCallback(() => {
+		const el = sliderRef.current
+		if (!el) return
+		if (!tickingRef.current) {
+			tickingRef.current = true
+			requestAnimationFrame(() => {
+				setCanPrev(el.scrollLeft > 0)
+				setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
+				tickingRef.current = false
+			})
+		}
+	}, [])
 
 	// 컴포넌트 마운트 시 WebKit 스크롤바 숨김 스타일 추가
 	useEffect(() => {
@@ -49,7 +64,7 @@ const NewProject: React.FC = () => {
 
 	useEffect(() => {
 		const loadProjects = async () => {
-			const data = await fetchProjectsFromServer({ order: 'CREATED', desc: true, pageCount: 4 })
+			const data = await fetchProjectsFromServer({ order: 'CREATED', desc: true, pageCount: 3 })
 			console.log('📦 서버에서 받아온 프로젝트:', data)
 			if (Array.isArray(data)) {
 				setProjects(data)
@@ -62,31 +77,24 @@ const NewProject: React.FC = () => {
 	useEffect(() => {
 		const el = sliderRef.current
 		if (!el) return
-		
-		const update = () => {
-			setCanPrev(el.scrollLeft > 0)
-			setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
-		}
-		
 		// 초기 상태 업데이트를 위한 타이머
 		const timer = setTimeout(update, 100)
-		
+		// 즉시 한 번 실행
 		update()
 		el.addEventListener('scroll', update, { passive: true })
 		window.addEventListener('resize', update)
-		
 		return () => {
 			clearTimeout(timer)
 			el.removeEventListener('scroll', update)
 			window.removeEventListener('resize', update)
 		}
-	}, [projects]) // projects가 로드된 후에 실행되도록 변경
+	}, [projects, update]) // projects가 로드된 후에 실행되도록 변경
 
 		const getStep = () => {
 			const el = sliderRef.current
 			if (!el) return 0
 			const first = el.querySelector<HTMLElement>(':scope > *')
-			const gapPx = 20 // Tailwind gap-5 ≈ 20px
+			const gapPx = 12 // Tailwind gap-3 ≈ 12px
 			const w = first ? first.getBoundingClientRect().width : el.clientWidth * 0.9
 			return Math.max(0, Math.round(w + gapPx))
 		}
@@ -103,27 +111,19 @@ const NewProject: React.FC = () => {
 		}
 
 	return (
-			<section className='mt-10' data-aos='fade-up'>
-				<div className='flex items-end justify-between mb-4'>
+			<section className='py-6 sm:py-8' >
+				<div className='flex items-end justify-between mb-4 sm:mb-6'>
 					<div>
-						<h2 className='text-xl md:text-2xl font-bold m-0'>신규 프로젝트</h2>
-						<p className='mt-1 text-xs text-gray-500 m-0'>방금 올라온 따끈한 프로젝트를 확인해보세요</p>
+						<h2 className='text-lg sm:text-xl md:text-2xl font-bold m-0'>신규 프로젝트</h2>
+						<p className='mt-1 text-xs sm:text-sm text-gray-500 m-0'>방금 올라온 따끈한 프로젝트를 확인해보세요</p>
 					</div>
-					<a href='/search?order=CREATED' className='text-sm text-purple-600 hover:underline'>더 보기</a>
+					<a href='/search?order=CREATED' className='text-xs sm:text-sm text-purple-600 hover:underline'>더 보기</a>
 				</div>
 
 						{projects.length === 0 && <p className='text-sm text-gray-500'>프로젝트가 없습니다.</p>}
 
-								{/* Apple-like horizontal scroll slider (no blur, native scroll) */}
-										<div className='relative'>
-											<div 
-												ref={sliderRef} 
-												className='flex overflow-x-auto snap-x snap-proximity gap-5 pt-1 pr-16 md:pr-20 pb-16 md:pb-20 webkit-scrollbar-hidden'
-												style={{
-													...scrollbarHiddenStyle,
-													WebkitOverflowScrolling: 'touch',
-												}}
-											>
+						{/* 반응형 그리드 레이아웃 */}
+						<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4'>
 							{projects.map((item) => {
 						// titleImg can be a string or an object with uri
 						const titleImgPath = item?.titleImg?.uri ? item.titleImg.uri : item.titleImg
@@ -131,63 +131,77 @@ const NewProject: React.FC = () => {
 						const rate = Math.max(0, Math.min(100, Math.round(item?.completionRate ?? 0)))
 						const tagText = Array.isArray(item?.tags) && item.tags.length > 0 ? item.tags[0] : 'New'
 						const remain = getRemainingText(item?.expired, item?.createdAt)
-						const introText =
-							item?.shortDescription || item?.description || item?.summary || item?.intro || '방금 등록된 프로젝트의 핵심 소개가 여기에 들어갑니다.'
-
+						const creatorName = item?.creator?.name || item?.author?.name || item?.user?.name || '알 수 없음'
+						const createdDate = item?.createdAt ? new Date(item.createdAt).toLocaleDateString('ko-KR') : ''
 						return (
 							<div
 								key={item.id}
-								onClick={() => navigate(`/project/${item.id}`)}
-														className='group block cursor-pointer rounded-2xl ring-1 ring-gray-200 overflow-hidden bg-white hover:ring-purple-300 hover:shadow-lg transition snap-center shrink-0 first:ml-px w-[85%] sm:w-[65%] md:w-[48%] lg:w-[32%] xl:w-[30%]'
+														className='bg-transparent group'
 							>
-								<div className='relative w-full overflow-hidden' style={{ aspectRatio: '16 / 9' }}>
-									<img
-										src={imgSrc || noImage}
-										alt={item.title}
-										className='absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105'
-										onError={(e) => {
-											e.currentTarget.onerror = null
-											e.currentTarget.src = noImage
-										}}
-									/>
-									<div className='absolute top-3 right-3 z-10 flex gap-2'>
-										<button className='w-9 h-9 grid place-items-center rounded-full bg-white/90 text-gray-800 hover:bg-white shadow'>
-											<i className='bi bi-heart' />
-										</button>
-									</div>
-									<div className='absolute inset-x-0 bottom-0 p-3 flex items-center gap-2'>
-										<span className='inline-flex items-center rounded-full text-xs px-2.5 py-1 bg-black/60 text-white backdrop-blur'>
-											{tagText}
-										</span>
-										{remain && (
-											<span className='inline-flex items-center rounded-full text-[11px] px-2 py-0.5 bg-white/80 text-gray-700 backdrop-blur'>{remain}</span>
-										)}
-									</div>
-								</div>
-								<div className='p-4'>
-									<h3 className='text-base md:text-[1.05rem] font-bold line-clamp-2 min-h-[2.6em]'>{item.title}</h3>
-									<p className='mt-1 text-xs text-gray-500 line-clamp-2'>{introText}</p>
-									<div className='mt-3'>
-										<div className='flex items-center justify-between text-sm font-semibold'>
-											<span className='text-purple-600'>{rate}% 달성</span>
-											{Array.isArray(item?.tags) && item.tags[1] && (
-												<span className='text-gray-600'>{item.tags[1]}</span>
-											)}
-										</div>
-										<div className='mt-2 h-2 rounded-full bg-gray-100 overflow-hidden'>
-											<div className={`h-full ${gradients}`} style={{ width: `${rate}%` }} />
-										</div>
-									</div>
-									<div className='mt-4 flex items-center justify-between text-xs text-gray-500'>
-										<div className='flex items-center gap-1.5'>
-											<i className='bi bi-people text-gray-400 text-sm' />
-											<span>추천 {item?.recommendCount?.toLocaleString?.('ko-KR') ?? 0}</span>
-										</div>
-										{remain && (
-											<div className='flex items-center gap-1.5'>
-												<i className='bi bi-clock text-gray-400 text-sm' />
-												<span>{remain}</span>
+								<div className='relative'>
+									{/* 이미지와 프로그래스바 영역 */}
+									<div className='flex mb-4 sm:mb-6 gap-0 rounded-sm overflow-hidden'>
+										<div className='flex-1 relative overflow-hidden rounded-t-lg'>
+											<img
+												src={imgSrc || noImage}
+												alt={item.title}
+												className='w-full object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105 cursor-pointer'
+												style={{ aspectRatio: '16 / 9' }}
+												loading="lazy"
+												onClick={() => navigate(`/project/${item.id}`)}
+												onError={(e) => {
+													e.currentTarget.onerror = null
+													e.currentTarget.src = noImage
+												}}
+											/>
+
+											{/* 프로그래스 바 - 이미지 하단 border처럼 */}
+											<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
+												<div className={`h-full ${gradients} transition-all duration-300`} style={{ width: `${rate}%` }} />
 											</div>
+										</div>
+									</div>
+
+									{/* 타이틀 */}
+									<h3 className='text-base sm:text-[18px] font-bold line-clamp-2 mb-2 sm:mb-3 transition-colors duration-300 group-hover:text-purple-600'>
+										<span className='cursor-pointer' onClick={() => navigate(`/project/${item.id}`)}>{item.title}</span>
+									</h3>
+
+									{/* 작성자와 시작일 */}
+									<div className='flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3'>
+										<span className='flex items-center gap-1'>
+											<i className='bi bi-person text-xs' />
+											{creatorName}
+										</span>
+										<span className='flex items-center gap-1'>
+											<i className='bi bi-calendar text-xs' />
+											{createdDate}
+										</span>
+									</div>
+
+									{/* 진행률과 추천수 */}
+									<div className='flex items-center justify-between text-xs sm:text-sm mb-2 sm:mb-3'>
+										<span className='text-purple-600 font-semibold'>{rate}% 달성</span>
+										<div className='flex items-center gap-1 text-gray-500'>
+											<i className='bi bi-heart text-xs' />
+											<span className='text-xs'>{item?.recommendCount?.toLocaleString?.('ko-KR') ?? 0}</span>
+										</div>
+									</div>
+
+									{/* 태그 */}
+									<div className='flex flex-wrap gap-1.5 sm:gap-2'>
+										{Array.isArray(item.tags) && item.tags.slice(0, 2).map((tag: string, tagIndex: number) => (
+											<span
+												key={`tag-${tagIndex}`}
+												className='inline-flex items-center text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-gray-100 text-gray-700 rounded-full'
+											>
+												{tag}
+											</span>
+										))}
+										{remain && (
+											<span className='inline-flex items-center text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-blue-100 text-blue-700 rounded-full'>
+												{remain}
+											</span>
 										)}
 									</div>
 								</div>
@@ -195,29 +209,8 @@ const NewProject: React.FC = () => {
 						)
 								})}
 								</div>
-
-								{/* Bottom-right nav buttons */}
-											<div className='pointer-events-none absolute right-4 md:right-6 bottom-4 md:bottom-6 flex items-center gap-2'>
-									<button
-										aria-label='Previous'
-										className={`pointer-events-auto w-9 h-9 rounded-full bg-white/90 text-gray-700 shadow grid place-items-center hover:bg-white ${!canPrev ? 'opacity-40 cursor-default' : ''}`}
-										onClick={goPrev}
-										disabled={!canPrev}
-									>
-										<i className='bi bi-chevron-left' />
-									</button>
-									<button
-										aria-label='Next'
-										className={`pointer-events-auto w-9 h-9 rounded-full bg-white/90 text-gray-700 shadow grid place-items-center hover:bg-white ${!canNext ? 'opacity-40 cursor-default' : ''}`}
-										onClick={goNext}
-										disabled={!canNext}
-									>
-										<i className='bi bi-chevron-right' />
-									</button>
-								</div>
-							</div>
 			</section>
 	)
 }
 
-export default NewProject
+export default React.memo(NewProject)
