@@ -35,47 +35,44 @@ const MainPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-  <div className="ml-0 mr-auto flex flex-col box-border text-gray-700">
+  <div className="w-full max-w-none flex flex-col box-border text-gray-700">
       {/* Modern hero and sections */}
       
       <div className="w-full px-0">
         <HeroSection />
       </div>
       
-      <div className="px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]">
-        <div className="w-full px-0">
+      <div className="w-full px-0">
         {/* New CategoryBar placed above existing CategorySelector */}
-        <div className="mt-4">
+        <div className="mt-4 mx-[15%]">
           <CategoryBar
             categories={categories}
             value={tag}
-            onChange={(t) => {
+            onChange={(t: string) => {
               setTag(t)
               navigate(`/search?tag=${t}`)
             }}
             className="px-0 py-0"
           />
         </div>
-  
 
-        {/* 취향 맞춤(7) + 오른쪽 실시간(3) */}
-        <div className="mt-2 grid grid-cols-1 lg:grid-cols-10 gap-6 items-stretch">
-          <div className="lg:col-span-7 h-full">
-            <PersonalizedProjectGallery />
-          </div>
-          <aside className="lg:col-span-3 w-full h-full flex">
-            <RankingList variant="sidebar" />
-          </aside>
-        </div>
-
-        <StatsSection />
         {/* Use the clean CategorySelector directly below stats (누적펀딩 금액 아래) */}
         <div className="mt-6" />
       </div>
 
-      <div className="w-full px-0">
+      {/* 취향 맞춤 프로젝트 전체 너비 */}
+      <div className="mt-2 mx-[15%]">
+        <PersonalizedProjectGallery />
+      </div>
+
+      <hr className="h-px bg-gray-100 border-none w-full" />
+
+      <div className="w-full bg-gray-50">
         {/* Legacy sections retained below while we transition */}
         <div className="mt-10" />
+
+        <StatsSection />
+
   <hr className="h-px bg-gray-100 border-none w-full" />
         {/* 인기 프로젝트 섹션 제거 (요청에 따라) */}
         <NewProject />
@@ -90,7 +87,6 @@ const MainPage: React.FC = () => {
         <BloomProjectGallery />
         <BloomStatistics />
       </div> */}
-      </div>
     </div>
   );
 };

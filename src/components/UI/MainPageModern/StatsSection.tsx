@@ -45,7 +45,7 @@ const Stat: React.FC<{ label: string; value: number; suffix?: string; delay?: nu
 
 const StatsSection: React.FC = () => {
   return (
-    <section className='mt-12 md:mt-16' data-aos='fade-up'>
+    <section className='mt-12 md:mt-16 px-[15%]' data-aos='fade-up'>
       {/* Top copy */}
       <header className='mb-4 md:mb-6 text-center'>
         <h2 className='text-xl md:text-2xl font-extrabold tracking-tight text-[#212529]'>

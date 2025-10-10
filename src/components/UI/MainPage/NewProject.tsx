@@ -103,7 +103,7 @@ const NewProject: React.FC = () => {
 		}
 
 	return (
-			<section className='mt-10' data-aos='fade-up'>
+			<section className='mt-10 px-[15%]' data-aos='fade-up'>
 				<div className='flex items-end justify-between mb-4'>
 					<div>
 						<h2 className='text-xl md:text-2xl font-bold m-0'>신규 프로젝트</h2>
@@ -118,7 +118,7 @@ const NewProject: React.FC = () => {
 										<div className='relative'>
 											<div 
 												ref={sliderRef} 
-												className='flex overflow-x-auto snap-x snap-proximity gap-5 pt-1 pr-16 md:pr-20 pb-16 md:pb-20 webkit-scrollbar-hidden'
+												className='flex overflow-x-auto snap-x snap-proximity gap-5 pt-1 pr-20 md:pr-24 pb-16 md:pb-20 webkit-scrollbar-hidden'
 												style={{
 													...scrollbarHiddenStyle,
 													WebkitOverflowScrolling: 'touch',
