@@ -124,15 +124,6 @@ const PersonalizedProjectGallery: React.FC = () => {
                       e.currentTarget.src = noImage
                     }}
                   />
-                  <button className='absolute top-3 right-3 z-10 grid place-items-center w-8 h-8 rounded-full bg-white/90 text-gray-800 hover:bg-white shadow'
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      handleLikeToggle(p.id, !!p.isLiked)
-                    }}
-                  >
-                    <i className={`bi ${p.isLiked ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
-                  </button>
                   <div className='absolute inset-x-0 bottom-0 p-3 flex items-center gap-2'>
                     <span className='inline-flex items-center rounded-full text-xs px-2.5 py-1 bg-black/60 text-white backdrop-blur'>
                       {tagText}

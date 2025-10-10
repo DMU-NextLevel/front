@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import noImage from '../../../assets/images/noImage.jpg'
 import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
-import { useAuth } from '../../../hooks/AuthContext'
-import { api } from '../../../AxiosInstance'
 
 // 스크롤바 숨김을 위한 스타일
 const scrollbarHiddenStyle = {
@@ -29,37 +27,10 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
 const NewProject: React.FC = () => {
 	const baseUrl = process.env.REACT_APP_API_BASE_URL
 	const navigate = useNavigate()
-	const { isLoggedIn } = useAuth()
 	const [projects, setProjects] = useState<any[]>([])
 	const sliderRef = useRef<HTMLDivElement | null>(null)
 	const [canPrev, setCanPrev] = useState(false)
 	const [canNext, setCanNext] = useState(true)
-
-	// 좋아요 토글 API 함수 (api 인스턴스, withCredentials만 사용)
-	const toggleProjectLike = async (projectId: number, like: boolean) => {
-		try {
-			const url = `${baseUrl}/social/user/like`;
-			const res = await api.post(url, { like, projectId }, { withCredentials: true })
-			if (res.data.message === 'success') {
-				setProjects((prev) =>
-					prev.map((p) =>
-						p.id === projectId ? { ...p, isLiked: like } : p
-					)
-				)
-			}
-		} catch (err) {
-			console.error('좋아요 토글 실패', err)
-		}
-	}
-
-	// 좋아요 버튼 클릭 핸들러
-	const handleLikeToggle = async (projectId: number, current: boolean) => {
-		if (!isLoggedIn) {
-			alert('로그인이 필요합니다.')
-			return
-		}
-		await toggleProjectLike(projectId, !current)
-	}
 
 	// 컴포넌트 마운트 시 WebKit 스크롤바 숨김 스타일 추가
 	useEffect(() => {
@@ -180,17 +151,8 @@ const NewProject: React.FC = () => {
 										}}
 									/>
 									<div className='absolute top-3 right-3 z-10 flex gap-2'>
-										<button className='w-8 h-8 grid place-items-center rounded-full bg-white/90 text-gray-800 hover:bg-white shadow'
-											onClick={(e) => {
-												e.preventDefault()
-												e.stopPropagation()
-												handleLikeToggle(item.id, !!item.isLiked)
-											}}
-										>
-											<i className={`bi ${item.isLiked ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
-										</button>
-										<button className='w-8 h-8 grid place-items-center rounded-full bg-white/90 text-gray-800 hover:bg-white shadow'>
-											<i className='bi bi-share' />
+										<button className='w-9 h-9 grid place-items-center rounded-full bg-white/90 text-gray-800 hover:bg-white shadow'>
+											<i className='bi bi-heart' />
 										</button>
 									</div>
 									<div className='absolute inset-x-0 bottom-0 p-3 flex items-center gap-2'>
@@ -203,10 +165,10 @@ const NewProject: React.FC = () => {
 									</div>
 								</div>
 								<div className='p-4'>
-									<h3 className='text-sm font-bold line-clamp-2 min-h-[2.6em]'>{item.title}</h3>
+									<h3 className='text-base md:text-[1.05rem] font-bold line-clamp-2 min-h-[2.6em]'>{item.title}</h3>
 									<p className='mt-1 text-xs text-gray-500 line-clamp-2'>{introText}</p>
 									<div className='mt-3'>
-										<div className='flex items-center justify-between text-xs font-semibold'>
+										<div className='flex items-center justify-between text-sm font-semibold'>
 											<span className='text-purple-600'>{rate}% 달성</span>
 											{Array.isArray(item?.tags) && item.tags[1] && (
 												<span className='text-gray-600'>{item.tags[1]}</span>
