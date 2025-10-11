@@ -1,6 +1,8 @@
 import React, { JSX } from 'react'
 import ExamImage from '../../../assets/images/nextlevel.png'
 import LikeImage from '../../../assets/images/Like.svg'
+import { api } from '../../../AxiosInstance'
+import { useParams } from 'react-router-dom'
 
 interface props {
 	setPayOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -15,9 +17,22 @@ interface props {
 
 const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, peopleNum, likeNum }: props): JSX.Element => {
 	const baseUrl = process.env.REACT_APP_API_BASE_URL
+	const {no} = useParams<{no:string}>()
 
 	const PayClick = () => {
 		setPayOpen(true)
+	}
+
+	const handleLike = async() => {
+		try {
+			await api.post('/social/user/like',{
+				like:true,
+				projectId:no
+			})
+		} catch(e) {
+			console.log(e)
+			alert('좋아요 실패')
+		}
 	}
 
 	return (
@@ -39,7 +54,7 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 			</div>
 			<div className='flex w-full h-[75px] gap-5'>
 				<div className='flex flex-col items-center'>
-					<img src={LikeImage} className='w-12 h-12 mb-1.5 hover:cursor-pointer' />
+					<img src={LikeImage} className='w-12 h-12 mb-1.5 hover:cursor-pointer' onClick={handleLike} />
 					<p className='flex justify-center text-sm m-0 text-gray-500'>{likeNum}</p>
 				</div>
 				<button className='bg-purple-500 text-white border-none rounded-xl text-xl font-bold w-full h-12 hover:cursor-pointer' onClick={PayClick}>

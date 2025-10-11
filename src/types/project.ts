@@ -11,7 +11,7 @@ export interface ProjectDetailData {
     goal: number
     sum: number
     completionRate: number
-    recommendCount: number
+    likeCount: number
     fundingCount: number
     userCount: number
 }

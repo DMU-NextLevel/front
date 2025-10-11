@@ -24,7 +24,7 @@ const FundingPage = (): JSX.Element => {
 					description={projectInfo?.content ?? ''}
 					amount={projectInfo?.sum ?? 0}
 					peopleNum={projectInfo?.fundingCount ?? 0}
-					likeNum={projectInfo?.recommendCount ?? 0}
+					likeNum={projectInfo?.likeCount ?? 0}
 				/>
 				<StarterInfo starter={projectInfo?.authorNickName ?? ''} />
 			</div>
