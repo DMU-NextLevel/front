@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, CheckCircle, Star, TrendingUp, Users, Award, Smartphone, BookOpen, PieChart, ChevronDown, Monitor, Home, Shirt, Heart, Palette, Gamepad2, PawPrint, Plane, UtensilsCrossed, Edit, BarChart3, Bell, MessageSquare, Users2, Ticket } from 'lucide-react'
 import './Creater.css'
-import AnimatedBanner from '../components/UI/MainPageModern/AnimatedBanner'
+import AnimatedBanner from '../components/Creater/AnimatedBanner'
 
 // 카테고리 데이터
 const CATEGORIES = [

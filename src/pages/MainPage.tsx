@@ -5,14 +5,13 @@ import RecommendedProject from "../components/UI/MainPage/RecommendedProject";
 import FeatureOverview from "../components/UI/MainPage/FeatureOverview";
 import CategorySelector from "../components/UI/MainPage/CategorySelector";
 import NewProject from "../components/UI/MainPage/NewProject";
-import HeroSection from "../components/UI/MainPageModern/HeroSection";
+import HeroSection from "../components/UI/MainPage/HeroSection";
 // Removed "카테고리 탐색" selector section
-import PopularProjectGallery from "../components/UI/MainPageModern/PersonalizedProjectGallery";
-import CustomizedProjectGallery from "../components/UI/MainPageModern/CustomizedProjectGallery";
-import StatsSection from "../components/UI/MainPageModern/StatsSection";
-import LoginSection from "../components/UI/MainPageModern/LoginSection";
-import FollowProjectBanner from "../components/UI/MainPage/FollowProjectBanner";
-import CategoryCarousel from "../components/UI/MainPageModern/CategoryCarousel";
+import PopularProjectGallery from "../components/UI/MainPage/PersonalizedProjectGallery";
+import CustomizedProjectGallery from "../components/UI/MainPage/CustomizedProjectGallery";
+import StatsSection from "../components/UI/MainPage/StatsSection";
+import LoginSection from "../components/UI/MainPage/LoginSection";
+
 const categories = [
 
   { label: '테크/가전', icon: 'bi bi-cpu', tag: '1', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
