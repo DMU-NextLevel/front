@@ -15,10 +15,23 @@ interface User {
   createdAt: string
 }
 
+interface Project {
+  id: number
+  title: string
+  category: string
+  status: '펀딩중' | '펀딩성공' | '펀딩실패'
+  currentFunding: number
+  targetFunding: number
+  backers: number
+  createdDate: string
+}
+
 interface UserDetail extends User {
   address?: string | null
   number?: string | null
   areaNumber?: string | null
+  projects: Project[]
+  followingProjects: Project[]
 }
 
 const AdminUsers: React.FC = () => {
@@ -30,6 +43,7 @@ const AdminUsers: React.FC = () => {
   const [expandedUserId, setExpandedUserId] = useState<number | null>(null)
   const [isClosing, setIsClosing] = useState(false)
   const [openMenuId, setOpenMenuId] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState<'info' | 'projects' | 'following'>('info')
 
   // 더미 데이터 10개
   const dummyUsers: User[] = [
@@ -299,10 +313,65 @@ const AdminUsers: React.FC = () => {
         ...user,
         address: '서울특별시 강남구 테헤란로 123',
         number: '010-1234-5678',
-        areaNumber: '02-1234-5678'
+        areaNumber: '02-1234-5678',
+        projects: [
+          {
+            id: 101,
+            title: '스마트 홈 IoT 디바이스',
+            category: '테크/가전',
+            status: '펀딩중',
+            currentFunding: 1200000,
+            targetFunding: 2000000,
+            backers: 45,
+            createdDate: '2024-10-01'
+          },
+          {
+            id: 102,
+            title: '에코 프렌들리 텀블러',
+            category: '라이프스타일',
+            status: '펀딩성공',
+            currentFunding: 800000,
+            targetFunding: 500000,
+            backers: 32,
+            createdDate: '2024-08-15'
+          }
+        ],
+        followingProjects: [
+          {
+            id: 201,
+            title: 'VR 교육 플랫폼',
+            category: '교육/키즈',
+            status: '펀딩중',
+            currentFunding: 950000,
+            targetFunding: 1500000,
+            backers: 67,
+            createdDate: '2024-09-10'
+          },
+          {
+            id: 202,
+            title: '천연 화장품 라인',
+            category: '뷰티/헬스',
+            status: '펀딩성공',
+            currentFunding: 650000,
+            targetFunding: 600000,
+            backers: 28,
+            createdDate: '2024-07-05'
+          },
+          {
+            id: 203,
+            title: '보드게임 세트',
+            category: '취미/DIY',
+            status: '펀딩중',
+            currentFunding: 500000,
+            targetFunding: 800000,
+            backers: 25,
+            createdDate: '2024-09-25'
+          }
+        ]
       }
       setSelectedUser(detailUser)
       setExpandedUserId(user.id)
+      setActiveTab('info') // 유저 선택 시 기본 정보 탭으로 리셋
     }
   }
 
@@ -684,44 +753,210 @@ const AdminUsers: React.FC = () => {
 
                               {/* 오른쪽: 상세 정보 */}
                               <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-3">
+                                {/* 탭 메뉴 */}
+                                <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit mb-4">
+                                  <button
+                                    onClick={() => setActiveTab('info')}
+                                    className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
+                                      activeTab === 'info'
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                  >
+                                    기본 정보
+                                  </button>
+                                  <button
+                                    onClick={() => setActiveTab('projects')}
+                                    className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
+                                      activeTab === 'projects'
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                  >
+                                    작성한 프로젝트 ({selectedUser.projects.length})
+                                  </button>
+                                  <button
+                                    onClick={() => setActiveTab('following')}
+                                    className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
+                                      activeTab === 'following'
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                  >
+                                    팔로우한 프로젝트 ({selectedUser.followingProjects.length})
+                                  </button>
+                                </div>
+
+                                <div className="flex items-center gap-3 mb-4">
                                   <h3 className="text-base font-bold text-gray-900">{selectedUser.name}</h3>
                                   <span className="text-sm text-gray-600">@{selectedUser.nickName}</span>
                                   {getProviderBadge(selectedUser.socialProvider)}
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-x-6 gap-y-3">
+                                {/* 탭 콘텐츠 */}
+                                {activeTab === 'info' && (
                                   <div>
-                                    <p className="text-xs text-gray-500 mb-0.5">유저 ID</p>
-                                    <p className="text-sm font-medium text-gray-900">#{selectedUser.id}</p>
+                                    <div className="grid grid-cols-3 gap-x-6 gap-y-3">
+                                    <div>
+                                      <p className="text-xs text-gray-500 mb-0.5">유저 ID</p>
+                                      <p className="text-sm font-medium text-gray-900">#{selectedUser.id}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-500 mb-0.5">포인트</p>
+                                      <p className="text-sm font-semibold text-blue-600">{selectedUser.point.toLocaleString()}P</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-500 mb-0.5">가입일</p>
+                                      <p className="text-sm text-gray-900">
+                                        {new Date(selectedUser.createdAt).toLocaleDateString('ko-KR')}
+                                      </p>
+                                    </div>
+                                    <div className="col-span-3">
+                                      <p className="text-xs text-gray-500 mb-0.5">이메일</p>
+                                      <p className="text-sm font-medium text-gray-900">{selectedUser.email}</p>
+                                    </div>
+                                    <div className="col-span-3">
+                                      <p className="text-xs text-gray-500 mb-0.5">주소</p>
+                                      <p className="text-sm text-gray-700">{selectedUser.address || '등록된 주소가 없습니다.'}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-500 mb-0.5">휴대폰</p>
+                                      <p className="text-sm text-gray-700">{selectedUser.number || '-'}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-500 mb-0.5">지역번호</p>
+                                      <p className="text-sm text-gray-700">{selectedUser.areaNumber || '-'}</p>
+                                    </div>
+                                    </div>
                                   </div>
-                                  <div>
-                                    <p className="text-xs text-gray-500 mb-0.5">포인트</p>
-                                    <p className="text-sm font-semibold text-blue-600">{selectedUser.point.toLocaleString()}P</p>
+                                )}
+
+                                {activeTab === 'projects' && (
+                                  <div className="overflow-x-auto">
+                                    {selectedUser.projects.length > 0 ? (
+                                      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                        <table className="w-full text-xs">
+                                          <thead className="bg-gray-50 border-b border-gray-200">
+                                            <tr>
+                                              <th className="px-4 py-3 text-left font-semibold text-gray-900">프로젝트명</th>
+                                              <th className="px-4 py-3 text-left font-semibold text-gray-900">카테고리</th>
+                                              <th className="px-4 py-3 text-center font-semibold text-gray-900">상태</th>
+                                              <th className="px-4 py-3 text-center font-semibold text-gray-900">후원자</th>
+                                              <th className="px-4 py-3 text-right font-semibold text-gray-900">현재금액</th>
+                                              <th className="px-4 py-3 text-right font-semibold text-gray-900">목표금액</th>
+                                              <th className="px-4 py-3 text-center font-semibold text-gray-900">달성률</th>
+                                              <th className="px-4 py-3 text-center font-semibold text-gray-900">관리</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody className="divide-y divide-gray-200">
+                                            {selectedUser.projects.map((project) => (
+                                              <tr key={project.id} className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-4 py-3 font-medium text-gray-900 max-w-md">
+                                                  <div className="truncate" title={project.title}>
+                                                    {project.title}
+                                                  </div>
+                                                </td>
+                                                <td className="px-4 py-3 text-gray-600">{project.category}</td>
+                                                <td className="px-4 py-3 text-center">
+                                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                    project.status === '펀딩성공' 
+                                                      ? 'bg-green-100 text-green-800'
+                                                      : project.status === '펀딩중'
+                                                      ? 'bg-blue-100 text-blue-800'
+                                                      : 'bg-red-100 text-red-800'
+                                                  }`}>
+                                                    {project.status}
+                                                  </span>
+                                                </td>
+                                                <td className="px-4 py-3 text-center text-gray-600 font-medium">{project.backers}명</td>
+                                                <td className="px-4 py-3 text-right font-medium text-gray-900">{project.currentFunding.toLocaleString()}원</td>
+                                                <td className="px-4 py-3 text-right font-medium text-gray-900">{project.targetFunding.toLocaleString()}원</td>
+                                                <td className="px-4 py-3 text-center">
+                                                  <span className="font-semibold text-blue-600">
+                                                    {Math.round((project.currentFunding / project.targetFunding) * 100)}%
+                                                  </span>
+                                                </td>
+                                                <td className="px-4 py-3 text-center">
+                                                  <button className="inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                                                    <i className="bi bi-gear text-xs"></i>
+                                                  </button>
+                                                </td>
+                                              </tr>
+                                            ))}
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    ) : (
+                                      <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+                                        <div className="flex flex-col items-center">
+                                          <i className="bi bi-folder-x text-4xl text-gray-400 mb-3"></i>
+                                          <p className="text-gray-500 font-medium">작성한 프로젝트가 없습니다.</p>
+                                          <p className="text-sm text-gray-400 mt-1">새로운 프로젝트를 시작해보세요.</p>
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
-                                  <div>
-                                    <p className="text-xs text-gray-500 mb-0.5">가입일</p>
-                                    <p className="text-sm text-gray-900">
-                                      {new Date(selectedUser.createdAt).toLocaleDateString('ko-KR')}
-                                    </p>
+                                )}
+
+                                {activeTab === 'following' && (
+                                  <div className="overflow-x-auto">
+                                    {selectedUser.followingProjects.length > 0 ? (
+                                      <div className="py-6">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                                        {selectedUser.followingProjects.map((project) => {
+                                          const rate = Math.round((project.currentFunding / project.targetFunding) * 100);
+                                          return (
+                                            <div key={project.id} className="group block rounded-xl ring-1 ring-gray-200 overflow-hidden bg-white hover:ring-purple-300 hover:shadow-lg transition">
+                                              <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 10' }}>
+                                                <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                                  <i className="bi bi-image text-2xl text-gray-400"></i>
+                                                </div>
+                                                <button className="absolute top-2 right-2 z-10 grid place-items-center w-7 h-7 rounded-full bg-white/90 text-gray-800 hover:bg-white shadow">
+                                                  <i className="bi bi-gear text-xs"></i>
+                                                </button>
+                                                <div className="absolute inset-x-0 bottom-0 p-2 flex items-center gap-2">
+                                                  <span className={`inline-flex items-center rounded-full text-xs px-2 py-0.5 backdrop-blur ${
+                                                    project.status === '펀딩성공' 
+                                                      ? 'bg-green-500/90 text-white'
+                                                      : project.status === '펀딩중'
+                                                      ? 'bg-blue-500/90 text-white'
+                                                      : 'bg-red-500/90 text-white'
+                                                  }`}>
+                                                    {project.status}
+                                                  </span>
+                                                </div>
+                                                {/* 프로그래스바를 이미지 하단 테두리처럼 */}
+                                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200">
+                                                  <div 
+                                                    className="h-full bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 transition-all duration-300" 
+                                                    style={{ width: `${Math.min(rate, 100)}%` }}
+                                                  />
+                                                </div>
+                                              </div>
+                                              <div className="px-3 pt-2 pb-3">
+                                                <h3 className="text-sm font-bold leading-tight line-clamp-2 mb-1" title={project.title}>
+                                                  {project.title}
+                                                </h3>
+                                                <div className="text-xs font-semibold text-purple-600">
+                                                  {rate}% 달성
+                                                </div>
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                      </div>
+                                    ) : (
+                                      <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+                                        <div className="flex flex-col items-center">
+                                          <i className="bi bi-heart text-4xl text-gray-400 mb-3"></i>
+                                          <p className="text-gray-500 font-medium">팔로우한 프로젝트가 없습니다.</p>
+                                          <p className="text-sm text-gray-400 mt-1">관심 있는 프로젝트를 팔로우해보세요.</p>
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className="col-span-3">
-                                    <p className="text-xs text-gray-500 mb-0.5">이메일</p>
-                                    <p className="text-sm font-medium text-gray-900">{selectedUser.email}</p>
-                                  </div>
-                                  <div className="col-span-3">
-                                    <p className="text-xs text-gray-500 mb-0.5">주소</p>
-                                    <p className="text-sm text-gray-700">{selectedUser.address || '등록된 주소가 없습니다.'}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-gray-500 mb-0.5">휴대폰</p>
-                                    <p className="text-sm text-gray-700">{selectedUser.number || '-'}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-gray-500 mb-0.5">지역번호</p>
-                                    <p className="text-sm text-gray-700">{selectedUser.areaNumber || '-'}</p>
-                                  </div>
-                                </div>
+                                )}
                               </div>
                             </div>
                           </div>

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import ReactApexChart from 'react-apexcharts'
+import Chart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts'
 import { api } from '../../AxiosInstance'
 import { fetchProjectsFromServer } from '../../hooks/fetchProjectsFromServer'
 import noImage from '../../assets/images/noImage.jpg'
 import defaultProfile from '../../assets/images/default_profile.png'
+
+// 타입 단언을 위한 변수
+const ApexChart = Chart as any
 
 interface DashboardStats {
   totalUsers: number
@@ -753,7 +756,7 @@ const AdminPage: React.FC = () => {
             {/* 차트 영역 */}
             <div className="relative">
               {activeChartTab === 'visitor' && (
-                <ReactApexChart
+                <ApexChart
                   options={visitorChartOptions}
                   series={visitorChartSeries}
                   type="area"
@@ -761,7 +764,7 @@ const AdminPage: React.FC = () => {
                 />
               )}
               {activeChartTab === 'funding' && (
-                <ReactApexChart
+                <ApexChart
                   options={fundingChartOptions}
                   series={fundingChartSeries}
                   type="bar"
@@ -769,7 +772,7 @@ const AdminPage: React.FC = () => {
                 />
               )}
               {activeChartTab === 'category' && (
-                <ReactApexChart
+                <ApexChart
                   options={categoryChartOptions}
                   series={chartData.category.series}
                   type="donut"
@@ -777,7 +780,7 @@ const AdminPage: React.FC = () => {
                 />
               )}
               {activeChartTab === 'success' && (
-                <ReactApexChart
+                <ApexChart
                   options={successChartOptions}
                   series={successChartSeries}
                   type="line"
