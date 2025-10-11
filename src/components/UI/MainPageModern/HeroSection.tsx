@@ -124,7 +124,7 @@ const HeroSection: React.FC = () => {
 
   return (
     <div className="relative w-full bg-gray-100">
-      <div ref={sliderRef} className="image-slider relative w-full h-[70vh] min-h-[500px] overflow-hidden shadow-2xl">
+      <div ref={sliderRef} className="image-slider relative w-full h-[70vh] min-h-[500px] overflow-hidden">
         {/* Images Container */}
         <div className="images absolute inset-0">
           {slideData.map((slide, index) => (

@@ -86,7 +86,7 @@ const NewProject: React.FC = () => {
 			const el = sliderRef.current
 			if (!el) return 0
 			const first = el.querySelector<HTMLElement>(':scope > *')
-			const gapPx = 20 // Tailwind gap-5 ≈ 20px
+			const gapPx = 12 // Tailwind gap-3 ≈ 12px
 			const w = first ? first.getBoundingClientRect().width : el.clientWidth * 0.9
 			return Math.max(0, Math.round(w + gapPx))
 		}
@@ -103,22 +103,20 @@ const NewProject: React.FC = () => {
 		}
 
 	return (
-			<section className='mt-10 px-[15%]' data-aos='fade-up'>
+			<section className='mt-10 h-[400px]' data-aos='fade-up'>
 				<div className='flex items-end justify-between mb-4'>
-					<div>
+					{/* <div>
 						<h2 className='text-xl md:text-2xl font-bold m-0'>신규 프로젝트</h2>
 						<p className='mt-1 text-xs text-gray-500 m-0'>방금 올라온 따끈한 프로젝트를 확인해보세요</p>
 					</div>
-					<a href='/search?order=CREATED' className='text-sm text-purple-600 hover:underline'>더 보기</a>
-				</div>
-
-						{projects.length === 0 && <p className='text-sm text-gray-500'>프로젝트가 없습니다.</p>}
+					<a href='/search?order=CREATED' className='text-sm text-purple-600 hover:underline'>더 보기</a> */}
+				</div>						{projects.length === 0 && <p className='text-sm text-gray-500'>프로젝트가 없습니다.</p>}
 
 								{/* Apple-like horizontal scroll slider (no blur, native scroll) */}
 										<div className='relative'>
 											<div 
 												ref={sliderRef} 
-												className='flex overflow-x-auto snap-x snap-proximity gap-5 pt-1 pr-20 md:pr-24 pb-16 md:pb-20 webkit-scrollbar-hidden'
+												className='flex overflow-x-auto snap-x snap-proximity gap-3 pt-1 pr-20 md:pr-24 pb-16 md:pb-20 webkit-scrollbar-hidden'
 												style={{
 													...scrollbarHiddenStyle,
 													WebkitOverflowScrolling: 'touch',
@@ -131,16 +129,13 @@ const NewProject: React.FC = () => {
 						const rate = Math.max(0, Math.min(100, Math.round(item?.completionRate ?? 0)))
 						const tagText = Array.isArray(item?.tags) && item.tags.length > 0 ? item.tags[0] : 'New'
 						const remain = getRemainingText(item?.expired, item?.createdAt)
-						const introText =
-							item?.shortDescription || item?.description || item?.summary || item?.intro || '방금 등록된 프로젝트의 핵심 소개가 여기에 들어갑니다.'
-
 						return (
 							<div
 								key={item.id}
 								onClick={() => navigate(`/project/${item.id}`)}
-														className='group block cursor-pointer rounded-2xl ring-1 ring-gray-200 overflow-hidden bg-white hover:ring-purple-300 hover:shadow-lg transition snap-center shrink-0 first:ml-px w-[85%] sm:w-[65%] md:w-[48%] lg:w-[32%] xl:w-[30%]'
+														className='group block cursor-pointer rounded-2xl ring-1 ring-gray-200 overflow-hidden bg-white hover:ring-purple-300 hover:shadow-lg transition snap-center shrink-0 first:ml-px w-[36%] sm:w-[36%] md:w-[36%] lg:w-[36%] xl:w-[36%]'
 							>
-								<div className='relative w-full overflow-hidden' style={{ aspectRatio: '16 / 9' }}>
+								<div className='relative w-full overflow-hidden aspect-video'>
 									<img
 										src={imgSrc || noImage}
 										alt={item.title}
@@ -163,19 +158,19 @@ const NewProject: React.FC = () => {
 											<span className='inline-flex items-center rounded-full text-[11px] px-2 py-0.5 bg-white/80 text-gray-700 backdrop-blur'>{remain}</span>
 										)}
 									</div>
+									{/* Progress bar overlay at bottom border */}
+									<div className='absolute bottom-0 left-0 right-0 h-1 bg-black/20'>
+										<div className={`h-full ${gradients} transition-all duration-300`} style={{ width: `${rate}%` }} />
+									</div>
 								</div>
 								<div className='p-4'>
 									<h3 className='text-base md:text-[1.05rem] font-bold line-clamp-2 min-h-[2.6em]'>{item.title}</h3>
-									<p className='mt-1 text-xs text-gray-500 line-clamp-2'>{introText}</p>
 									<div className='mt-3'>
 										<div className='flex items-center justify-between text-sm font-semibold'>
 											<span className='text-purple-600'>{rate}% 달성</span>
 											{Array.isArray(item?.tags) && item.tags[1] && (
 												<span className='text-gray-600'>{item.tags[1]}</span>
 											)}
-										</div>
-										<div className='mt-2 h-2 rounded-full bg-gray-100 overflow-hidden'>
-											<div className={`h-full ${gradients}`} style={{ width: `${rate}%` }} />
 										</div>
 									</div>
 									<div className='mt-4 flex items-center justify-between text-xs text-gray-500'>
