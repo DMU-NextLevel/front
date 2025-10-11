@@ -148,7 +148,7 @@ const AppWrapper = () => {
 				</Route>
 				<Route path='/socialfeed/:id' element={<SocialPage />} />
 			</Routes>
-		       <Toaster
+		    <Toaster
 			       position="bottom-right"
 			       reverseOrder={true}
 			       toastOptions={{

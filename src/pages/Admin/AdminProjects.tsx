@@ -63,7 +63,7 @@ const AdminProjects: React.FC = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true)
-      
+
       const projectsData = await fetchProjectsFromServer({
         order: 'CREATED',
         page: 0,
@@ -77,7 +77,7 @@ const AdminProjects: React.FC = () => {
         if (statusFilter !== 'ALL' && project.status !== statusFilter) {
           return false
         }
-        
+
         // 카테고리 필터
         if (categoryFilter !== 'ALL') {
           const projectCategory = getProjectCategory(project.tags)
@@ -85,7 +85,7 @@ const AdminProjects: React.FC = () => {
             return false
           }
         }
-        
+
         return true
       })
 
@@ -182,7 +182,7 @@ const AdminProjects: React.FC = () => {
 
   const getSortIcon = (field: string) => {
     if (sortField !== field) return <i className="bi bi-caret-down-fill text-gray-300 text-xs ms-1"></i>
-    return sortDirection === 'asc' 
+    return sortDirection === 'asc'
       ? <i className="bi bi-caret-up-fill text-blue-600 text-xs ms-1"></i>
       : <i className="bi bi-caret-down-fill text-blue-600 text-xs ms-1"></i>
   }
@@ -243,12 +243,12 @@ const AdminProjects: React.FC = () => {
           animation-delay: 0.1s;
           animation-fill-mode: both;
         }
-        
+
         .animate-delay-200 {
           animation-delay: 0.2s;
           animation-fill-mode: both;
         }
-        
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -257,7 +257,7 @@ const AdminProjects: React.FC = () => {
             opacity: 1;
           }
         }
-        
+
         @keyframes slideInDown {
           from {
             opacity: 0;
@@ -269,7 +269,7 @@ const AdminProjects: React.FC = () => {
           }
         }
       `}</style>
-      
+
       {/* 헤더 */}
       <div className="flex justify-between items-center animate-slideInDown">
         <div>
@@ -312,7 +312,7 @@ const AdminProjects: React.FC = () => {
               <option value="END">종료</option>
             </select>
           </div>
-          
+
           {/* 카테고리 필터 */}
           <div className="flex gap-2 flex-wrap">
             {categories.map((category) => (
@@ -337,7 +337,7 @@ const AdminProjects: React.FC = () => {
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th 
+              <th
                 className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('id')}
               >
@@ -346,7 +346,7 @@ const AdminProjects: React.FC = () => {
                   {getSortIcon('id')}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('title')}
               >
@@ -355,7 +355,7 @@ const AdminProjects: React.FC = () => {
                   {getSortIcon('title')}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('author')}
               >
@@ -364,7 +364,7 @@ const AdminProjects: React.FC = () => {
                   {getSortIcon('author')}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('category')}
               >
@@ -374,7 +374,7 @@ const AdminProjects: React.FC = () => {
                 </div>
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">상태</th>
-              <th 
+              <th
                 className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('completionRate')}
               >
@@ -383,7 +383,7 @@ const AdminProjects: React.FC = () => {
                   {getSortIcon('completionRate')}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('userCount')}
               >
@@ -392,7 +392,7 @@ const AdminProjects: React.FC = () => {
                   {getSortIcon('userCount')}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('remainingDays')}
               >
@@ -401,7 +401,7 @@ const AdminProjects: React.FC = () => {
                   {getSortIcon('remainingDays')}
                 </div>
               </th>
-              <th 
+              <th
                 className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('startAt')}
               >
@@ -467,15 +467,15 @@ const AdminProjects: React.FC = () => {
                         >
                           <i className="bi bi-gear text-lg"></i>
                         </button>
-                        
+
                         {showActionMenu === project.id && (
                           <>
                             {/* 배경 클릭 시 닫기 */}
-                            <div 
-                              className="fixed inset-0 z-10" 
+                            <div
+                              className="fixed inset-0 z-10"
                               onClick={() => setShowActionMenu(null)}
                             ></div>
-                            
+
                             {/* 액션 메뉴 */}
                             <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[120px]">
                               <button
@@ -539,7 +539,7 @@ const AdminProjects: React.FC = () => {
                   <div className="space-y-1 text-sm">
                     <p className="text-gray-600">ID: #{selectedProject.id}</p>
                     <p className="text-gray-600">
-                      창작자: {selectedProject.author?.name || '-'} 
+                      창작자: {selectedProject.author?.name || '-'}
                       {selectedProject.author?.nickName && ` (@${selectedProject.author.nickName})`}
                     </p>
                     <p className="text-gray-600">카테고리: {getCategoryDisplay(selectedProject.tags)}</p>
