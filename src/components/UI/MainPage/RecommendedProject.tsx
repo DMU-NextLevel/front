@@ -126,29 +126,53 @@ const RecommendedProject: React.FC = () => {
 		setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
 		
 		// 현재 슬라이드 인덱스 계산 (gap-4 고려)
-		const slideWidth = el.clientWidth + 16
+		// robust slide width: measure distance between first two children if available
+		let slideWidth = el.clientWidth
+		if (el.children.length >= 2) {
+			const first = el.children[0] as HTMLElement
+			const second = el.children[1] as HTMLElement
+			slideWidth = second.offsetLeft - first.offsetLeft
+		}
 		const currentIndex = Math.round(el.scrollLeft / slideWidth)
-		setCurrentSlide(Math.min(currentIndex, 2)) // 최대 3개 슬라이드 (0, 1, 2)
+		const maxIndex = Math.max(0, el.children.length - 1)
+		setCurrentSlide(Math.max(0, Math.min(currentIndex, maxIndex)))
 	}, [])
 
 	const goToSlide = (index: number) => {
 		const el = sliderRef.current
 		if (!el) return
-		// gap-4 (16px) 간격을 고려한 슬라이드 너비 계산
-		const slideWidth = el.clientWidth + 16
+		// compute slide width by measuring children offset where possible
+		let slideWidth = el.clientWidth
+		if (el.children.length >= 2) {
+			const first = el.children[0] as HTMLElement
+			const second = el.children[1] as HTMLElement
+			slideWidth = second.offsetLeft - first.offsetLeft
+		}
 		el.scrollTo({ left: index * slideWidth, behavior: 'smooth' })
 	}
 
 	const goPrev = () => {
 		const el = sliderRef.current
 		if (!el) return
-		el.scrollBy({ left: -(el.clientWidth + 16), behavior: 'smooth' })
+		let slideWidth = el.clientWidth
+		if (el.children.length >= 2) {
+			const first = el.children[0] as HTMLElement
+			const second = el.children[1] as HTMLElement
+			slideWidth = second.offsetLeft - first.offsetLeft
+		}
+		el.scrollBy({ left: -slideWidth, behavior: 'smooth' })
 	}
 
 	const goNext = () => {
 		const el = sliderRef.current
 		if (!el) return
-		el.scrollBy({ left: el.clientWidth + 16, behavior: 'smooth' })
+		let slideWidth = el.clientWidth
+		if (el.children.length >= 2) {
+			const first = el.children[0] as HTMLElement
+			const second = el.children[1] as HTMLElement
+			slideWidth = second.offsetLeft - first.offsetLeft
+		}
+		el.scrollBy({ left: slideWidth, behavior: 'smooth' })
 	}
 
 	// 슬라이더 관련 useEffect들
@@ -314,7 +338,7 @@ const RecommendedProject: React.FC = () => {
 						{/* 슬라이더 인디케이터 - 선 스타일 */}
 						<div className='flex justify-center mt-4'>
 							<div className='flex items-center space-x-1'>
-								{Array.from({ length: 3 }).map((_, index) => (
+								{Array.from({ length: projects.slice(0, 3).length }).map((_, index) => (
 									<button
 										key={index}
 										onClick={() => goToSlide(index)}

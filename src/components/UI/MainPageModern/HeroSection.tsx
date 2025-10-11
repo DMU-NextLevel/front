@@ -88,6 +88,7 @@ const slideData: SlideData[] = [
 const HeroSection: React.FC = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [scrollY, setScrollY] = useState(0);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean[]>(new Array(slideData.length).fill(false));
   const navigate = useNavigate();
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -101,6 +102,14 @@ const HeroSection: React.FC = () => {
 
   const goToSlide = (index: number) => {
     setCurrentImage(index);
+  };
+
+  const handleImageLoad = (index: number) => {
+    setImagesLoaded(prev => {
+      const newLoaded = [...prev];
+      newLoaded[index] = true;
+      return newLoaded;
+    });
   };
 
   // Auto-play functionality
@@ -122,9 +131,18 @@ const HeroSection: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Preload images for better UX
+  useEffect(() => {
+    slideData.forEach((slide, index) => {
+      const img = new Image();
+      img.src = slide.backgroundImage;
+      img.onload = () => handleImageLoad(index);
+    });
+  }, []);
+
   return (
     <div className="relative w-full bg-gray-100 -mt-14">
-      <div ref={sliderRef} className="image-slider relative w-full h-[70vh] min-h-[800px] overflow-hidden">
+      <div ref={sliderRef} className="image-slider relative w-full h-[70vh] min-h-[700px] overflow-hidden">
         {/* Images Container */}
         <div className="images absolute inset-0">
           {slideData.map((slide, index) => (
@@ -138,12 +156,31 @@ const HeroSection: React.FC = () => {
                 src={slide.backgroundImage}
                 alt={slide.title}
                 className="w-full h-full object-cover"
+                onLoad={() => handleImageLoad(index)}
                 style={{
                   transform: `scale(${1 + scrollY * 0.0002})`,
                   transition: 'transform 0.1s ease-out',
-                  filter: index === 0 ? 'brightness(0.7)' : 'none'
+                  filter: index === 0 ? 'brightness(0.7)' : 'none',
+                  opacity: imagesLoaded[index] ? 1 : 0
                 }}
               />
+
+              {/* 로딩 중 배경 */}
+              {!imagesLoaded[index] && (
+                <div 
+                  className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center"
+                  style={{
+                    background: slide.accentColor ? 
+                      `linear-gradient(135deg, ${slide.accentColor.split(' ')[0].replace('from-', '').replace('-600', '')}20, ${slide.accentColor.split(' ')[1].replace('to-', '').replace('-600', '')}20)` 
+                      : 'linear-gradient(135deg, #f3f4f6, #e5e7eb)'
+                  }}
+                >
+                  <div className="text-gray-500 text-lg font-medium">
+                    <i className="bi bi-image text-3xl mb-2 block"></i>
+                    로딩 중...
+                  </div>
+                </div>
+              )}
 
               {/* Content Overlay */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent flex items-start pt-[350px]">

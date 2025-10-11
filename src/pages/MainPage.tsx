@@ -1,25 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect } from "react";
 import AOS from 'aos'
 import 'aos/dist/aos.css'
-import MainBanner from "../components/UI/MainPage/MainBanner";
 import RecommendedProject from "../components/UI/MainPage/RecommendedProject";
 import FeatureOverview from "../components/UI/MainPage/FeatureOverview";
-import PromoBanner from "../components/UI/MainPage/PromoBanner";
-import RankingList from "../components/UI/MainPage/RankingList";
-import FollowProjectBanner from "../components/UI/MainPage/FollowProjectBanner";
 import CategorySelector from "../components/UI/MainPage/CategorySelector";
-import CategorySlider from "../components/UI/MainPageModern/CategorySlider";
 import NewProject from "../components/UI/MainPage/NewProject";
 import HeroSection from "../components/UI/MainPageModern/HeroSection";
 // Removed "카테고리 탐색" selector section
 import PopularProjectGallery from "../components/UI/MainPageModern/PersonalizedProjectGallery";
 import CustomizedProjectGallery from "../components/UI/MainPageModern/CustomizedProjectGallery";
 import StatsSection from "../components/UI/MainPageModern/StatsSection";
-import BloomProjectGallery from "../components/external/Bloom/ProjectGalleryLite";
-import BloomStatistics from "../components/external/Bloom/StatisticsLite";
 import LoginSection from "../components/UI/MainPageModern/LoginSection";
-
+import FollowProjectBanner from "../components/UI/MainPage/FollowProjectBanner";
+import CategoryCarousel from "../components/UI/MainPageModern/CategoryCarousel";
 const categories = [
 
   { label: '테크/가전', icon: 'bi bi-cpu', tag: '1', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
@@ -36,9 +29,6 @@ const categories = [
 
 
 const MainPage: React.FC = () => {
-  const [tag, setTag] = useState('');
-  const navigate = useNavigate();
-
   useEffect(() => {
     AOS.init({
       once: true, // 애니메이션이 한번만 실행되도록 설정
@@ -54,11 +44,6 @@ const MainPage: React.FC = () => {
       <div className="w-full px-0">
         <HeroSection />
   
-      </div>
-      
-      {/* 애니메이션 베너 */}
-      <div className="w-full px-0">
-        
       </div>
       
       {/* 띄모양 배너 */}
@@ -118,20 +103,6 @@ const MainPage: React.FC = () => {
       </div>
 
                   {/* 인터렉티브 배너 섹션 */}
-      {/* <div className="w-full py-12 bg-gray-50">
-        <div className="mt-2 mx-[15%]">
-          <CategorySlider
-            categories={categories}
-            value={tag}
-            onChange={(t: string) => {
-              setTag(t)
-              navigate(`/search?tag=${t}`)
-            }}
-            className="px-0 py-0"
-          />
-        </div>
-      </div> */}
-
           
       <hr className="h-px bg-gray-100 border-none w-full" />
           
@@ -146,13 +117,6 @@ const MainPage: React.FC = () => {
 
   <hr className="h-px bg-gray-100 border-none w-full" />
       </div>
-
-      {/* External (Bloom) sections appended below */}
-      {/* <div className="w-full px-0">
-        <div className="mt-16" />
-        <BloomProjectGallery />
-        <BloomStatistics />
-      </div> */}
 
 
     </div>

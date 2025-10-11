@@ -189,7 +189,7 @@ export const HeaderMain: React.FC = () => {
 							className='cursor-pointer hover:opacity-80 transition-opacity flex items-center'
 						>
 							<span className={`text-xl font-bold ${location.pathname === '/' && !isScrolled ? 'text-white' : 'text-gray-900'}`}>With</span>
-							<span className={`text-xl font-bold ${location.pathname === '/' && !isScrolled ? 'text-sky-400' : 'text-blue-600'}`}>U</span>
+							<span className={`text-[26px] font-bold ${location.pathname === '/' && !isScrolled ? 'text-sky-400' : 'text-blue-600'}`}>U</span>
 						</div>
 
 						{/* 데스크톱: 네비게이션 메뉴 - 로고 바로 옆에 */}
