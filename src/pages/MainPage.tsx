@@ -91,6 +91,13 @@ const MainPage: React.FC = () => {
         <BloomStatistics />
       </div> */}
       </div>
+
+      {/* External (Bloom) sections appended below */}
+      {/* <div className="w-full px-0">
+        <div className="mt-16" />
+        <BloomProjectGallery />
+        <BloomStatistics />
+      </div> */}
     </div>
   );
 };

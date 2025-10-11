@@ -41,6 +41,13 @@ declare global {
 	}
 }
 
+// AOS 초기화
+declare global {
+	interface Window {
+		AOS: any
+	}
+}
+
 function App() {
 	return (
 		<Router>
