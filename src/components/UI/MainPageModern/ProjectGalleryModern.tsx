@@ -28,7 +28,7 @@ const formatWon = (n: number) => n.toLocaleString('ko-KR')
 
 const ProjectGalleryModern: React.FC<{ projects?: Project[] }> = ({ projects = mock }) => {
   return (
-    <section className='mt-10' data-aos='fade-up'>
+    <section className='mt-10' data-aos='fade-up' data-aos-once='true'>
       <div className='flex items-end justify-between mb-4'>
         <h2 className='text-xl md:text-2xl font-bold'>지금 인기 프로젝트</h2>
         <a href='/search?order=RECOMMEND' className='text-sm text-purple-600 hover:underline'>더 보기</a>

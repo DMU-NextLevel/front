@@ -52,7 +52,7 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
   return `${diffDays}일 남음`
 }
 
-const PopularProjectGallery: React.FC = () => {
+const CustomizedProjectGallery: React.FC = () => {
   const { isLoggedIn } = useAuth()
   const [projects, setProjects] = useState<ProjectItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -178,8 +178,8 @@ const PopularProjectGallery: React.FC = () => {
     <section className='py-5 px-[15%]' data-aos='fade-up' data-aos-once='true'>
       <div className='flex items-end justify-start relative'>
         <div>
-          <h2 className='text-xl md:text-2xl font-bold text-left'>인기 프로젝트</h2>
-          <p className='mt-1 text-xs text-gray-500 text-left'>지금 가장 인기 있는 프로젝트들을 만나보세요</p>
+          <h2 className='text-xl md:text-2xl font-bold text-left'>취향 맞춤 프로젝트</h2>
+          <p className='mt-1 text-xs text-gray-500 text-left'>당신을 위한 맞춤 추천 프로젝트</p>
         </div>
 
         {/* Top-right nav buttons */}
@@ -363,4 +363,4 @@ const PopularProjectGallery: React.FC = () => {
   )
 }
 
-export default React.memo(PopularProjectGallery)
+export default React.memo(CustomizedProjectGallery)

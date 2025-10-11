@@ -31,7 +31,7 @@ const data: { label: string; tag: string; Icon: React.ComponentType<{ className?
 
 const CategoryCarousel: React.FC = () => {
   return (
-    <section className='mt-8' data-aos='fade-up'>
+    <section className='mt-8' data-aos='fade-up' data-aos-once='true'>
       <div className='flex items-end justify-between mb-3'>
         <h2 className='text-xl md:text-2xl font-semibold tracking-tight'>카테고리 탐색</h2>
       </div>

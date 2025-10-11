@@ -107,7 +107,7 @@ const HeroSection: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 10000);
+    }, 30000); // 30초로 변경
 
     return () => clearInterval(interval);
   }, []);
@@ -123,8 +123,8 @@ const HeroSection: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative w-full bg-gray-100">
-      <div ref={sliderRef} className="image-slider relative w-full h-[70vh] min-h-[500px] overflow-hidden">
+    <div className="relative w-full bg-gray-100 -mt-14">
+      <div ref={sliderRef} className="image-slider relative w-full h-[70vh] min-h-[800px] overflow-hidden">
         {/* Images Container */}
         <div className="images absolute inset-0">
           {slideData.map((slide, index) => (
@@ -139,13 +139,14 @@ const HeroSection: React.FC = () => {
                 alt={slide.title}
                 className="w-full h-full object-cover"
                 style={{
-                  transform: `scale(${1 + scrollY * 0.0003})`,
-                  transition: 'transform 0.1s ease-out'
+                  transform: `scale(${1 + scrollY * 0.0002})`,
+                  transition: 'transform 0.1s ease-out',
+                  filter: index === 0 ? 'brightness(0.7)' : 'none'
                 }}
               />
 
               {/* Content Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-start pt-[250px]">
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent flex items-start pt-[350px]">
                 <div className="px-[15%] py-8 md:py-12 text-white max-w-none">
                   <div className="mb-4">
                     <span className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
@@ -202,28 +203,9 @@ const HeroSection: React.FC = () => {
             />
           ))}
         </div>
-
-        {/* Navigation Buttons */}
-        <div
-          className="absolute bottom-4 flex gap-2 z-20"
-          style={{ right: '15%' }}
-        >
-          <button
-            onClick={prevSlide}
-            className="w-10 h-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center text-white text-lg hover:bg-white/10 transition-all duration-300 hover:scale-105"
-          >
-            ‹
-          </button>
-          <button
-            onClick={nextSlide}
-            className="w-10 h-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center text-white text-lg hover:bg-white/10 transition-all duration-300 hover:scale-105"
-          >
-            ›
-          </button>
-        </div>
       </div>
     </div>
   )
 }
 
-export default HeroSection
+export default React.memo(HeroSection)

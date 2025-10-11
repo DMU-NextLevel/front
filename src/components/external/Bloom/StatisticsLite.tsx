@@ -83,7 +83,7 @@ const BloomStatistics: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-blue-50 via-cyan-50 to-transparent" data-aos="fade-up">
+    <section className="py-16 bg-gradient-to-br from-blue-50 via-cyan-50 to-transparent" data-aos="fade-up" data-aos-once="true">
       <div className="mx-auto w-full">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">
@@ -103,6 +103,7 @@ const BloomStatistics: React.FC = () => {
                 className="text-center p-8 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-shadow duration-300"
                 data-aos="zoom-in"
                 data-aos-delay={index * 100}
+                data-aos-once="true"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-6">
                   <Icon className={`h-8 w-8 ${stat.color}`} />

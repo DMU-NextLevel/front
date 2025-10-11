@@ -45,7 +45,7 @@ const Stat: React.FC<{ label: string; value: number; suffix?: string; delay?: nu
 
 const StatsSection: React.FC = () => {
   return (
-    <section className='mt-12 md:mt-16 px-[15%]' data-aos='fade-up'>
+    <section className='px-[15%] bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-300 py-12'  data-aos='fade-up' data-aos-once='true'>
       {/* Top copy */}
       <header className='mb-4 md:mb-6 text-center'>
         <h2 className='text-xl md:text-2xl font-extrabold tracking-tight text-[#212529]'>
