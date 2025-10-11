@@ -9,8 +9,6 @@ import { fetchProjectsFromServer } from '../hooks/fetchProjectsFromServer'
 import CategoryBar from '../components/UI/shared/CategoryBar'
 import { api } from '../AxiosInstance'
 
-// git 오류 체크용
-
 type ProjectItem = {
   id: number
   title: string
