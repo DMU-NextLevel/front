@@ -1,25 +1,88 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 interface Props {
   userInfo: { name: string };
   fundingCount: number;
   point: number;
-  onHandleClick: (label: string) => void; // ✅ 이름 변경
+  selectedFilter: string;
+  setSelectedFilter: (filter: string) => void;
+  onHandleClick?: (label: string) => void;
 }
 
-const MainContent: React.FC<Props> = ({ userInfo, fundingCount, point, onHandleClick }) => {
+interface Project {
+  id: number;
+  title: string;
+  titleImg?: { uri: string };
+  completionRate: number;
+  likeCount: number;
+}
+
+interface Coupon {
+  id: number;
+  name: string;
+  percent: number;
+}
+
+const MainContent: React.FC<Props> = ({
+  userInfo,
+  fundingCount,
+  point,
+  selectedFilter,
+  setSelectedFilter,
+  onHandleClick,
+}) => {
+  //const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
+  const [recentProjects, setRecentProjects] = useState<Project[]>([]);
+  const [couponCount, setCouponCount] = useState<number>(0);
+
+  // ✅ 최근 본 프로젝트 API
+  useEffect(() => {
+    const fetchRecentProjects = async () => {
+      try {
+        const response = await axios.post(`${API_URL}/api/projects`, {
+          page: 0,
+          pageCount: 10,
+          type: 'VIEW',
+          status: 'PROGRESS',
+        });
+        setRecentProjects(response.data.data?.projects || []);
+      } catch (error) {
+        console.error('최근 본 프로젝트 불러오기 실패:', error);
+      }
+    };
+    fetchRecentProjects();
+  }, [API_URL]);
+
+  // ✅ 쿠폰 API 연동
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/coupons`);
+        const list: Coupon[] = response.data.data || [];
+        setCouponCount(list.length);
+      } catch (error) {
+        console.error('쿠폰 데이터 불러오기 실패:', error);
+      }
+    };
+    fetchCoupons();
+  }, [API_URL]);
+
   return (
     <Main>
       <Greeting>
         <h2>{userInfo.name}님 안녕하세요.</h2>
         <InviteBox>당신의 아이디어, 펀딩으로 연결하세요!</InviteBox>
+
         <StatGrid>
           {['펀딩+', '스토어', '지지서명', '알림신청', '포인트', '쿠폰'].map((label) => {
-            let value: React.ReactNode;
+            let value: React.ReactNode = null;
 
             if (label === '지지서명' || label === '알림신청') {
-              value = <button onClick={() => onHandleClick(label)}>보기</button>;
+              value = <button onClick={() => onHandleClick?.(label)}>보기</button>;
             } else if (label === '포인트') {
               value = <strong>{point.toLocaleString()}P</strong>;
             } else if (label === '펀딩+') {
@@ -27,7 +90,7 @@ const MainContent: React.FC<Props> = ({ userInfo, fundingCount, point, onHandleC
             } else if (label === '스토어') {
               value = <strong>0</strong>;
             } else if (label === '쿠폰') {
-              value = <strong>2장</strong>;
+              value = <strong>{couponCount}장</strong>;
             }
 
             return (
@@ -41,16 +104,29 @@ const MainContent: React.FC<Props> = ({ userInfo, fundingCount, point, onHandleC
       </Greeting>
 
       <SectionTitle>최근 본 프로젝트 👀</SectionTitle>
+
       <ProductList>
-        {[...Array(5)].map((_, i) => (
-          <ProductCardNormal key={i}>
-            <img
-              src="https://shop-phinf.pstatic.net/20220615_163/1655256234926pHmSR_JPEG/56392121446286841_1599012163.jpg?type=m510"
-              alt={`상품${i + 1}`}
-            />
-            <div className="discount">28,000원</div>
-          </ProductCardNormal>
-        ))}
+        {recentProjects.length > 0 ? (
+          recentProjects.map((p) => (
+            <ProductCardNormal key={p.id}>
+              <img
+                src={
+                  p.titleImg?.uri
+                    ? `${API_URL}/images/${p.titleImg.uri}`
+                    : 'https://via.placeholder.com/200x180?text=No+Image'
+                }
+                alt={p.title}
+              />
+              <div className="discount">{p.title}</div>
+              <ProgressBar>
+                <ProgressFill style={{ width: `${p.completionRate}%` }} />
+              </ProgressBar>
+              <ProgressText>달성률 {p.completionRate}%</ProgressText>
+            </ProductCardNormal>
+          ))
+        ) : (
+          <EmptyText>최근 본 프로젝트가 없습니다.</EmptyText>
+        )}
       </ProductList>
     </Main>
   );
@@ -61,7 +137,7 @@ export default MainContent;
 /* ---------------------- Styled Components ---------------------- */
 const Main = styled.main`
   flex: 1;
-  min-width: 0; // ✅ flex-child overflow 방지
+  min-width: 0;
   padding: 40px 15px;
   background: #fff;
   overflow-x: hidden;
@@ -78,7 +154,7 @@ const Greeting = styled.div`
 `;
 
 const InviteBox = styled.div`
-  background: #A66CFF;
+  background: #a66cff;
   padding: 16px;
   border-radius: 10px;
   font-weight: 500;
@@ -125,8 +201,8 @@ const SectionTitle = styled.div`
 
 const ProductList = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* ✅ 간격 여유 */
-  gap: 24px; /* ✅ 사진 간격 넓게 */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
   padding-bottom: 20px;
   width: 100%;
   max-width: 100%;
@@ -151,9 +227,38 @@ const ProductCardNormal = styled.div`
     font-weight: bold;
     margin-top: 10px;
     font-size: 14px;
+    color: #333;
   }
 
   &:hover {
     transform: scale(1.02);
   }
+`;
+
+const ProgressBar = styled.div`
+  width: 100%;
+  height: 6px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+`;
+
+const ProgressFill = styled.div`
+  height: 100%;
+  background: #a66cff;
+  transition: width 0.3s ease;
+`;
+
+const ProgressText = styled.div`
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+`;
+
+const EmptyText = styled.div`
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+  grid-column: 1 / -1;
 `;

@@ -92,6 +92,8 @@ interface SidebarProps {
   onOpenPoint: () => void;
   onOpenLike: () => void;
   onOpenFunding: () => void;
+  onOpenFollowing: () => void;
+  onOpenMyProjects: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -104,6 +106,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onOpenPoint,
   onOpenLike,
   onOpenFunding,
+  onOpenFollowing,
+  onOpenMyProjects,
 }) => {
   return (
     <Container>
@@ -130,17 +134,17 @@ const Sidebar: React.FC<SidebarProps> = ({
         <SettingsBtn onClick={onOpenSettings}>내 정보 설정</SettingsBtn>
       </ProfileBox>
 
-      {/* 탭에 따라 다른 메뉴 */}
       {activeTab === '서포터' ? (
         <ActivityMenu>
           <MenuButton onClick={onOpenRecent}>최근본</MenuButton>
           <MenuButton onClick={onOpenPoint}>포인트 충전</MenuButton>
           <MenuButton onClick={onOpenLike}>좋아요</MenuButton>
-          <MenuButton onClick={onOpenFunding}>펀딩 목록</MenuButton>
+          <MenuButton onClick={onOpenFunding}>내 펀딩</MenuButton>
+        <MenuButton onClick={onOpenFollowing}>팔로잉</MenuButton>
         </ActivityMenu>
       ) : (
         <ActivityMenu>
-          <MenuButton as="a" href="/my-projects">내 프로젝트</MenuButton>
+          <MenuButton onClick={onOpenMyProjects}>내 프로젝트</MenuButton>
           <MenuButton>문의 답변</MenuButton>
         </ActivityMenu>
       )}

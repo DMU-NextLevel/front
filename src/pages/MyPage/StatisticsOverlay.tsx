@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 
 interface StatisticsOverlayProps {
@@ -15,30 +15,72 @@ interface StatisticsOverlayProps {
   onClose: () => void;
 }
 
+// --- 유틸: 날짜를 "YYYY년 M월" 형식으로 변환 ---
+const formatMonth = (year: number, month: number) => `${year}년 ${month}월`;
+
+// --- 유틸: 기준 년/월에서 ±2개월 구간 생성 ---
+const getFiveMonthRange = (year: number, month: number) => {
+  const months: { year: number; month: number }[] = [];
+  for (let i = -2; i <= 2; i++) {
+    const date = new Date(year, month - 1 + i);
+    months.push({ year: date.getFullYear(), month: date.getMonth() + 1 });
+  }
+  return months;
+};
+
 const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose }) => {
-  // 통계 데이터 (임시)
-  const stats = {
-    totalAmount: Math.round(project.fundingGoal * (project.progress / 100)),
-    dailyData: [
-      { date: '09-01', amount: 1200000 },
-      { date: '09-05', amount: 2500000 },
-      { date: '09-10', amount: 3800000 },
-      { date: '09-15', amount: 4200000 },
-      { date: '09-20', amount: 5800000 },
-      { date: '09-25', amount: 6500000 },
-    ],
-    backerTrend: [
-      { date: '09-01', count: 12 },
-      { date: '09-05', count: 28 },
-      { date: '09-10', count: 42 },
-      { date: '09-15', count: 55 },
-      { date: '09-20', count: 68 },
-      { date: '09-25', count: 75 },
-    ],
+  // ✅ 모달 열릴 때 body 스크롤 완전 비활성화
+  useEffect(() => {
+    const originalStyle = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      width: document.body.style.width,
+    };
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+
+    return () => {
+      document.body.style.overflow = originalStyle.overflow;
+      document.body.style.position = originalStyle.position;
+      document.body.style.width = originalStyle.width;
+    };
+  }, []);
+
+  // ✅ 현재 날짜를 기준으로 기본 년/월 설정
+  const now = new Date();
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
+
+  // ✅ 예시 데이터 (Record 타입 명시로 타입 에러 방지)
+  const allMonthlyData: Record<string, { amount: number; backers: number }> = {
+    '2025년 6월': { amount: 3000000, backers: 25 },
+    '2025년 7월': { amount: 5200000, backers: 48 },
+    '2025년 8월': { amount: 7500000, backers: 73 },
+    '2025년 9월': { amount: 9000000, backers: 95 },
+    '2025년 10월': { amount: 10800000, backers: 120 },
+    '2025년 11월': { amount: 0, backers: 0 },
   };
 
-  const maxAmount = Math.max(...stats.dailyData.map(item => item.amount));
-  const maxBackers = Math.max(...stats.backerTrend.map(item => item.count));
+  // ✅ 선택된 년/월 기준으로 ±2개월 구간 계산
+  const displayedMonths = useMemo(
+    () => getFiveMonthRange(selectedYear, selectedMonth),
+    [selectedYear, selectedMonth]
+  );
+
+  // ✅ 현재 구간에 해당하는 데이터 구성 (없으면 0 처리)
+  const monthlyData = displayedMonths.map(({ year, month }) => {
+    const key = formatMonth(year, month);
+    return {
+      month: key,
+      amount: allMonthlyData[key]?.amount || 0,
+      backers: allMonthlyData[key]?.backers || 0,
+    };
+  });
+
+  const maxAmount = Math.max(...monthlyData.map((item) => item.amount));
+  const maxBackers = Math.max(...monthlyData.map((item) => item.backers));
 
   return (
     <Overlay>
@@ -47,61 +89,81 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
           <Title>{project.title} 통계</Title>
           <CloseButton onClick={onClose}>×</CloseButton>
         </Header>
-        
+
         <Content>
+          {/* 요약 섹션 */}
           <SummarySection>
             <StatCard>
               <StatLabel>총 모금액</StatLabel>
-              <StatValue>{stats.totalAmount.toLocaleString()}원</StatValue>
+              <StatValue>
+                {Math.round(project.fundingGoal * (project.progress / 100)).toLocaleString()}원
+              </StatValue>
               <ProgressBar>
                 <ProgressFill $progress={project.progress} />
               </ProgressBar>
               <ProgressText>{project.progress}% 달성</ProgressText>
             </StatCard>
-            
+
             <StatCard>
               <StatLabel>후원자 수</StatLabel>
               <StatValue>{project.backers.toLocaleString()}명</StatValue>
-              <TrendText>지난 주 대비 +12%</TrendText>
+              <TrendText>지난 달 대비 +8%</TrendText>
             </StatCard>
-            
+
             <StatCard>
               <StatLabel>프로젝트 기간</StatLabel>
               <StatValue>
                 {project.startDate} ~ {project.endDate}
               </StatValue>
-              <StatusBadge $status={project.status}>
-                {project.status}
-              </StatusBadge>
+              <StatusBadge $status={project.status}>{project.status}</StatusBadge>
             </StatCard>
           </SummarySection>
-          
+
+          {/* 월별 차트 섹션 */}
           <ChartSection>
-            <ChartTitle>일별 모금 현황</ChartTitle>
+            <ChartTitleRow>
+              <ChartTitle>월별 모금 현황</ChartTitle>
+              <SelectGroup>
+                <Select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}>
+                  {[2024, 2025, 2026].map((year) => (
+                    <option key={year} value={year}>
+                      {year}년
+                    </option>
+                  ))}
+                </Select>
+                <Select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))}>
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                    <option key={m} value={m}>
+                      {m}월
+                    </option>
+                  ))}
+                </Select>
+              </SelectGroup>
+            </ChartTitleRow>
+
+            {/* 월별 모금액 차트 */}
             <ChartContainer>
-              {stats.dailyData.map((item, index) => (
+              {monthlyData.map((item, index) => (
                 <ChartBar key={index}>
-                  <Bar 
-                    $height={(item.amount / maxAmount) * 150} 
-                    $isMax={item.amount === maxAmount}
-                  />
-                  <BarLabel>{item.date}</BarLabel>
+                  <Bar $height={(item.amount / (maxAmount || 1)) * 150} $isMax={item.amount === maxAmount} />
+                  <BarLabel>{item.month}</BarLabel>
                   <BarValue>{Math.round(item.amount / 10000)}만원</BarValue>
                 </ChartBar>
               ))}
             </ChartContainer>
-            
-            <ChartTitle>후원자 추이</ChartTitle>
+
+            {/* 월별 후원자 추이 */}
+            <ChartTitle>월별 후원자 추이</ChartTitle>
             <ChartContainer>
-              {stats.backerTrend.map((item, index) => (
+              {monthlyData.map((item, index) => (
                 <ChartBar key={index}>
-                  <Bar 
-                    $height={(item.count / maxBackers) * 150} 
-                    $isMax={item.count === maxBackers}
+                  <Bar
+                    $height={(item.backers / (maxBackers || 1)) * 150}
+                    $isMax={item.backers === maxBackers}
                     $isTrend
                   />
-                  <BarLabel>{item.date}</BarLabel>
-                  <BarValue>{item.count}명</BarValue>
+                  <BarLabel>{item.month}</BarLabel>
+                  <BarValue>{item.backers}명</BarValue>
                 </ChartBar>
               ))}
             </ChartContainer>
@@ -114,6 +176,7 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
 
 export default StatisticsOverlay;
 
+/* ---------------------- Styled Components ---------------------- */
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -164,7 +227,7 @@ const CloseButton = styled.button`
   color: #999;
   padding: 0 10px;
   line-height: 1;
-  
+
   &:hover {
     color: #666;
   }
@@ -236,22 +299,45 @@ const StatusBadge = styled.span<{ $status: string }>`
   font-size: 12px;
   font-weight: 500;
   margin-top: 8px;
-  background-color: ${({ $status }) => 
-    $status === '진행 중' ? '#e6f7ff' : 
-    $status === '완료' ? '#f6ffed' : '#f9f9f9'};
-  color: ${({ $status }) => 
-    $status === '진행 중' ? '#1890ff' : 
-    $status === '완료' ? '#52c41a' : '#8c8c8c'};
+  background-color: ${({ $status }) =>
+    $status === '진행 중' ? '#e6f7ff' : $status === '완료' ? '#f6ffed' : '#f9f9f9'};
+  color: ${({ $status }) =>
+    $status === '진행 중' ? '#1890ff' : $status === '완료' ? '#52c41a' : '#8c8c8c'};
 `;
 
 const ChartSection = styled.div`
   margin-top: 30px;
 `;
 
+const ChartTitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 const ChartTitle = styled.h3`
   font-size: 16px;
   color: #333;
   margin: 0 0 20px 0;
+`;
+
+const SelectGroup = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+`;
+
+const Select = styled.select`
+  padding: 4px 8px;
+  font-size: 13px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #555;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #a66cff;
+  }
 `;
 
 const ChartContainer = styled.div`
@@ -274,19 +360,19 @@ const ChartBar = styled.div`
 const Bar = styled.div<{ $height: number; $isMax: boolean; $isTrend?: boolean }>`
   width: 30px;
   height: ${({ $height }) => $height}px;
-  background: ${({ $isMax, $isTrend }) => 
-    $isMax 
-      ? $isTrend 
-        ? 'linear-gradient(to top, #36cfc9, #5cdbd3)' 
+  background: ${({ $isMax, $isTrend }) =>
+    $isMax
+      ? $isTrend
+        ? 'linear-gradient(to top, #36cfc9, #5cdbd3)'
         : 'linear-gradient(to top, #597ef7, #85a5ff)'
-      : $isTrend 
-        ? '#b5f5ec' 
-        : '#d6e4ff'};
+      : $isTrend
+      ? '#b5f5ec'
+      : '#d6e4ff'};
   border-radius: 4px 4px 0 0;
   margin-bottom: 8px;
   transition: height 0.3s ease;
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -303,10 +389,12 @@ const BarLabel = styled.div`
   font-size: 12px;
   color: #666;
   margin-top: 8px;
+  text-align: center;
 `;
 
 const BarValue = styled.div`
   font-size: 11px;
   color: #999;
   margin-top: 4px;
+  text-align: center;
 `;

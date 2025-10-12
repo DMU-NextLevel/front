@@ -1,73 +1,62 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import StatisticsOverlay from './StatisticsOverlay';
+import React, { useState, useEffect } from 'react'
+import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import StatisticsOverlay from './StatisticsOverlay'
 
-type ProjectStatus = '전체' | '진행 중' | '완료' | '준비 중';
+type ProjectStatus = '전체' | '진행 중' | '완료' | '준비 중'
+
+interface Project {
+  id: number
+  title: string
+  status: string
+  userCount: number
+  completionRate: number
+  startAt: string
+  expiredAt: string
+  fundingGoal: number
+}
 
 const MyProjects: React.FC = () => {
-  const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState<ProjectStatus>('전체');
-  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const navigate = useNavigate()
+  const [activeFilter, setActiveFilter] = useState<ProjectStatus>('전체')
+  const [projects, setProjects] = useState<Project[]>([])
+  const [selectedProject, setSelectedProject] = useState<number | null>(null)
 
-  // 임시 프로젝트 데이터
-  const allProjects = [
-    { 
-      id: 1, 
-      title: '첫 번째 프로젝트', 
-      status: '진행 중', 
-      backers: 42, 
-      progress: 65,
-      startDate: '2025-09-01',
-      endDate: '2025-10-15',
-      fundingGoal: 10000000
-    },
-    { 
-      id: 2, 
-      title: '두 번째 프로젝트', 
-      status: '완료', 
-      backers: 120, 
-      progress: 100,
-      startDate: '2025-07-01',
-      endDate: '2025-08-30',
-      fundingGoal: 5000000
-    },
-    { 
-      id: 3, 
-      title: '세 번째 프로젝트', 
-      status: '준비 중', 
-      backers: 0, 
-      progress: 0,
-      startDate: '2025-10-01',
-      endDate: '2025-11-30',
-      fundingGoal: 3000000
-    },
-    { 
-      id: 4, 
-      title: '네 번째 프로젝트', 
-      status: '진행 중', 
-      backers: 35, 
-      progress: 45,
-      startDate: '2025-09-10',
-      endDate: '2025-10-20',
-      fundingGoal: 8000000
-    },
-    { 
-      id: 5, 
-      title: '다섯 번째 프로젝트', 
-      status: '완료', 
-      backers: 200, 
-      progress: 100,
-      startDate: '2025-06-15',
-      endDate: '2025-08-15',
-      fundingGoal: 15000000
-    },
-  ];
+  // ✅ API 기본 URL
+  const baseUrl = process.env.REACT_APP_API_BASE_URL
 
-  // 필터링된 프로젝트 목록
-  const projects = activeFilter === '전체' 
-    ? allProjects 
-    : allProjects.filter(project => project.status === activeFilter);
+  // ✅ 상태 필터 매핑
+  const statusMap: Record<ProjectStatus, string | undefined> = {
+    전체: undefined,
+    '진행 중': 'PROGRESS',
+    완료: 'SUCCESS',
+    '준비 중': 'PENDING',
+  }
+
+  // ✅ 프로젝트 데이터 불러오기
+  const fetchProjects = async () => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/project/list`,
+        {
+          page: 0,
+          pageCount: 10,
+          type: 'PROJECT',
+          status: statusMap[activeFilter],
+        },
+        { withCredentials: true }
+      )
+
+      setProjects(response.data.data.projects)
+    } catch (error) {
+      console.error('❌ 프로젝트 리스트 불러오기 실패:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchProjects()
+  }, [activeFilter])
 
   return (
     <>
@@ -78,72 +67,113 @@ const MyProjects: React.FC = () => {
             새 프로젝트 만들기
           </CreateButton>
         </Header>
-      
-      {/* 상태 필터 탭 */}
-      <FilterTabs>
-        {(['전체', '진행 중', '완료', '준비 중'] as ProjectStatus[]).map((status) => (
-          <FilterTab 
-            key={status}
-            active={activeFilter === status}
-            onClick={() => setActiveFilter(status)}
-          >
-            {status}
-          </FilterTab>
-        ))}
-      </FilterTabs>
-      
-      <ProjectList>
-        {projects.map((project) => (
-          <ProjectCard key={project.id}>
-            <ProjectInfo>
-              <ProjectTitle>{project.title}</ProjectTitle>
-              <ProjectStatus status={project.status.toLowerCase()}>
-                {project.status}
-              </ProjectStatus>
-              <ProjectDetails>
-                <div>
-                  {project.status === '준비 중' ? (
-                    <span>시작 예정: {project.startDate}</span>
-                  ) : project.status === '진행 중' ? (
-                    <span>종료일: {project.endDate} (D-{Math.ceil((new Date(project.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))})</span>
-                  ) : (
-                    <span>종료일: {project.endDate}</span>
-                  )}
-                </div>
-                <div>
-                  <span>후원자: {project.backers}명</span>
-                  <span>달성률: {project.progress}%</span>
-                </div>
-              </ProjectDetails>
-            </ProjectInfo>
-            <ProjectActions>
-              <ActionButton>수정</ActionButton>
-              <ActionButton onClick={() => setSelectedProject(project.id)}>통계 보기</ActionButton>
-            </ProjectActions>
-          </ProjectCard>
-        ))}
+
+        {/* 상태 필터 탭 */}
+        <FilterTabs>
+          {(['전체', '진행 중', '완료', '준비 중'] as ProjectStatus[]).map((status) => (
+            <FilterTab
+              key={status}
+              active={activeFilter === status}
+              onClick={() => setActiveFilter(status)}
+            >
+              {status}
+            </FilterTab>
+          ))}
+        </FilterTabs>
+
+        <ProjectList>
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <ProjectCard key={project.id}>
+                <ProjectInfo>
+                  <ProjectTitle>{project.title}</ProjectTitle>
+                  <ProjectStatusBadge status={project.status}>
+                    {project.status}
+                  </ProjectStatusBadge>
+                  <ProjectDetails>
+                    <div>
+                      <span>시작일: {project.startAt}</span>
+                      <span>종료일: {project.expiredAt}</span>
+                    </div>
+                    <div>
+                      <span>후원자: {project.userCount}명</span>
+                      <span>달성률: {project.completionRate}%</span>
+                    </div>
+                  </ProjectDetails>
+                </ProjectInfo>
+                <ProjectActions>
+                  <ActionButton>수정</ActionButton>
+                  <ActionButton onClick={() => setSelectedProject(project.id)}>
+                    통계 보기
+                  </ActionButton>
+                </ProjectActions>
+              </ProjectCard>
+            ))
+          ) : (
+            <EmptyMessage>현재 표시할 프로젝트가 없습니다.</EmptyMessage>
+          )}
         </ProjectList>
       </Container>
-      
-      {/* 통계 오버레이 */}
-      {selectedProject !== null && (
-        <StatisticsOverlay
-          project={allProjects.find(p => p.id === selectedProject)!}
-          onClose={() => setSelectedProject(null)}
-        />
-      )}
+
+      {/* ✅ 통계 오버레이 */}
+      {selectedProject !== null && (() => {
+        const p = projects.find((p) => p.id === selectedProject)!
+        return (
+          <StatisticsOverlay
+            project={{
+              id: p.id,
+              title: p.title,
+              status: p.status,
+              backers: p.userCount,
+              progress: p.completionRate,
+              startDate: p.startAt,
+              endDate: p.expiredAt,
+              fundingGoal: p.fundingGoal,
+            }}
+            onClose={() => setSelectedProject(null)}
+          />
+        )
+      })()}
     </>
-  );
-};
+  )
+}
 
-export default MyProjects;
+export default MyProjects
 
+/* ---------------------- Styled Components ---------------------- */
 const Container = styled.div`
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: calc(100vh - 200px); // 푸터와의 간격 조정
-`;
+  min-height: calc(100vh - 200px);
+`
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+`
+
+const Title = styled.h1`
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+`
+
+const CreateButton = styled.button`
+  padding: 10px 20px;
+  background-color: #a66cff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #8a4fff;
+  }
+`
 
 const FilterTabs = styled.div`
   display: flex;
@@ -151,7 +181,7 @@ const FilterTabs = styled.div`
   margin-bottom: 24px;
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 16px;
-`;
+`
 
 const FilterTab = styled.button<{ active: boolean }>`
   padding: 8px 16px;
@@ -163,45 +193,16 @@ const FilterTab = styled.button<{ active: boolean }>`
   cursor: pointer;
   transition: all 0.2s;
   font-size: 14px;
-  
   &:hover {
     background: ${({ active }) => (active ? '#8a4fff' : '#e9e9e9')};
   }
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-`;
-
-const CreateButton = styled.button`
-  padding: 10px 20px;
-  background-color: #a66cff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #8a4fff;
-  }
-`;
+`
 
 const ProjectList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 24px;
-`;
+`
 
 const ProjectCard = styled.div`
   background: white;
@@ -213,38 +214,47 @@ const ProjectCard = styled.div`
   justify-content: space-between;
   height: 180px;
   transition: transform 0.2s, box-shadow 0.2s;
-
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
-`;
+`
 
 const ProjectInfo = styled.div`
   margin-bottom: 16px;
-`;
+`
 
 const ProjectTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
   margin: 0 0 8px 0;
   color: #333;
-`;
+`
 
-const ProjectStatus = styled.span<{ status: string }>`
+const ProjectStatusBadge = styled.span<{ status: string }>`
   display: inline-block;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 12px;
-  background-color: ${({ status }) => 
-    status === '진행 중' ? '#e6f7ff' : 
-    status === '완료' ? '#f6ffed' : '#f9f9f9'};
-  color: ${({ status }) => 
-    status === '진행 중' ? '#1890ff' : 
-    status === '완료' ? '#52c41a' : '#8c8c8c'};
-`;
+  background-color: ${({ status }) =>
+    status === 'PROGRESS'
+      ? '#e6f7ff'
+      : status === 'SUCCESS'
+      ? '#f6ffed'
+      : status === 'PENDING'
+      ? '#fffbe6'
+      : '#f9f9f9'};
+  color: ${({ status }) =>
+    status === 'PROGRESS'
+      ? '#1890ff'
+      : status === 'SUCCESS'
+      ? '#52c41a'
+      : status === 'PENDING'
+      ? '#faad14'
+      : '#8c8c8c'};
+`
 
 const ProjectDetails = styled.div`
   display: flex;
@@ -253,33 +263,29 @@ const ProjectDetails = styled.div`
   font-size: 14px;
   color: #666;
   margin-top: 8px;
-  
   & > div {
     display: flex;
     gap: 16px;
   }
-  
   span {
     display: inline-flex;
     align-items: center;
-    
     &::before {
       content: '•';
       margin-right: 4px;
       color: #999;
     }
-    
     &:first-child::before {
       display: none;
     }
   }
-`;
+`
 
 const ProjectActions = styled.div`
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-`;
+`
 
 const ActionButton = styled.button`
   padding: 6px 12px;
@@ -289,9 +295,16 @@ const ActionButton = styled.button`
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
-
   &:hover {
     background: #e6e6e6;
     border-color: #bfbfbf;
   }
-`;
+`
+
+const EmptyMessage = styled.div`
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  font-size: 15px;
+  padding: 40px 0;
+`
