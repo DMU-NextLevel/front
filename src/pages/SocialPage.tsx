@@ -20,31 +20,22 @@ const dummyFeed = [
 
 const SocialPage = () => {
   return (
-    <div className='w-full min-h-screen bg-subColor3'>
-        <div className='max-w-[640px] mx-auto h-screen bg-[#fcfcfc]'>
-            <SocialInfo />
+		<div className='w-full min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50'>
+			<div className='max-w-[640px] mx-auto min-h-screen bg-white shadow-2xl'>
+				<SocialInfo />
 
-            <div className='flex justify-center items-center my-10 bg-[#afb4ff] py-4 shadow-[0_4px_8px_4px_rgba(0,0,0,0.1)]'>
-              <p className="font-bold">피드</p>
-            </div>
+				<div className='flex justify-center items-center my-6 bg-gradient-to-r from-purple-500 via-purple-400 to-blue-400 py-4 shadow-lg backdrop-blur-sm'>
+					<p className='font-bold text-white text-lg tracking-wide'>피드</p>
+				</div>
 
-            <div className='flex flex-col gap-8'>
-              {dummyFeed.map((feed, idx) => (
-                <SocialFeed
-                  key={feed.nickName + idx}
-                  nickName={feed.nickName}
-                  content={feed.content}
-                  img={feed.img}
-                  date={feed.date}
-                  like={0}
-                  type={feed.type as "image" | "text"}
-                />
-              ))}
-            </div>
-
-        </div>
-    </div>
-  )
+				<div className='flex flex-col gap-6 pb-8'>
+					{dummyFeed.map((feed, idx) => (
+						<SocialFeed key={feed.nickName + idx} nickName={feed.nickName} content={feed.content} img={feed.img} date={feed.date} like={0} type={feed.type as 'image' | 'text'} />
+					))}
+				</div>
+			</div>
+		</div>
+	)
 }
 
 export default SocialPage
