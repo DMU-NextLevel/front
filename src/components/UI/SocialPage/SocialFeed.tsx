@@ -7,7 +7,6 @@ import UserImage from '../../../assets/images/default_profile.png'
 import { SocialLikeButton } from './SocialLikeButton'
 import { SocialFeedMenu } from './SocialFeedMenu'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useFeedDelete } from '../../../apis/social/useFeedFetch'
 
 interface SocialFeedProps {
 	id: number
@@ -25,22 +24,11 @@ export const SocialFeed = ({ id, nickName, content, img, date, like, type, isLik
 	const { likeFeed } = useFeedLike()
 	const [likeCount, setLikeCount] = useState(like)
 	const [likeStatus, setLikeStatus] = useState(isLiked)
-	const { deleteFeed, isLoading, error } = useFeedDelete()
 
 	const handleLike = () => {
 		likeFeed({ socialId: id, like: !likeStatus })
 		setLikeCount(likeCount + (likeStatus ? -1 : 1))
 		setLikeStatus(!likeStatus)
-	}
-
-	const handleEdit = (feedId: number) => {
-		// TODO: 수정 기능 구현
-		console.log('수정:', feedId)
-	}
-
-	const handleDelete = (feedId: number) => {
-		deleteFeed({ socialId: feedId })
-		window.location.reload()
 	}
 
 	// 슬라이더 커스텀 화살표
@@ -89,7 +77,7 @@ export const SocialFeed = ({ id, nickName, content, img, date, like, type, isLik
 				</div>
 
 				{/* 더보기 버튼 (작성자만 표시) */}
-				{isAuthor && <SocialFeedMenu feedId={id} onEdit={handleEdit} onDelete={handleDelete} />}
+				{isAuthor && <SocialFeedMenu feedId={id} content={content || ''} images={img || []} />}
 			</div>
 			<div className='flex flex-col gap-4'>
 				{content && <p className='text-gray-700 text-base leading-relaxed px-1'>{content}</p>}

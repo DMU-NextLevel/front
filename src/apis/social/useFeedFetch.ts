@@ -51,3 +51,33 @@ export const useFeedDelete = () => {
     }
     return { deleteFeed, isLoading, error }
 }
+
+interface requestFeedEdit {
+    id: number
+    text: string | null
+    img: File[] | null
+}
+
+export const useFeedEdit = () => {
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const editFeed = async ({ id, text, img }: requestFeedEdit) => {
+        const formData = new FormData()
+        formData.append('id', id.toString())
+        formData.append('text', text || '')
+        if (img && img.length > 0) {
+            img.forEach((image) => formData.append('img', image))
+        }
+        setIsLoading(true)
+        setError(null)
+        try {
+            await api.put<responseFeedFetch>(`/social/social`, formData)
+        } catch (e) {
+            setError(e instanceof Error ? e.message : '피드 수정에 실패했습니다.')
+            throw e
+        } finally {
+            setIsLoading(false)
+        }
+    }
+    return { editFeed }
+}

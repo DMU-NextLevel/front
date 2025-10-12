@@ -4,14 +4,14 @@ import { SocialInfo } from '../components/UI/SocialPage/SocialInfo'
 import { SocialFeedCreateModal } from '../components/UI/SocialPage/SocialFeedCreateModal'
 import { useFeedList } from '../apis/social/useFeedList'
 import { useAuth } from '../hooks/AuthContext'
-import { useState } from 'react'
 import { SocialCreateButton } from '../components/UI/SocialPage/SocialCreateButton'
+import { useFeedModalStore } from '../store/useFeedModalStore'
 
 const SocialPage = () => {
 	const { id } = useParams()
 	const { feedList, isLoading, error } = useFeedList(Number(id))
 	const { user } = useAuth()
-	const [isModalOpen, setIsModalOpen] = useState(false)
+	const { isCreateModalOpen, isEditModalOpen, editFeedData, openCreateModal, closeCreateModal, closeEditModal } = useFeedModalStore()
 
 	return (
 		<>
@@ -40,7 +40,7 @@ const SocialPage = () => {
 						<div className='flex flex-col gap-6 pb-8'>
 							{user?.nickName === feedList.user.nickName && (
 								<div className='px-6'>
-									<SocialCreateButton onClick={() => setIsModalOpen(true)} />
+									<SocialCreateButton onClick={openCreateModal} />
 								</div>
 							)}
 							{feedList.socials && feedList.socials.length > 0 ? (
@@ -69,7 +69,19 @@ const SocialPage = () => {
 			</div>
 
 			{/* 피드 생성 모달 */}
-			<SocialFeedCreateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+			<SocialFeedCreateModal isOpen={isCreateModalOpen} onClose={closeCreateModal} />
+
+			{/* 피드 수정 모달 */}
+			{editFeedData && (
+				<SocialFeedCreateModal
+					isOpen={isEditModalOpen}
+					onClose={closeEditModal}
+					editMode={true}
+					feedId={editFeedData.feedId}
+					initialContent={editFeedData.content}
+					initialImages={editFeedData.images}
+				/>
+			)}
 		</>
 	)
 }
