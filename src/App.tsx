@@ -88,7 +88,7 @@ const AppWrapper = () => {
 		return () => clearTimeout(timer);
 }, [location.pathname])
 
-const pattern = ['/admin', '/socialpage']
+const pattern = ['/admin', '/social']
 
 const shouldHideLayout = hideLayout.includes(location.pathname) || pattern.some((pattern) => location.pathname.startsWith(pattern))
 
@@ -128,7 +128,7 @@ return (
 					<Route path='projects' element={<AdminProjects />} />
 					<Route path='notices' element={<AdminNotices />} />
 				</Route>
-				<Route path='/socialpage/:id' element={<SocialPage />} />
+				<Route path='/social/:id' element={<SocialPage />} />
 			</Routes>
 			{!shouldHideLayout && <Footer />}
 		</AuthProvider>
