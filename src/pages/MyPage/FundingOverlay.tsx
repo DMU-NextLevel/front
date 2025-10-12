@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { api } from '../../AxiosInstance';
 
 interface FundingItem {
   id: number;
@@ -37,7 +38,7 @@ const FundingOverlay: React.FC<FundingOverlayProps> = ({ onClose }) => {
   useEffect(() => {
     const fetchFundingList = async () => {
       try {
-        const res = await axios.post('/api/projects/list', {
+        const res = await api.post('/social/user/project-withFunding', {
           page: 0,
           pageCount: 10,
           type: 'FUNDING',

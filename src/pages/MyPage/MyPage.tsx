@@ -12,6 +12,24 @@ import LikeOverlay from './LikeOverlay';
 import FundingOverlay from './FundingOverlay';
 import MainContent from './MainContent';
 
+interface userResponse {
+	message: string
+	data: {
+		name: string
+		nickName: string
+		point: number
+		address: string
+		number: string
+		areaNumber: string
+		email: string
+		socialProvider: string
+		img: {
+			id: number
+			uri: string
+		}
+	}
+}
+
 const MyPage = () => {
   const [fundingCount, setFundingCount] = useState<number>(0);
   const [homePhone, setHomePhone] = useState({ area: '02', number: '' });
@@ -28,10 +46,10 @@ const MyPage = () => {
   const [activeTab, setActiveTab] = useState<'서포터' | '메이커'>('서포터');
 
   const [userInfo, setUserInfo] = useState({
-    name: '김찬영',
-    nickname: '넥스트레벨',
-    phone: '010-6672-6024',
-    email: 'kcy021216@gmail.com',
+    name: '',
+    nickname: '',
+    phone: '',
+    email: '',
     password: '비밀번호 변경하기',
     passwordcf: '비밀번호 확인',
   });
@@ -131,63 +149,125 @@ const MyPage = () => {
       .catch((e) => console.log(e));
   }, []);
 
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+		setTempUserInfo((prev) => ({ ...prev, [field]: e.target.value }))
+	}
+
+	const handleHomePhoneChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value } = e.target
+		setHomePhone((prev) => ({ ...prev, [name]: value }))
+	}
+
+	const handleEditClick = (field: string) => {
+		setEditFields((prev) => ({ ...prev, [field]: true }))
+	}
+
+	const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files[0]) {
+			const file = e.target.files[0]
+			setTempProfileImage(URL.createObjectURL(file))
+		}
+	}
+
+	const handleResetClick = () => {
+		setTempUserInfo(userInfo)
+		setTempProfileImage(profileImage)
+		setEditFields({})
+	}
+
+	useEffect(() => {
+		api.get<userResponse>('/social/user').then((res) => {
+			setUserInfo({
+				name: res.data.data.name,
+				nickname: res.data.data.nickName,
+				phone: res.data.data.number + '-' + res.data.data.areaNumber,
+				email: res.data.data.email,
+				password: '비밀번호 변경하기',
+				passwordcf: '',
+			})
+      if(res.data.data.img) {
+        setProfileImage(res.data.data.img.uri)
+      }
+			setPoint(res.data.data.point)
+			setHomePhone({
+				area: res.data.data.areaNumber,
+				number: res.data.data.number,
+			})
+		})
+	}, [])
+
+  useEffect(() => {
+    setTempUserInfo(userInfo)
+  },[userInfo])
+
   return (
-    <Container>
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        userInfo={userInfo}
-        profileImage={profileImage}
-        onOpenSettings={() => handleClick('내 정보 설정')}
-        onOpenRecent={() => handleClick('최근본')}
-        onOpenPoint={() => handleClick('포인트 충전')}
-        onOpenLike={() => handleClick('좋아요')}
-        onOpenFunding={() => handleClick('펀딩 목록')}
-        onOpenFollowing={() => handleClick('팔로잉')}
-        onOpenMyProjects={() => handleClick('내 프로젝트')}
-      />
+		<Container>
+			<Sidebar
+				activeTab={activeTab}
+				setActiveTab={setActiveTab}
+				userInfo={userInfo}
+				profileImage={profileImage}
+				onOpenSettings={() => handleClick('내 정보 설정')}
+				onOpenRecent={() => handleClick('최근본')}
+				onOpenPoint={() => handleClick('포인트 충전')}
+				onOpenLike={() => handleClick('좋아요')}
+				onOpenFunding={() => handleClick('펀딩 목록')}
+				onOpenFollowing={() => handleClick('팔로잉')}
+				onOpenMyProjects={() => handleClick('내 프로젝트')}
+			/>
 
-      <MainContent
-        userInfo={userInfo}
-        fundingCount={fundingCount}
-        point={point}
-        selectedFilter={selectedFilter}
-        setSelectedFilter={setSelectedFilter}
-        onHandleClick={(label) => handleClick(label)}
-      />
+			<MainContent
+				userInfo={userInfo}
+				fundingCount={fundingCount}
+				point={point}
+				selectedFilter={selectedFilter}
+				setSelectedFilter={setSelectedFilter}
+				onHandleClick={(label) => handleClick(label)}
+			/>
 
-      {showRecentView && (
-        <RecentOverlay
-          onClose={closeAll}
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
-          allTags={[]}
-          userInfo={userInfo}
-          tempUserInfo={tempUserInfo}
-          profileImage={profileImage}
-          tempProfileImage={tempProfileImage}
-        />
-      )}
+			{showSettingsOverlay && (
+				<SettingsOverlay
+					userInfo={userInfo}
+					tempUserInfo={tempUserInfo}
+					setUserInfo={setUserInfo}
+					profileImage={profileImage}
+					tempProfileImage={tempProfileImage}
+					setTempUserInfo={setTempUserInfo}
+					setTempProfileImage={setTempProfileImage}
+					setProfileImage={setProfileImage}
+					homePhone={homePhone}
+					setHomePhone={setHomePhone}
+					editFields={editFields}
+					setEditFields={setEditFields}
+					onReset={handleResetClick}
+					onInputChange={handleInputChange}
+					onHomePhoneChange={handleHomePhoneChange}
+					onEditClick={handleEditClick}
+					onImageChange={handleImageChange}
+					onClose={closeAll}
+				/>
+			)}
 
-      {showLikeOverlay && (
-        <LikeOverlay
-          onClose={closeAll}
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
-        />
-      )}
+			{showRecentView && (
+				<RecentOverlay
+					onClose={closeAll}
+					selectedFilter={selectedFilter}
+					setSelectedFilter={setSelectedFilter}
+					allTags={[]}
+					userInfo={userInfo}
+					tempUserInfo={tempUserInfo}
+					profileImage={profileImage}
+					tempProfileImage={tempProfileImage}
+				/>
+			)}
 
-      {showPointOverlay && (
-        <PointOverlay
-          onClose={() => setShowPointOverlay(false)}
-          point={point}
-          openPaymentWindow={openPaymentWindow}
-        />
-      )}
+			{showLikeOverlay && <LikeOverlay onClose={closeAll} selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />}
 
-      {showFundingOverlay && <FundingOverlay onClose={closeAll} />}
-    </Container>
-  );
+			{showPointOverlay && <PointOverlay onClose={() => setShowPointOverlay(false)} point={point} openPaymentWindow={openPaymentWindow} />}
+
+			{showFundingOverlay && <FundingOverlay onClose={closeAll} />}
+		</Container>
+	)
 };
 
 export default MyPage;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Swal from 'sweetalert2';
-import axios from 'axios';
+import { api } from '../../AxiosInstance';
 
 interface Product {
   id: number;
@@ -60,7 +60,7 @@ const RecentOverlay: React.FC<Props> = ({
   useEffect(() => {
     const fetchRecent = async () => {
       try {
-        const res = await axios.post('/api/projects/list', {
+        const res = await api.post('/social/user/project', {
           page: 0,
           pageCount: 10,
           type: 'VIEW',

@@ -36,6 +36,8 @@ const AvatarImg = styled.img`
   height: 105px;
   border-radius: 50%;
   object-fit: cover;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const Name = styled.div`
