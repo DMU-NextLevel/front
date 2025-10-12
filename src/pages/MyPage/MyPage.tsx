@@ -1,9 +1,9 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
 import { api } from '../../AxiosInstance';
 
-// 쪼갠 컴포넌트들
 import Sidebar from './Sidebar';
 import SettingsOverlay from './SettingsOverlay';
 import RecentOverlay from './RecentOverlay';
@@ -13,19 +13,17 @@ import FundingOverlay from './FundingOverlay';
 import MainContent from './MainContent';
 
 const MyPage = () => {
-  const baseUrl = process.env.REACT_APP_API_BASE_URL;
   const [fundingCount, setFundingCount] = useState<number>(0);
-
   const [homePhone, setHomePhone] = useState({ area: '02', number: '' });
   const [showRecentView, setShowRecentView] = useState(false);
   const [showSettingsOverlay, setShowSettingsOverlay] = useState(false);
   const [showPointOverlay, setShowPointOverlay] = useState(false);
   const [showLikeOverlay, setShowLikeOverlay] = useState(false);
   const [showFundingOverlay, setShowFundingOverlay] = useState(false);
+  const navigate = useNavigate();
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [tempProfileImage, setTempProfileImage] = useState<string | null>(null);
-
   const [point, setPoint] = useState(0);
   const [activeTab, setActiveTab] = useState<'서포터' | '메이커'>('서포터');
 
@@ -39,10 +37,8 @@ const MyPage = () => {
   });
   const [tempUserInfo, setTempUserInfo] = useState(userInfo);
 
-  // ✅ editFields 추가
   const [editFields, setEditFields] = useState<{ [key: string]: boolean }>({});
-
-  const [selectedFilter, setSelectedFilter] = useState("전체");
+  const [selectedFilter, setSelectedFilter] = useState('전체');
 
   // 📌 공통 닫기
   const closeAll = () => {
@@ -53,25 +49,51 @@ const MyPage = () => {
     setShowFundingOverlay(false);
   };
 
-  // 📌 클릭 핸들러
-  const handleClick = (label: string) => {
-    closeAll();
-    if (label === '최근본') setShowRecentView(true);
-    else if (label === '내 정보 설정') setShowSettingsOverlay(true);
-    else if (label === '좋아요') setShowLikeOverlay(true);
-    else if (label === '포인트 충전') {
-      setShowPointOverlay(true);
-      api.get('/social/user/my-point').then((res) => setPoint(res.data.data.point));
-    } else if (label === '펀딩 목록') {
-      setShowFundingOverlay(true);
-    } else {
-      Swal.fire({
-        icon: 'info',
-        title: `${label} 기능은 준비 중입니다.`,
-        confirmButtonColor: '#a66cff',
-      });
+  // 📌 메뉴 클릭 핸들러
+  const handleClick = (menu: string) => {
+    switch (menu) {
+      case '내 정보 설정':
+        setShowSettingsOverlay(true);
+        break;
+      case '최근본':
+        setShowRecentView(true);
+        break;
+      case '포인트 충전':
+        setShowPointOverlay(true);
+        break;
+      case '좋아요':
+        setShowLikeOverlay(true);
+        break;
+      case '펀딩 목록':
+        setShowFundingOverlay(true);
+        break;
+      case '내 프로젝트':
+        // ✅ 페이지 이동으로 변경
+        navigate('/mypage/myprojects');
+        break;
+      case '팔로잉':
+        navigate('/following');
+        break;
+      default:
+        Swal.fire({
+          title: '알림',
+          text: `'${menu}' 메뉴로 이동합니다.'`,
+          confirmButtonColor: '#a66cff',
+        });
+        break;
     }
   };
+
+  // ✅ 포인트 오버레이 열릴 때 스크롤 막기
+  useEffect(() => {
+    if (showPointOverlay) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [showPointOverlay]);
 
   // 📌 Toss 결제 팝업 열기
   const openPaymentWindow = (amount: number) => {
@@ -79,7 +101,6 @@ const MyPage = () => {
     const height = 900;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
-
     const url = `/popup-payment?amount=${amount}`;
 
     window.open(
@@ -95,7 +116,6 @@ const MyPage = () => {
         api.get('/social/user/my-point').then((res) => {
           setPoint(res.data.data.point);
         });
-
         window.removeEventListener('message', messageListener);
       }
     };
@@ -103,38 +123,12 @@ const MyPage = () => {
     window.addEventListener('message', messageListener);
   };
 
-  // ✅ 핸들러 추가
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
-    setTempUserInfo((prev) => ({ ...prev, [field]: e.target.value }));
-  };
-
-  const handleHomePhoneChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setHomePhone((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleEditClick = (field: string) => {
-    setEditFields((prev) => ({ ...prev, [field]: true }));
-  };
-
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setTempProfileImage(URL.createObjectURL(file));
-    }
-  };
-
-  const handleResetClick = () => {
-    setTempUserInfo(userInfo);
-    setTempProfileImage(profileImage);
-    setEditFields({});
-  };
-
   // 📌 API - 펀딩 카운트
   useEffect(() => {
-    api.post('/public/project/all', { tag: [], page: 0, myPageWhere: 'PROJECT' })
-      .then(res => setFundingCount(res.data.data.totalCount))
-      .catch(e => console.log(e));
+    api
+      .post('/public/project/all', { tag: [], page: 0, myPageWhere: 'PROJECT' })
+      .then((res) => setFundingCount(res.data.data.totalCount))
+      .catch((e) => console.log(e));
   }, []);
 
   return (
@@ -149,56 +143,29 @@ const MyPage = () => {
         onOpenPoint={() => handleClick('포인트 충전')}
         onOpenLike={() => handleClick('좋아요')}
         onOpenFunding={() => handleClick('펀딩 목록')}
+        onOpenFollowing={() => handleClick('팔로잉')}
+        onOpenMyProjects={() => handleClick('내 프로젝트')}
       />
 
       <MainContent
         userInfo={userInfo}
         fundingCount={fundingCount}
         point={point}
-        onHandleClick={handleClick}
+        selectedFilter={selectedFilter}
+        setSelectedFilter={setSelectedFilter}
+        onHandleClick={(label) => handleClick(label)}
       />
-
-      {showSettingsOverlay && (
-        <SettingsOverlay
-          userInfo={userInfo}
-          tempUserInfo={tempUserInfo}
-          setUserInfo={setUserInfo}
-          profileImage={profileImage}
-          tempProfileImage={tempProfileImage}
-          setTempUserInfo={setTempUserInfo}
-          setTempProfileImage={setTempProfileImage}
-          setProfileImage={setProfileImage} 
-          homePhone={homePhone}
-          setHomePhone={setHomePhone}
-          editFields={editFields}
-          setEditFields={setEditFields}
-          onReset={handleResetClick}
-          onInputChange={handleInputChange}
-          onHomePhoneChange={handleHomePhoneChange}
-          onEditClick={handleEditClick}
-          onImageChange={handleImageChange}
-          onClose={closeAll}
-        />
-      )}
 
       {showRecentView && (
         <RecentOverlay
           onClose={closeAll}
           selectedFilter={selectedFilter}
           setSelectedFilter={setSelectedFilter}
+          allTags={[]}
           userInfo={userInfo}
           tempUserInfo={tempUserInfo}
           profileImage={profileImage}
           tempProfileImage={tempProfileImage}
-          allTags={[]}   // RecentOverlay에서 props 요구하니까 일단 빈 배열 넘김
-        />
-      )}
-
-      {showPointOverlay && (
-        <PointOverlay
-          point={point}
-          onClose={closeAll}
-          openPaymentWindow={openPaymentWindow}
         />
       )}
 
@@ -210,11 +177,15 @@ const MyPage = () => {
         />
       )}
 
-      {showFundingOverlay && (
-        <FundingOverlay
-          onClose={closeAll}
+      {showPointOverlay && (
+        <PointOverlay
+          onClose={() => setShowPointOverlay(false)}
+          point={point}
+          openPaymentWindow={openPaymentWindow}
         />
       )}
+
+      {showFundingOverlay && <FundingOverlay onClose={closeAll} />}
     </Container>
   );
 };

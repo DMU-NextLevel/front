@@ -1,51 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import axios from 'axios';
 
 interface Creator {
   id: number;
   name: string;
-  category: string;
-  isFollowing: boolean;
+  category?: string;
   avatar: string;
+  isFollowing: boolean; // 내가 팔로우 중인지 여부
 }
 
 const FollowingPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'following' | 'followers'>('following');
+  const [creators, setCreators] = useState<Creator[]>([]);
+  //const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
-  const [creators, setCreators] = useState<Creator[]>([
-    { id: 1, name: '김민수', category: '테크/가전', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 2, name: '이지은', category: '패션/잡화', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 3, name: '박준호', category: '취미/DIY', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 4, name: '최유진', category: '교육/키즈', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 5, name: '홍길동', category: '푸드/리뷰', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 6, name: '김하늘', category: '여행/라이프', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 7, name: '이서준', category: '자동차/테크', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 8, name: '한지원', category: '헬스/운동', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 9, name: '정우성', category: '라이프/브이로그', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-    { id: 10, name: '강채원', category: '뷰티/패션', isFollowing: true, avatar: 'https://via.placeholder.com/50' },
-  ]);
+  // ✅ 탭 전환 시 API 호출 (팔로잉 / 팔로워 각각)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const endpoint =
+          activeTab === 'following' ? '/api/following' : '/api/followers';
+        const res = await axios.get(`${API_URL}${endpoint}`);
 
-  const handleFollowToggle = (id: number) => {
-    setCreators(creators.map(creator => 
-      creator.id === id 
-        ? { ...creator, isFollowing: !creator.isFollowing } 
-        : creator
-    ));
+        const list = res.data.data.map((item: any) => ({
+          id: item.user.id,
+          name: item.user.nickName,
+          avatar: item.user.img?.uri
+            ? `${API_URL}/images/${item.user.img.uri}`
+            : 'https://via.placeholder.com/50',
+          isFollowing: item.isFollow, // 서버의 isFollow 필드 그대로 사용
+        }));
+
+        setCreators(list);
+      } catch (err) {
+        console.error(`${activeTab} 목록 불러오기 실패:`, err);
+      }
+    };
+
+    fetchData();
+  }, [activeTab]);
+
+  // ✅ 팔로우 / 언팔로우 요청 API (POST /api/follow)
+  const handleFollowToggle = async (id: number, isFollowing: boolean) => {
+    try {
+      const res = await axios.post(`${API_URL}/api/follow`, {
+        targetId: id,
+        follow: !isFollowing, // true → 팔로우, false → 언팔로우
+      });
+
+      if (res.data.message === 'success') {
+        setCreators(prev =>
+          prev.map(c =>
+            c.id === id ? { ...c, isFollowing: !c.isFollowing } : c
+          )
+        );
+      }
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response) {
+        const { status, data } = err.response;
+        console.error(`에러 (${status}): ${data.message}`);
+      } else {
+        console.error('팔로우 상태 변경 실패:', err);
+      }
+    }
   };
 
-  // ✅ 마우스 들어오면 body 스크롤 잠그기
+  // ✅ 스크롤 잠금 관련 (UX 유지)
   const handleMouseEnter = () => {
     document.body.style.overflow = 'hidden';
   };
-
-  // ✅ 마우스 나가면 스크롤 다시 허용
   const handleMouseLeave = () => {
     document.body.style.overflow = '';
   };
-
-  // 혹시 컴포넌트가 언마운트될 때도 안전하게 복원
   useEffect(() => {
     return () => {
       document.body.style.overflow = '';
@@ -56,17 +86,18 @@ const FollowingPage: React.FC = () => {
     <Container>
       <Header>
         <BackButton onClick={() => navigate(-1)}>←</BackButton>
-        <h1>팔로잉</h1>
+        <h1>{activeTab === 'following' ? '팔로잉' : '팔로워'}</h1>
       </Header>
-      
+
+      {/* ✅ 탭 메뉴 */}
       <TabMenu>
-        <TabItem 
+        <TabItem
           active={activeTab === 'following'}
           onClick={() => setActiveTab('following')}
         >
           내가 팔로우한 크리에이터
         </TabItem>
-        <TabItem 
+        <TabItem
           active={activeTab === 'followers'}
           onClick={() => setActiveTab('followers')}
         >
@@ -74,27 +105,35 @@ const FollowingPage: React.FC = () => {
         </TabItem>
       </TabMenu>
 
-      <CreatorList 
-        onMouseEnter={handleMouseEnter} 
-        onMouseLeave={handleMouseLeave}
-      >
-        {creators.map(creator => (
-          <CreatorItem key={creator.id}>
-            <CreatorInfo>
-              <Avatar src={creator.avatar} alt={creator.name} />
-              <div>
-                <CreatorName>{creator.name}</CreatorName>
-                <CreatorCategory>{creator.category}</CreatorCategory>
-              </div>
-            </CreatorInfo>
-            <FollowButton 
-              following={creator.isFollowing}
-              onClick={() => handleFollowToggle(creator.id)}
-            >
-              {creator.isFollowing ? '팔로잉' : '팔로우'}
-            </FollowButton>
-          </CreatorItem>
-        ))}
+      {/* ✅ 목록 영역 */}
+      <CreatorList onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        {creators.length > 0 ? (
+          creators.map((creator) => (
+            <CreatorItem key={creator.id}>
+              <CreatorInfo>
+                <Avatar src={creator.avatar} alt={creator.name} />
+                <div>
+                  <CreatorName>{creator.name}</CreatorName>
+                  {creator.category && (
+                    <CreatorCategory>{creator.category}</CreatorCategory>
+                  )}
+                </div>
+              </CreatorInfo>
+              <FollowButton
+                following={creator.isFollowing}
+                onClick={() => handleFollowToggle(creator.id, creator.isFollowing)}
+              >
+                {creator.isFollowing ? '팔로잉' : '팔로우'}
+              </FollowButton>
+            </CreatorItem>
+          ))
+        ) : (
+          <EmptyText>
+            {activeTab === 'followers'
+              ? '아직 나를 팔로우한 사용자가 없습니다.'
+              : '아직 내가 팔로우한 사용자가 없습니다.'}
+          </EmptyText>
+        )}
       </CreatorList>
     </Container>
   );
@@ -147,7 +186,7 @@ const BackButton = styled.button`
   position: absolute;
   left: 15px;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: translateX(-2px);
@@ -173,7 +212,7 @@ const TabItem = styled.div<{ active: boolean }>`
   border-bottom: 3px solid ${({ active }) => (active ? '#a66cff' : 'transparent')};
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   &:hover {
     color: #8a2be2;
   }
@@ -183,7 +222,7 @@ const CreatorList = styled.div`
   flex-shrink: 0;
   background: #fff;
   overflow-y: auto;
-  max-height: 450px; /* 5명만 보이게 */
+  max-height: 450px;
   padding: 15px 20px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
@@ -212,7 +251,7 @@ const CreatorItem = styled.div`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
   border: 1px solid #f0f0f0;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -269,11 +308,20 @@ const FollowButton = styled.button<{ following: boolean }>`
   min-width: 90px;
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    ${({ following }) => !following && 'background: #7b1fa2; border-color: #7b1fa2;'}
-    ${({ following }) => following && 'background: #f8f9fa; color: #555; border-color: #ddd;'}
+    ${({ following }) =>
+      !following && 'background: #7b1fa2; border-color: #7b1fa2;'}
+    ${({ following }) =>
+      following && 'background: #f8f9fa; color: #555; border-color: #ddd;'}
   }
 `;
+
+const EmptyText = styled.div`
+  text-align: center;
+  color: #999;
+  padding: 60px 0;
+`;
+

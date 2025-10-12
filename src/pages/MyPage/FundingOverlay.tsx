@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 interface FundingItem {
   id: number;
   title: string;
-  amount: string;
-  date: string;
-  status: '진행중' | '성공' | '실패' | '취소';
   image: string;
   category: string;
+  status: string;
+  author: string;
+  completionRate: number;
+  totalPrice: number;
+  optionFunding: {
+    optionDesc: string;
+    optionPrice: number;
+    count: number;
+    total: number;
+  }[];
+  freeFunding?: number;
+  createdAt: string;
 }
 
 interface FundingOverlayProps {
@@ -23,71 +33,78 @@ const FundingOverlay: React.FC<FundingOverlayProps> = ({ onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleCount, setVisibleCount] = useState(5);
 
-  // 더미 데이터
+  // ✅ API 연동
   useEffect(() => {
-    const dummyData: FundingItem[] = [
-      {
-        id: 1,
-        title: '아이들을 위한 교육용 로봇 키트',
-        amount: '150,000원',
-        date: '2023.10.15',
-        status: '진행중',
-        image: 'https://picsum.photos/200/200?random=1',
-        category: '교육/키즈'
-      },
-      {
-        id: 2,
-        title: '친환경 텀블러 프로젝트',
-        amount: '45,000원',
-        date: '2023.09.28',
-        status: '성공',
-        image: 'https://picsum.photos/200/200?random=2',
-        category: '라이프스타일'
-      },
-      {
-        id: 3,
-        title: 'AI 스마트 플래너',
-        amount: '89,000원',
-        date: '2023.11.05',
-        status: '진행중',
-        image: 'https://picsum.photos/200/200?random=3',
-        category: '테크/가전'
-      },
-      {
-        id: 4,
-        title: '수제 핸드메이드 가방',
-        amount: '120,000원',
-        date: '2023.08.20',
-        status: '성공',
-        image: 'https://picsum.photos/200/200?random=4',
-        category: '패션/잡화'
-      },
-      {
-        id: 5,
-        title: '건강 기능성 차 세트',
-        amount: '35,000원',
-        date: '2023.07.15',
-        status: '실패',
-        image: 'https://picsum.photos/200/200?random=5',
-        category: '푸드/음료'
-      },
-      {
-        id: 6,
-        title: '캠핑용 미니 랜턴',
-        amount: '55,000원',
-        date: '2023.06.12',
-        status: '취소',
-        image: 'https://picsum.photos/200/200?random=6',
-        category: '여행/레저'
-      },
-    ];
+    const fetchFundingList = async () => {
+      try {
+        const res = await axios.post('/api/projects/list', {
+          page: 0,
+          pageCount: 10,
+          type: 'FUNDING',
+          status: 'PROGRESS',
+        });
 
-    const timer = setTimeout(() => {
-      setFundingList(dummyData);
-      setIsLoading(false);
-    }, 500);
+        if (res.data.message === 'success') {
+          const mapped: FundingItem[] = res.data.data.projects.map((item: any) => {
+            const project = item.project;
+            const optionFunding = item.optionFunding || [];
 
-    return () => clearTimeout(timer);
+            // 옵션별 총합 계산
+            const options = optionFunding.map((opt: any) => {
+              const total = opt.optionFunding.reduce(
+                (sum: number, f: any) => sum + (f.price || 0),
+                0
+              );
+              return {
+                optionDesc: opt.option.description,
+                optionPrice: opt.option.price,
+                count: opt.optionFunding.reduce(
+                  (sum: number, f: any) => sum + (f.count || 0),
+                  0
+                ),
+                total,
+              };
+            });
+
+            // 자유후원 금액
+            const free = item.freeFunding?.price || 0;
+
+            // 전체 합산
+            const totalPrice =
+              options.reduce(
+                (
+                  sum: number,
+                  o: { optionDesc: string; optionPrice: number; count: number; total: number }
+                ) => sum + o.total,
+                0
+              ) + free;
+
+            return {
+              id: project.id,
+              title: project.title,
+              image: project.titleImg?.uri || 'https://via.placeholder.com/200',
+              category: project.tags?.[0] || '기타',
+              status: project.status,
+              author: project.author?.nickName || '',
+              completionRate: project.completionRate || 0,
+              totalPrice,
+              optionFunding: options,
+              freeFunding: free,
+              createdAt: item.freeFunding?.createdAt || project.createdAt,
+            };
+          });
+
+          setFundingList(mapped);
+        }
+      } catch (err) {
+        console.error('펀딩 내역 불러오기 실패:', err);
+        Swal.fire('오류', '펀딩 내역을 불러올 수 없습니다.', 'error');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFundingList();
   }, []);
 
   // 뒤 화면 스크롤 막기
@@ -99,35 +116,36 @@ const FundingOverlay: React.FC<FundingOverlayProps> = ({ onClose }) => {
     };
   }, []);
 
-  // 탭별 필터링
-  const filteredFundings = activeTab === '전체'
-    ? fundingList
-    : activeTab === '진행중'
-    ? fundingList.filter(item => item.status === '진행중')
-    : activeTab === '완료'
-    ? fundingList.filter(item => item.status === '성공' || item.status === '실패')
-    : fundingList.filter(item => item.status === '취소');
-
-  // 검색어 필터링
-  const searchedFundings = filteredFundings.filter(item =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   // 상태 컬러
   const getStatusColor = (status: string) => {
     switch (status) {
-      case '진행중':
+      case 'PROGRESS':
         return '#4caf50';
-      case '성공':
+      case 'SUCCESS':
         return '#2196f3';
-      case '실패':
+      case 'FAIL':
         return '#f44336';
-      case '취소':
+      case 'END':
         return '#9e9e9e';
       default:
         return '#000';
     }
   };
+
+  // 탭별 필터링
+  const filteredFundings =
+    activeTab === '전체'
+      ? fundingList
+      : activeTab === '진행중'
+      ? fundingList.filter(item => item.status === 'PROGRESS')
+      : activeTab === '완료'
+      ? fundingList.filter(item => ['SUCCESS', 'FAIL', 'END'].includes(item.status))
+      : fundingList.filter(item => item.status === 'STOPPED');
+
+  // 검색어 필터링
+  const searchedFundings = filteredFundings.filter(item =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Overlay>
@@ -140,7 +158,7 @@ const FundingOverlay: React.FC<FundingOverlayProps> = ({ onClose }) => {
         <ScrollableContent>
           <Tabs>
             <TabGroup>
-              {['전체', '진행중', '완료', '취소'].map((tab) => (
+              {['전체', '진행중', '완료', '취소'].map(tab => (
                 <Tab
                   key={tab}
                   active={activeTab === tab}
@@ -152,12 +170,11 @@ const FundingOverlay: React.FC<FundingOverlayProps> = ({ onClose }) => {
             </TabGroup>
           </Tabs>
 
-          {/* 검색창 */}
           <SearchBox
             type="text"
             placeholder="펀딩명 검색"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
           />
 
           {isLoading ? (
@@ -174,39 +191,53 @@ const FundingOverlay: React.FC<FundingOverlayProps> = ({ onClose }) => {
           ) : (
             <>
               <FundingList>
-                {searchedFundings.slice(0, visibleCount).map((funding) => (
+                {searchedFundings.slice(0, visibleCount).map(funding => (
                   <FundingItem key={funding.id}>
                     <FundingImage src={funding.image} alt={funding.title} />
                     <FundingInfo>
                       <FundingTitle>{funding.title}</FundingTitle>
                       <FundingMeta>
-                        <FundingAmount>{funding.amount}</FundingAmount>
-                        <FundingDate>{funding.date}</FundingDate>
+                        <FundingAmount>
+                          총 결제 금액: {funding.totalPrice.toLocaleString()}원
+                        </FundingAmount>
+                        <FundingDate>
+                          {new Date(funding.createdAt).toLocaleDateString()}
+                        </FundingDate>
                         <FundingStatus color={getStatusColor(funding.status)}>
                           {funding.status}
                         </FundingStatus>
                       </FundingMeta>
+
+                      {funding.optionFunding.map((opt, i) => (
+                        <OptionBox key={i}>
+                          {opt.optionDesc} × {opt.count}개 —{' '}
+                          {(opt.total || 0).toLocaleString()}원
+                        </OptionBox>
+                      ))}
+
+                      {funding.freeFunding && funding.freeFunding > 0 && (
+                        <FreeBox>자유후원: {funding.freeFunding.toLocaleString()}원</FreeBox>
+                      )}
+
                       <FundingCategory>{funding.category}</FundingCategory>
                     </FundingInfo>
                   </FundingItem>
                 ))}
               </FundingList>
 
-              {/* 더보기 / 접기 버튼 */}
-{searchedFundings.length > 5 && (
-  <MoreButton
-    onClick={() => {
-      if (visibleCount < searchedFundings.length) {
-        setVisibleCount(searchedFundings.length); // 전체 펼치기
-      } else {
-        setVisibleCount(5); // 다시 접기
-      }
-    }}
-  >
-    {visibleCount < searchedFundings.length ? '더보기 ▼' : '접기 ▲'}
-  </MoreButton>
-)}
-
+              {searchedFundings.length > 5 && (
+                <MoreButton
+                  onClick={() => {
+                    if (visibleCount < searchedFundings.length) {
+                      setVisibleCount(searchedFundings.length);
+                    } else {
+                      setVisibleCount(5);
+                    }
+                  }}
+                >
+                  {visibleCount < searchedFundings.length ? '더보기 ▼' : '접기 ▲'}
+                </MoreButton>
+              )}
             </>
           )}
         </ScrollableContent>
@@ -256,7 +287,7 @@ const OverlayHeader = styled.div`
   padding: 20px 25px;
   border-bottom: 1px solid #eee;
   background-color: #f9f9f9;
-  
+
   h2 {
     margin: 0;
     font-size: 1.4rem;
@@ -274,7 +305,7 @@ const CloseButton = styled.button`
   padding: 0 10px;
   line-height: 1;
   transition: color 0.2s;
-  
+
   &:hover {
     color: #000;
   }
@@ -308,7 +339,7 @@ const Tab = styled.button<{ active: boolean }>`
   border-bottom: 2px solid ${({ active }) => (active ? '#a66cff' : 'transparent')};
   cursor: pointer;
   transition: all 0.2s;
-  
+
   &:hover {
     color: #a66cff;
   }
@@ -345,7 +376,7 @@ const LoadingSpinner = styled.div`
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 15px;
-  
+
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -391,7 +422,7 @@ const FundingItem = styled.div`
   border-radius: 10px;
   transition: transform 0.2s, box-shadow 0.2s;
   background-color: #fff;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -410,7 +441,6 @@ const FundingInfo = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 `;
 
 const FundingTitle = styled.h3`
@@ -449,6 +479,18 @@ const FundingStatus = styled.span<{ color: string }>`
   font-weight: 500;
 `;
 
+const OptionBox = styled.div`
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 4px;
+`;
+
+const FreeBox = styled.div`
+  font-size: 0.9rem;
+  color: #8b5cf6;
+  margin-top: 4px;
+`;
+
 const FundingCategory = styled.span`
   background-color: #f0f0f0;
   color: #666;
@@ -475,3 +517,6 @@ const MoreButton = styled.button`
     color: #a66cff;
   }
 `;
+
+
+
