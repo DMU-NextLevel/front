@@ -125,8 +125,8 @@ const MyPage = () => {
 
 		window.open(url, 'toss_payment_popup', `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no`)
 
-		const messageListener = (event: MessageEvent) => {
-			if (event.origin !== window.location.origin) return
+    const messageListener = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
 
 			if (event.data === 'payment-success') {
 				api.get('/social/user/my-point').then((res) => {
@@ -136,8 +136,8 @@ const MyPage = () => {
 			}
 		}
 
-		window.addEventListener('message', messageListener)
-	}
+    window.addEventListener('message', messageListener);
+  };
 
 	// 📌 API - 펀딩 카운트
 	useEffect(() => {
@@ -151,10 +151,10 @@ const MyPage = () => {
 		setTempUserInfo((prev) => ({ ...prev, [field]: e.target.value }))
 	}
 
-	const handleHomePhoneChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		const { name, value } = e.target
-		setHomePhone((prev) => ({ ...prev, [name]: value }))
-	}
+  const handleHomePhoneChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setHomePhone((prev) => ({ ...prev, [name]: value }));
+  };
 
 	const handleEditClick = (field: string) => {
 		setEditFields((prev) => ({ ...prev, [field]: true }))
@@ -201,11 +201,11 @@ const MyPage = () => {
 		}
 	}
 
-	const handleResetClick = () => {
-		setTempUserInfo(userInfo)
-		setTempProfileImage(profileImage)
-		setEditFields({})
-	}
+  const handleResetClick = () => {
+    setTempUserInfo(userInfo);
+    setTempProfileImage(profileImage);
+    setEditFields({});
+  };
 
 	useEffect(() => {
 		api.get<userResponse>('/social/user').then((res) => {
