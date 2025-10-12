@@ -131,18 +131,18 @@ export const HeaderMain: React.FC = () => {
 	return (
 		<div className='relative'>
 			{/* 헤더 */}
-			<header 
+			<header
 				ref={headerRef}
 				className='w-full bg-white/80 backdrop-blur-xl border-b border-gray-200/50 fixed top-0 left-0 right-0 z-50'
 			>
 				<div className='px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]'>
 					<div className='flex items-center h-14'>
 						{/* 왼쪽: 로고 */}
-						<img 
-							src={LogoImage} 
-							alt='logo' 
+						<img
+							src={LogoImage}
+							alt='logo'
 							onClick={() => navigate('/')}
-							className='w-[120px] h-[28px] cursor-pointer hover:opacity-80 transition-opacity' 
+							className='w-[120px] h-[28px] cursor-pointer hover:opacity-80 transition-opacity'
 						/>
 
 						{/* 데스크톱: 네비게이션 메뉴 - 로고 바로 옆에 */}
@@ -169,17 +169,16 @@ export const HeaderMain: React.FC = () => {
 							<a href={createSearchLink('EXPIRED')} className='text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors'>
 								마감임박
 							</a>
-							
-							{/* 프로젝트 시작 버튼 - 마감임박 우측에 배치 */}
-							<button
-								onClick={() => navigate('/project/create')}
-								className='bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-blue-700 transition-colors'
-							>
-								프로젝트 시작
-							</button>
-						</nav>
 
-						{/* 오른쪽 영역 */}
+
+						{/* 프로젝트 시작 버튼 - 마감임박 우측에 배치 */}
+						<button
+							onClick={() => navigate('/creater')}
+							className='bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-blue-700 transition-colors'
+						>
+							프로젝트 시작
+						</button>
+					</nav>						{/* 오른쪽 영역 */}
 						<div className='ml-auto flex items-center space-x-4'>
 							{/* 검색창 - 데스크톱에서만 표시 */}
 							<form
@@ -270,7 +269,7 @@ export const HeaderMain: React.FC = () => {
 							</div>
 
 							{/* 모바일: 햄버거 메뉴 버튼 */}
-							<button 
+							<button
 								className='lg:hidden flex items-center justify-center w-10 h-10 text-gray-700 hover:text-gray-900 transition-colors'
 								onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 							>
@@ -280,14 +279,14 @@ export const HeaderMain: React.FC = () => {
 					</div>
 				</div>
 			</header>
-			
+
 			{/* 헤더 높이만큼 여백 추가 */}
 			<div className='h-14'></div>
 
 			{/* 모바일 메뉴 */}
 			<div className={`lg:hidden fixed left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-gray-200/50 z-40 ${
-				isMobileMenuOpen 
-					? 'opacity-100 visible transform translate-y-0 transition-all duration-200 ease-out' 
+				isMobileMenuOpen
+					? 'opacity-100 visible transform translate-y-0 transition-all duration-200 ease-out'
 					: 'opacity-0 invisible transform -translate-y-2 transition-all duration-150 ease-in pointer-events-none'
 			}`}
 			style={{ top: '56px', maxHeight: 'calc(100vh - 56px)' }}>
@@ -322,7 +321,7 @@ export const HeaderMain: React.FC = () => {
 									<i className='bi bi-plus-circle text-blue-600 text-lg'></i>
 									<span className='text-sm font-medium text-gray-900'>프로젝트 시작</span>
 								</button>
-								<button 
+								<button
 									onClick={() => setIsMobileMenuOpen(false)}
 									className='flex items-center space-x-3 w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors'
 								>
@@ -336,29 +335,29 @@ export const HeaderMain: React.FC = () => {
 						<div>
 							<h4 className='text-sm font-semibold text-gray-900 mb-3'>프로젝트</h4>
 							<div className='space-y-2'>
-								<a 
-									href={createSearchLink('RECOMMEND')} 
+								<a
+									href={createSearchLink('RECOMMEND')}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 									onClick={() => setIsMobileMenuOpen(false)}
 								>
 									인기 프로젝트
 								</a>
-								<a 
-									href={createSearchLink('NEW')} 
+								<a
+									href={createSearchLink('NEW')}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 									onClick={() => setIsMobileMenuOpen(false)}
 								>
 									신규 프로젝트
 								</a>
-								<a 
-									href={createSearchLink('EXPIRED')} 
+								<a
+									href={createSearchLink('EXPIRED')}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 									onClick={() => setIsMobileMenuOpen(false)}
 								>
 									마감 임박 프로젝트
 								</a>
-								<a 
-									href={createSearchLink('COMPLETED')} 
+								<a
+									href={createSearchLink('COMPLETED')}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 									onClick={() => setIsMobileMenuOpen(false)}
 								>
@@ -391,23 +390,26 @@ export const HeaderMain: React.FC = () => {
 						<div>
 							<h4 className='text-sm font-semibold text-gray-900 mb-3'>도구 & 서비스</h4>
 							<div className='space-y-2'>
-								<button 
+								<button
 									onClick={() => {
-										navigate('/notice')
+										navigate('/support/notice')
 										setIsMobileMenuOpen(false)
 									}}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 								>
 									공지사항
 								</button>
-								<button 
-									onClick={() => setIsMobileMenuOpen(false)}
+								<button
+									onClick={() => {
+										navigate('/support/faq')
+										setIsMobileMenuOpen(false)
+									}}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 								>
-									고객센터
+									FAQ
 								</button>
 								{isLoggedIn && (
-									<button 
+									<button
 										onClick={() => {
 											navigate('/mypage')
 											setIsMobileMenuOpen(false)
@@ -459,11 +461,11 @@ export const HeaderMain: React.FC = () => {
 									<div className='font-medium text-gray-900'>{user?.nickName || '익명'}</div>
 									<div className='text-sm text-gray-500'>{role == 'ADMIN' ? '관리자' : '일반 사용자'}</div>
 								</div>
-								<button 
+								<button
 									onClick={() => {
 										handleLogout()
 										setIsMobileMenuOpen(false)
-									}} 
+									}}
 									className='text-gray-500 hover:text-gray-700 transition-colors p-2'
 								>
 									<i className='bi bi-box-arrow-right text-lg'></i>
@@ -475,10 +477,10 @@ export const HeaderMain: React.FC = () => {
 			</div>
 
 			{/* 모바일 메뉴 배경 오버레이 */}
-			<div 
+			<div
 				className={`lg:hidden fixed inset-0 bg-black/20 z-30 ${
-					isMobileMenuOpen 
-						? 'opacity-100 visible transition-opacity duration-200 ease-out' 
+					isMobileMenuOpen
+						? 'opacity-100 visible transition-opacity duration-200 ease-out'
 						: 'opacity-0 invisible transition-opacity duration-150 ease-in'
 				}`}
 				onClick={() => setIsMobileMenuOpen(false)}
@@ -487,8 +489,8 @@ export const HeaderMain: React.FC = () => {
 			{/* 애플 스타일 메가 메뉴 */}
 			<div
 				className={`fixed left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-gray-200/50 z-40 ${
-					isMenuOpen 
-						? 'opacity-100 visible transform translate-y-0 transition-all duration-200 ease-out' 
+					isMenuOpen
+						? 'opacity-100 visible transform translate-y-0 transition-all duration-200 ease-out'
 						: 'opacity-0 invisible transform -translate-y-1 transition-all duration-150 ease-in pointer-events-none'
 				}`}
 				style={{ top: menuHeight }}
@@ -566,16 +568,19 @@ export const HeaderMain: React.FC = () => {
 								도구 & 서비스
 							</h3>
 							<div className='space-y-1'>
-								<button 
-									onClick={() => navigate('/notice')}
+								<button
+									onClick={() => navigate('/support/notice')}
 									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
 								>
 									공지사항
 								</button>
-								<button className='block text-xs hover:text-blue-600 transition-colors py-0.5'>
-									고객센터
+								<button
+									onClick={() => navigate('/support/faq')}
+									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
+								>
+									FAQ
 								</button>
-								<button 
+								<button
 									onClick={() => navigate('/mypage')}
 									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
 								>
@@ -588,10 +593,10 @@ export const HeaderMain: React.FC = () => {
 			</div>
 
 			{/* Apple 스타일 배경 오버레이 */}
-			<div 
+			<div
 				className={`fixed inset-0 bg-black/5 z-30 ${
-					isMenuOpen 
-						? 'opacity-100 visible transition-opacity duration-200 ease-out' 
+					isMenuOpen
+						? 'opacity-100 visible transition-opacity duration-200 ease-out'
 						: 'opacity-0 invisible transition-opacity duration-150 ease-in'
 				}`}
 				onClick={() => setIsMenuOpen(false)}

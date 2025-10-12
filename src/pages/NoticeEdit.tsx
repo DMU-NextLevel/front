@@ -221,7 +221,7 @@ const NoticeEdit: React.FC = () => {
 		})
 
 		try {
-			const res = await api.post(`/admin/notice/${id}`, formData, {
+			const res = await api.put(`/admin/notice/${id}`, formData, {
 				withCredentials: true,
 				headers: {
 					'Content-Type': 'multipart/form-data',
@@ -230,7 +230,7 @@ const NoticeEdit: React.FC = () => {
 
 			if (res.data.message === 'success') {
 				alert('공지사항이 성공적으로 수정되었습니다.')
-				navigate(`/notice/${id}`, {
+				navigate(`/support/notice/${id}`, {
 					state: { ...article, title, content: processedContent },
 				})
 			} else {
@@ -258,8 +258,8 @@ const NoticeEdit: React.FC = () => {
 				<div className="bg-white rounded-3xl shadow-xl p-12 max-w-md text-center">
 					<h2 className="text-2xl font-bold text-gray-900 mb-4">접근 권한이 없습니다</h2>
 					<p className="text-gray-600 mb-6">공지사항 수정은 관리자만 가능합니다.</p>
-					<button 
-						onClick={() => window.history.back()} 
+					<button
+						onClick={() => window.history.back()}
 						className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium"
 					>
 						돌아가기
@@ -298,7 +298,7 @@ const NoticeEdit: React.FC = () => {
 				{/* Content Editor - Responsive */}
 				<div className='mb-6 sm:mb-8'>
 					<label className='block mb-2 sm:mb-3 text-base sm:text-lg font-semibold text-gray-900'>본문 내용</label>
-					
+
 					{/* Toolbar - Responsive */}
 					<div className='flex flex-wrap gap-1 sm:gap-2 p-2 sm:p-4 bg-gray-50 border border-gray-200 rounded-t-lg border-b-0 overflow-x-auto'>
 						{/* Basic Formatting */}
@@ -307,8 +307,8 @@ const NoticeEdit: React.FC = () => {
 								type='button'
 								onClick={() => executeCommand(() => editor?.chain().focus().toggleBold().run())}
 								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-									editor?.isActive('bold') 
-										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									editor?.isActive('bold')
+										? 'bg-blue-600 text-white border-blue-600 shadow-md'
 										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
 								}`}
 								title="굵게">
@@ -318,8 +318,8 @@ const NoticeEdit: React.FC = () => {
 								type='button'
 								onClick={() => executeCommand(() => editor?.chain().focus().toggleItalic().run())}
 								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-									editor?.isActive('italic') 
-										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									editor?.isActive('italic')
+										? 'bg-blue-600 text-white border-blue-600 shadow-md'
 										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
 								}`}
 								title="기울임">
@@ -329,8 +329,8 @@ const NoticeEdit: React.FC = () => {
 								type='button'
 								onClick={() => executeCommand(() => editor?.chain().focus().toggleUnderline().run())}
 								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-									editor?.isActive('underline') 
-										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									editor?.isActive('underline')
+										? 'bg-blue-600 text-white border-blue-600 shadow-md'
 										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
 								}`}
 								title="밑줄">
@@ -340,17 +340,17 @@ const NoticeEdit: React.FC = () => {
 								type='button'
 								onClick={() => executeCommand(() => editor?.chain().focus().toggleStrike().run())}
 								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-									editor?.isActive('strike') 
-										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									editor?.isActive('strike')
+										? 'bg-blue-600 text-white border-blue-600 shadow-md'
 										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
 								}`}
 								title="취소선">
 								<span className='line-through'>S</span>
 							</button>
 						</div>
-						
+
 						<div className='w-px h-6 sm:h-10 bg-gray-200 mx-1 sm:mx-2'></div>
-						
+
 						{/* Text Size Controls - Responsive */}
 						<div className="flex items-center space-x-1">
 							<span className="hidden sm:inline text-xs text-gray-500 mr-1 sm:mr-2">크기</span>
@@ -429,9 +429,9 @@ const NoticeEdit: React.FC = () => {
 								📷
 							</button>
 						</div>
-						
+
 						<div className='w-px h-6 sm:h-10 bg-gray-200 mx-1 sm:mx-2'></div>
-						
+
 						{/* Undo/Redo */}
 						<div className="flex gap-1 sm:gap-2">
 							<button
@@ -461,8 +461,8 @@ const NoticeEdit: React.FC = () => {
 					<div className='border border-gray-200 rounded-b-lg bg-white'>
 						<EditorContent
 							editor={editor}
-							className='min-h-64 sm:min-h-96 p-3 sm:p-6 
-								[&_.ProseMirror]:min-h-56 sm:[&_.ProseMirror]:min-h-80 [&_.ProseMirror]:outline-none [&_.ProseMirror]:leading-relaxed [&_.ProseMirror]:text-sm sm:[&_.ProseMirror]:text-base 
+							className='min-h-64 sm:min-h-96 p-3 sm:p-6
+								[&_.ProseMirror]:min-h-56 sm:[&_.ProseMirror]:min-h-80 [&_.ProseMirror]:outline-none [&_.ProseMirror]:leading-relaxed [&_.ProseMirror]:text-sm sm:[&_.ProseMirror]:text-base
 								[&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2 sm:[&_img]:my-4 [&_img]:border [&_img]:border-gray-200
 								[&_span[style*="font-size"]]:inline
 								[&_span[style*="color"]]:inline'
@@ -480,7 +480,7 @@ const NoticeEdit: React.FC = () => {
 						</svg>
 						취소
 					</button>
-					
+
 					<button
 						onClick={handleSave}
 						className='w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md'>
