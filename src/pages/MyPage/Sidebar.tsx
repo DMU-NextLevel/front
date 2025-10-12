@@ -1,90 +1,155 @@
-import React from 'react'
+import React from 'react';
+import styled from 'styled-components';
 
+/* ---------------------- Styled Components ---------------------- */
+const Container = styled.aside`
+  width: 260px;
+  background: #fff;
+  padding: 30px 20px;
+  border-right: 1px solid #eee;
+`;
+
+const TopTab = styled.div`
+  display: flex;
+  width: 100%;
+  margin-bottom: 30px;
+`;
+
+const TabButton = styled.button<{ active?: boolean }>`
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 20px;
+  background: ${({ active }) => (active ? '#a66cff' : '#f0f0f0')};
+  color: ${({ active }) => (active ? '#fff' : '#999')};
+  font-weight: bold;
+  cursor: pointer;
+`;
+
+const ProfileBox = styled.div`
+  text-align: center;
+  margin: 30px 0;
+`;
+
+const AvatarImg = styled.img`
+  width: 105px;
+  height: 105px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+const Name = styled.div`
+  font-weight: bold;
+  margin: 10px 0;
+  font-size: 16px;
+`;
+
+const SettingsBtn = styled.button`
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f3f3f3;
+  }
+`;
+
+const ActivityMenu = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const MenuButton = styled.button`
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 15px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  width: 100%;
+
+  &:hover {
+    background: #ecebf5;
+  }
+`;
+
+/* ---------------------- Component ---------------------- */
 interface SidebarProps {
-	activeTab: '서포터' | '메이커'
-	setActiveTab: (tab: '서포터' | '메이커') => void
-	userInfo: any
-	profileImage: string | null
-	onOpenSettings: () => void
-	onOpenRecent: () => void
-	onOpenPoint: () => void
+  activeTab: '서포터' | '메이커';
+  setActiveTab: (tab: '서포터' | '메이커') => void;
+  userInfo: { name: string };
+  profileImage: string | null;
+  onOpenSettings: () => void;
+  onOpenRecent: () => void;
+  onOpenPoint: () => void;
+  onOpenLike: () => void;
+  onOpenFunding: () => void;
+  onOpenFollowing: () => void;
+  onOpenMyProjects: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, userInfo, profileImage, onOpenSettings, onOpenRecent, onOpenPoint }) => {
-	return (
-		<aside className='w-65 bg-white py-7 px-5 border-r border-gray-200'>
-			{/* 탭 버튼 */}
-			<div className='flex w-full mb-7'>
-				<button
-					className={`flex-1 py-2 px-4 border-none rounded-2xl font-bold cursor-pointer transition-colors duration-200 ${
-						activeTab === '서포터' ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500'
-					}`}
-					onClick={() => setActiveTab('서포터')}>
-					서포터
-				</button>
-				<button
-					className={`flex-1 py-2 px-4 border-none rounded-2xl font-bold cursor-pointer transition-colors duration-200 ${
-						activeTab === '메이커' ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500'
-					}`}
-					onClick={() => setActiveTab('메이커')}>
-					메이커
-				</button>
-			</div>
+const Sidebar: React.FC<SidebarProps> = ({
+  activeTab,
+  setActiveTab,
+  userInfo,
+  profileImage,
+  onOpenSettings,
+  onOpenRecent,
+  onOpenPoint,
+  onOpenLike,
+  onOpenFunding,
+  onOpenFollowing,
+  onOpenMyProjects,
+}) => {
+  return (
+    <Container>
+      {/* 탭 버튼 */}
+      <TopTab>
+        <TabButton active={activeTab === '서포터'} onClick={() => setActiveTab('서포터')}>
+          서포터
+        </TabButton>
+        <TabButton active={activeTab === '메이커'} onClick={() => setActiveTab('메이커')}>
+          메이커
+        </TabButton>
+      </TopTab>
 
-			{/* 프로필 섹션 */}
-			<div className='text-center my-7'>
-				<img src={profileImage || 'https://via.placeholder.com/100'} alt='프로필' className='w-[105px] h-[105px] rounded-full object-cover mx-auto' />
-				<div className='font-bold my-2.5 text-base'>{userInfo.name}</div>
-				<button className='py-1.5 px-3.5 rounded-2xl border border-gray-300 bg-white text-xs cursor-pointer hover:bg-gray-50' onClick={onOpenSettings}>
-					설정
-				</button>
-			</div>
+      {/* 프로필 영역 */}
+      <ProfileBox>
+        <AvatarImg
+          src={
+            profileImage ||
+            'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA2MjVfMTkz%2FMDAxNzE5MjkxMTA5MzY4.6JsIEfv3ged1X5Tm8X64E27sIL935yGSV-9T_pNE9sUg.txCrKMz0Emxy98jwwxnmWi8mqcU91uaLyXx88Z1X1iQg.JPEG%2FB7A00E50-ABFD-43A4-AE4C-9901F147A4DC.jpeg&type=sc960_832'
+          }
+          alt="프로필"
+        />
+        <Name>{userInfo.name}</Name>
+        <SettingsBtn onClick={onOpenSettings}>내 정보 설정</SettingsBtn>
+      </ProfileBox>
 
-			{/* 메뉴 섹션 */}
-			<div className='mb-6'>
-				<div className='text-sm font-semibold text-gray-800 mb-3 pl-1'>서포터 메뉴</div>
-				<div className='flex flex-col gap-2'>
-					<button
-						className='w-full py-3 px-4 border-none bg-transparent text-left text-sm text-gray-600 cursor-pointer rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-800'
-						onClick={onOpenRecent}>
-						최근 본 프로젝트
-					</button>
-					<button
-						className='w-full py-3 px-4 border-none bg-transparent text-left text-sm text-gray-600 cursor-pointer rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-800'
-						onClick={onOpenPoint}>
-						포인트 충전
-					</button>
-					<button
-						className='w-full py-3 px-4 border-none bg-transparent text-left text-sm text-gray-600 cursor-pointer rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-800'>
-						좋아요
-					</button>
-					<button
-						className='w-full py-3 px-4 border-none bg-transparent text-left text-sm text-gray-600 cursor-pointer rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-800'>
-						팔로잉
-					</button>
-					<button
-						className='w-full py-3 px-4 border-none bg-transparent text-left text-sm text-gray-600 cursor-pointer rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-800'>
-						펀딩목록
-					</button>
-				</div>
-			</div>
+      {activeTab === '서포터' ? (
+        <ActivityMenu>
+          <MenuButton onClick={onOpenRecent}>최근본</MenuButton>
+          <MenuButton onClick={onOpenPoint}>포인트 충전</MenuButton>
+          <MenuButton onClick={onOpenLike}>좋아요</MenuButton>
+          <MenuButton onClick={onOpenFunding}>내 펀딩</MenuButton>
+        <MenuButton onClick={onOpenFollowing}>팔로잉</MenuButton>
+        </ActivityMenu>
+      ) : (
+        <ActivityMenu>
+          <MenuButton onClick={onOpenMyProjects}>내 프로젝트</MenuButton>
+          <MenuButton>문의 답변</MenuButton>
+        </ActivityMenu>
+      )}
+    </Container>
+  );
+};
 
-			{/* 메이커 메뉴 */}
-			{activeTab === '메이커' && (
-				<div className='flex flex-col gap-2'>
-					<button className='w-full py-3 px-4 border-none bg-transparent text-left text-sm text-gray-600 cursor-pointer rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-800'>
-						내 프로젝트
-					</button>
-					<button className='w-full py-3 px-4 border-none bg-transparent text-left text-sm text-gray-600 cursor-pointer rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-800'>
-						정산 관리
-					</button>
-					<button className='w-full py-3 px-4 border-none bg-transparent text-left text-sm text-gray-600 cursor-pointer rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-800'>
-						문의 답변
-					</button>
-				</div>
-			)}
-		</aside>
-	)
-}
-
-export default Sidebar
+export default Sidebar;
