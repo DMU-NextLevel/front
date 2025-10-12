@@ -88,7 +88,9 @@ const AppWrapper = () => {
 		return () => clearTimeout(timer);
 }, [location.pathname])
 
-const shouldHideLayout = hideLayout.includes(location.pathname) || location.pathname.startsWith('/admin')
+const pattern = ['/admin', '/socialpage']
+
+const shouldHideLayout = hideLayout.includes(location.pathname) || pattern.some((pattern) => location.pathname.startsWith(pattern))
 
 return (
 	<AuthProvider>
