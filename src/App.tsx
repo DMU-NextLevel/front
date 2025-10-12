@@ -33,6 +33,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminProjects from './pages/Admin/AdminProjects'
 import AdminNotices from './pages/Admin/AdminNotices'
+import SocialPage from './pages/SocialPage'
 
 // AOS 초기화
 declare global {
@@ -87,48 +88,53 @@ const AppWrapper = () => {
 		return () => clearTimeout(timer);
 }, [location.pathname])
 
-const shouldHideLayout = hideLayout.includes(location.pathname) || location.pathname.startsWith('/admin')
+const pattern = ['/admin']
+const footerHidePattern = ['/admin', '/social']
+
+const shouldHideLayout = hideLayout.includes(location.pathname) || pattern.some((pattern) => location.pathname.startsWith(pattern))
+const shouldHideFooter = hideLayout.includes(location.pathname) || footerHidePattern.some((pattern) => location.pathname.startsWith(pattern))
 
 return (
 	<AuthProvider>
 		{!shouldHideLayout && <HeaderMain />}
 		<Routes>
-				<Route path='/' element={<MainPage />} />
-				<Route path='/login' element={<Login setLoginType={setLoginType} />} />
-				<Route path='/signup' element={<Signup />} />
-				<Route path='/idfind' element={<IDFindPage />} />
-				<Route path='/mypage' element={<MyPage />} />
-				<Route path='/project/:no' element={<FundingPage />} />
-				<Route path='/search' element={<Search />} />
-				<Route path='/project/create' element={<ProjectCreatePage />} />
-				<Route path='/project/info' element={<ProjectInfoPage />} />
-				<Route path='/project/introduction' element={<ProjectIntroductionPage />} />
-				<Route path='/project/media' element={<ProjectMediaPage />} />
-				<Route path='/creater' element={<Creater />} />
-				<Route path='/popup-payment' element={<PopupPaymentPage />} />
-				<Route path='/popup-payment-success' element={<SuccessPage />} />
-				<Route path='/fail' element={<FailPage />} />
-				<Route path='/notice/write' element={<NoticeWrite />} />
-				<Route path='/notice/edit/:id' element={<NoticeEdit />} />
-				<Route path='/profile' element={<ProfileHeader />} />
-				<Route path={`/google/callback`} element={<SocialLogin loginType={'google'} />} />
-				<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
-				<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
-				<Route path='/support/notice' element={<SupportNotice />} />
-				<Route path='/support/notice/:id' element={<SupportNoticeDetail />} />
-				<Route path='/support/faq' element={<SupportFAQ />} />
-				<Route path='/support/inquiry' element={<SupportInquiry />} />
-				<Route path='/admin' element={<AdminLayout />}>
+			<Route path='/' element={<MainPage />} />
+			<Route path='/login' element={<Login setLoginType={setLoginType} />} />
+			<Route path='/signup' element={<Signup />} />
+			<Route path='/idfind' element={<IDFindPage />} />
+			<Route path='/mypage' element={<MyPage />} />
+			<Route path='/project/:no' element={<FundingPage />} />
+			<Route path='/search' element={<Search />} />
+			<Route path='/project/create' element={<ProjectCreatePage />} />
+			<Route path='/project/info' element={<ProjectInfoPage />} />
+			<Route path='/project/introduction' element={<ProjectIntroductionPage />} />
+			<Route path='/project/media' element={<ProjectMediaPage />} />
+			<Route path='/creater' element={<Creater />} />
+			<Route path='/popup-payment' element={<PopupPaymentPage />} />
+			<Route path='/popup-payment-success' element={<SuccessPage />} />
+			<Route path='/fail' element={<FailPage />} />
+			<Route path='/notice/write' element={<NoticeWrite />} />
+			<Route path='/notice/edit/:id' element={<NoticeEdit />} />
+			<Route path='/profile' element={<ProfileHeader />} />
+			<Route path={`/google/callback`} element={<SocialLogin loginType={'google'} />} />
+			<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
+			<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
+			<Route path='/support/notice' element={<SupportNotice />} />
+			<Route path='/support/notice/:id' element={<SupportNoticeDetail />} />
+			<Route path='/support/faq' element={<SupportFAQ />} />
+			<Route path='/support/inquiry' element={<SupportInquiry />} />
+			<Route path='/admin' element={<AdminLayout />}>
 				<Route index element={<AdminPage />} />
-					<Route path='dashboard' element={<AdminDashboard />} />
-					<Route path='users' element={<AdminUsers />} />
-					<Route path='projects' element={<AdminProjects />} />
-					<Route path='notices' element={<AdminNotices />} />
-				</Route>
-			</Routes>
-			{!shouldHideLayout && <Footer />}
-		</AuthProvider>
-	)
+				<Route path='dashboard' element={<AdminDashboard />} />
+				<Route path='users' element={<AdminUsers />} />
+				<Route path='projects' element={<AdminProjects />} />
+				<Route path='notices' element={<AdminNotices />} />
+			</Route>
+			<Route path='/social/:id' element={<SocialPage />} />
+		</Routes>
+		{!shouldHideFooter && <Footer />}
+	</AuthProvider>
+)
 }
 
 export default App
