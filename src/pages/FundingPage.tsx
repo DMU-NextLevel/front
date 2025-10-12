@@ -25,8 +25,9 @@ const FundingPage = (): JSX.Element => {
 					amount={projectInfo?.sum ?? 0}
 					peopleNum={projectInfo?.fundingCount ?? 0}
 					likeNum={projectInfo?.likeCount ?? 0}
+					tag={projectInfo?.tag ?? []}
 				/>
-				<StarterInfo starter={projectInfo?.authorNickName ?? ''} />
+				<StarterInfo starter={projectInfo?.user?.nickName ?? ''} />
 			</div>
 			<FundingContent projectData={{ story, notice, community }} />
 			{payOpen && (

@@ -5,15 +5,25 @@ export interface ProjectDetailData {
     titleImg: ProjectImage
     createdAt: Date
     expiredAt: Date
-    isExpired: boolean
-    authorNickName: string
     isAuthor: boolean
     goal: number
     sum: number
     completionRate: number
     likeCount: number
     fundingCount: number
-    userCount: number
+    viewCount: number
+    status: string
+    tag: []
+    user: {
+        followCount: number
+        img: {
+            id: number
+            uri: string
+        }
+        isFollow: boolean
+        name: string
+        nickName: string
+    }
 }
 
 export type detailResponse<T> = {
