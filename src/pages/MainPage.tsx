@@ -37,11 +37,9 @@ const MainPage: React.FC = () => {
   return (
   <div className="ml-0 mr-auto flex flex-col box-border text-gray-700">
       {/* Modern hero and sections */}
-      
       <div className="w-full px-0">
         <HeroSection />
       </div>
-      
       <div className="px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]">
         <div className="w-full px-0">
         {/* New CategoryBar placed above existing CategorySelector */}
@@ -56,7 +54,6 @@ const MainPage: React.FC = () => {
             className="px-0 py-0"
           />
         </div>
-  
 
         {/* 취향 맞춤(7) + 오른쪽 실시간(3) */}
         <div className="mt-2 grid grid-cols-1 lg:grid-cols-10 gap-6 items-stretch">

@@ -41,13 +41,6 @@ declare global {
 	}
 }
 
-// AOS 초기화
-declare global {
-	interface Window {
-		AOS: any
-	}
-}
-
 function App() {
 	return (
 		<Router>
@@ -90,7 +83,7 @@ const AppWrapper = () => {
 				}, 100);
 			}
 		}, 50);
-		
+
 		return () => clearTimeout(timer);
 }, [location.pathname])
 

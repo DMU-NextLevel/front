@@ -42,12 +42,12 @@ const Creater: React.FC = () => {
 			const heroTop = heroSection.offsetTop
 			const heroHeight = heroSection.offsetHeight
 			const heroBottom = heroTop + heroHeight
-			
+
 			// 히어로 섹션 아래에 있는지 확인
 			if (scrollTop > heroBottom) {
 				hasPassedHeroRef.current = true
 			}
-			
+
 			// 히어로 섹션 위에 있으면 리셋
 			if (scrollTop < heroTop) {
 				if (heroScrollProgressRef.current > 0) {
@@ -140,7 +140,7 @@ const Creater: React.FC = () => {
 
 		// 초기 설정
 		document.body.style.overflow = 'auto'
-		
+
 		// 이벤트 리스너 추가
 		window.addEventListener('wheel', handleWheel, { passive: false })
 
@@ -162,7 +162,7 @@ const Creater: React.FC = () => {
 
 			const heroRect = tabsHeroSection.getBoundingClientRect()
 			const heroBottom = heroRect.bottom
-			
+
 			// 히어로 섹션의 하단이 화면 상단에 도달하면 sticky 활성화
 			if (heroBottom <= 75) {
 				setIsTabsSticky(true)
@@ -210,10 +210,10 @@ const Creater: React.FC = () => {
 		if (element) {
 			const elementPosition = element.getBoundingClientRect().top
 			const offsetPosition = elementPosition + window.pageYOffset
-			
-			window.scrollTo({ 
-				top: offsetPosition, 
-				behavior: 'smooth' 
+
+			window.scrollTo({
+				top: offsetPosition,
+				behavior: 'smooth'
 			})
 		}
 	}
@@ -285,7 +285,7 @@ const Creater: React.FC = () => {
 			const animateHero = () => {
 				const elapsed = Date.now() - startTime
 				const progress = Math.min(elapsed / animationDuration, 1)
-				
+
 				// easeInOutCubic 이징
 				const ease = progress < 0.5
 					? 4 * progress * progress * progress
@@ -309,7 +309,7 @@ const Creater: React.FC = () => {
 					// 히어로 애니메이션 완료 후 다음 섹션으로 즉시 이동
 					heroScrollProgressRef.current = 2.5
 					hasPassedHeroRef.current = true
-					
+
 					// 딜레이 없이 바로 다음 섹션으로 스크롤
 					nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
 				}
@@ -340,7 +340,7 @@ const Creater: React.FC = () => {
 							<img data-speed="0.8" src="https://images.unsplash.com/photo-1588007375246-3ee823ef4851?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjR8fG5lb258ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=60" alt="" />
 							<img data-speed="1" src="https://images.unsplash.com/photo-1571450669798-fcb4c543f6a4?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjF8fG5lb258ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=60" alt="" />
 						</div>
-					</div>	
+					</div>
 				</div>
 				{/* Custom Header for Creater Page */}
 				<header className='pt-6 md:pt-8 px-4 md:px-8 lg:px-[10%] relative z-10'>
@@ -378,17 +378,17 @@ const Creater: React.FC = () => {
 							지금 바로 당신의 프로젝트를 시작하세요.
 						</p>
 						<div className='flex flex-wrap gap-3 md:gap-4 animate-fade-in-up delay-600'>
-							<Link 
-								to='/project/create' 
+							<Link
+								to='/project/create'
 								className='inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 md:px-10 md:py-5 rounded-full text-base md:text-xl font-bold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105'
 							>
 								프로젝트 시작하기 <ArrowRight className='w-5 h-5 md:w-6 md:h-6' />
 							</Link>
-							<button 
+							<button
 								onClick={scrollToSuccess}
 								className='inline-flex items-center gap-2 md:gap-3 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-6 py-3 md:px-10 md:py-5 rounded-full text-base md:text-xl font-semibold hover:bg-white/20 transition-all duration-300'
 							>
-								문의하기 
+								문의하기
 							</button>
 						</div>
 						<p className='mt-6 md:mt-8 text-xs md:text-sm text-gray-500 animate-fade-in-up delay-700'>
@@ -482,33 +482,33 @@ const Creater: React.FC = () => {
 			<section className='sticky-tabs-hero relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 text-center px-8'>
 				{/* SVG Path 애니메이션 */}
 				<div className='svg-content absolute inset-0 pointer-events-none overflow-hidden z-0'>
-					<svg 
-						className='absolute inset-0 w-full h-full' 
-						viewBox='0 0 1920 800' 
+					<svg
+						className='absolute inset-0 w-full h-full'
+						viewBox='0 0 1920 800'
 						xmlns='http://www.w3.org/2000/svg'
 						preserveAspectRatio='none'
 					>
-						<path 
+						<path
 							className='svg-path'
 							d='M0,600 Q480,300 960,500 Q1440,700 1920,400'
-							fill='none' 
-							stroke='#059669' 
+							fill='none'
+							stroke='#059669'
 							strokeWidth='3'
 							opacity='0.3'
 						/>
-						<path 
+						<path
 							className='svg-path'
 							d='M0,400 Q240,100 480,400 Q720,700 960,400 Q1200,100 1440,400 Q1680,700 1920,400'
-							fill='none' 
-							stroke='#F59E0B' 
+							fill='none'
+							stroke='#F59E0B'
 							strokeWidth='3'
 							opacity='0.3'
 						/>
-						<path 
+						<path
 							className='svg-path'
 							d='M200,650 Q600,350 1000,550 Q1400,750 1800,450'
-							fill='none' 
-							stroke='#0891B2' 
+							fill='none'
+							stroke='#0891B2'
 							strokeWidth='2'
 							opacity='0.2'
 						/>
@@ -521,7 +521,7 @@ const Creater: React.FC = () => {
 				<h3 className='relative z-10 text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-600 font-light mb-8 md:mb-12 scroll-fade-in px-4'>
 					아이디어를 현실로, 위드유가 함께합니다
 				</h3>
-				
+
 				{/* 핵심 가치 3개를 한 줄로 */}
 				<div className='relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-5xl mx-auto'>
 					<div className='group bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 hover:border-blue-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 scroll-scale-in'>
@@ -555,11 +555,11 @@ const Creater: React.FC = () => {
 					</div>
 				</div>
 
-				<div 
+				<div
 					ref={tabsContainerRef}
 					className={`sticky-tabs-container relative z-10 ${isTabsSticky ? 'sticky-tabs-container--sticky' : ''}`}
 				>
-					<a 
+					<a
 						ref={(el) => { tabRefs.current['features'] = el }}
 						className={`sticky-tab ${currentTab === 'features' ? 'active' : ''}`}
 						href='#features'
@@ -567,7 +567,7 @@ const Creater: React.FC = () => {
 					>
 						자격 요건
 					</a>
-					<a 
+					<a
 						ref={(el) => { tabRefs.current['benefits'] = el }}
 						className={`sticky-tab ${currentTab === 'benefits' ? 'active' : ''}`}
 						href='#benefits'
@@ -575,7 +575,7 @@ const Creater: React.FC = () => {
 					>
 						장점
 					</a>
-					<a 
+					<a
 						ref={(el) => { tabRefs.current['categories'] = el }}
 						className={`sticky-tab ${currentTab === 'categories' ? 'active' : ''}`}
 						href='#categories'
@@ -583,7 +583,7 @@ const Creater: React.FC = () => {
 					>
 						카테고리
 					</a>
-					<a 
+					<a
 						ref={(el) => { tabRefs.current['tools'] = el }}
 						className={`sticky-tab ${currentTab === 'tools' ? 'active' : ''}`}
 						href='#tools'
@@ -591,11 +591,11 @@ const Creater: React.FC = () => {
 					>
 						도구
 					</a>
-					<span 
-						className='sticky-tab-slider' 
-						style={{ 
-							width: `${sliderStyle.width}px`, 
-							left: `${sliderStyle.left}px` 
+					<span
+						className='sticky-tab-slider'
+						style={{
+							width: `${sliderStyle.width}px`,
+							left: `${sliderStyle.left}px`
 						}}
 					></span>
 				</div>
@@ -614,7 +614,7 @@ const Creater: React.FC = () => {
 							<span className='text-cyan-500'>개인, 개인 사업자, 법인 사업자</span>까지 누구나 이용할 수 있습니다.
 						</h2>
 					</div>
-					
+
 					{/* 움직이는 카테고리 - 여백 없이 화면 끝에서 끝으로 */}
 					<div className='relative w-full overflow-hidden py-12'>
 						<div className='flex items-center h-full animate-move-right whitespace-nowrap'>
@@ -1096,8 +1096,8 @@ const Creater: React.FC = () => {
 					<p className='text-base md:text-xl mb-6 md:mb-8 opacity-90'>
 						당신의 창의적인 아이디어를 세상과 공유하고, 함께 성장할 후원자들을 만나보세요.
 					</p>
-					<Link 
-						to='/project/create' 
+					<Link
+						to='/project/create'
 						className='inline-flex items-center gap-2 md:gap-3 bg-white text-blue-600 px-6 py-3 md:px-8 md:py-4 rounded-lg text-base md:text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
 					>
 						프로젝트 시작하기 <ArrowRight className='w-4 h-4 md:w-5 md:h-5' />

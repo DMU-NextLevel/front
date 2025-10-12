@@ -91,10 +91,7 @@ const Search: React.FC = () => {
 				}
 			})
 
-			if (node) observer.current.observe(node)
-		},
-		[loading, hasMore]
-	)
+  if (node) observer.current.observe(node);}, [loading, hasMore]);
 
 	// 검색 키워드 저장
 	useEffect(() => {
@@ -134,9 +131,9 @@ const Search: React.FC = () => {
 		const diffTime = expiredDate.getTime() - today.getTime()
 		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-		// 생성일로부터 24시간 이내면 NEW
-		const createdDiff = today.getTime() - createdDate.getTime()
-		const createdHours = Math.floor(createdDiff / (1000 * 60 * 60))
+    // 생성일로부터 24시간 이내면 NEW
+    const createdDiff = today.getTime() - createdDate.getTime();
+    const createdHours = Math.floor(createdDiff / (1000 * 60 * 60));
 
 		return createdHours <= 24 ? 'New' : diffDays < 0 ? '마감' : `${diffDays}일 남음`
 	}
@@ -167,14 +164,14 @@ const Search: React.FC = () => {
 						'전문가의 노하우가 담긴 고품질 콘텐츠와 서비스를 만나보세요.',
 						'모든 연령대가 함께 즐길 수 있는 재미있고 유익한 경험을 제공합니다.'
 					]
-					
+
 					// 더미 소개 텍스트 추가
 					const projectsWithIntro = data.map((project: any, index: number) => ({
 						...project,
-						shortDescription: project.shortDescription || 
-							project.description || 
-							project.summary || 
-							project.intro || 
+						shortDescription: project.shortDescription ||
+							project.description ||
+							project.summary ||
+							project.intro ||
 							dummyDescriptions[index % dummyDescriptions.length]
 					}))
 					setProjects(projectsWithIntro)
@@ -374,7 +371,7 @@ const Search: React.FC = () => {
 									</p>
 									<div className='flex flex-wrap gap-2'>
 										{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-											<span 
+											<span
 												key={`hidden-${tagIndex}`}
 												className='inline-flex items-center text-xs font-medium text-white bg-gray-600 px-2.5 py-1 rounded-full'
 											>
@@ -387,7 +384,7 @@ const Search: React.FC = () => {
 									</div>
 								</div>
 							</div>
-							
+
 							<div className='relative z-10 p-4'>
 								<a href={`/project/${item.id}`} className='block'>
 									{/* 이미지와 프로그래스바 영역 */}
@@ -417,7 +414,7 @@ const Search: React.FC = () => {
   <i className={`text-base transition-all duration-200 hover:scale-125 hover:text-red-500 ${item.isLiked ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
 </button>
 										</div>
-										
+
 										   {/* 프로그래스바 - 이미지 바로 옆에 붙임 */}
 										   <div className='w-2 relative overflow-visible transition-all duration-150 ease group/progress cursor-pointer'>
 											   <div className='bg-gray-50 relative rounded-r-xl w-2 h-full flex flex-col-reverse transition-all duration-200 group-hover/progress:bg-gray-200 group-hover/progress:w-3'>
@@ -440,18 +437,18 @@ const Search: React.FC = () => {
 										   </div>
 									</div>
 								</a>
-									
+
 									<div className='space-y-2 relative'>
 										<a href={`/project/${item.id}`} className='block group/title'>
 											  <h3 className='text-lg font-bold text-gray-900 leading-tight line-clamp-2 hover:scale-[1.02] transition-all duration-250 ease-out'>
 												{item.title}
 											</h3>
 										</a>
-										
+
 																									<div className='text-xs text-gray-600 transition-all duration-200 ease-in-out hover:text-purple-600 hover:underline cursor-pointer'>
 																										Big Thinker
 																									</div>
-										
+
 										<div className='flex items-center justify-between text-xs text-gray-500 mb-2 mt-2'>
 											<span>{remainingText && remainingText !== '마감' ? remainingText : '진행 중'}</span>
 											<span className='text-purple-600 font-semibold'>{rate}% funded</span>
@@ -463,10 +460,10 @@ const Search: React.FC = () => {
 												<p className='text-sm text-gray-600 leading-relaxed'>
 													{introText}
 												</p>
-												
+
 												<div className='flex flex-wrap gap-2'>
 													{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-														<span 
+														<span
 															key={tagIndex}
 															className='inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-full transition-all duration-250 ease-out cursor-pointer'
 														>
@@ -474,7 +471,7 @@ const Search: React.FC = () => {
 														</span>
 													))}
 												</div>
-											</div>	
+											</div>
 										</div>
 									</div>
 								</div>
