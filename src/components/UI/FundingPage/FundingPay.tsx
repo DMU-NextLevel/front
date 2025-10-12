@@ -1,15 +1,34 @@
-import { JSX, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { RewardData } from './modals/FundingModal'
+import { api } from '../../../AxiosInstance'
 
 interface FundingPayProps {
 	reward: RewardData | undefined
 }
 
+interface responseCouponList {
+	message: string
+	data: [
+		{
+			id: number
+			name: string
+			percent: number
+		}
+	]
+}
+
+interface CouponList {
+	id: number
+	name: string
+	percent: number
+}
+
 const FundingPay = ({ reward }: FundingPayProps): JSX.Element => {
 	const termsList = ['[필수] 구매조건, 결제 진행 및 결제 대행 서비스 동의', '[필수] 개인정보 제3자 제공 동의', '[필수] 책임 규정에 대한 동의']
 	const [allAgree, setAllAgree] = useState(false)
-	const [coupon, setCoupon] = useState<number>(0)
+	const [couponPercent, setCouponPercent] = useState<number>(0) // % 할인율
 	const [checkedTerms, setCheckedTerms] = useState(new Array(termsList.length).fill(false))
+	const [couponList, setCouponList] = useState<CouponList[] | null>(null)
 
 	const handleTermChange = (index: number) => {
 		const updated = [...checkedTerms]
@@ -26,7 +45,29 @@ const FundingPay = ({ reward }: FundingPayProps): JSX.Element => {
 		return reward.data.price
 	}
 
+	useEffect(() => {
+		const getCouponList = async () => {
+			const response = await api.get<responseCouponList>(`/social/coupon`)
+			setCouponList(response.data.data)
+		}
+		getCouponList()
+	}, [])
+
+	const handleCouponChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const selectedId = parseInt(e.target.value)
+		if (!selectedId || !couponList) {
+			setCouponPercent(0)
+			return
+		}
+		const selectedCoupon = couponList.find((coupon) => coupon.id === selectedId)
+		if (selectedCoupon) {
+			setCouponPercent(selectedCoupon.percent)
+		}
+	}
+
 	const rewardPrice = getRewardPrice()
+	const discountAmount = Math.floor(rewardPrice * (couponPercent / 100)) // 할인 금액
+	const finalPrice = rewardPrice - discountAmount // 최종 결제 금액
 
 	return (
 		<div className='m-5'>
@@ -38,24 +79,47 @@ const FundingPay = ({ reward }: FundingPayProps): JSX.Element => {
 					<p className='text-purple-600 font-bold text-xl'>{rewardPrice.toLocaleString()}P</p>
 				</div>
 			</div>
-			<div className='flex justify-between py-2.5 px-5 bg-gray-100 mt-2.5 rounded-lg'>
-				<p className='font-medium'>쿠폰</p>
-				<select className='border border-gray-300 rounded px-2 py-1 text-sm'>
-					<option>쿠폰을 선택해주세요.</option>
+			{reward?.type === 'option' && (
+			<div className='flex justify-between items-center py-4 px-5 bg-gradient-to-r from-purple-50 to-blue-50 mt-2.5 rounded-xl border border-purple-100'>
+				<div className='flex items-center gap-2'>
+					<svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5 text-purple-500' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+						<path
+							strokeLinecap='round'
+							strokeLinejoin='round'
+							strokeWidth={2}
+							d='M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z'
+						/>
+					</svg>
+					<p className='font-semibold text-gray-800'>쿠폰</p>
+				</div>
+				<select
+					className='border-2 border-purple-200 rounded-lg px-4 py-2 text-sm font-medium bg-white hover:border-purple-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200 transition-all duration-200 cursor-pointer'
+					onChange={handleCouponChange}
+					defaultValue=''>
+					<option value=''>{couponList && couponList.length > 0 ? '쿠폰을 선택해주세요.' : '보유중인 쿠폰이 없습니다.'}</option>
+					{couponList &&
+						couponList.map((item) => (
+							<option key={item.id} value={item.id}>
+								{item.name} ({item.percent}%)
+							</option>
+						))}
 				</select>
 			</div>
+			)}
 			<div className='my-8 pb-2.5 border-b-4 border-gray-100'>
 				<div className='flex justify-between my-2.5 text-gray-700'>
 					<span>리워드 금액</span>
 					<span className='font-semibold'>{rewardPrice.toLocaleString()}P</span>
 				</div>
-				<div className='flex justify-between my-2.5 text-gray-700'>
-					<span>쿠폰 금액</span>
-					<span className='font-semibold text-red-500'>-{coupon.toLocaleString()}P</span>
-				</div>
+				{couponPercent > 0 && (
+					<div className='flex justify-between my-2.5 text-gray-700'>
+						<span>쿠폰 할인 ({couponPercent}%)</span>
+						<span className='font-semibold text-red-500'>-{discountAmount.toLocaleString()}P</span>
+					</div>
+				)}
 				<div className='flex justify-between my-2.5 font-bold text-xl mt-4'>
 					<span>총 결제 금액</span>
-					<span className='text-purple-600'>{(rewardPrice - coupon).toLocaleString()}P</span>
+					<span className='text-purple-600'>{finalPrice.toLocaleString()}P</span>
 				</div>
 			</div>
 			<div className='bg-amber-50 border-l-4 border-amber-400 text-gray-700 py-4 px-5 rounded-lg'>
