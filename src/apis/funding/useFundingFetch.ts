@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { api } from "../AxiosInstance"
+import { api } from "../../AxiosInstance"
 import { useParams } from "react-router-dom"
-import { RewardData } from "../components/UI/FundingPage/modals/FundingModal"
+import { RewardData } from "../../components/UI/FundingPage/modals/FundingModal"
 
 interface FundingFetchProps {
     reward: RewardData

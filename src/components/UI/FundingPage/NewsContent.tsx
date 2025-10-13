@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import Modal from '../../layout/Modal'
 import NoticeModal from './modals/NoticeModal'
-import { useNoticeDelete } from '../../../apis/useNoticeFetch'
+import { useNoticeDelete } from '../../../apis/funding/useNoticeFetch'
 
 interface NewsContentProps {
 	title: string

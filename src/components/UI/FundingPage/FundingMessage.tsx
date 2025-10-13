@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import QuestionModal from './modals/QuestionModal'
 import Modal from '../../layout/Modal'
-import { useCommunityDelete } from '../../../apis/useCommuFetch'
+import { useCommunityDelete } from '../../../apis/funding/useCommuFetch'
 
 interface AnswerData {
 	id: number

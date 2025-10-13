@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Modal from '../../../layout/Modal'
-import { useNoticeAdd, useNoticeUpdate } from '../../../../apis/useNoticeFetch'
+import { useNoticeAdd, useNoticeUpdate } from '../../../../apis/funding/useNoticeFetch'
 import { useParams } from 'react-router-dom'
 
 interface NoticeFormData {

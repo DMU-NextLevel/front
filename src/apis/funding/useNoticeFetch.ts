@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { NoticeAddData } from "../types/project"
-import { api } from "../AxiosInstance"
+import { NoticeAddData } from "../../types/project"
+import { api } from "../../AxiosInstance"
 
 interface NoticeAddProps {
 	projectId: string
