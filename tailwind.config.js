@@ -32,6 +32,7 @@ module.exports = {
               'spin': 'spin 1s linear infinite',
               'shimmer': 'shimmer 3s ease-in-out infinite',
               'blob': 'blob 7s infinite',
+              'fadeIn': 'fadeIn 0.5s ease-in',
             },
             keyframes: {
               fadeInUp: {
@@ -42,6 +43,14 @@ module.exports = {
                 'to': {
                   opacity: '1',
                   transform: 'translateY(0)',
+                },
+              },
+              fadeIn: {
+                'from': {
+                  opacity: '0',
+                },
+                'to': {
+                  opacity: '1',
                 },
               },
               pulseCustom: {

@@ -221,7 +221,7 @@ const NoticeEdit: React.FC = () => {
 		})
 
 		try {
-			const res = await api.post(`/admin/notice/${id}`, formData, {
+			const res = await api.put(`/admin/notice/${id}`, formData, {
 				withCredentials: true,
 				headers: {
 					'Content-Type': 'multipart/form-data',
@@ -230,7 +230,7 @@ const NoticeEdit: React.FC = () => {
 
 			if (res.data.message === 'success') {
 				alert('공지사항이 성공적으로 수정되었습니다.')
-				navigate(`/notice/${id}`, {
+				navigate(`/support/notice/${id}`, {
 					state: { ...article, title, content: processedContent },
 				})
 			} else {

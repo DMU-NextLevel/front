@@ -15,8 +15,6 @@ import ProjectMediaPage from './pages/ProjectMediaPage'
 import ProjectIntroductionPage from './pages/ProjectIntroductionPage'
 import { AuthProvider } from './hooks/AuthContext'
 import ScrollToTop from './hooks/ScrollToTop'
-import NoticeBoard from './pages/NoticeBoard'
-import NoticeDetail from './pages/NoticeDetail'
 import NoticeWrite from './pages/NoticeWrite'
 import NoticeEdit from './pages/NoticeEdit'
 import ProfileHeader from './pages/ProfileHeader'
@@ -25,6 +23,16 @@ import { PopupPaymentPage } from './components/UI/TossPayments'
 import { SuccessPage } from './components/UI/TossPayments'
 import { FailPage } from './components/UI/TossPayments'
 import SocialLogin from './pages/SocialLogin'
+import SupportNotice from './pages/Support/SupportNotice'
+import SupportFAQ from './pages/Support/SupportFAQ'
+import SupportInquiry from './pages/Support/SupportInquiry'
+import SupportNoticeDetail from './pages/Support/SupportNoticeDetail'
+import AdminLayout from './pages/Admin/AdminLayout'
+import AdminPage from './pages/Admin/AdminPage'
+import AdminDashboard from './pages/Admin/AdminDashboard'
+import AdminUsers from './pages/Admin/AdminUsers'
+import AdminProjects from './pages/Admin/AdminProjects'
+import AdminNotices from './pages/Admin/AdminNotices'
 
 // AOS 초기화
 declare global {
@@ -45,7 +53,7 @@ function App() {
 const AppWrapper = () => {
 	const [loginType, setLoginType] = useState<string>('')
 	const location = useLocation()
-	const hideLayout = ['/login', '/signup', '/popup-payment', '/popup-payment-success', '/kakao/callback', '/naver/callback', '/google/callback', '/creater']
+	const hideLayout = ['/login', '/signup', '/popup-payment', '/popup-payment-success', '/kakao/callback', '/naver/callback', '/google/callback', '/creater', '/admin']
 
 	// AOS 초기화
 	useEffect(() => {
@@ -77,12 +85,14 @@ const AppWrapper = () => {
 		}, 50);
 		
 		return () => clearTimeout(timer);
-	}, [location.pathname])
+}, [location.pathname])
 
-	return (
-		<AuthProvider>
-			{!hideLayout.includes(location.pathname) && <HeaderMain />}
-			<Routes>
+const shouldHideLayout = hideLayout.includes(location.pathname) || location.pathname.startsWith('/admin')
+
+return (
+	<AuthProvider>
+		{!shouldHideLayout && <HeaderMain />}
+		<Routes>
 				<Route path='/' element={<MainPage />} />
 				<Route path='/login' element={<Login setLoginType={setLoginType} />} />
 				<Route path='/signup' element={<Signup />} />
@@ -98,16 +108,25 @@ const AppWrapper = () => {
 				<Route path='/popup-payment' element={<PopupPaymentPage />} />
 				<Route path='/popup-payment-success' element={<SuccessPage />} />
 				<Route path='/fail' element={<FailPage />} />
-				<Route path='/notice' element={<NoticeBoard />} />
-				<Route path='/notice/:id' element={<NoticeDetail />} />
 				<Route path='/notice/write' element={<NoticeWrite />} />
 				<Route path='/notice/edit/:id' element={<NoticeEdit />} />
 				<Route path='/profile' element={<ProfileHeader />} />
 				<Route path={`/google/callback`} element={<SocialLogin loginType={'google'} />} />
 				<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
 				<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
+				<Route path='/support/notice' element={<SupportNotice />} />
+				<Route path='/support/notice/:id' element={<SupportNoticeDetail />} />
+				<Route path='/support/faq' element={<SupportFAQ />} />
+				<Route path='/support/inquiry' element={<SupportInquiry />} />
+				<Route path='/admin' element={<AdminLayout />}>
+				<Route index element={<AdminPage />} />
+					<Route path='dashboard' element={<AdminDashboard />} />
+					<Route path='users' element={<AdminUsers />} />
+					<Route path='projects' element={<AdminProjects />} />
+					<Route path='notices' element={<AdminNotices />} />
+				</Route>
 			</Routes>
-			{!hideLayout.includes(location.pathname) && <Footer />}
+			{!shouldHideLayout && <Footer />}
 		</AuthProvider>
 	)
 }
