@@ -41,9 +41,9 @@ const FundingReward = ({ id, price, title, checked, setSelectReward }: props): J
 				/>
 				<div className='flex-1'>
 					<div className='flex items-center justify-between mb-2'>
-						<span className={`font-bold text-2xl transition-colors duration-200 ${check ? 'text-purple-600' : 'text-gray-400'}`}>{price}</span>
+						<span className={`font-bold text-xl transition-colors duration-200 ${check ? 'text-purple-600' : 'text-gray-400'}`}>{price} P</span>
 					</div>
-					<p className={`font-bold text-lg mb-2 transition-colors duration-200 ${check ? 'text-gray-800' : 'text-gray-400'}`}>{title}</p>
+					<p className={`font-medium text-base mb-2 transition-colors duration-200 ${check ? 'text-gray-600' : 'text-gray-400'}`}>{title}</p>
 					<p className={`text-xs flex items-center gap-1 transition-colors duration-200 ${check ? 'text-purple-600' : 'text-gray-400'}`}>
 					</p>
 				</div>
