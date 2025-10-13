@@ -365,14 +365,14 @@ export default function FeatureOverview() {
 
     return (
       <div className="flex justify-center lg:justify-start"> 
-  <div className="relative accent-bg rounded-2xl px-6 pt-20 pb-0 w-[400px] h-[440px] flex items-center justify-center shadow-lg overflow-hidden">
+  <div className="relative accent-bg rounded-2xl px-4 sm:px-6 pt-16 sm:pt-20 pb-0 w-[320px] sm:w-[400px] h-[352px] sm:h-[440px] flex items-center justify-center shadow-lg overflow-hidden">
           {/* 정상 상태 */}
           {animationPhase === 'idle' && (
             <div 
               key={`card-${active}`}
-              className="device-card bg-white rounded-t-2xl w-[280px] p-6 mb-[-10px] shadow-inner relative"
+              className="device-card bg-white rounded-t-2xl w-[240px] sm:w-[280px] p-4 sm:p-6 mb-[-10px] shadow-inner relative"
             >
-              <h4 className="text-lg font-semibold mb-4">{currentCard.title}</h4>
+              <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{currentCard.title}</h4>
               {currentCard.content}
             </div>
           )}
@@ -381,11 +381,11 @@ export default function FeatureOverview() {
             {animationPhase === 'exiting' && prevActive !== null && (
             <div 
               key={`card-${prevActive}-exiting`}
-              className={`device-card bg-white rounded-t-2xl w-[280px] p-6 mb-[-10px] shadow-inner relative transition-all duration-300 ease-in-out ${
+              className={`device-card bg-white rounded-t-2xl w-[240px] sm:w-[280px] p-4 sm:p-6 mb-[-10px] shadow-inner relative transition-all duration-300 ease-in-out ${
                 exitingStarted ? 'transform translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
               }`}
             >
-              <h4 className="text-lg font-semibold mb-4">{cardContents[prevActive - 1].title}</h4>
+              <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{cardContents[prevActive - 1].title}</h4>
               {cardContents[prevActive - 1].content}
             </div>
           )}
@@ -394,11 +394,11 @@ export default function FeatureOverview() {
           {animationPhase === 'entering' && nextActive !== null && (
             <div 
               key={`card-${nextActive}-entering`}
-              className={`device-card bg-white rounded-t-2xl w-[280px] p-6 mb-[-10px] shadow-inner relative transition-all duration-300 ease-in-out ${
+              className={`device-card bg-white rounded-t-2xl w-[240px] sm:w-[280px] p-4 sm:p-6 mb-[-10px] shadow-inner relative transition-all duration-300 ease-in-out ${
                 enteringStarted ? 'transform translate-y-0 opacity-100' : 'transform translate-y-full opacity-0'
               }`}
             >
-              <h4 className="text-lg font-semibold mb-4">{cardContents[nextActive - 1].title}</h4>
+              <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{cardContents[nextActive - 1].title}</h4>
               {cardContents[nextActive - 1].content}
             </div>
           )}
@@ -410,15 +410,15 @@ export default function FeatureOverview() {
               setIsPlaying(next)
               isPlayingRef.current = next
             }}
-            className="absolute top-3 right-3 w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-white"
+            className="absolute top-2 sm:top-3 right-2 sm:right-3 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-transparent flex items-center justify-center text-white"
           >
             {isPlaying ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <rect x="6" y="5" width="3" height="14" rx="1" fill="#fff" />
                 <rect x="15" y="5" width="3" height="14" rx="1" fill="#fff" />
               </svg>
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path d="M5 3v18l15-9L5 3z" fill="#fff" />
               </svg>
             )}
@@ -435,7 +435,7 @@ export default function FeatureOverview() {
   }
 
   return (
-    <section className="w-full bg-gray-50 py-12 feature-overview">
+    <section className="w-full bg-gray-50 py-8 sm:py-10 md:py-12 feature-overview">
       <style>{`
         .device-card { width: 280px; height: 400px }
         /* custom accent color */
@@ -447,20 +447,20 @@ export default function FeatureOverview() {
         .feature-overview input:focus, .feature-overview textarea:focus { box-shadow: 0 0 0 4px rgba(166,108,255,0.12); outline: none; }
       `}</style>
 
-      <div className="max-w-7xl mx-auto px-6">
-        <h3 className="text-center text-3xl font-bold mb-4">WithU에서 펀딩하기는 쉽고, 강력하며, 신뢰할 수 있습니다</h3>
-        <p className="text-center text-lg text-gray-600 mb-12">WithU와 함께라면 당신의 아이디어는 현실이 됩니다. 아래 3단계에 따라 쉽게 프로젝트를 시작하고 성공을 경험하세요.</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-6">
+        <h3 className="text-center text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4">WithU에서 펀딩하기는 쉽고, 강력하며, 신뢰할 수 있습니다</h3>
+        <p className="text-center text-sm sm:text-base md:text-lg text-gray-600 mb-8 sm:mb-10 md:mb-12">WithU와 함께라면 당신의 아이디어는 현실이 됩니다. 아래 3단계에 따라 쉽게 프로젝트를 시작하고 성공을 경험하세요.</p>
 
-        <div className="flex flex-col lg:flex-row items-start gap-8">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 sm:gap-8">
           {/* Left: visual that changes per step */}
-          <div className="flex-1">{renderLeft()}</div>
+          <div className="flex-1 flex justify-center lg:justify-start">{renderLeft()}</div>
 
           {/* Right: steps */}
-          <div className="flex-1">
+          <div className="flex-1 w-full">
             <div className="max-w-xl mx-auto lg:mx-0">
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 {STEPS.map((s) => (
-                  <div key={s.id} className="flex items-start gap-6">
+                  <div key={s.id} className="flex items-start gap-4 sm:gap-6">
                     <div className="flex flex-col items-center">
                       <button
                         onClick={() => {
@@ -469,7 +469,7 @@ export default function FeatureOverview() {
                           setAutoplayProgress(0)
                           setActiveWithAnimation(s.id)
                         }}
-                        className={`w-12 h-12 rounded-full flex items-center justify-center border-2 text-lg font-bold transition-all ${
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold transition-all ${
                           s.id === active 
                             ? 'active-accent' 
                             : 'bg-white text-gray-600 border-gray-300 hover-accent-border'
@@ -478,15 +478,15 @@ export default function FeatureOverview() {
                         {s.id}
                       </button>
                       {s.id < STEPS.length && (
-                        <div className="w-0.5 h-16 bg-gray-300 mt-4"></div>
+                        <div className="w-0.5 h-12 sm:h-16 bg-gray-300 mt-3 sm:mt-4"></div>
                       )}
                     </div>
                     
                     <div className="flex-1 pt-1">
-                      <h4 className={`text-xl font-bold mb-2 ${s.id === active ? 'text-gray-900' : 'text-gray-700'}`}>
+                      <h4 className={`text-lg sm:text-xl font-bold mb-2 ${s.id === active ? 'text-gray-900' : 'text-gray-700'}`}>
                         {s.title}
                       </h4>
-                      <p className="text-gray-600 leading-relaxed">{s.desc}</p>
+                      <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{s.desc}</p>
                     </div>
                   </div>
                 ))}

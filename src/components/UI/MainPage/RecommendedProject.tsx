@@ -206,30 +206,30 @@ const RecommendedProject: React.FC = () => {
 	}, [updateSliderState])
 
 	return (
-		<section className='py-5 px-[15%]' data-aos='fade-up' data-aos-once='true'>
+		<section className='py-5 px-4 sm:px-6 md:px-8 lg:px-[15%]' data-aos='fade-up' data-aos-once='true'>
 			<div className='flex items-end justify-between mb-4'>
 				<div>
-					<h2 className='text-xl md:text-2xl font-bold'>추천 프로젝트</h2>
-					<p className='mt-1 text-xs text-gray-500'>인기 있고 추천하는 프로젝트</p>
+					<h2 className='text-lg sm:text-xl md:text-2xl font-bold'>추천 프로젝트</h2>
+					<p className='mt-1 text-xs sm:text-sm text-gray-500'>인기 있고 추천하는 프로젝트</p>
 				</div>
-				<a href='/search?order=RECOMMEND' className='text-sm text-purple-600 hover:underline'>더 보기</a>
+				<a href='/search?order=RECOMMEND' className='text-xs sm:text-sm text-purple-600 hover:underline'>더 보기</a>
 			</div>
 
 			{loading && (
-				<div className='grid grid-cols-1 lg:grid-cols-10 gap-10'>
-					<div className='lg:col-span-5 h-96 rounded-2xl ring-1 ring-gray-200 bg-gray-50 animate-pulse' />
-					<div className='lg:col-span-5 space-y-4'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-10 gap-4 md:gap-6 lg:gap-10'>
+					<div className='md:col-span-1 lg:col-span-5 h-64 sm:h-80 md:h-96 rounded-2xl ring-1 ring-gray-200 bg-gray-50 animate-pulse' />
+					<div className='md:col-span-1 lg:col-span-5 space-y-3 sm:space-y-4'>
 						{Array.from({ length: 4 }).map((_, i) => (
-							<div key={i} className='h-24 rounded-xl ring-1 ring-gray-200 bg-gray-50 animate-pulse' />
+							<div key={i} className='h-20 sm:h-24 rounded-xl ring-1 ring-gray-200 bg-gray-50 animate-pulse' />
 						))}
 					</div>
 				</div>
 			)}
 
 			{!loading && (
-				<div className='grid grid-cols-1 lg:grid-cols-10 gap-2'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-10 gap-4 md:gap-6 lg:gap-10'>
 					{/* 좌측: 슬라이더로 4개 아이템 */}
-					<div className='lg:col-span-5 relative'>
+					<div className='md:col-span-1 lg:col-span-5 relative'>
 						{/* 좌측 슬라이더 컨테이너 */}
 						<div 
 							ref={sliderRef}
@@ -245,9 +245,9 @@ const RecommendedProject: React.FC = () => {
 								return (
 									<div
 										key={p.id}
-										className='group cursor-pointer overflow-hidden transition flex-shrink-0 w-full snap-center'
+										className='group overflow-hidden transition flex-shrink-0 w-full snap-center'
 									>
-										<div className='relative w-full overflow-hidden rounded-t-2xl transition-all duration-500' style={{ aspectRatio: '16 / 9' }}>
+										<div className='relative w-full overflow-hidden rounded-t-2xl transition-all duration-500 cursor-pointer' style={{ aspectRatio: '16 / 9' }} onClick={() => navigate(`/project/${p.id}`)}>
 											<img
 												src={imgSrc || noImage}
 												alt={p.title}
@@ -266,9 +266,13 @@ const RecommendedProject: React.FC = () => {
 
 										<div className='px-4 pt-2 pb-4'>
 											<div className='flex items-center justify-between mb-0'>
-												<h4 className='text-lg font-bold line-clamp-2 hover:underline transition-all cursor-pointer' onClick={() => navigate(`/project/${p.id}`)}>{p.title}</h4>
+												<h4 className='text-lg font-bold line-clamp-2 hover:underline transition-all'>
+													<span className='cursor-pointer' onClick={() => navigate(`/project/${p.id}`)}>{p.title}</span>
+												</h4>
 												<button
 													onClick={(e) => {
+														e.preventDefault()
+														e.stopPropagation()
 														handleLikeToggle(p.id, p.isLiked ?? false)
 													}}
 													className='text-gray-400 hover:text-red-500 p-2 rounded-md'
@@ -356,7 +360,7 @@ const RecommendedProject: React.FC = () => {
 					</div>
 
 					{/* 우측: 나머지 4개 */}
-					<div className='lg:col-span-5 relative' style={{ top: '-16px', left: '16px' }}>
+					<div className='md:col-span-1 lg:col-span-5 relative' style={{ top: '-16px', left: '16px' }}>
 						<div className='grid grid-cols-2 gap-2'>
 							{projects.slice(3, 7).map((p) => {
 								const rate = Math.max(0, Math.min(100, Math.round(p.completionRate ?? 0)))
@@ -432,6 +436,8 @@ const RecommendedProject: React.FC = () => {
 													<h4 className='text-sm font-bold line-clamp-2 hover:underline transition-all cursor-pointer' onClick={() => navigate(`/project/${p.id}`)}>{p.title}</h4>
 													<button
 														onClick={(e) => {
+															e.preventDefault()
+															e.stopPropagation()
 															handleLikeToggle(p.id, p.isLiked ?? false)
 														}}
 														className='text-gray-400 hover:text-red-500 p-1 rounded-md ml-1'

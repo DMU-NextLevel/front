@@ -6,7 +6,6 @@ import FeatureOverview from "../components/UI/MainPage/FeatureOverview";
 import CategorySelector from "../components/UI/MainPage/CategorySelector";
 import NewProject from "../components/UI/MainPage/NewProject";
 import HeroSection from "../components/UI/MainPage/HeroSection";
-// Removed "카테고리 탐색" selector section
 import PopularProjectGallery from "../components/UI/MainPage/PersonalizedProjectGallery";
 import CustomizedProjectGallery from "../components/UI/MainPage/CustomizedProjectGallery";
 import StatsSection from "../components/UI/MainPage/StatsSection";

@@ -68,7 +68,7 @@ const AnimatedBanner: React.FC = () => {
     return () => window.removeEventListener('resize', update)
   }, [])
   return (
-    <div className="w-full bg-cover bg-center bg-no-repeat rotating-background" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 80%), url(/banner-bg.jpg)', filter: 'grayscale(70%)' }}>
+    <div className="w-full bg-cover bg-center bg-no-repeat rotating-background overflow-hidden" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 80%), url(/banner-bg.jpg)', filter: 'grayscale(70%)' }}>
       <div className="relative w-full py-0">
         <style>{`
           .orbit-wrap { position: relative; width: 100%; height: 750px; overflow: hidden; }

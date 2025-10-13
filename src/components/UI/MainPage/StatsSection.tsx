@@ -35,30 +35,30 @@ const Stat: React.FC<{ label: string; value: number; suffix?: string; delay?: nu
 
   return (
     <div ref={ref} className='text-center'>
-      <div className='text-2xl md:text-3xl font-extrabold tracking-tight text-[#212529]'>
+      <div className='text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-[#212529]'>
         {count.toLocaleString()}<span className='text-purple-600'>{suffix}</span>
       </div>
-      <div className='mt-1 text-sm text-gray-500'>{label}</div>
+      <div className='mt-1 text-xs sm:text-sm text-gray-500'>{label}</div>
     </div>
   )
 }
 
 const StatsSection: React.FC = () => {
   return (
-    <section className='px-[15%] bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-300 py-12'  data-aos='fade-up' data-aos-once='true'>
+    <section className='px-4 sm:px-6 md:px-8 lg:px-[15%] bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-300 py-8 sm:py-10 md:py-12'  data-aos='fade-up' data-aos-once='true'>
       {/* Top copy */}
       <header className='mb-4 md:mb-6 text-center'>
-        <h2 className='text-xl md:text-2xl font-extrabold tracking-tight text-[#212529]'>
+        <h2 className='text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-[#212529]'>
           함께 만든 성장의 숫자
         </h2>
-        <p className='mt-1 text-sm text-gray-500'>
+        <p className='mt-1 text-xs sm:text-sm text-gray-500'>
           위더와 크리에이터, 그리고 서포터가 함께 이룬 성과입니다.
         </p>
       </header>
 
       {/* Stats card */}
-      <div className='rounded-2xl ring-1 ring-gray-200 bg-white p-6 md:p-8'>
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
+      <div className='rounded-2xl ring-1 ring-gray-200 bg-white p-4 sm:p-6 md:p-8'>
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6'>
           <Stat label='누적 펀딩 금액' value={125000000} suffix='원' />
           <Stat label='성공 프로젝트' value={842} />
           <Stat label='응원한 서포터' value={53210} />
@@ -66,7 +66,7 @@ const StatsSection: React.FC = () => {
         </div>
 
         {/* Bottom helper content */}
-        <div className='mt-5 md:mt-6 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-xs md:text-sm'>
+        <div className='mt-4 sm:mt-5 md:mt-6 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4 text-xs md:text-sm'>
           <div className='inline-flex items-center gap-1.5 text-gray-600'>
             <i className='bi bi-lightning-charge text-purple-600'></i>
             매일 새로운 프로젝트가 업데이트됩니다.

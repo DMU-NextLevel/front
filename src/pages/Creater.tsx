@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, CheckCircle, Star, TrendingUp, Users, Award, Smartphone, BookOpen, PieChart, ChevronDown, Monitor, Home, Shirt, Heart, Palette, Gamepad2, PawPrint, Plane, UtensilsCrossed, Edit, BarChart3, Bell, MessageSquare, Users2, Ticket } from 'lucide-react'
 import './Creater.css'
-import AnimatedBanner from '../components/Creater/AnimatedBanner'
+import AnimatedBanner from '../components/UI/CreaterPage/AnimatedBanner'
 
 // 카테고리 데이터
 const CATEGORIES = [
@@ -1092,7 +1092,7 @@ const Creater: React.FC = () => {
 			</section>
 
 			{/* 애니메이션 배너 */}
-			<AnimatedBanner />
+			{/* <AnimatedBanner /> */}
 			{/* CTA 섹션 */}
 			<section className='py-12 md:py-20 bg-gradient-to-br from-blue-600 to-purple-700 text-white'>
 				<div className='max-w-4xl mx-auto text-center px-4 md:px-8 scroll-fade-in'>

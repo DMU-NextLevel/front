@@ -34,15 +34,15 @@ const LoginSection: React.FC = () => {
   // 로그인 상태에 따라 다른 콘텐츠 표시
   if (isLoggedIn) {
     return (
-      <div className='px-[15%] py-12 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900'>
-        <div className='text-center mb-8'>
-          <h3 className='text-lg font-semibold text-white mb-2'>관심 프로젝트를 확인해보세요</h3>
-          <p className='text-sm text-gray-300'>좋아요한 프로젝트들을 모아보세요</p>
+      <div className='px-4 sm:px-6 md:px-8 lg:px-[15%] py-8 sm:py-10 md:py-12 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900'>
+        <div className='text-center mb-6 sm:mb-8'>
+          <h3 className='text-base sm:text-lg font-semibold text-white mb-2'>관심 프로젝트를 확인해보세요</h3>
+          <p className='text-xs sm:text-sm text-gray-300'>좋아요한 프로젝트들을 모아보세요</p>
         </div>
 
         <div className='flex justify-center'>
           <button
-            className='px-8 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5'
+            className='px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-sm sm:text-base'
             onClick={() => navigate('/mypage?tab=liked')}
           >
             관심 프로젝트 보기

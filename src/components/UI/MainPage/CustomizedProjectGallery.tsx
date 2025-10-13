@@ -175,18 +175,18 @@ const CustomizedProjectGallery: React.FC = () => {
   }
 
   return (
-    <section className='py-5 px-[15%]' data-aos='fade-up' data-aos-once='true'>
+    <section className='py-4 sm:py-5 px-4 sm:px-6 md:px-8 lg:px-[15%]' data-aos='fade-up' data-aos-once='true'>
       <div className='flex items-end justify-start relative'>
         <div>
-          <h2 className='text-xl md:text-2xl font-bold text-left'>취향 맞춤 프로젝트</h2>
-          <p className='mt-1 text-xs text-gray-500 text-left'>당신을 위한 맞춤 추천 프로젝트</p>
+          <h2 className='text-lg sm:text-xl md:text-2xl font-bold text-left'>취향 맞춤 프로젝트</h2>
+          <p className='mt-1 text-xs sm:text-sm text-gray-500 text-left'>당신을 위한 맞춤 추천 프로젝트</p>
         </div>
 
         {/* Top-right nav buttons */}
         <div className='absolute top-0 right-0 flex items-center gap-2'>
           <button
             aria-label='Previous'
-            className={`w-9 h-9 rounded-full bg-white/90 text-gray-700 shadow grid place-items-center hover:bg-white ${!canPrev ? 'opacity-40 cursor-default' : ''}`}
+            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 text-gray-700 shadow grid place-items-center hover:bg-white ${!canPrev ? 'opacity-40 cursor-default' : ''}`}
             onClick={goPrev}
             disabled={!canPrev}
           >
@@ -194,7 +194,7 @@ const CustomizedProjectGallery: React.FC = () => {
           </button>
           <button
             aria-label='Next'
-            className={`w-9 h-9 rounded-full bg-white/90 text-gray-700 shadow grid place-items-center hover:bg-white ${!canNext ? 'opacity-40 cursor-default' : ''}`}
+            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 text-gray-700 shadow grid place-items-center hover:bg-white ${!canNext ? 'opacity-40 cursor-default' : ''}`}
             onClick={goNext}
             disabled={!canNext}
           >
@@ -204,21 +204,21 @@ const CustomizedProjectGallery: React.FC = () => {
       </div>
 
       {loading && (
-        <div className='grid grid-cols-1 lg:grid-cols-10 gap-10'>
-          <div className='lg:col-span-6 h-96 rounded-2xl ring-1 ring-gray-200 bg-gray-50 animate-pulse' />
-          <div className='lg:col-span-4 space-y-4'>
+        <div className='grid grid-cols-1 lg:grid-cols-10 gap-6 sm:gap-8 md:gap-10 mt-6'>
+          <div className='lg:col-span-6 h-80 sm:h-96 rounded-2xl ring-1 ring-gray-200 bg-gray-50 animate-pulse' />
+          <div className='lg:col-span-4 space-y-3 sm:space-y-4'>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className='h-24 rounded-xl ring-1 ring-gray-200 bg-gray-50 animate-pulse' />
+              <div key={i} className='h-20 sm:h-24 rounded-xl ring-1 ring-gray-200 bg-gray-50 animate-pulse' />
             ))}
           </div>
         </div>
       )}
 
       {!loading && (
-        <div className='relative overflow-visible'>
+        <div className='relative overflow-visible mt-6'>
           <div 
             ref={sliderRef} 
-            className='flex overflow-x-auto snap-x snap-proximity gap-1 pr-20 md:pr-24 pb-16 md:pb-20 webkit-scrollbar-hidden -ml-4'
+            className='flex overflow-x-auto snap-x snap-proximity gap-1 pr-16 sm:pr-20 md:pr-24 pb-12 sm:pb-16 md:pb-20 webkit-scrollbar-hidden -ml-4'
             style={{
               ...scrollbarHiddenStyle,
               WebkitOverflowScrolling: 'touch',
@@ -276,16 +276,17 @@ const CustomizedProjectGallery: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className='relative z-10 p-4'>
-                    <a href={`/project/${p.id}`} className='block'>
+                  <div className='relative z-10 p-3 sm:p-4'>
+                    {/* <a href={`/project/${p.id}`} className='block'> */}
                       {/* 이미지와 프로그래스바 영역 */}
-                      <div className='flex mb-4 gap-0 rounded-sm overflow-hidden'>
+                      <div className='flex mb-3 sm:mb-4 gap-0 rounded-sm overflow-hidden'>
                         <div className='flex-1 relative overflow-hidden rounded-t-lg'>
                           <img
                             src={imgSrc || noImage}
                             alt={p.title}
-                            className='w-full object-cover rounded-t-lg transition-all duration-500 ease-out group-hover:scale-105'
+                            className='w-full object-cover rounded-t-lg transition-all duration-500 ease-out group-hover:scale-105 cursor-pointer'
                             style={{ aspectRatio: '16 / 9' }}
+                            onClick={() => window.location.href = `/project/${p.id}`}
                             onError={(e) => {
                               e.currentTarget.onerror = null
                               e.currentTarget.src = noImage
@@ -300,15 +301,18 @@ const CustomizedProjectGallery: React.FC = () => {
                       </div>
 
                       <div className='flex items-center justify-between mb-0'>
-                        <h4 className='text-sm font-bold line-clamp-2 hover:underline transition-all cursor-pointer' onClick={() => window.location.href = `/project/${p.id}`}>{p.title}</h4>
+                        <h4 className='text-xs sm:text-sm font-bold line-clamp-2 hover:underline transition-all'>
+													<span className='cursor-pointer' onClick={() => window.location.href = `/project/${p.id}`}>{p.title}</span>
+												</h4>
                         <button
                           onClick={(e) => {
                             e.preventDefault()
+                            e.stopPropagation()
                             handleLikeToggle(p.id, p.isLiked ?? false)
                           }}
                           className='text-gray-400 hover:text-red-500 p-1 rounded-md ml-1'
                         >
-                          <svg className={`w-4 h-4 ${p.isLiked ? 'fill-current text-red-500' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                          <svg className={`w-3 h-3 sm:w-4 sm:h-4 ${p.isLiked ? 'fill-current text-red-500' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' />
                           </svg>
                         </button>
@@ -343,14 +347,14 @@ const CustomizedProjectGallery: React.FC = () => {
                           )
                         })()}
                       </div>
-                    </a>
+                    {/* </a> */}
                   </div>
                 </div>
               )
             })}
             <div className='shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%] flex items-center justify-center'>
               <button
-                className={`bg-white rounded-full w-24 h-24 flex flex-col items-center justify-center text-gray-600 text-2xl font-bold hover:bg-gray-50 shadow transition-opacity duration-300 ${showMoreButton ? 'opacity-100' : 'opacity-0'}`}
+                className={`bg-white rounded-full w-20 h-20 sm:w-24 sm:h-24 flex flex-col items-center justify-center text-gray-600 text-xl sm:text-2xl font-bold hover:bg-gray-50 shadow transition-opacity duration-300 ${showMoreButton ? 'opacity-100' : 'opacity-0'}`}
               >
                 <i className='bi bi-chevron-right' />
                 <span className='text-xs mt-1'>더보기</span>

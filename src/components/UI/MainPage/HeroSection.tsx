@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import DotsLoader from '../Common/DotsLoader'
 
 interface SlideData {
   id: number;
@@ -41,12 +42,12 @@ const slideData: SlideData[] = [
     subtitle: '환경을 생각하는 프로젝트',
     description: '환경 친화적인 아이디어로 더 나은 세상을 만들어가요.',
     primaryButton: {
-      text: '지속가능 프로젝트',
-      link: '/search?tag=eco'
+      text: '', // '지속가능 프로젝트',
+      link: '' // '/search?tag=eco'
     },
     secondaryButton: {
-      text: '더 알아보기',
-      link: '/about'
+      text: '', // '더 알아보기',
+      link: '' // '/about'
     },
     backgroundImage: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     accentColor: 'from-green-600 to-teal-600'
@@ -112,14 +113,10 @@ const HeroSection: React.FC = () => {
     });
   };
 
-  // Auto-play functionality
+  // Dots 로딩 애니메이션
   useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 30000); // 30초로 변경
-
-    return () => clearInterval(interval);
-  }, []);
+    // CSS 애니메이션으로 구현됨
+  }, [imagesLoaded])
 
   // Scroll zoom effect
   useEffect(() => {
@@ -142,7 +139,7 @@ const HeroSection: React.FC = () => {
 
   return (
     <div className="relative w-full bg-gray-100 -mt-14">
-      <div ref={sliderRef} className="image-slider relative w-full h-[70vh] min-h-[700px] overflow-hidden">
+      <div ref={sliderRef} className="image-slider relative w-full h-[60vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] min-h-[500px] sm:min-h-[600px] md:min-h-[700px] overflow-hidden">
         {/* Images Container */}
         <div className="images absolute inset-0">
           {slideData.map((slide, index) => (
@@ -167,58 +164,57 @@ const HeroSection: React.FC = () => {
 
               {/* 로딩 중 배경 */}
               {!imagesLoaded[index] && (
-                <div 
-                  className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center"
-                  style={{
-                    background: slide.accentColor ? 
-                      `linear-gradient(135deg, ${slide.accentColor.split(' ')[0].replace('from-', '').replace('-600', '')}20, ${slide.accentColor.split(' ')[1].replace('to-', '').replace('-600', '')}20)` 
-                      : 'linear-gradient(135deg, #f3f4f6, #e5e7eb)'
-                  }}
+                <div
+                  className="absolute inset-0 flex items-center justify-center bg-black z-10"
                 >
-                  <div className="text-gray-500 text-lg font-medium">
-                    <i className="bi bi-image text-3xl mb-2 block"></i>
-                    로딩 중...
+                  <div className="z-20">
+                    <DotsLoader />
+                    <p className="text-white text-sm font-medium mt-4 text-center">이미지 로딩 중...</p>
                   </div>
                 </div>
               )}
 
               {/* Content Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent flex items-start pt-[350px]">
-                <div className="px-[15%] py-8 md:py-12 text-white max-w-none">
-                  <div className="mb-4">
-                    <span className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent flex items-start pt-[200px] sm:pt-[250px] md:pt-[300px] lg:pt-[350px]">
+                <div className="px-4 sm:px-6 md:px-8 lg:px-[15%] py-6 sm:py-8 md:py-12 text-white max-w-none">
+                  <div className="mb-3 sm:mb-4">
+                    <span className="inline-block bg-white/20 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium">
                       {slide.subtitle}
                     </span>
                   </div>
 
-                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 leading-tight">
                     {slide.title}
                   </h1>
 
-                  <p className="text-lg md:text-xl text-white/90 mb-6 leading-relaxed">
+                  <p className="text-base sm:text-lg md:text-xl text-white/90 mb-4 sm:mb-6 leading-relaxed max-w-2xl">
                     {slide.description}
                   </p>
 
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <button
-                      onClick={() => navigate(slide.primaryButton.link)}
-                      className="group relative px-8 py-3 bg-white text-gray-900 font-semibold rounded-full shadow-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden border-2 border-transparent hover:border-blue-200"
-                    >
-                      <span className="relative z-10 transition-all duration-300 group-hover:scale-105 group-hover:text-blue-900">
-                        {slide.primaryButton.text}
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </button>
-                    <button
-                      onClick={() => navigate(slide.secondaryButton.link)}
-                      className="group relative px-8 py-3 border-2 border-white text-white font-semibold rounded-full backdrop-blur-sm hover:bg-gradient-to-r hover:from-white hover:to-gray-100 hover:text-gray-900 hover:shadow-2xl hover:shadow-white/40 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden"
-                    >
-                      <span className="relative z-10 transition-all duration-300 group-hover:scale-105 group-hover:text-gray-900">
-                        {slide.secondaryButton.text}
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-gray-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
-                    </button>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    {slide.primaryButton.text && (
+                      <button
+                        onClick={() => navigate(slide.primaryButton.link)}
+                        className="group relative px-6 sm:px-8 py-2.5 sm:py-3 bg-white text-gray-900 font-semibold rounded-full shadow-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden border-2 border-transparent hover:border-blue-200 text-sm sm:text-base"
+                      >
+                        <span className="relative z-10 transition-all duration-300 group-hover:scale-105 group-hover:text-blue-900">
+                          {slide.primaryButton.text}
+                        </span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </button>
+                    )}
+                    {slide.secondaryButton.text && (
+                      <button
+                        onClick={() => navigate(slide.secondaryButton.link)}
+                        className="group relative px-6 sm:px-8 py-2.5 sm:py-3 border-2 border-white text-white font-semibold rounded-full backdrop-blur-sm hover:bg-gradient-to-r hover:from-white hover:to-gray-100 hover:text-gray-900 hover:shadow-2xl hover:shadow-white/40 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden text-sm sm:text-base"
+                      >
+                        <span className="relative z-10 transition-all duration-300 group-hover:scale-105 group-hover:text-gray-900">
+                          {slide.secondaryButton.text}
+                        </span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-gray-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -227,19 +223,28 @@ const HeroSection: React.FC = () => {
         </div>
 
         {/* Thumbnails */}
-        <div className="thumbnails absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+        <div className="thumbnails absolute bottom-3 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1.5 sm:gap-2">
           {slideData.map((slide, index) => (
             <img
               key={slide.id}
               src={slide.backgroundImage}
               alt={`Thumbnail ${index + 1}`}
-              className={`w-16 h-10 object-cover cursor-pointer rounded border-2 transition-all duration-300 ${
+              className={`w-12 h-8 sm:w-16 sm:h-10 object-cover cursor-pointer rounded border-2 transition-all duration-300 ${
                 index === currentImage ? 'border-white' : 'border-transparent opacity-60 hover:opacity-80'
               }`}
               onClick={() => goToSlide(index)}
             />
           ))}
         </div>
+
+        {/* 임시 로딩 토글 버튼 (테스트용) */}
+        {/* <button
+          onClick={toggleLoading}
+          className="fixed bottom-6 right-6 z-50 bg-black/50 hover:bg-black/70 text-white px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm border border-white/20 transition-all duration-300 hover:scale-105"
+          title="로딩 애니메이션 토글 (테스트용)"
+        >
+          {imagesLoaded[currentImage] ? '🔄 로딩 ON' : '⏸️ 로딩 OFF'}
+        </button> */}
       </div>
     </div>
   )

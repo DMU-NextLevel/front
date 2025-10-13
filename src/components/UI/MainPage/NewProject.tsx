@@ -111,19 +111,19 @@ const NewProject: React.FC = () => {
 		}
 
 	return (
-			<section className='py-8' >
-				<div className='flex items-end justify-between mb-6'>
+			<section className='py-6 sm:py-8' >
+				<div className='flex items-end justify-between mb-4 sm:mb-6'>
 					<div>
-						<h2 className='text-xl md:text-2xl font-bold m-0'>신규 프로젝트</h2>
-						<p className='mt-1 text-xs text-gray-500 m-0'>방금 올라온 따끈한 프로젝트를 확인해보세요</p>
+						<h2 className='text-lg sm:text-xl md:text-2xl font-bold m-0'>신규 프로젝트</h2>
+						<p className='mt-1 text-xs sm:text-sm text-gray-500 m-0'>방금 올라온 따끈한 프로젝트를 확인해보세요</p>
 					</div>
-					<a href='/search?order=CREATED' className='text-sm text-purple-600 hover:underline'>더 보기</a>
+					<a href='/search?order=CREATED' className='text-xs sm:text-sm text-purple-600 hover:underline'>더 보기</a>
 				</div>
 
 						{projects.length === 0 && <p className='text-sm text-gray-500'>프로젝트가 없습니다.</p>}
 
-						{/* 2열 그리드 레이아웃 */}
-						<div className='grid grid-cols-3 gap-4'>
+						{/* 반응형 그리드 레이아웃 */}
+						<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4'>
 							{projects.map((item) => {
 						// titleImg can be a string or an object with uri
 						const titleImgPath = item?.titleImg?.uri ? item.titleImg.uri : item.titleImg
@@ -136,19 +136,19 @@ const NewProject: React.FC = () => {
 						return (
 							<div
 								key={item.id}
-								onClick={() => navigate(`/project/${item.id}`)}
-														className='bg-transparent cursor-pointer group'
+														className='bg-transparent group'
 							>
 								<div className='relative'>
 									{/* 이미지와 프로그래스바 영역 */}
-									<div className='flex mb-6 gap-0 rounded-sm overflow-hidden'>
+									<div className='flex mb-4 sm:mb-6 gap-0 rounded-sm overflow-hidden'>
 										<div className='flex-1 relative overflow-hidden rounded-t-lg'>
 											<img
 												src={imgSrc || noImage}
 												alt={item.title}
-												className='w-full object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105'
+												className='w-full object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105 cursor-pointer'
 												style={{ aspectRatio: '16 / 9' }}
 												loading="lazy"
+												onClick={() => navigate(`/project/${item.id}`)}
 												onError={(e) => {
 													e.currentTarget.onerror = null
 													e.currentTarget.src = noImage
@@ -163,10 +163,12 @@ const NewProject: React.FC = () => {
 									</div>
 
 									{/* 타이틀 */}
-									<h3 className='text-[18px] font-bold line-clamp-2 mb-3 transition-colors duration-300 group-hover:text-purple-600'>{item.title}</h3>
+									<h3 className='text-base sm:text-[18px] font-bold line-clamp-2 mb-2 sm:mb-3 transition-colors duration-300 group-hover:text-purple-600'>
+										<span className='cursor-pointer' onClick={() => navigate(`/project/${item.id}`)}>{item.title}</span>
+									</h3>
 
 									{/* 작성자와 시작일 */}
-									<div className='flex items-center justify-between text-sm text-gray-600 mb-3'>
+									<div className='flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3'>
 										<span className='flex items-center gap-1'>
 											<i className='bi bi-person text-xs' />
 											{creatorName}
@@ -178,7 +180,7 @@ const NewProject: React.FC = () => {
 									</div>
 
 									{/* 진행률과 추천수 */}
-									<div className='flex items-center justify-between text-sm mb-3'>
+									<div className='flex items-center justify-between text-xs sm:text-sm mb-2 sm:mb-3'>
 										<span className='text-purple-600 font-semibold'>{rate}% 달성</span>
 										<div className='flex items-center gap-1 text-gray-500'>
 											<i className='bi bi-heart text-xs' />
@@ -187,17 +189,17 @@ const NewProject: React.FC = () => {
 									</div>
 
 									{/* 태그 */}
-									<div className='flex flex-wrap gap-2'>
+									<div className='flex flex-wrap gap-1.5 sm:gap-2'>
 										{Array.isArray(item.tags) && item.tags.slice(0, 2).map((tag: string, tagIndex: number) => (
 											<span
 												key={`tag-${tagIndex}`}
-												className='inline-flex items-center text-xs px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full'
+												className='inline-flex items-center text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-gray-100 text-gray-700 rounded-full'
 											>
 												{tag}
 											</span>
 										))}
 										{remain && (
-											<span className='inline-flex items-center text-xs px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full'>
+											<span className='inline-flex items-center text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-blue-100 text-blue-700 rounded-full'>
 												{remain}
 											</span>
 										)}
