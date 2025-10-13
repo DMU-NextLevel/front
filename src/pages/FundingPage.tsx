@@ -18,7 +18,7 @@ const FundingPage = (): JSX.Element => {
 
 	useEffect(() => {
 		setIsAuthor(user?.nickName === projectInfo?.user?.nickName)
-	}, [projectInfo])
+	}, [projectInfo, user])
 
 	return (
 		<div className='flex pl-[2%] gap-[2%] mx-[15%] mt-10'>
