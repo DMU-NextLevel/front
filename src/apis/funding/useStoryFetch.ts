@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { api } from "../AxiosInstance"
+import { api } from "../../AxiosInstance"
 
 interface StoryUpdateProps {
     projectId: string

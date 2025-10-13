@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { apiWithoutCredentials } from '../AxiosInstance'
+import { apiWithoutCredentials } from '../../AxiosInstance'
 import {
 	communityResponse,
 	detailResponse,
@@ -9,8 +9,8 @@ import {
 	ProjectNoticeData,
 	ProjectStoryData,
 	storyResponse,
-} from '../types/project'
-import { useProjectStore } from '../store/useProjectStore'
+} from '../../types/project'
+import { useProjectStore } from '../../store/useProjectStore'
 
 interface ProjectFetchProps {
 	projectId: string

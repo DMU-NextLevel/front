@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import Modal from "../../../layout/Modal"
 import Swal from "sweetalert2";
-import { useStoryUpdate } from "../../../../apis/useStoryFetch";
+import { useStoryUpdate } from "../../../../apis/funding/useStoryFetch";
 import { useParams } from "react-router-dom";
 
 export const StoryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {

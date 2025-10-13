@@ -2,18 +2,8 @@ import React, { JSX, useEffect, useState } from 'react'
 import FundingReward from '../FundingReward'
 import FundingPay from '../FundingPay'
 import FundingFree from '../FundingFree'
-import { useFundingFetch, useGetFundingOption } from '../../../../apis/useFundingFetch'
+import { useFundingFetch, useGetFundingOption } from '../../../../apis/funding/useFundingFetch'
 import { useParams } from 'react-router-dom'
-
-const exam = [
-	{
-		id: 1,
-		price: '20000P',
-		title: '제목인데요?',
-		description: `설명인데요?`,
-		date: '2025년 3월 말 제공 예정',
-	},
-]
 
 export interface OptionRewardData {
 	optionId: number
