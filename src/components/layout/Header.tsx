@@ -170,25 +170,6 @@ export const HeaderMain: React.FC = () => {
 		}
 	}, [isSearchExpanded])
 
-	// Close mega menu on outside click / ESC
-	useEffect(() => {
-		if (!isOpen) return
-		const onMouseDown = (e: MouseEvent) => {
-			if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-				setIsOpen(false)
-			}
-		}
-		const onKeyDown = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') setIsOpen(false)
-		}
-		document.addEventListener('mousedown', onMouseDown)
-		window.addEventListener('keydown', onKeyDown)
-		return () => {
-			document.removeEventListener('mousedown', onMouseDown)
-			window.removeEventListener('keydown', onKeyDown)
-		}
-	}, [isOpen])
-
 	return (
 		<div className='relative'>
 			{/* 헤더 */}
@@ -514,7 +495,7 @@ export const HeaderMain: React.FC = () => {
 							<div className='space-y-2'>
 								<button 
 									onClick={() => {
-										navigate('/support/notice')
+										navigate('/notice')
 										setIsMobileMenuOpen(false)
 									}}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
@@ -522,13 +503,10 @@ export const HeaderMain: React.FC = () => {
 									공지사항
 								</button>
 								<button 
-									onClick={() => {
-										navigate('/support/faq')
-										setIsMobileMenuOpen(false)
-									}}
+									onClick={() => setIsMobileMenuOpen(false)}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 								>
-									FAQ
+									고객센터
 								</button>
 								{isLoggedIn && (
 									<button 
@@ -599,12 +577,6 @@ export const HeaderMain: React.FC = () => {
 							</div>
 						)}
 					</div>
-					<button
-						className='ml-auto md:hidden p-2 rounded-md hover:bg-gray-100'
-						onClick={() => setMobileOpen((v) => !v)}
-						aria-label='메뉴 열기'>
-						<i className={`bi ${mobileOpen ? 'bi-x' : 'bi-list'} text-2xl`}></i>
-					</button>
 				</div>
 			</div>
 
@@ -701,16 +673,13 @@ export const HeaderMain: React.FC = () => {
 							</h3>
 							<div className='space-y-1'>
 								<button 
-									onClick={() => navigate('/support/notice')}
-									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
+									onClick={() => navigate('/notice')}
+									className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors py-0.5`}
 								>
 									공지사항
 								</button>
-								<button 
-									onClick={() => navigate('/support/faq')}
-									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
-								>
-									FAQ
+								<button className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors py-0.5`}>
+									고객센터
 								</button>
 								<button 
 									onClick={() => navigate('/mypage')}
