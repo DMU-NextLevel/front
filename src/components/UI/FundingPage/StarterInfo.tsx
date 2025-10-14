@@ -3,6 +3,7 @@ import UserImage from '../../../assets/images/default_profile.png'
 import FollowImage from '../../../assets/images/Heart.svg'
 import StarterScore from './StarterScore'
 import { useNavigate } from 'react-router-dom'
+import { useFollow } from '../../../apis/social/useFollow'
 
 const baseUrl = process.env.REACT_APP_API_BASE_URL
 
@@ -20,10 +21,12 @@ interface props {
 }
 
 const StarterInfo = ({ starter }: props): JSX.Element => {
-	const [isFollowed, setIsFollowed] = useState<boolean>(false)
+	const [isFollowed, setIsFollowed] = useState<boolean>(starter?.isFollow ?? false)
 	const navigate = useNavigate()
+	const { follow } = useFollow()
 
-	const handleFllow = () => {
+	const handleFllow = async () => {
+		follow({ targetId: starter?.id ?? 0, follow: !isFollowed })
 		setIsFollowed((prev) => !prev)
 	}
 
