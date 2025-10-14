@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom'
 
 export interface OptionRewardData {
 	optionId: number
-	couponId: number
+	couponId: number | null
 	price: number
 }
 
