@@ -15,7 +15,10 @@ const baseUrl = process.env.REACT_APP_API_BASE_URL
 type ProjectItem = {
   id: number
   title: string
-  titleImg: string
+  titleImg: {
+	id: number
+	uri: string
+  }
   completionRate: number
   recommendCount: number
   tags: string[]
@@ -111,7 +114,7 @@ const RecommendedProject: React.FC = () => {
 			}
 		`
 		document.head.appendChild(style)
-		
+
 		return () => {
 			document.head.removeChild(style)
 		}
@@ -121,10 +124,10 @@ const RecommendedProject: React.FC = () => {
 	const updateSliderState = useCallback(() => {
 		const el = sliderRef.current
 		if (!el) return
-		
+
 		setCanPrev(el.scrollLeft > 0)
 		setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
-		
+
 		// 현재 슬라이드 인덱스 계산 (gap-4 고려)
 		// robust slide width: measure distance between first two children if available
 		let slideWidth = el.clientWidth
@@ -179,9 +182,9 @@ const RecommendedProject: React.FC = () => {
 	useEffect(() => {
 		const el = sliderRef.current
 		if (!el) return
-		
+
 		let ticking = false
-		
+
 		const update = () => {
 			if (!ticking) {
 				requestAnimationFrame(() => {
@@ -191,13 +194,13 @@ const RecommendedProject: React.FC = () => {
 				ticking = true
 			}
 		}
-		
+
 		const timer = setTimeout(update, 100)
-		
+
 		update()
 		el.addEventListener('scroll', update, { passive: true })
 		window.addEventListener('resize', update)
-		
+
 		return () => {
 			clearTimeout(timer)
 			el.removeEventListener('scroll', update)
@@ -231,7 +234,7 @@ const RecommendedProject: React.FC = () => {
 					{/* 좌측: 슬라이더로 4개 아이템 */}
 					<div className='md:col-span-1 lg:col-span-5 relative'>
 						{/* 좌측 슬라이더 컨테이너 */}
-						<div 
+						<div
 							ref={sliderRef}
 							className='flex overflow-x-auto snap-x snap-mandatory gap-4 webkit-scrollbar-hidden'
 							style={{
@@ -241,7 +244,7 @@ const RecommendedProject: React.FC = () => {
 
 							{projects.slice(0, 3).map((p, index) => {
 								const rate = Math.max(0, Math.min(100, Math.round(p.completionRate ?? 0)))
-								const imgSrc = p.titleImg ? `${baseUrl}/img/${p.titleImg}` : ''
+								const imgSrc = p.titleImg ? `${baseUrl}/img/${p.titleImg.uri}` : ''
 								return (
 									<div
 										key={p.id}

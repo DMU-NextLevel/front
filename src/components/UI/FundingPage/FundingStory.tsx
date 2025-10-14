@@ -45,7 +45,7 @@ export const FundingStory = ({ story }: storyProps): JSX.Element => {
 				{story && story.length > 0 ? (
 					story.map((story) => (
 						<div key={story.id} className='bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden'>
-							<img src={`${baseUrl}/img/${story}`} className='w-full h-auto object-cover' alt='프로젝트 스토리 이미지' />
+							<img src={`${baseUrl}/img/${story.uri}`} className='w-full h-auto object-cover' alt='프로젝트 스토리 이미지' />
 						</div>
 					))
 				) : (
