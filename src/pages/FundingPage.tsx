@@ -7,6 +7,7 @@ import Modal from '../components/layout/Modal'
 import { useParams } from 'react-router-dom'
 import { useProjectDetailFetch, useProjectFetch } from '../apis/funding/useProjectFetch'
 import { useAuth } from '../hooks/AuthContext'
+import { useAuthorStore } from '../store/authorStore'
 
 const FundingPage = (): JSX.Element => {
 	const { no } = useParams<{ no: string }>()
@@ -14,10 +15,10 @@ const FundingPage = (): JSX.Element => {
 	const { story, notice, community } = useProjectFetch({ projectId: no ?? '' })
 	const { projectInfo } = useProjectDetailFetch({ projectId: no ?? '' })
 	const { user } = useAuth()
-	const [isAuthor, setIsAuthor] = useState<boolean>(false)
+	const { isAuthor, setIsAuthor } = useAuthorStore()
 
 	useEffect(() => {
-		setIsAuthor(user?.nickName === projectInfo?.user?.nickName)
+		setIsAuthor(user?.id === projectInfo?.user?.id)
 	}, [projectInfo, user])
 
 	return (

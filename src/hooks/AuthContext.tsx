@@ -3,15 +3,16 @@ import { api } from '../AxiosInstance'; // 실제 API 인스턴스로 바꿔주�
 
 // 유저 타입 정의
 export interface User {
-  name?: string;
-  nickName?: string;
-  point?: number;
-  address?: string;
-  number?: string;
-  areaNumber?: string | null;
-  email?: string;
-  socialProvider?: string | null;
-  img?: string | null;
+	id?: number
+	name?: string
+	nickName?: string
+	point?: number
+	address?: string
+	number?: string
+	areaNumber?: string | null
+	email?: string
+	socialProvider?: string | null
+	img?: string | null
 }
 
 // 컨텍스트 타입 정의

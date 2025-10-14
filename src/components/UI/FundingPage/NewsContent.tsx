@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import Modal from '../../layout/Modal'
 import NoticeModal from './modals/NoticeModal'
 import { useNoticeDelete } from '../../../apis/funding/useNoticeFetch'
+import { useAuthorStore } from '../../../store/authorStore'
 
 interface NewsContentProps {
 	title: string
@@ -22,6 +23,7 @@ const NewsContent: React.FC<NewsContentProps> = ({ title, content, id, createTim
 	const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
 	const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
 	const { deleteNotice } = useNoticeDelete()
+	const { isAuthor } = useAuthorStore()
 
 	const handleClick = () => {
 		setIsOpen((prev) => !prev)
@@ -45,6 +47,7 @@ const NewsContent: React.FC<NewsContentProps> = ({ title, content, id, createTim
 					<p className='text-sm text-gray-500'>{createTime.split('T')[0]}</p>
 				</div>
 				<div className='flex items-center gap-4'>
+					{isAuthor && (
 					<button
 						className='text-gray-500 hover:text-purple-700'
 						onClick={(e) => {
@@ -53,6 +56,8 @@ const NewsContent: React.FC<NewsContentProps> = ({ title, content, id, createTim
 						}}>
 						수정
 					</button>
+					)}
+					{isAuthor && (
 					<button
 						className='text-gray-500 hover:text-red-700'
 						onClick={(e) => {
@@ -61,6 +66,7 @@ const NewsContent: React.FC<NewsContentProps> = ({ title, content, id, createTim
 						}}>
 						삭제
 					</button>
+					)}
 					<div className='flex-shrink-0'>
 						{isOpen ? (
 							<ChevronUp className='w-5 h-5 text-purple-500 transition-transform duration-200' />
