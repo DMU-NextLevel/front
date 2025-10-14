@@ -53,6 +53,8 @@ export const HeaderMain: React.FC = () => {
 	const notificationRef = useRef<HTMLDivElement>(null)
 	const searchFormRef = useRef<HTMLFormElement>(null)
 
+	const baseUrl = process.env.REACT_APP_API_BASE_URL
+
 	// 검색 제출 핸들러
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -301,7 +303,7 @@ export const HeaderMain: React.FC = () => {
 								{/* 프로필 */}
 								<div className='relative inline-block' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
 									<img
-										src={user?.img?.uri ?? UserImage}
+										src={`${baseUrl}/img/${user?.img?.uri}`}
 										alt='profile'
 										onClick={() => navigate('/mypage')}
 										onError={(e) => {
@@ -318,7 +320,7 @@ export const HeaderMain: React.FC = () => {
 											{/* 배경 패턴 */}
 											<div className='absolute inset-0 bg-white/5 rounded-xl'></div>
 											<img
-												src={user?.img?.uri ?? UserImage}
+												src={`${baseUrl}/img/${user?.img?.uri}`}
 												alt='프로필'
 												className='w-[60px] h-[60px] rounded-full mx-auto mb-3 border-2 border-white/30 relative z-10'
 												onError={(e) => {
@@ -557,7 +559,7 @@ export const HeaderMain: React.FC = () => {
 						) : (
 							<div className='flex items-center space-x-4 p-3 bg-gray-50 rounded-lg'>
 								<img
-									src={user?.img?.uri ?? UserImage}
+									src={`${baseUrl}/img/${user?.img?.uri}`}
 									alt='profile'
 									onClick={() => {
 										navigate('/mypage')
