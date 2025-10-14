@@ -6,7 +6,8 @@ import { useCreateStore } from '../store/store'
 
 interface ProjectFormData {
 	title: string
-	category: number | null
+	category1: number | null
+	category2: number | null
 }
 
 const categories = [
@@ -27,11 +28,12 @@ const ProjectCreatePage: React.FC = () => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [formData, setFormData] = useState<ProjectFormData>({
 		title: '',
-		category: null,
+		category1: null,
+		category2: null,
 	})
-	const { setTitle, setTag1 } = useCreateStore()
+	const { setTitle, setTag1, setTag2 } = useCreateStore()
 
-	const isFormValid = formData.title.trim() !== '' && formData.category !== null
+	const isFormValid = formData.title.trim() !== '' && formData.category1 !== null && formData.category2 !== null
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target
@@ -110,20 +112,31 @@ const ProjectCreatePage: React.FC = () => {
 
 		setIsLoading(true)
 
-		// ✅ 여기서 라벨 값 찾아서 함께 넘김
-		const selectedCategory = categories.find((cat) => cat.value === formData.category)
-		const categoryLabel = selectedCategory?.label || formData.category
+		// ✅ 카테고리 정렬 (낮은 값이 tag1, 높은 값이 tag2)
+		const sortedCategories = [formData.category1, formData.category2].sort((a, b) => (a || 0) - (b || 0))
+		const tag1Value = sortedCategories[0]
+		const tag2Value = sortedCategories[1]
+
+		// ✅ 라벨 값 찾아서 함께 넘김
+		const selectedCategory1 = categories.find((cat) => cat.value === tag1Value)
+		const selectedCategory2 = categories.find((cat) => cat.value === tag2Value)
+		const category1Label = selectedCategory1?.label || tag1Value
+		const category2Label = selectedCategory2?.label || tag2Value
 
 		setTitle(formData.title)
-		setTag1(formData.category)
+		setTag1(tag1Value)
+		setTag2(tag2Value)
 
 		// 1초 대기 (로딩 효과를 보여주기 위함)
 		await new Promise((resolve) => setTimeout(resolve, 1000))
 
+		setIsLoading(false)
+
 		navigate('/project/info', {
 			state: {
 				...formData,
-				categoryLabel: categoryLabel,
+				category1Label: category1Label,
+				category2Label: category2Label,
 			},
 		})
 	}
@@ -172,28 +185,54 @@ const ProjectCreatePage: React.FC = () => {
 
 				<div className='mb-7 text-left'>
 					<label className='flex items-center text-lg font-medium text-gray-800 mb-3'>
-						카테고리<span className='text-red-500 ml-1 text-base'>*</span>
+						카테고리 (2개 선택)<span className='text-red-500 ml-1 text-base'>*</span>
 					</label>
 					<div className='relative w-[600px] mx-auto'>
 						<div className='grid grid-cols-2 gap-3 w-full'>
-							{categories.map((cat) => (
-								<button
-									key={cat.value}
-									type='button'
-									onClick={() => setFormData((prev) => ({ ...prev, category: cat.value }))}
-									className={`flex items-center py-3 px-4 border-2 rounded-lg text-base cursor-pointer gap-2.5 w-full transition-all duration-200 ${
-										formData.category === cat.value ? 'border-purple-500 bg-purple-50' : 'border-gray-300 bg-white hover:bg-purple-50'
-									}`}>
-									<i className={`bi ${cat.icon} text-lg`}></i>
-									<span>{cat.label}</span>
-								</button>
-							))}
+							{categories.map((cat) => {
+								const isSelected = formData.category1 === cat.value || formData.category2 === cat.value
+								const isDisabled = !isSelected && formData.category1 !== null && formData.category2 !== null
+
+								return (
+									<button
+										key={cat.value}
+										type='button'
+										disabled={isDisabled}
+										onClick={() => {
+											if (isSelected) {
+												// 이미 선택된 카테고리면 선택 해제
+												setFormData((prev) => ({
+													...prev,
+													category1: prev.category1 === cat.value ? null : prev.category1,
+													category2: prev.category2 === cat.value ? null : prev.category2,
+												}))
+											} else {
+												// 새로운 카테고리 선택
+												if (formData.category1 === null) {
+													setFormData((prev) => ({ ...prev, category1: cat.value }))
+												} else if (formData.category2 === null) {
+													setFormData((prev) => ({ ...prev, category2: cat.value }))
+												}
+											}
+										}}
+										className={`flex items-center py-3 px-4 border-2 rounded-lg text-base cursor-pointer gap-2.5 w-full transition-all duration-200 ${
+											isSelected
+												? 'border-purple-500 bg-purple-50'
+												: isDisabled
+												? 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-50'
+												: 'border-gray-300 bg-white hover:bg-purple-50'
+										}`}>
+										<i className={`bi ${cat.icon} text-lg`}></i>
+										<span>{cat.label}</span>
+									</button>
+								)
+							})}
 						</div>
 					</div>
 
 					<div className='flex items-center mt-2 py-2 px-3 bg-gray-50 rounded-md text-sm text-gray-600 leading-relaxed'>
 						<span className='flex items-center justify-center w-4 h-4 mr-2 bg-purple-500 text-white rounded-full text-xs font-bold leading-none'>i</span>
-						<span>프로젝트 성격에 맞는 카테고리를 선택해주세요.</span>
+						<span>프로젝트 성격에 맞는 카테고리 2개를 선택해주세요.</span>
 					</div>
 				</div>
 

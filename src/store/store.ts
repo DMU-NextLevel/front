@@ -8,6 +8,7 @@ export const useCreateStore = create<CreateState>()((set) => ({
   titleImg: null,
   imgs: [],
   expired: '',
+  startAt: '',
   goal: 0,
 
   setTitle: (title) => set({ title }),
@@ -17,5 +18,6 @@ export const useCreateStore = create<CreateState>()((set) => ({
   setTitleImg: (file) => set({ titleImg: file }),
   setImgs: (files) => set({ imgs: files }),
   setExpired: (date) => set({ expired: date }),
+  setStartAt: (date) => set({ startAt: date }),
   setGoal: (goal) => set({ goal }),
 }))

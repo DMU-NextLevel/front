@@ -1,24 +1,21 @@
 import React, { JSX, useEffect, useState } from 'react'
+import { OptionRewardData } from './modals/FundingModal'
 
 interface props {
-	id: Number
+	id: number
 	price: string
 	title: string
-	description: string
-	date: string
-	checked: Number | null
-	setSelectReward: React.Dispatch<React.SetStateAction<Number | null>>
+	checked: number | null
+	setSelectReward: (type: 'option' | 'free', data: OptionRewardData, rewardNum: number) => void
 }
 
-const FundingReward = ({ id, price, title, description, date, checked, setSelectReward }: props): JSX.Element => {
+const FundingReward = ({ id, price, title, checked, setSelectReward }: props): JSX.Element => {
 	const [check, setCheck] = useState<boolean>(false)
 
 	const onCheck = () => {
-		if (checked === id) {
-			setSelectReward(null)
-		} else {
-			setSelectReward(id)
-		}
+		// price에서 'P' 제거하고 숫자로 변환
+		const priceNumber = parseInt(price.replace('P', ''))
+		setSelectReward('option', { optionId: id, couponId: 0, price: priceNumber }, id)
 	}
 
 	useEffect(() => {
@@ -30,24 +27,27 @@ const FundingReward = ({ id, price, title, description, date, checked, setSelect
 	}, [checked, id])
 
 	return (
-		<div className='m-5'>
-			<div className='w-4/5 border-b-4 border-gray-100 rounded-3xl mb-5 mx-auto' />
-			<div className='flex flex-row gap-2.5 items-center'>
+		<div className={`p-6 rounded-xl border-2 transition-all duration-300 ${check ? 'border-purple-500 bg-purple-50 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+			<div className='flex flex-row gap-3 items-start mb-4'>
 				<input
 					type='checkbox'
 					onChange={onCheck}
 					checked={check}
-					className={`appearance-none border-2 border-gray-300 rounded-md p-1 w-8 h-8 cursor-pointer ${
+					className={`appearance-none border-2 border-gray-300 rounded-md p-1 w-8 h-8 cursor-pointer transition-all duration-200 mt-1 ${
 						check
-							? "border-transparent bg-purple-500 bg-[url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e\")] bg-full bg-center bg-no-repeat"
-							: ''
+							? "border-transparent bg-purple-500 bg-[url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e\")] bg-full bg-center bg-no-repeat shadow-sm"
+							: 'hover:border-gray-400'
 					}`}
 				/>
-				<span className={`font-bold text-xl text-purple-500 ${check ? 'opacity-100' : 'opacity-50'}`}>{price}</span>
+				<div className='flex-1'>
+					<div className='flex items-center justify-between mb-2'>
+						<span className={`font-bold text-xl transition-colors duration-200 ${check ? 'text-purple-600' : 'text-gray-400'}`}>{price} P</span>
+					</div>
+					<p className={`font-medium text-base mb-2 transition-colors duration-200 ${check ? 'text-gray-600' : 'text-gray-400'}`}>{title}</p>
+					<p className={`text-xs flex items-center gap-1 transition-colors duration-200 ${check ? 'text-purple-600' : 'text-gray-400'}`}>
+					</p>
+				</div>
 			</div>
-			<p className={`font-bold text-xl text-purple-500 ${check ? 'opacity-100' : 'opacity-50'}`}>{title}</p>
-			<p className={`text-gray-500 ${check ? 'opacity-100' : 'opacity-50'}`}>{description}</p>
-			<p className={`text-gray-500 ${check ? 'opacity-100' : 'opacity-50'}`}>{date}</p>
 		</div>
 	)
 }

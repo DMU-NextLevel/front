@@ -495,7 +495,7 @@ export const HeaderMain: React.FC = () => {
 							<div className='space-y-2'>
 								<button 
 									onClick={() => {
-										navigate('/support/notice')
+										navigate('/notice')
 										setIsMobileMenuOpen(false)
 									}}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
@@ -503,13 +503,10 @@ export const HeaderMain: React.FC = () => {
 									공지사항
 								</button>
 								<button 
-									onClick={() => {
-										navigate('/support/faq')
-										setIsMobileMenuOpen(false)
-									}}
+									onClick={() => setIsMobileMenuOpen(false)}
 									className='block w-full text-left text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
 								>
-									FAQ
+									고객센터
 								</button>
 								{isLoggedIn && (
 									<button 
@@ -669,30 +666,35 @@ export const HeaderMain: React.FC = () => {
 							</div>
 						</div>
 
-						{/* 도구 */}
+						{/* 도구 & 서비스 */}
 						<div>
 							<h3 className={`text-xs font-semibold uppercase tracking-wide ${location.pathname === '/' && !isScrolled ? 'text-white' : 'text-gray-500'} mb-4`}>
 								도구 & 서비스
 							</h3>
 							<div className='space-y-1'>
-								<button 
+								<button
 									onClick={() => navigate('/support/notice')}
-									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
+									className={`flex items-center space-x-2 w-full text-left py-0.5 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors`}
 								>
-									공지사항
+									<i className='bi bi-info-circle text-xs'></i>
+									<span className='text-xs'>공지사항</span>
 								</button>
-								<button 
+								<button
 									onClick={() => navigate('/support/faq')}
-									className='block text-xs hover:text-blue-600 transition-colors py-0.5'
+									className={`flex items-center space-x-2 w-full text-left py-0.5 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors`}
 								>
-									FAQ
+									<i className='bi bi-question-circle text-xs'></i>
+									<span className='text-xs'>FAQ</span>
 								</button>
-								<button 
-									onClick={() => navigate('/mypage')}
-									className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors py-0.5`}
-								>
-									마이페이지
-								</button>
+								{isLoggedIn && (
+									<button
+										onClick={() => navigate('/mypage')}
+										className={`flex items-center space-x-2 w-full text-left py-0.5 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors`}
+									>
+										<i className='bi bi-person text-xs'></i>
+										<span className='text-xs'>마이페이지</span>
+									</button>
+								)}
 							</div>
 						</div>
 					</div>

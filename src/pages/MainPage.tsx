@@ -4,6 +4,7 @@ import 'aos/dist/aos.css'
 import RecommendedProject from "../components/UI/MainPage/RecommendedProject";
 import FeatureOverview from "../components/UI/MainPage/FeatureOverview";
 import CategorySelector from "../components/UI/MainPage/CategorySelector";
+import CategoryBar from "../components/UI/shared/CategoryBar";
 import NewProject from "../components/UI/MainPage/NewProject";
 import HeroSection from "../components/UI/MainPage/HeroSection";
 import PopularProjectGallery from "../components/UI/MainPage/PersonalizedProjectGallery";
