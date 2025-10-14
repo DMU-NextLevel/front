@@ -36,14 +36,17 @@ const CategorySelector: React.FC<Props> = ({ categories }) => {
 	}
 
 	return (
-		<div className='flex overflow-x-auto h-20 px-5 py-3 items-center justify-between'>
+		<div className='flex h-16 sm:h-20 md:h-24 lg:h-28 px-2 sm:px-4 md:px-6 lg:px-8 pt-4 sm:pt-6 md:pt-8 pb-2 sm:pb-3 md:pb-4 items-center justify-between gap-2 sm:gap-3 md:gap-4'>
 			{categories.map((cat) => (
 				<div
 					key={cat.tag}
 					onClick={() => handleClick(cat.tag)}
-					className='flex flex-col items-center text-[13px] min-w-[80px] text-gray-700 cursor-pointer transition-all duration-200 hover:text-purple-500 hover:font-bold hover:-translate-y-0.5'>
-					<i className={`${cat.icon} text-[22px] mb-1.5`}></i>
-					<span>{cat.label}</span>
+					className='flex flex-col items-center text-xs sm:text-sm md:text-[15px] lg:text-[16px] min-w-[60px] sm:min-w-[70px] md:min-w-[75px] lg:min-w-[85px] text-gray-700 cursor-pointer transition-all duration-200 hover:text-purple-500 hover:font-bold hover:-translate-y-0.5 snap-start group flex-shrink-0'
+				>
+					<div className='w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 bg-gray-100 rounded-full flex items-center justify-center mb-1.5 sm:mb-2 transition-colors duration-200 group-hover:bg-purple-500'>
+						<i className={`${cat.icon} text-[18px] sm:text-[20px] md:text-[22px] text-gray-600 transition-colors duration-200 group-hover:text-white`}></i>
+					</div>
+					<span className='whitespace-nowrap text-center leading-tight'>{cat.label}</span>
 				</div>
 			))}
 		</div>
