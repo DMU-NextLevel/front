@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import 'bootstrap-icons/font/bootstrap-icons.min.css'
 import Swal from 'sweetalert2'
 import { useCreateStore } from '../store/store'
+import { useAuth } from '../hooks/AuthContext'
 
 interface ProjectFormData {
 	title: string
@@ -25,6 +26,7 @@ const categories = [
 
 const ProjectCreatePage: React.FC = () => {
 	const navigate = useNavigate()
+	const { isLoggedIn } = useAuth()
 	const [isLoading, setIsLoading] = useState(false)
 	const [formData, setFormData] = useState<ProjectFormData>({
 		title: '',
@@ -32,6 +34,12 @@ const ProjectCreatePage: React.FC = () => {
 		category2: null,
 	})
 	const { setTitle, setTag1, setTag2 } = useCreateStore()
+
+	useEffect(() => {
+		if (!isLoggedIn) {
+			navigate('/login')
+		}
+	}, [isLoggedIn, navigate])
 
 	const isFormValid = formData.title.trim() !== '' && formData.category1 !== null && formData.category2 !== null
 
