@@ -30,17 +30,25 @@ interface ProjectResponse {
   };
 }
 
+export interface ProjectResponseData {
+  projects: ProjectItem[];
+  totalCount: number;
+  pageCount: number;
+  page: number;
+}
+
 interface ProjectRequest {
   order?: string;
-  tag?: string | number | null;
+  tag?: number;
   page?: number;
   search?: string;
   desc?: boolean;
   pageCount?: number;
+  returnFullResponse?: boolean; // 전체 응답 반환 여부
+  status?: string[]; // 프로젝트 상태 필터링
 }
 
-
-export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<ProjectItem[]> => {
+export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<ProjectItem[] | ProjectResponseData> => {
   const {
     order = 'RECOMMEND',
     tag,
@@ -48,6 +56,8 @@ export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<Pr
     search = '',
     desc = true,
     pageCount = 100000,
+    returnFullResponse = false,
+    status,
   } = input;
 
   const requestData = {
@@ -59,13 +69,19 @@ export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<Pr
     search: search.trim() !== '' ? search.trim() : null,
     desc,
     pageCount,
+    status: status || null, // status가 null이면 기본 ["PROGRESS", "STOPPED"]
   };
 
   console.log('✅ 전달된 input:', input);
   console.log('📦 요청 보낼 데이터:', JSON.stringify(requestData, null, 2));
 
   const response = await api.post<ProjectResponse>('/public/project/all', requestData); // ✅ 고정된 경로 사용
-  return response.data.data.projects;
+  
+  if (returnFullResponse) {
+    return response.data.data;
+  } else {
+    return response.data.data.projects;
+  }
 };
 
 
