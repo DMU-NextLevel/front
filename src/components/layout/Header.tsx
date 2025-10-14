@@ -340,8 +340,16 @@ export const HeaderMain: React.FC = () => {
 												<span>{user?.email}</span>
 											</div>
 											<div className='flex items-center text-[13px] text-gray-500 px-2'>
-												<i className='bi bi-shield-check text-gray-400 mr-2 text-base'></i>
-												<span>{role == 'ADMIN' ? '관리자' : '일반 사용자'}</span>
+    											<i className='bi bi-shield-check text-gray-400 mr-2 text-base'></i>
+												<div className='flex items-center justify-between w-full'>
+													<span>{role == 'ADMIN' ? '관리자' : '일반 사용자'}</span>
+													{role == 'ADMIN' && (
+														<i 
+															onClick={() => navigate('/admin')}
+															className='bi bi-gear text-gray-400 hover:text-gray-600 cursor-pointer'
+														></i>
+													)}
+												</div>
 											</div>
 											<div className='flex items-center text-[13px] text-blue-600 font-medium px-2'>
 												<i className='bi bi-coin text-blue-500 mr-2 text-base'></i>
