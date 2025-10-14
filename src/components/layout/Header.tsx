@@ -301,7 +301,7 @@ export const HeaderMain: React.FC = () => {
 								{/* 프로필 */}
 								<div className='relative inline-block' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
 									<img
-										src={user?.img || UserImage}
+										src={user?.img?.uri ?? UserImage}
 										alt='profile'
 										onClick={() => navigate('/mypage')}
 										onError={(e) => {
@@ -318,7 +318,7 @@ export const HeaderMain: React.FC = () => {
 											{/* 배경 패턴 */}
 											<div className='absolute inset-0 bg-white/5 rounded-xl'></div>
 											<img
-												src={user?.img || UserImage}
+												src={user?.img?.uri ?? UserImage}
 												alt='프로필'
 												className='w-[60px] h-[60px] rounded-full mx-auto mb-3 border-2 border-white/30 relative z-10'
 												onError={(e) => {
@@ -344,7 +344,7 @@ export const HeaderMain: React.FC = () => {
 												<div className='flex items-center justify-between w-full'>
 													<span>{role == 'ADMIN' ? '관리자' : '일반 사용자'}</span>
 													{role == 'ADMIN' && (
-														<i 
+														<i
 															onClick={() => navigate('/admin')}
 															className='bi bi-gear text-gray-400 hover:text-gray-600 cursor-pointer'
 														></i>
@@ -557,7 +557,7 @@ export const HeaderMain: React.FC = () => {
 						) : (
 							<div className='flex items-center space-x-4 p-3 bg-gray-50 rounded-lg'>
 								<img
-									src={user?.img || UserImage}
+									src={user?.img?.uri ?? UserImage}
 									alt='profile'
 									onClick={() => {
 										navigate('/mypage')
