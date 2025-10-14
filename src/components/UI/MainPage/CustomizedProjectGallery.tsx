@@ -16,7 +16,10 @@ const baseUrl = process.env.REACT_APP_API_BASE_URL
 type ProjectItem = {
   id: number
   title: string
-  titleImg: string
+  titleImg: {
+	id: number
+	uri: string
+  }
   completionRate: number
   recommendCount: number
   tags: string[]
@@ -160,7 +163,7 @@ const CustomizedProjectGallery: React.FC = () => {
       }
     `
     document.head.appendChild(style)
-    
+
     return () => {
       document.head.removeChild(style)
     }
@@ -170,20 +173,20 @@ const CustomizedProjectGallery: React.FC = () => {
   useEffect(() => {
     const el = sliderRef.current
     if (!el) return
-    
+
     const update = () => {
       setCanPrev(el.scrollLeft > 0)
       setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
     }
-    
+
     // 초기 상태 업데이트를 위한 타이머
     const timer = setTimeout(update, 100)
-    
+
     update()
     el.addEventListener('scroll', update, { passive: true })
     el.addEventListener('scroll', handleScroll, { passive: true })
     window.addEventListener('resize', update)
-    
+
     return () => {
       clearTimeout(timer)
       el.removeEventListener('scroll', update)
@@ -255,8 +258,8 @@ const CustomizedProjectGallery: React.FC = () => {
 
       {!loading && (
         <div className='relative overflow-visible mt-6'>
-          <div 
-            ref={sliderRef} 
+          <div
+            ref={sliderRef}
             className='flex overflow-x-auto snap-x snap-proximity gap-1 pr-16 sm:pr-20 md:pr-24 pb-12 sm:pb-16 md:pb-20 webkit-scrollbar-hidden -ml-4'
             style={{
               ...scrollbarHiddenStyle,
@@ -265,7 +268,7 @@ const CustomizedProjectGallery: React.FC = () => {
           >
             {projects.slice(0, 5).map((p) => {
               const rate = Math.max(0, Math.min(100, Math.round(p.completionRate ?? 0)))
-              const imgSrc = p.titleImg ? `${baseUrl}/img/${p.titleImg}` : ''
+              const imgSrc = p.titleImg ? `${baseUrl}/img/${p.titleImg.uri}` : ''
               return (
                 <div
                   key={p.id}

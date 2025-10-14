@@ -16,6 +16,7 @@ export interface ProjectDetailData {
     tag: []
     user: {
         followCount: number
+        id: number
         img: {
             id: number
             uri: string
@@ -54,8 +55,11 @@ interface ProjectNotice {
     id: number
     title: string
     content: string
-    createdTime: Date
-    imgs: ProjectImage[]
+    createTime: string
+    img: {
+        id: number
+        uri: string
+    }
 }
 
 export type noticeResponse<T> = {

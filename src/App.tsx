@@ -34,6 +34,7 @@ import AdminUsers from './pages/Admin/AdminUsers'
 import AdminProjects from './pages/Admin/AdminProjects'
 import AdminNotices from './pages/Admin/AdminNotices'
 import SocialPage from './pages/SocialPage'
+import AdditionalInfo from './pages/AdditionalInfo'
 
 // AOS 초기화
 declare global {
@@ -54,7 +55,18 @@ function App() {
 const AppWrapper = () => {
 	const [loginType, setLoginType] = useState<string>('')
 	const location = useLocation()
-	const hideLayout = ['/login', '/signup', '/popup-payment', '/popup-payment-success', '/kakao/callback', '/naver/callback', '/google/callback', '/creater', '/admin']
+	const hideLayout = [
+		'/login',
+		'/signup',
+		'/additional-info',
+		'/popup-payment',
+		'/popup-payment-success',
+		'/kakao/callback',
+		'/naver/callback',
+		'/google/callback',
+		'/creater',
+		'/admin',
+	]
 
 	// AOS 초기화
 	useEffect(() => {
@@ -62,14 +74,14 @@ const AppWrapper = () => {
 			window.AOS.init({
 				duration: 800,
 				easing: 'ease-out-cubic',
-				once: false,  // 매번 실행되도록 변경
+				once: false, // 매번 실행되도록 변경
 				offset: 50,
 				disable: false, // 모든 디바이스에서 활성화
 				startEvent: 'DOMContentLoaded',
 				useClassNames: false,
 				disableMutationObserver: false,
 				debounceDelay: 50,
-				throttleDelay: 99
+				throttleDelay: 99,
 			})
 		}
 	}, [])
@@ -78,63 +90,64 @@ const AppWrapper = () => {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			if (window.AOS) {
-				window.AOS.refreshHard(); // 완전 재초기화
+				window.AOS.refreshHard() // 완전 재초기화
 				setTimeout(() => {
-					window.AOS.refresh(); // 한번 더 refresh
-				}, 100);
+					window.AOS.refresh() // 한번 더 refresh
+				}, 100)
 			}
-		}, 50);
+		}, 50)
 
-		return () => clearTimeout(timer);
-}, [location.pathname])
+		return () => clearTimeout(timer)
+	}, [location.pathname])
 
-const pattern = ['/admin']
-const footerHidePattern = ['/admin', '/social']
+	const pattern = ['/admin']
+	const footerHidePattern = ['/admin', '/social']
 
-const shouldHideLayout = hideLayout.includes(location.pathname) || pattern.some((pattern) => location.pathname.startsWith(pattern))
-const shouldHideFooter = hideLayout.includes(location.pathname) || footerHidePattern.some((pattern) => location.pathname.startsWith(pattern))
+	const shouldHideLayout = hideLayout.includes(location.pathname) || pattern.some((pattern) => location.pathname.startsWith(pattern))
+	const shouldHideFooter = hideLayout.includes(location.pathname) || footerHidePattern.some((pattern) => location.pathname.startsWith(pattern))
 
-return (
-	<AuthProvider>
-		{!shouldHideLayout && <HeaderMain />}
-		<Routes>
-			<Route path='/' element={<MainPage />} />
-			<Route path='/login' element={<Login setLoginType={setLoginType} />} />
-			<Route path='/signup' element={<Signup />} />
-			<Route path='/idfind' element={<IDFindPage />} />
-			<Route path='/mypage' element={<MyPage />} />
-			<Route path='/project/:no' element={<FundingPage />} />
-			<Route path='/search' element={<Search />} />
-			<Route path='/project/create' element={<ProjectCreatePage />} />
-			<Route path='/project/info' element={<ProjectInfoPage />} />
-			<Route path='/project/introduction' element={<ProjectIntroductionPage />} />
-			<Route path='/project/media' element={<ProjectMediaPage />} />
-			<Route path='/creater' element={<Creater />} />
-			<Route path='/popup-payment' element={<PopupPaymentPage />} />
-			<Route path='/popup-payment-success' element={<SuccessPage />} />
-			<Route path='/fail' element={<FailPage />} />
-			<Route path='/notice/write' element={<NoticeWrite />} />
-			<Route path='/notice/edit/:id' element={<NoticeEdit />} />
-			<Route path='/profile' element={<ProfileHeader />} />
-			<Route path={`/google/callback`} element={<SocialLogin loginType={'google'} />} />
-			<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
-			<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
-			<Route path='/support/notice' element={<SupportNotice />} />
-			<Route path='/support/notice/:id' element={<SupportNoticeDetail />} />
-			<Route path='/support/faq' element={<SupportFAQ />} />
-			<Route path='/support/inquiry' element={<SupportInquiry />} />
-			<Route path='/admin' element={<AdminLayout />}>
-				<Route index element={<AdminPage />} />
-				<Route path='dashboard' element={<AdminDashboard />} />
-				<Route path='users' element={<AdminUsers />} />
-				<Route path='projects' element={<AdminProjects />} />
-				<Route path='notices' element={<AdminNotices />} />
-			</Route>
-			<Route path='/social/:id' element={<SocialPage />} />
-		</Routes>
-		{!shouldHideFooter && <Footer />}
-	</AuthProvider>
-)
+	return (
+		<AuthProvider>
+			{!shouldHideLayout && <HeaderMain />}
+			<Routes>
+				<Route path='/' element={<MainPage />} />
+				<Route path='/login' element={<Login setLoginType={setLoginType} />} />
+				<Route path='/signup' element={<Signup />} />
+				<Route path='/additional-info' element={<AdditionalInfo />} />
+				<Route path='/idfind' element={<IDFindPage />} />
+				<Route path='/mypage' element={<MyPage />} />
+				<Route path='/project/:no' element={<FundingPage />} />
+				<Route path='/search' element={<Search />} />
+				<Route path='/project/create' element={<ProjectCreatePage />} />
+				<Route path='/project/info' element={<ProjectInfoPage />} />
+				<Route path='/project/introduction' element={<ProjectIntroductionPage />} />
+				<Route path='/project/media' element={<ProjectMediaPage />} />
+				<Route path='/creater' element={<Creater />} />
+				<Route path='/popup-payment' element={<PopupPaymentPage />} />
+				<Route path='/popup-payment-success' element={<SuccessPage />} />
+				<Route path='/fail' element={<FailPage />} />
+				<Route path='/notice/write' element={<NoticeWrite />} />
+				<Route path='/notice/edit/:id' element={<NoticeEdit />} />
+				<Route path='/profile' element={<ProfileHeader />} />
+				<Route path={`/google/callback`} element={<SocialLogin loginType={'google'} />} />
+				<Route path={`/kakao/callback`} element={<SocialLogin loginType={'kakao'} />} />
+				<Route path={`/naver/callback`} element={<SocialLogin loginType={'naver'} />} />
+				<Route path='/support/notice' element={<SupportNotice />} />
+				<Route path='/support/notice/:id' element={<SupportNoticeDetail />} />
+				<Route path='/support/faq' element={<SupportFAQ />} />
+				<Route path='/support/inquiry' element={<SupportInquiry />} />
+				<Route path='/admin' element={<AdminLayout />}>
+					<Route index element={<AdminPage />} />
+					<Route path='dashboard' element={<AdminDashboard />} />
+					<Route path='users' element={<AdminUsers />} />
+					<Route path='projects' element={<AdminProjects />} />
+					<Route path='notices' element={<AdminNotices />} />
+				</Route>
+				<Route path='/social/:id' element={<SocialPage />} />
+			</Routes>
+			{!shouldHideFooter && <Footer />}
+		</AuthProvider>
+	)
 }
 
 export default App

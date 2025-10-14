@@ -114,7 +114,7 @@ const FundingModal = (): JSX.Element => {
 					</div>
 				) : (
 					<div className='space-y-6'>
-						<FundingPay reward={reward} />
+						<FundingPay reward={reward} setReward={setReward} />
 					</div>
 				)}
 			</div>

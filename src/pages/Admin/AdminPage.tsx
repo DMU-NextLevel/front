@@ -30,7 +30,10 @@ interface RecentActivity {
 interface RecentProject {
   id: number
   title: string
-  titleImg: string
+  titleImg: {
+    id: number
+    uri: string
+  }
   completionRate: number
   userCount: number
 }
@@ -181,15 +184,15 @@ const AdminPage: React.FC = () => {
   const fetchAdminInfo = async () => {
     try {
       const response = await api.get('/social/user')
-      
+
       if (response.data.message === 'success' && response.data.data) {
         const userData = response.data.data
-        
+
         // 브라우저 정보 가져오기
         const userAgent = navigator.userAgent
         let browser = 'Unknown'
         let os = 'Unknown'
-        
+
         // 브라우저 감지
         if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Edg') === -1) {
           browser = 'Chrome'
@@ -200,7 +203,7 @@ const AdminPage: React.FC = () => {
         } else if (userAgent.indexOf('Edg') > -1) {
           browser = 'Edge'
         }
-        
+
         // OS 감지
         if (userAgent.indexOf('Win') > -1) {
           os = 'Windows'
@@ -209,7 +212,7 @@ const AdminPage: React.FC = () => {
         } else if (userAgent.indexOf('Linux') > -1) {
           os = 'Linux'
         }
-        
+
         setAdminInfo({
           id: userData.img?.id || 0,
           name: userData.name,
@@ -230,7 +233,7 @@ const AdminPage: React.FC = () => {
       const userAgent = navigator.userAgent
       let browser = 'Unknown'
       let os = 'Unknown'
-      
+
       // 브라우저 감지
       if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Edg') === -1) {
         browser = 'Chrome'
@@ -241,7 +244,7 @@ const AdminPage: React.FC = () => {
       } else if (userAgent.indexOf('Edg') > -1) {
         browser = 'Edge'
       }
-      
+
       // OS 감지
       if (userAgent.indexOf('Win') > -1) {
         os = 'Windows'
@@ -250,7 +253,7 @@ const AdminPage: React.FC = () => {
       } else if (userAgent.indexOf('Linux') > -1) {
         os = 'Linux'
       }
-      
+
       // 기본 더미 데이터 설정
       setAdminInfo({
         id: 1,
@@ -269,10 +272,10 @@ const AdminPage: React.FC = () => {
 
   const fetchPopularProjects = async () => {
     try {
-      const data = await fetchProjectsFromServer({ 
-        order: 'RECOMMEND', 
-        desc: true, 
-        pageCount: 3 
+      const data = await fetchProjectsFromServer({
+        order: 'RECOMMEND',
+        desc: true,
+        pageCount: 3
       })
       if (Array.isArray(data) && data.length > 0) {
         setPopularProjects(data as RecentProject[])
@@ -496,7 +499,7 @@ const AdminPage: React.FC = () => {
             transform: translateY(0);
           }
         }
-        
+
         @keyframes slideInLeft {
           from {
             opacity: 0;
@@ -507,7 +510,7 @@ const AdminPage: React.FC = () => {
             transform: translateX(0);
           }
         }
-        
+
         @keyframes slideInRight {
           from {
             opacity: 0;
@@ -518,7 +521,7 @@ const AdminPage: React.FC = () => {
             transform: translateX(0);
           }
         }
-        
+
         @keyframes scaleIn {
           from {
             opacity: 0;
@@ -529,44 +532,44 @@ const AdminPage: React.FC = () => {
             transform: scale(1);
           }
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out;
         }
-        
+
         .animate-slideInLeft {
           animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .animate-slideInRight {
           animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .animate-scaleIn {
           animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .animate-delay-100 {
           animation-delay: 0.1s;
           animation-fill-mode: backwards;
         }
-        
+
         .animate-delay-200 {
           animation-delay: 0.2s;
           animation-fill-mode: backwards;
         }
-        
+
         .animate-delay-300 {
           animation-delay: 0.3s;
           animation-fill-mode: backwards;
         }
-        
+
         .animate-delay-400 {
           animation-delay: 0.4s;
           animation-fill-mode: backwards;
         }
       `}</style>
-      
+
       {/* 상단 헤더 */}
       <div className="flex justify-between items-center animate-slideInLeft">
         <div>
@@ -835,7 +838,7 @@ const AdminPage: React.FC = () => {
                         <div className="w-full h-full" style={{ aspectRatio: '16 / 9' }}>
                           {project.titleImg ? (
                             <img
-                              src={project.titleImg}
+                              src={project.titleImg.uri}
                               alt={project.title}
                               onError={(e) => {
                                 e.currentTarget.onerror = null
@@ -896,8 +899,8 @@ const AdminPage: React.FC = () => {
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                         )}
-                        <img 
-                          src={adminInfo.profileImage} 
+                        <img
+                          src={adminInfo.profileImage}
                           alt={adminInfo.name}
                           className={`w-full h-full object-cover ${imageLoading ? 'hidden' : 'block'}`}
                           onLoad={() => setImageLoading(false)}
@@ -908,8 +911,8 @@ const AdminPage: React.FC = () => {
                         />
                       </>
                     ) : (
-                      <img 
-                        src={defaultProfile} 
+                      <img
+                        src={defaultProfile}
                         alt={adminInfo.name}
                         className="w-full h-full object-cover"
                       />
@@ -922,7 +925,7 @@ const AdminPage: React.FC = () => {
                     {adminInfo.role}
                   </span>
                 </div>
-                
+
                 <div className="space-y-3 pt-4 border-t border-blue-500">
                   <div className="flex items-center gap-2 text-sm">
                     <i className="bi bi-browser-chrome text-blue-200"></i>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { api, apiWithoutCredentials } from '../../AxiosInstance'
+import { apiWithoutCredentials } from '../AxiosInstance'
 import {
 	communityResponse,
 	detailResponse,
@@ -9,8 +9,8 @@ import {
 	ProjectNoticeData,
 	ProjectStoryData,
 	storyResponse,
-} from '../../types/project'
-import { useProjectStore } from '../../store/useProjectStore'
+} from '../types/project'
+import { useProjectStore } from '../store/useProjectStore'
 
 interface ProjectFetchProps {
 	projectId: string
@@ -22,7 +22,7 @@ export const useProjectDetailFetch = ({ projectId }: ProjectFetchProps) => {
 	const { setIsAuthor } = useProjectStore()
 
 	useEffect(() => {
-		api.get<detailResponse<ProjectDetailData>>(`/public/project/${projectId}`).then((res) => {
+		apiWithoutCredentials.get<detailResponse<ProjectDetailData>>(`/public/project/${projectId}`).then((res) => {
 			setProjectInfo(res.data.data)
 			console.log(res.data.data)
 			setIsAuthor(res.data.data.isAuthor)
@@ -39,15 +39,15 @@ export const useProjectFetch = ({ projectId }: ProjectFetchProps) => {
 	const [community, setCommunity] = useState<ProjectCommunityData | null>(null)
 
 	useEffect(() => {
-		api.get<storyResponse<ProjectStoryData>>(`/public/project/${projectId}/story`).then((res) => {
+		apiWithoutCredentials.get<storyResponse<ProjectStoryData>>(`/public/project/${projectId}/story`).then((res) => {
 			setStory(res.data.data)
 		})
 
-		api.get<noticeResponse<ProjectNoticeData>>(`/public/project/${projectId}/notice`).then((res) => {
+		apiWithoutCredentials.get<noticeResponse<ProjectNoticeData>>(`/public/project/${projectId}/notice`).then((res) => {
 			setNotice(res.data.data)
 		})
 
-		api.get<communityResponse<ProjectCommunityData>>(`/public/project/${projectId}/community`).then((res) => {
+		apiWithoutCredentials.get<communityResponse<ProjectCommunityData>>(`/public/project/${projectId}/community`).then((res) => {
 			setCommunity(res.data.data)
 		})
 	}, [projectId])

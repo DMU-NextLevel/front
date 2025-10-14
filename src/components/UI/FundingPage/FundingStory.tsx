@@ -4,6 +4,7 @@ import FundingMessage from './FundingMessage'
 import NoticeModal from './modals/NoticeModal'
 import QuestionModal from './modals/QuestionModal'
 import { StoryModal } from './modals/StoryModal'
+import { useAuthorStore } from '../../../store/authorStore'
 
 const baseUrl = process.env.REACT_APP_API_BASE_URL
 
@@ -21,6 +22,7 @@ interface commuProps {
 
 export const FundingStory = ({ story }: storyProps): JSX.Element => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
+	const { isAuthor } = useAuthorStore()
 
 	const handleEdit = () => {
 		setIsModalOpen(true)
@@ -34,7 +36,9 @@ export const FundingStory = ({ story }: storyProps): JSX.Element => {
 					<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-300 rounded-full'></div>
 					<h2 className='text-2xl font-bold text-gray-800'>📢 프로젝트 스토리</h2>
 				</div>
-				<button className='bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/25 hover:-translate-y-0.5' onClick={handleEdit}>수정하기</button>
+				{isAuthor && (
+					<button className='bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/25 hover:-translate-y-0.5' onClick={handleEdit}>수정하기</button>
+				)}
 			</div>
 
 			{/* 구분선 */}
@@ -45,7 +49,7 @@ export const FundingStory = ({ story }: storyProps): JSX.Element => {
 				{story && story.length > 0 ? (
 					story.map((story) => (
 						<div key={story.id} className='bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden'>
-							<img src={`${baseUrl}/img/${story}`} className='w-full h-auto object-cover' alt='프로젝트 스토리 이미지' />
+							<img src={`${baseUrl}/img/${story.uri}`} className='w-full h-auto object-cover' alt='프로젝트 스토리 이미지' />
 						</div>
 					))
 				) : (
@@ -72,6 +76,7 @@ export const FundingStory = ({ story }: storyProps): JSX.Element => {
 
 export const FundingNews = ({ notice }: newsProps): JSX.Element => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
+	const { isAuthor } = useAuthorStore()
 
 	return (
 		<div className='flex flex-col w-[90%] max-w-4xl mx-auto'>
@@ -81,14 +86,16 @@ export const FundingNews = ({ notice }: newsProps): JSX.Element => {
 					<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-300 rounded-full'></div>
 					<h2 className='text-2xl font-bold text-gray-800'>우리 프로젝트는 현재 이렇게 진행중이에요</h2>
 				</div>
-				<button
+				{isAuthor && (
+					<button
 					onClick={() => setIsModalOpen(true)}
 					className='flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/25 hover:-translate-y-0.5'>
 					<svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
 						<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
 					</svg>
-					공지 추가
-				</button>
+						공지 추가
+					</button>
+				)}
 			</div>
 
 			{/* 구분선 */}
@@ -97,7 +104,7 @@ export const FundingNews = ({ notice }: newsProps): JSX.Element => {
 			{/* 공지 목록 */}
 			<div className='space-y-4'>
 				{notice && notice.length > 0 ? (
-					notice.map((news) => <NewsContent title={news.title} content={news.content} id={news.id} />)
+					notice.map((news) => <NewsContent title={news.title} content={news.content} id={news.id} createTime={news.createTime} img={news.img} />)
 				) : (
 					<div className='text-center py-12'>
 						<div className='w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center'>
@@ -132,7 +139,7 @@ export const FundingCommu = ({ community }: commuProps): JSX.Element => {
 					<div className='w-1 h-8 bg-gradient-to-b from-purple-500 to-purple-300 rounded-full'></div>
 					<h2 className='text-2xl font-bold text-gray-800'>💬 저희 소통해요</h2>
 				</div>
-				<button
+					<button
 					onClick={() => setIsQuestionModalOpen(true)}
 					className='flex items-center gap-2 border-2 border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/25 hover:-translate-y-0.5'>
 					<svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

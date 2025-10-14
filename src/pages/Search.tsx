@@ -237,7 +237,7 @@ const Search: React.FC = () => {
 						'전문가의 노하우가 담긴 고품질 콘텐츠와 서비스를 만나보세요.',
 						'모든 연령대가 함께 즐길 수 있는 재미있고 유익한 경험을 제공합니다.'
 					]
-					
+
 					// 더미 소개 텍스트 추가
 					const projectsWithIntro = data.projects.map((project: any, index: number) => ({
 						...project,
@@ -570,7 +570,7 @@ const Search: React.FC = () => {
 								<div className='invisible py-4 px-0 space-y-3'>
 									<div className='flex flex-wrap gap-2'>
 										{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-											<span 
+											<span
 												key={`hidden-${tagIndex}`}
 												className='inline-flex items-center text-xs font-medium text-white bg-gray-600 px-2.5 py-1 rounded-full'
 											>
@@ -583,7 +583,7 @@ const Search: React.FC = () => {
 									</div>
 								</div>
 							</div>
-							
+
 							<div className='relative z-10 p-4'>
 								<a href={`/project/${item.id}`} className='block'>
 									{/* 이미지와 프로그래스바 영역 */}
@@ -636,7 +636,7 @@ const Search: React.FC = () => {
 										   </div>
 									</div>
 								</a>
-									
+
 									<div className='space-y-2 relative'>
 										<a href={`/project/${item.id}`} className='block group/title'>
 											  <h3 className='text-base font-bold text-gray-900 leading-tight line-clamp-2 hover:scale-[1.02] transition-all duration-250 ease-out'>
@@ -666,7 +666,7 @@ const Search: React.FC = () => {
 											<div className='py-4 px-0 space-y-3'>
 												<div className='flex flex-wrap gap-2'>
 													{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-														<span 
+														<span
 															key={tagIndex}
 															className='inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-full transition-all duration-250 ease-out cursor-pointer'
 														>
@@ -674,7 +674,7 @@ const Search: React.FC = () => {
 														</span>
 													))}
 												</div>
-											</div>	
+											</div>
 										</div>
 									</div>
 								</div>

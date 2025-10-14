@@ -39,12 +39,12 @@ const MainPage: React.FC = () => {
   return (
   <div className="w-full max-w-none flex flex-col box-border text-gray-700">
       {/* Modern hero and sections */}
-      
+
       <div className="w-full px-0">
         <HeroSection />
-  
+
       </div>
-      
+
       {/* 띄모양 배너 */}
       <div className="w-full bg-gradient-to-r from-purple-50 to-blue-50 py-4">
         <div className="max-w-7xl mx-auto px-4">
@@ -53,13 +53,13 @@ const MainPage: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
               <div className="my-5 mx-[15%]">
           <CategorySelector
             categories={categories}
           />
         </div>
-      
+
       <div className="w-full px-0">
 
 
@@ -102,12 +102,12 @@ const MainPage: React.FC = () => {
       </div>
 
                   {/* 인터렉티브 배너 섹션 */}
-          
+
       <hr className="h-px bg-gray-100 border-none w-full" />
-          
+
       <div className="w-full bg-gray-50">
         {/* Legacy sections retained below while we transition */}
-        
+
         <div className="" />
               <FeatureOverview />
         <StatsSection />
@@ -120,7 +120,7 @@ const MainPage: React.FC = () => {
 
     </div>
   );
-  
+
 };
 
 export default MainPage;

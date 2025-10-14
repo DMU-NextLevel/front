@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import QuestionModal from './modals/QuestionModal'
 import Modal from '../../layout/Modal'
 import { useCommunityDelete } from '../../../apis/funding/useCommuFetch'
+import { useAuthorStore } from '../../../store/authorStore'
+import { useAuth } from '../../../hooks/AuthContext'
 
 interface AnswerData {
 	id: number
@@ -42,6 +44,14 @@ const FundingMessage: React.FC<ChatMessageProps> = ({ ask, answer }) => {
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 	const [isType, setIsType] = useState<'ask' | 'answer' | null>(null)
 	const [editData, setEditData] = useState<{ id: number; content: string; isType: 'ask' | 'answer' | null } | null>(null)
+	const [isMine, setIsMine] = useState(false)
+	const {deleteCommunity} = useCommunityDelete()
+	const { user } = useAuth()
+	const { isAuthor } = useAuthorStore()
+
+	useEffect(() => {
+		setIsMine(user?.id === ask?.userProfileDto.id)
+	}, [user, ask])
 
 	const handleAnswer = () => {
 		setIsAnswerModalOpen(true)
@@ -73,7 +83,7 @@ const FundingMessage: React.FC<ChatMessageProps> = ({ ask, answer }) => {
 			<div className={`flex flex-row-reverse items-end mb-4`}>
 				<div className={`w-10 h-10 rounded-full flex-shrink-0 bg-gray-300`} />
 				<div className={`flex flex-col items-end mx-2.5`}>
-					{!answer && (
+					{!answer && isAuthor && (
 						<button className='text-xs text-purple-500 hover:text-purple-700 font-medium' onClick={() => handleAnswer()}>
 							답변하기
 						</button>
@@ -86,12 +96,16 @@ const FundingMessage: React.FC<ChatMessageProps> = ({ ask, answer }) => {
 						</div>
 					</div>
 					<div className='flex flex-row items-center gap-4'>
-						<button className='text-xs text-gray-500 hover:text-purple-700 font-medium' onClick={() => handleEdit('ask')}>
-							수정하기
-						</button>
-						<button className='text-xs text-gray-500 hover:text-red-700 font-medium' onClick={() => handleDelete('ask')}>
-							삭제하기
-						</button>
+						{isMine && (
+							<button className='text-xs text-gray-500 hover:text-purple-700 font-medium' onClick={() => handleEdit('ask')}>
+								수정하기
+							</button>
+						)}
+						{(isMine || isAuthor) && (
+							<button className='text-xs text-gray-500 hover:text-red-700 font-medium' onClick={() => handleDelete('ask')}>
+								삭제하기
+							</button>
+						)}
 					</div>
 				</div>
 			</div>
@@ -108,12 +122,16 @@ const FundingMessage: React.FC<ChatMessageProps> = ({ ask, answer }) => {
 								<div className='text-xs text-gray-500'>{answer?.createdAt.split('T')[0]}</div>
 							</div>
 							<div className='flex flex-row items-center gap-4'>
-								<button className='text-xs text-gray-500 hover:text-purple-700 font-medium' onClick={() => handleEdit('answer')}>
-									수정하기
-								</button>
-								<button className='text-xs text-gray-500 hover:text-red-700 font-medium' onClick={() => handleDelete('answer')}>
-									삭제하기
-								</button>
+								{isAuthor && (
+									<>
+										<button className='text-xs text-gray-500 hover:text-purple-700 font-medium' onClick={() => handleEdit('answer')}>
+											수정하기
+										</button>
+										<button className='text-xs text-gray-500 hover:text-red-700 font-medium' onClick={() => handleDelete('answer')}>
+											삭제하기
+										</button>
+									</>
+								)}
 							</div>
 						</div>
 					</div>
