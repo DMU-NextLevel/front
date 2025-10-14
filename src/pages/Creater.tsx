@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, CheckCircle, Star, TrendingUp, Users, Award, Smartphone, BookOpen, PieChart, ChevronDown, Monitor, Home, Shirt, Heart, Palette, Gamepad2, PawPrint, Plane, UtensilsCrossed, Edit, BarChart3, Bell, MessageSquare, Users2, Ticket } from 'lucide-react'
 import './Creater.css'
+import AnimatedBanner from '../components/UI/CreaterPage/AnimatedBanner'
 
 // 카테고리 데이터
 const CATEGORIES = [
@@ -42,12 +43,12 @@ const Creater: React.FC = () => {
 			const heroTop = heroSection.offsetTop
 			const heroHeight = heroSection.offsetHeight
 			const heroBottom = heroTop + heroHeight
-
+			
 			// 히어로 섹션 아래에 있는지 확인
 			if (scrollTop > heroBottom) {
 				hasPassedHeroRef.current = true
 			}
-
+			
 			// 히어로 섹션 위에 있으면 리셋
 			if (scrollTop < heroTop) {
 				if (heroScrollProgressRef.current > 0) {
@@ -140,7 +141,7 @@ const Creater: React.FC = () => {
 
 		// 초기 설정
 		document.body.style.overflow = 'auto'
-
+		
 		// 이벤트 리스너 추가
 		window.addEventListener('wheel', handleWheel, { passive: false })
 
@@ -162,7 +163,7 @@ const Creater: React.FC = () => {
 
 			const heroRect = tabsHeroSection.getBoundingClientRect()
 			const heroBottom = heroRect.bottom
-
+			
 			// 히어로 섹션의 하단이 화면 상단에 도달하면 sticky 활성화
 			if (heroBottom <= 75) {
 				setIsTabsSticky(true)
@@ -210,10 +211,10 @@ const Creater: React.FC = () => {
 		if (element) {
 			const elementPosition = element.getBoundingClientRect().top
 			const offsetPosition = elementPosition + window.pageYOffset
-
-			window.scrollTo({
-				top: offsetPosition,
-				behavior: 'smooth'
+			
+			window.scrollTo({ 
+				top: offsetPosition, 
+				behavior: 'smooth' 
 			})
 		}
 	}
@@ -285,7 +286,7 @@ const Creater: React.FC = () => {
 			const animateHero = () => {
 				const elapsed = Date.now() - startTime
 				const progress = Math.min(elapsed / animationDuration, 1)
-
+				
 				// easeInOutCubic 이징
 				const ease = progress < 0.5
 					? 4 * progress * progress * progress
@@ -309,7 +310,7 @@ const Creater: React.FC = () => {
 					// 히어로 애니메이션 완료 후 다음 섹션으로 즉시 이동
 					heroScrollProgressRef.current = 2.5
 					hasPassedHeroRef.current = true
-
+					
 					// 딜레이 없이 바로 다음 섹션으로 스크롤
 					nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
 				}
@@ -340,7 +341,7 @@ const Creater: React.FC = () => {
 							<img data-speed="0.8" src="https://images.unsplash.com/photo-1588007375246-3ee823ef4851?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjR8fG5lb258ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=60" alt="" />
 							<img data-speed="1" src="https://images.unsplash.com/photo-1571450669798-fcb4c543f6a4?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjF8fG5lb258ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=60" alt="" />
 						</div>
-					</div>
+					</div>	
 				</div>
 				{/* Custom Header for Creater Page */}
 				<header className='pt-6 md:pt-8 px-4 md:px-8 lg:px-[10%] relative z-10'>
@@ -378,17 +379,17 @@ const Creater: React.FC = () => {
 							지금 바로 당신의 프로젝트를 시작하세요.
 						</p>
 						<div className='flex flex-wrap gap-3 md:gap-4 animate-fade-in-up delay-600'>
-							<Link
-								to='/project/create'
+							<Link 
+								to='/project/create' 
 								className='inline-flex items-center gap-2 md:gap-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 md:px-10 md:py-5 rounded-full text-base md:text-xl font-bold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105'
 							>
 								프로젝트 시작하기 <ArrowRight className='w-5 h-5 md:w-6 md:h-6' />
 							</Link>
-							<button
+							<button 
 								onClick={scrollToSuccess}
 								className='inline-flex items-center gap-2 md:gap-3 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white px-6 py-3 md:px-10 md:py-5 rounded-full text-base md:text-xl font-semibold hover:bg-white/20 transition-all duration-300'
 							>
-								문의하기
+								문의하기 
 							</button>
 						</div>
 						<p className='mt-6 md:mt-8 text-xs md:text-sm text-gray-500 animate-fade-in-up delay-700'>
@@ -478,37 +479,39 @@ const Creater: React.FC = () => {
 				</div>
 			</section>
 
+
+
 			{/* 스티키 탭 네비게이션 */}
 			<section className='sticky-tabs-hero relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 text-center px-8'>
 				{/* SVG Path 애니메이션 */}
 				<div className='svg-content absolute inset-0 pointer-events-none overflow-hidden z-0'>
-					<svg
-						className='absolute inset-0 w-full h-full'
-						viewBox='0 0 1920 800'
+					<svg 
+						className='absolute inset-0 w-full h-full' 
+						viewBox='0 0 1920 800' 
 						xmlns='http://www.w3.org/2000/svg'
 						preserveAspectRatio='none'
 					>
-						<path
+						<path 
 							className='svg-path'
 							d='M0,600 Q480,300 960,500 Q1440,700 1920,400'
-							fill='none'
-							stroke='#059669'
+							fill='none' 
+							stroke='#059669' 
 							strokeWidth='3'
 							opacity='0.3'
 						/>
-						<path
+						<path 
 							className='svg-path'
 							d='M0,400 Q240,100 480,400 Q720,700 960,400 Q1200,100 1440,400 Q1680,700 1920,400'
-							fill='none'
-							stroke='#F59E0B'
+							fill='none' 
+							stroke='#F59E0B' 
 							strokeWidth='3'
 							opacity='0.3'
 						/>
-						<path
+						<path 
 							className='svg-path'
 							d='M200,650 Q600,350 1000,550 Q1400,750 1800,450'
-							fill='none'
-							stroke='#0891B2'
+							fill='none' 
+							stroke='#0891B2' 
 							strokeWidth='2'
 							opacity='0.2'
 						/>
@@ -521,7 +524,7 @@ const Creater: React.FC = () => {
 				<h3 className='relative z-10 text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-600 font-light mb-8 md:mb-12 scroll-fade-in px-4'>
 					아이디어를 현실로, 위드유가 함께합니다
 				</h3>
-
+				
 				{/* 핵심 가치 3개를 한 줄로 */}
 				<div className='relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-5xl mx-auto'>
 					<div className='group bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200 hover:border-blue-400 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 scroll-scale-in'>
@@ -555,11 +558,11 @@ const Creater: React.FC = () => {
 					</div>
 				</div>
 
-				<div
+				<div 
 					ref={tabsContainerRef}
 					className={`sticky-tabs-container relative z-10 ${isTabsSticky ? 'sticky-tabs-container--sticky' : ''}`}
 				>
-					<a
+					<a 
 						ref={(el) => { tabRefs.current['features'] = el }}
 						className={`sticky-tab ${currentTab === 'features' ? 'active' : ''}`}
 						href='#features'
@@ -567,7 +570,7 @@ const Creater: React.FC = () => {
 					>
 						자격 요건
 					</a>
-					<a
+					<a 
 						ref={(el) => { tabRefs.current['benefits'] = el }}
 						className={`sticky-tab ${currentTab === 'benefits' ? 'active' : ''}`}
 						href='#benefits'
@@ -575,15 +578,7 @@ const Creater: React.FC = () => {
 					>
 						장점
 					</a>
-					<a
-						ref={(el) => { tabRefs.current['categories'] = el }}
-						className={`sticky-tab ${currentTab === 'categories' ? 'active' : ''}`}
-						href='#categories'
-						onClick={(e) => handleTabClick(e, 'categories')}
-					>
-						카테고리
-					</a>
-					<a
+					<a 
 						ref={(el) => { tabRefs.current['tools'] = el }}
 						className={`sticky-tab ${currentTab === 'tools' ? 'active' : ''}`}
 						href='#tools'
@@ -591,11 +586,19 @@ const Creater: React.FC = () => {
 					>
 						도구
 					</a>
-					<span
-						className='sticky-tab-slider'
-						style={{
-							width: `${sliderStyle.width}px`,
-							left: `${sliderStyle.left}px`
+					<a 
+						ref={(el) => { tabRefs.current['categories'] = el }}
+						className={`sticky-tab ${currentTab === 'categories' ? 'active' : ''}`}
+						href='#categories'
+						onClick={(e) => handleTabClick(e, 'categories')}
+					>
+						카테고리
+					</a>
+					<span 
+						className='sticky-tab-slider' 
+						style={{ 
+							width: `${sliderStyle.width}px`, 
+							left: `${sliderStyle.left}px` 
 						}}
 					></span>
 				</div>
@@ -614,7 +617,7 @@ const Creater: React.FC = () => {
 							<span className='text-cyan-500'>개인, 개인 사업자, 법인 사업자</span>까지 누구나 이용할 수 있습니다.
 						</h2>
 					</div>
-
+					
 					{/* 움직이는 카테고리 - 여백 없이 화면 끝에서 끝으로 */}
 					<div className='relative w-full overflow-hidden py-12'>
 						<div className='flex items-center h-full animate-move-right whitespace-nowrap'>
@@ -874,43 +877,6 @@ const Creater: React.FC = () => {
 				</div>
 			</div>
 		</section>			{/* 카테고리 섹션 */}
-			<section id='categories' className='min-h-screen flex flex-col items-center justify-center bg-white px-4 md:px-8 py-16 md:py-20 scroll-mt-24'>
-				<div className='max-w-7xl mx-auto'>
-					<h2 className='text-3xl md:text-5xl font-bold text-gray-900 mb-4 md:mb-6 text-center scroll-fade-in'>다양한 카테고리</h2>
-					<p className='text-base md:text-xl text-gray-600 mb-8 md:mb-12 text-center max-w-3xl mx-auto scroll-fade-in'>
-						테크부터 라이프스타일까지, 모든 분야의 창작을 지원합니다
-					</p>
-					<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8'>
-						{CATEGORIES.map((category, idx) => (
-							<div key={idx} className='group relative bg-white rounded-xl md:rounded-2xl p-4 md:p-8 text-center shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden scroll-scale-in'>
-								{/* 배경 그라데이션 오버레이 */}
-								<div className={`absolute inset-0 bg-gradient-to-br ${category.color || 'from-blue-500 to-cyan-500'} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
-
-								{/* 아이콘 컨테이너 */}
-								<div className='relative mb-3 md:mb-4'>
-									<div className='w-12 h-12 md:w-16 md:h-16 mx-auto bg-gray-50 rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm'>
-										<category.icon className='w-6 h-6 md:w-8 md:h-8 text-gray-600' />
-									</div>
-								</div>
-
-								{/* 텍스트 컨텐츠 */}
-								<div className='relative'>
-									<h3 className='text-sm md:text-lg font-bold text-gray-900 mb-1 md:mb-2 group-hover:text-gray-800 transition-colors'>
-										{category.name}
-									</h3>
-									<p className='text-xs md:text-sm text-gray-500 leading-relaxed hidden md:block'>
-										{category.desc}
-									</p>
-								</div>
-
-								{/* 호버 효과를 위한 추가 요소 */}
-								<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-
 			{/* 도구 섹션 */}
 		<section id='tools' className='min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 px-4 md:px-8 py-16 md:py-20 pt-24 md:pt-32 scroll-mt-24'>
 			<div className='max-w-7xl mx-auto'>
@@ -1087,6 +1053,46 @@ const Creater: React.FC = () => {
 				</div>
 			</section>
 
+			{/* 카테고리 섹션 */}
+			<section id='categories' className='min-h-screen flex flex-col items-center justify-center bg-white px-4 md:px-8 py-16 md:py-20 scroll-mt-24'>
+				<div className='max-w-7xl mx-auto'>
+					<h2 className='text-3xl md:text-5xl font-bold text-gray-900 mb-4 md:mb-6 text-center scroll-fade-in'>다양한 카테고리</h2>
+					<p className='text-base md:text-xl text-gray-600 mb-8 md:mb-12 text-center max-w-3xl mx-auto scroll-fade-in'>
+						테크부터 라이프스타일까지, 모든 분야의 창작을 지원합니다
+					</p>
+					<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8'>
+						{CATEGORIES.map((category, idx) => (
+							<div key={idx} className='group relative bg-white rounded-xl md:rounded-2xl p-4 md:p-8 text-center shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden scroll-scale-in'>
+								{/* 배경 그라데이션 오버레이 */}
+								<div className={`absolute inset-0 bg-gradient-to-br ${category.color || 'from-blue-500 to-cyan-500'} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+
+								{/* 아이콘 컨테이너 */}
+								<div className='relative mb-3 md:mb-4'>
+									<div className='w-12 h-12 md:w-16 md:h-16 mx-auto bg-gray-50 rounded-xl md:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm'>
+										<category.icon className='w-6 h-6 md:w-8 md:h-8 text-gray-600' />
+									</div>
+								</div>
+
+								{/* 텍스트 컨텐츠 */}
+								<div className='relative'>
+									<h3 className='text-sm md:text-lg font-bold text-gray-900 mb-1 md:mb-2 group-hover:text-gray-800 transition-colors'>
+										{category.name}
+									</h3>
+									<p className='text-xs md:text-sm text-gray-500 leading-relaxed hidden md:block'>
+										{category.desc}
+									</p>
+								</div>
+
+								{/* 호버 효과를 위한 추가 요소 */}
+								<div className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			{/* 애니메이션 배너 */}
+			{/* <AnimatedBanner /> */}
 			{/* CTA 섹션 */}
 			<section className='py-12 md:py-20 bg-gradient-to-br from-blue-600 to-purple-700 text-white'>
 				<div className='max-w-4xl mx-auto text-center px-4 md:px-8 scroll-fade-in'>
@@ -1096,8 +1102,8 @@ const Creater: React.FC = () => {
 					<p className='text-base md:text-xl mb-6 md:mb-8 opacity-90'>
 						당신의 창의적인 아이디어를 세상과 공유하고, 함께 성장할 후원자들을 만나보세요.
 					</p>
-					<Link
-						to='/project/create'
+					<Link 
+						to='/project/create' 
 						className='inline-flex items-center gap-2 md:gap-3 bg-white text-blue-600 px-6 py-3 md:px-8 md:py-4 rounded-lg text-base md:text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
 					>
 						프로젝트 시작하기 <ArrowRight className='w-4 h-4 md:w-5 md:h-5' />
@@ -1105,12 +1111,6 @@ const Creater: React.FC = () => {
 				</div>
 			</section>
 
-			{/* Footer 정보 */}
-			<footer className='bg-gray-900 text-gray-400 py-6 md:py-8'>
-				<div className='max-w-7xl mx-auto px-4 md:px-8 text-center'>
-					<p className='text-sm'>copyright 2025 WithU Corp. all rights reserved.</p>
-				</div>
-			</footer>
 			{/* Footer 정보 */}
 			<footer className='bg-gray-900 text-gray-400 py-8'>
 				<div className='max-w-7xl mx-auto px-8 text-center'>
