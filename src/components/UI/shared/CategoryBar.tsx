@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 export interface CategoryItem {
   label: string
@@ -15,6 +15,13 @@ interface CategoryBarProps {
 
 // Reusable horizontal icon-based category selector (from Search.tsx)
 const CategoryBar: React.FC<CategoryBarProps> = ({ categories, value, onChange, className = '' }) => {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    // 컴포넌트가 마운트된 후 AOS 애니메이션 활성화
+    setIsMounted(true)
+  }, [])
+
   return (
     <div
       className={
@@ -23,10 +30,12 @@ const CategoryBar: React.FC<CategoryBarProps> = ({ categories, value, onChange, 
         `transform-gpu ` +
         `${className}`
       }
-      data-aos='fade-up'
-      data-aos-duration='600'
-      data-aos-easing='ease-out-cubic'
-      data-aos-once='true'
+      {...(isMounted && {
+        'data-aos': 'fade-up',
+        'data-aos-duration': '600',
+        'data-aos-easing': 'ease-out-cubic',
+        'data-aos-once': 'true'
+      })}
       style={{ willChange: 'transform' }}
     >
       {categories.map((cat) => (

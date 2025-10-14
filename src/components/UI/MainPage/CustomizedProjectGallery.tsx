@@ -61,6 +61,45 @@ const CustomizedProjectGallery: React.FC = () => {
   const [canNext, setCanNext] = useState(true)
   const [showMoreButton, setShowMoreButton] = useState(false)
 
+  // 최근본 프로젝트 API 호출 함수
+  const fetchRecentViewedProjects = async () => {
+    try {
+      const response = await api.post('/social/user/project', {
+        page: 0,
+        pageCount: 6,
+        type: 'VIEW',
+        status: 'PROGRESS'
+      }, { withCredentials: true })
+
+      if (response.data.message === 'success' && response.data.data?.projects) {
+        const projectsData = response.data.data.projects.map((project: any) => ({
+          id: project.id,
+          title: project.title,
+          titleImg: project.titleImg?.uri || '',
+          completionRate: project.completionRate,
+          recommendCount: project.likeCount || 0,
+          tags: project.tags || [],
+          createdAt: project.createdAt,
+          expired: project.expiredAt,
+          isExpired: false,
+          isRecommend: false,
+          isLiked: project.isLiked || false,
+          author: project.author,
+          userCount: project.userCount || 0,
+          viewCount: project.viewCount || 0
+        }))
+        setProjects(projectsData.slice(0, 6)) // 최대 6개
+      }
+    } catch (error) {
+      console.error('최근본 프로젝트 로드 실패:', error)
+      // 실패 시 일반 프로젝트 로드
+      const data = await fetchProjectsFromServer({ order: 'RECOMMEND', desc: true, pageCount: 6 })
+      if (Array.isArray(data)) {
+        setProjects((data as any).slice(0, 6))
+      }
+    }
+  }
+
   // 좋아요 토글 API 함수 (api 인스턴스, withCredentials만 사용)
   const toggleProjectLike = async (projectId: number, like: boolean) => {
     try {

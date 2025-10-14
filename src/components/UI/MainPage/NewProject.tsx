@@ -111,7 +111,7 @@ const NewProject: React.FC = () => {
 		}
 
 	return (
-			<section className='py-6 sm:py-8' >
+			<section className='py-6 sm:py-8 min-w-[1024px] mx-auto px-[15%]'>
 				<div className='flex items-end justify-between mb-4 sm:mb-6'>
 					<div>
 						<h2 className='text-lg sm:text-xl md:text-2xl font-bold m-0'>신규 프로젝트</h2>

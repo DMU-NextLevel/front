@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { api } from '../../AxiosInstance'
 import { useNavigate } from 'react-router-dom'
-import { fetchProjectsFromServer } from '../../hooks/fetchProjectsFromServer'
+import { fetchProjectsFromServer, ProjectResponseData } from '../../hooks/fetchProjectsFromServer'
 import noImage from '../../assets/images/noImage.jpg'
 
 interface Project {
@@ -69,9 +69,10 @@ const AdminProjects: React.FC = () => {
         page: 0,
         pageCount: 1000,
         desc: true,
-      })
+        returnFullResponse: true,
+      }) as ProjectResponseData
 
-      const filteredProjects = projectsData.filter((project: any) => {
+      const filteredProjects = projectsData.projects.filter((project: any) => {
         // 상태 필터
         if (statusFilter !== 'ALL' && project.status !== statusFilter) {
           return false
