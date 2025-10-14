@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import noImage from '../../../assets/images/noImage.jpg'
 import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
+import { useAuth } from '../../../hooks/AuthContext'
 
 // 스크롤바 숨김을 위한 스타일
 const scrollbarHiddenStyle = {
@@ -27,6 +29,7 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
 const NewProject: React.FC = () => {
 	const baseUrl = process.env.REACT_APP_API_BASE_URL
 	const navigate = useNavigate()
+	const { isLoggedIn } = useAuth()
 	const [projects, setProjects] = useState<any[]>([])
 	const sliderRef = useRef<HTMLDivElement | null>(null)
 	const tickingRef = useRef(false)
@@ -99,16 +102,53 @@ const NewProject: React.FC = () => {
 			return Math.max(0, Math.round(w + gapPx))
 		}
 
-		const goPrev = () => {
-			const el = sliderRef.current
-			if (!el) return
-			el.scrollBy({ left: -getStep(), behavior: 'smooth' })
+	// 좋아요 토글 API 함수
+	const toggleProjectLike = async (projectId: number, like: boolean) => {
+		try {
+			const url = `${baseUrl}/social/user/like`
+			const res = await fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				credentials: 'include',
+				body: JSON.stringify({ like, projectId })
+			})
+			if (res.ok) {
+				setProjects((prev) =>
+					prev.map((p) =>
+						p.id === projectId ? { ...p, isLiked: like } : p
+					)
+				)
+			}
+		} catch (err) {
+			console.error('좋아요 토글 실패', err)
 		}
-		const goNext = () => {
-			const el = sliderRef.current
-			if (!el) return
-			el.scrollBy({ left: getStep(), behavior: 'smooth' })
+	}
+
+	// 좋아요 버튼 클릭 핸들러
+	const handleLikeToggle = async (projectId: number, current: boolean) => {
+		if (!isLoggedIn) {
+			navigate('/login')
+			return
 		}
+		await toggleProjectLike(projectId, !current)
+		if (!current) {
+			toast.success('위시리스트에 추가됐어요!', {
+				duration: 4000,
+				style: {
+					animation: 'slideInRightToLeft 0.5s',
+				},
+			})
+		} else {
+			toast('위시리스트에서 제외했어요.', {
+				duration: 3000,
+				style: {
+					animation: 'slideInRightToLeft 0.5s',
+				},
+			})
+		}
+	}
 
 	return (
 			<section className='py-6 sm:py-8 min-w-[1024px] mx-auto px-[15%]'>
@@ -182,10 +222,17 @@ const NewProject: React.FC = () => {
 									{/* 진행률과 추천수 */}
 									<div className='flex items-center justify-between text-xs sm:text-sm mb-2 sm:mb-3'>
 										<span className='text-purple-600 font-semibold'>{rate}% 달성</span>
-										<div className='flex items-center gap-1 text-gray-500'>
-											<i className='bi bi-heart text-xs' />
+										<button
+											className='flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors duration-200 cursor-pointer'
+											onClick={(e) => {
+												e.preventDefault()
+												e.stopPropagation()
+												handleLikeToggle(item.id, !!item.isLiked)
+											}}
+										>
+											<i className={`text-xs transition-all duration-200 ${item.isLiked ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
 											<span className='text-xs'>{item?.recommendCount?.toLocaleString?.('ko-KR') ?? 0}</span>
-										</div>
+										</button>
 									</div>
 
 									{/* 태그 */}

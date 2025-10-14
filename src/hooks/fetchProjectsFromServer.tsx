@@ -4,6 +4,7 @@ import { api } from '../AxiosInstance';
 interface ProjectItem {
   id: number;
   title: string;
+  content?: string; // 프로젝트 소개글
   titleImg: {
     id: number
     uri: string

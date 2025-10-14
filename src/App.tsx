@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import { HeaderMain } from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import IDFindPage from './pages/IDFindPage'
@@ -145,6 +146,30 @@ const AppWrapper = () => {
 				</Route>
 				<Route path='/social/:id' element={<SocialPage />} />
 			</Routes>
+		       <Toaster
+			       position="bottom-right"
+			       reverseOrder={true}
+			       toastOptions={{
+				       duration: 3000,
+				       style: {
+					       background: '#363636',
+					       color: '#fff',
+					       fontSize: '14px',
+				       },
+			       }}
+		       />
+		       <style>{`
+			 @keyframes slideInRightToLeft {
+			   from {
+			     transform: translateX(100%);
+			     opacity: 0.7;
+			   }
+			   to {
+			     transform: translateX(0);
+			     opacity: 1;
+			   }
+			 }
+		       `}</style>
 			{!shouldHideFooter && <Footer />}
 		</AuthProvider>
 	)

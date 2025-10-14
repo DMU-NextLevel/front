@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
+import { useAuth } from '../../../hooks/AuthContext'
 import noImage from '../../../assets/images/noImage.jpg'
 
 // 스크롤바 숨김을 위한 스타일
@@ -15,6 +17,7 @@ const baseUrl = process.env.REACT_APP_API_BASE_URL
 type ProjectItem = {
   id: number
   title: string
+  content?: string // 프로젝트 소개글
   titleImg: {
 	id: number
 	uri: string
@@ -52,6 +55,7 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
 }
 
 const RecommendedProject: React.FC = () => {
+	const { isLoggedIn } = useAuth()
 	const navigate = useNavigate()
 	const [projects, setProjects] = useState<ProjectItem[]>([])
 	const [loading, setLoading] = useState(false)
@@ -86,7 +90,26 @@ const RecommendedProject: React.FC = () => {
 
 	// 좋아요 버튼 클릭 핸들러
 	const handleLikeToggle = async (projectId: number, current: boolean) => {
+		if (!isLoggedIn) {
+			navigate('/login')
+			return
+		}
 		await toggleProjectLike(projectId, !current)
+		if (!current) {
+			toast.success('위시리스트에 추가됐어요!', {
+				duration: 4000,
+				style: {
+					animation: 'slideInRightToLeft 0.5s',
+				},
+			})
+		} else {
+			toast('위시리스트에서 제외했어요.', {
+				duration: 3000,
+				style: {
+					animation: 'slideInRightToLeft 0.5s',
+				},
+			})
+		}
 	}
 
 	useEffect(() => {
@@ -254,7 +277,7 @@ const RecommendedProject: React.FC = () => {
 											<img
 												src={imgSrc || noImage}
 												alt={p.title}
-												className='absolute inset-0 w-full h-full object-cover rounded-t-2xl transition-all duration-500 ease-out group-hover:scale-105'
+												className='absolute inset-0 w-full h-full object-cover rounded-t-2xl border border-gray-200 transition-all duration-500 ease-out group-hover:scale-105'
 												onError={(e) => {
 													e.currentTarget.onerror = null
 													e.currentTarget.src = noImage
@@ -278,7 +301,7 @@ const RecommendedProject: React.FC = () => {
 														e.stopPropagation()
 														handleLikeToggle(p.id, p.isLiked ?? false)
 													}}
-													className='text-gray-400 hover:text-red-500 p-2 rounded-md'
+													className='text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-md transition-all duration-200'
 												>
 													<svg className={`w-5 h-5 ${p.isLiked ? 'fill-current text-red-500' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
 														<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' />
@@ -317,7 +340,7 @@ const RecommendedProject: React.FC = () => {
 											</div>
 
 											<p className='text-sm text-gray-500 line-clamp-3 mb-2'>
-												{p.shortDescription || p.description || p.summary || p.intro || '프로젝트 소개가 준비 중입니다.'}
+												{p.content || p.shortDescription || p.description || p.summary || p.intro || '프로젝트 소개가 준비 중입니다.'}
 											</p>
 
 											{/* 태그들 - 정보 아래에 배치 */}
@@ -325,7 +348,7 @@ const RecommendedProject: React.FC = () => {
 												{Array.isArray(p.tags) && p.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
 													<span
 														key={`left-${tagIndex}`}
-														className='inline-flex items-center rounded-full text-xs px-2.5 py-1 bg-gray-100 text-gray-700'
+														className='inline-flex items-center rounded-full text-xs px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors duration-200 cursor-pointer'
 													>
 														{tag}
 													</span>
@@ -367,7 +390,7 @@ const RecommendedProject: React.FC = () => {
 						<div className='grid grid-cols-2 gap-2'>
 							{projects.slice(3, 7).map((p) => {
 								const rate = Math.max(0, Math.min(100, Math.round(p.completionRate ?? 0)))
-								const imgSrc = p.titleImg ? `${baseUrl}/img/${p.titleImg}` : ''
+								const imgSrc = p.titleImg ? `${baseUrl}/img/${p.titleImg.uri}` : ''
 								return (
 									<div
 										key={p.id}
@@ -397,13 +420,13 @@ const RecommendedProject: React.FC = () => {
 											{/* 실제 표시되는 내용 */}
 											<div className='pb-4 px-4 space-y-2'>
 												<p className='text-sm text-gray-600 leading-relaxed mt-0.5'>
-													{p.shortDescription || p.description || p.summary || p.intro || '프로젝트 소개가 준비 중입니다.'}
+													{p.content || p.shortDescription || p.description || p.summary || p.intro || '프로젝트 소개가 준비 중입니다.'}
 												</p>
 												<div className='flex flex-wrap gap-2'>
 													{Array.isArray(p.tags) && p.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
 														<span
 															key={`visible-${tagIndex}`}
-															className='inline-flex items-center text-xs font-medium text-white bg-gray-600 px-2.5 py-1 rounded-full'
+															className='inline-flex items-center text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 px-2.5 py-1 rounded-full transition-colors duration-200 cursor-pointer'
 														>
 															{tag}
 														</span>
@@ -420,7 +443,7 @@ const RecommendedProject: React.FC = () => {
 														<img
 															src={imgSrc || noImage}
 															alt={p.title}
-															className='w-full object-cover rounded-t-lg transition-all duration-500 ease-out group-hover:scale-105'
+															className='w-full object-cover rounded-t-lg border border-gray-200 transition-all duration-500 ease-out group-hover:scale-105'
 															style={{ aspectRatio: '16 / 9' }}
 															onError={(e) => {
 																e.currentTarget.onerror = null
@@ -443,7 +466,7 @@ const RecommendedProject: React.FC = () => {
 															e.stopPropagation()
 															handleLikeToggle(p.id, p.isLiked ?? false)
 														}}
-														className='text-gray-400 hover:text-red-500 p-1 rounded-md ml-1'
+														className='text-gray-400 hover:text-red-500 hover:bg-red-50 p-1 rounded-md ml-1 transition-all duration-200'
 													>
 														<svg className={`w-4 h-4 ${p.isLiked ? 'fill-current text-red-500' : ''}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
 															<path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' />

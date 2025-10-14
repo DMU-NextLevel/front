@@ -8,11 +8,16 @@ import 'aos/dist/aos.css'
 import { fetchProjectsFromServer, ProjectResponseData } from '../hooks/fetchProjectsFromServer'
 import CategoryBar from '../components/UI/shared/CategoryBar'
 import { api } from '../AxiosInstance'
+import toast from 'react-hot-toast'
 
 type ProjectItem = {
   id: number
   title: string
-  titleImg: string
+  content?: string // 프로젝트 소개글
+  titleImg: {
+    id: number
+    uri: string
+  }
   completionRate: number
   recommendCount?: number
   userCount: number
@@ -186,7 +191,8 @@ const Search: React.FC = () => {
 							
 							const completedWithIntro = data.projects.map((project: any, index: number) => ({
 								...project,
-								shortDescription: project.shortDescription || 
+								shortDescription: project.content ||
+									project.shortDescription || 
 									project.description || 
 									project.summary || 
 									project.intro || 
@@ -241,7 +247,8 @@ const Search: React.FC = () => {
 					// 더미 소개 텍스트 추가
 					const projectsWithIntro = data.projects.map((project: any, index: number) => ({
 						...project,
-						shortDescription: project.shortDescription || 
+						shortDescription: project.content ||
+							project.shortDescription || 
 							project.description || 
 							project.summary || 
 							project.intro || 
@@ -299,7 +306,30 @@ const Search: React.FC = () => {
 
 	// 좋아요 버튼 클릭 핸들러
 	const handleLikeToggle = async (projectId: number, current: boolean) => {
+		console.log('handleLikeToggle called:', { projectId, current, isLoggedIn })
+		if (!isLoggedIn) {
+			navigate('/login')
+			return
+		}
 		await toggleProjectLike(projectId, !current)
+		console.log('After toggleProjectLike, current:', current)
+		if (!current) {
+			console.log('Showing success toast')
+			toast.success('위시리스트에 추가됐어요!', {
+				duration: 4000,
+				style: {
+					animation: 'slideInRightToLeft 0.5s',
+				},
+			})
+		} else {
+			console.log('Showing remove toast')
+			toast('위시리스트에서 제외했어요.', {
+				duration: 3000,
+				style: {
+					animation: 'slideInRightToLeft 0.5s',
+				},
+			})
+		}
 	}
 
 	// 검색 핸들러
@@ -334,7 +364,7 @@ const Search: React.FC = () => {
 	}
 
 	return (
-		<div className="px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%] pb-[10px]">
+		<div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
 			{/* 모바일/데스크톱 모두 메인페이지와 동일한 카테고리바 디자인 적용 */}
 
 
@@ -465,11 +495,11 @@ const Search: React.FC = () => {
 					</div>
 				)}
 				{/* 모바일 리스트 뷰 */}
-				<div className="block sm:hidden">
+				<div className="block sm:hidden pb-[100px]">
 					{projects.map((item) => (
 					<div key={item.id} className="flex items-center bg-white rounded-2xl shadow-sm mb-4 p-3">
 						<img
-							src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
+							src={item.titleImg ? `${baseUrl}/img/${item.titleImg.uri}` : noImage}
 							alt={item.title}
 							className="w-24 h-24 object-cover rounded-xl mr-3"
 							onError={(e) => {
@@ -517,19 +547,19 @@ const Search: React.FC = () => {
 			</div>
 
 			{/* 데스크톱 카드 그리드 */}
-			<div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-2 gap-y-10 justify-between relative z-0" style={{ overflow: 'visible', zoom: 0.9 }}>
+			<div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-2 gap-y-10 justify-between relative z-0 pb-[100px]" style={{ overflow: 'visible', zoom: 0.9 }}>
 				{projects.map((item, index) => {
 					const rate = Math.max(0, Math.min(100, Math.round(item.completionRate ?? 0)))
 					const remainingText = getRemainingDays(item.expired, item.createdAt)
-					const imgSrc = item.titleImg ? `${baseUrl}/img/${item.titleImg}` : ''
+					const imgSrc = item.titleImg ? `${baseUrl}/img/${item.titleImg.uri}` : ''
 					const introText = item.shortDescription || '간단한 소개가 준비 중이에요. 프로젝트 상세 페이지에서 더 많은 정보를 확인해 보세요.'
 
 					const getProgressColor = (percent: number) => {
-						if (percent >= 80) return { background: 'linear-gradient(to bottom, #A66CFF, #8B5CF6)' }
-						if (percent >= 60) return { background: 'linear-gradient(to bottom, #A66CFF, #9D6BFF)' }
-						if (percent >= 40) return { background: 'linear-gradient(to bottom, #A66CFF, #B794FF)' }
-						if (percent >= 20) return { background: 'linear-gradient(to bottom, #A66CFF, #C4B5FD)' }
-						return { background: 'linear-gradient(to bottom, #9CA3AF, #6B7280)' }
+						if (percent >= 80) return { background: '#8B5CF6' }
+						if (percent >= 60) return { background: '#9D6BFF' }
+						if (percent >= 40) return { background: '#B794FF' }
+						if (percent >= 20) return { background: '#C4B5FD' }
+						return { background: '#9CA3AF' }
 					}
 
 								return (
@@ -560,14 +590,17 @@ const Search: React.FC = () => {
 										}}
 									>
 							{/* 호버 시 전체 확장된 카드의 통합 배경 */}
-							<div className='absolute inset-0 bg-white border border-transparent group-hover:border-gray-200 rounded-2xl group-hover:rounded-b-none group-hover:shadow-2xl transition-all duration-300 ease-out z-10'></div>
+							<div className='absolute inset-0 bg-white border border-transparent group-hover:border-gray-200 rounded-t-2xl group-hover:rounded-b-none group-hover:shadow-lg transition-all duration-300 ease-out z-10'></div>
 											{/* 호버 시 카드 하단 확장 배경 - 위에서 아래로 내려오는 슬라이드 효과 */}
 											<div
-												className='absolute left-0 right-0 bg-white border-l border-r border-b border-gray-200 rounded-b-2xl max-h-0 group-hover:max-h-[80px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out shadow-2xl z-10'
+												className='absolute left-0 right-0 bg-white border-l border-r border-b border-gray-200 rounded-b-2xl max-h-0 group-hover:max-h-[200px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out shadow-lg z-10'
 												style={{ top: '100%', marginTop: '-1px', overflow: 'hidden' }}
 											>
 								{/* 숨겨진 내용으로 높이 결정 - 좌우 패딩 없이 */}
 								<div className='invisible py-4 px-0 space-y-3'>
+									<div className='text-sm text-gray-600 line-clamp-2'>
+										{item.content || item.shortDescription || item.description || item.summary || item.intro || '프로젝트 소개가 준비 중입니다.'}
+									</div>
 									<div className='flex flex-wrap gap-2'>
 										{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
 											<span
@@ -664,6 +697,9 @@ const Search: React.FC = () => {
 										</div>										{/* 호버 시 확장 내용 - 최상위 레벨에서 렌더링 */}
 										<div className='absolute left-0 right-0 top-full opacity-0 group-hover:opacity-100 transition-all duration-250 z-20' style={{ marginTop: '-1px' }}>
 											<div className='py-4 px-0 space-y-3'>
+												<div className='text-sm text-gray-600 line-clamp-2'>
+													{item.content || item.shortDescription || item.description || item.summary || item.intro || '프로젝트 소개가 준비 중입니다.'}
+												</div>
 												<div className='flex flex-wrap gap-2'>
 													{Array.isArray(item.tags) && item.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
 														<span
@@ -712,11 +748,11 @@ const Search: React.FC = () => {
 					<h2 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">완료된 프로젝트 ({completedTotalCount}개)</h2>
 					<div className="min-h-[160px] -mx-4">
 						{/* 모바일 완료된 프로젝트 리스트 뷰 */}
-						<div className="block sm:hidden">
+						<div className="block sm:hidden pb-[100px]">
 							{completedProjects.map((item) => (
 								<div key={`completed-${item.id}`} className="flex items-center bg-white rounded-2xl shadow-sm mb-4 p-3">
 									<img
-										src={item.titleImg ? `${baseUrl}/img/${item.titleImg}` : noImage}
+										src={item.titleImg ? `${baseUrl}/img/${item.titleImg.uri}` : noImage}
 										alt={item.title}
 										className="w-24 h-24 object-cover rounded-xl mr-3"
 										onError={(e) => {
@@ -755,11 +791,11 @@ const Search: React.FC = () => {
 						</div>
 
 						{/* 데스크톱 완료된 프로젝트 카드 그리드 */}
-						<div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-2 gap-y-10 justify-between relative z-0" style={{ overflow: 'visible', zoom: 0.9 }}>
+						<div className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-2 gap-y-10 justify-between relative z-0 pb-[100px]" style={{ overflow: 'visible', zoom: 0.9 }}>
 							{completedProjects.map((item, index) => {
 								const rate = Math.max(0, Math.min(100, Math.round(item.completionRate ?? 0)))
 								const remainingText = getRemainingDays(item.expired, item.createdAt)
-								const imgSrc = item.titleImg ? `${baseUrl}/img/${item.titleImg}` : ''
+								const imgSrc = item.titleImg ? `${baseUrl}/img/${item.titleImg.uri}` : ''
 								const introText = item.shortDescription || '완료된 프로젝트입니다.'
 
 								return (
@@ -789,10 +825,10 @@ const Search: React.FC = () => {
 										}}
 									>
 										{/* 호버 시 전체 확장된 카드의 통합 배경 */}
-										<div className='absolute inset-0 bg-white border border-transparent group-hover:border-gray-200 rounded-2xl group-hover:rounded-b-none group-hover:shadow-2xl transition-all duration-300 ease-out z-10'></div>
+										<div className='absolute inset-0 bg-white border border-transparent group-hover:border-gray-200 rounded-t-2xl group-hover:rounded-b-none group-hover:shadow-lg transition-all duration-300 ease-out z-10'></div>
 										{/* 호버 시 카드 하단 확장 배경 */}
 										<div
-											className='absolute left-0 right-0 bg-white border-l border-r border-b border-gray-200 rounded-b-2xl max-h-0 group-hover:max-h-[80px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out shadow-2xl z-10'
+											className='absolute left-0 right-0 bg-white border-l border-r border-b border-gray-200 rounded-b-2xl max-h-0 group-hover:max-h-[200px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out shadow-lg z-10'
 											style={{ top: '100%', marginTop: '-1px', overflow: 'hidden' }}
 										>
 											<div className='invisible py-4 px-0 space-y-3'>
@@ -844,7 +880,7 @@ const Search: React.FC = () => {
 														<div className='bg-gray-50 relative h-2 w-full transition-all duration-300 group-hover/progress:bg-gray-100'>
 															<div
 																className='h-full rounded-xl relative overflow-hidden transition-all duration-300 group-hover/progress:shadow-lg group-hover/progress:scale-105'
-																style={{ width: '100%', background: 'linear-gradient(to bottom, #A66CFF, #8B5CF6)' }}
+																style={{ width: '100%', background: '#8B5CF6' }}
 															>
 																<div className='absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-transparent opacity-60 group-hover/progress:opacity-80' />
 															</div>
