@@ -56,6 +56,7 @@ const SocialPage = () => {
 										type={social.imgs && social.imgs.length > 0 ? 'image' : 'text'}
 										isLiked={social.isLiked}
 										isAuthor={user?.nickName === feedList.user.nickName}
+										userImg={feedList.user.img.uri}
 									/>
 								))
 							) : (

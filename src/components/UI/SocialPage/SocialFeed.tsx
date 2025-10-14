@@ -18,9 +18,12 @@ interface SocialFeedProps {
 	type: 'image' | 'text'
 	isLiked: boolean
 	isAuthor?: boolean
+	userImg: string
 }
 
-export const SocialFeed = ({ id, nickName, content, img, date, like, type, isLiked, isAuthor = false }: SocialFeedProps) => {
+const baseUrl = process.env.REACT_APP_API_BASE_URL
+
+export const SocialFeed = ({ id, nickName, content, img, date, like, type, isLiked, isAuthor = false, userImg }: SocialFeedProps) => {
 	const { likeFeed } = useFeedLike()
 	const [likeCount, setLikeCount] = useState(like)
 	const [likeStatus, setLikeStatus] = useState(isLiked)
@@ -70,7 +73,7 @@ export const SocialFeed = ({ id, nickName, content, img, date, like, type, isLik
 	return (
 		<div className='bg-white rounded-2xl p-5 border border-gray-200 mx-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
 			<div className='flex items-center gap-4 mb-4'>
-				<img src={UserImage} alt='프로필 이미지' className='w-12 h-12 rounded-full border-2 border-purple-200 shadow-sm hover:scale-105 transition-transform duration-200' />
+				<img src={`${baseUrl}/img/${userImg}`} alt='프로필 이미지' className='w-12 h-12 rounded-full border-2 border-purple-200 shadow-sm hover:scale-105 transition-transform duration-200' />
 				<div className='flex flex-col justify-center flex-1'>
 					<p className='font-bold text-gray-800 text-base'>{nickName}</p>
 					<p className='text-gray-400 text-sm'>{date}</p>
