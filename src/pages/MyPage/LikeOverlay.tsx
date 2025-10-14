@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import Swal from 'sweetalert2';
-import axios from 'axios';
 import { api } from '../../AxiosInstance';
 
 interface Product {
@@ -21,17 +20,19 @@ interface LikeOverlayProps {
 }
 
 const categories = [
-  '테크/가전',
-  '패션/잡화',
-  '취미/DIY',
-  '교육/키즈',
-  '여행/레저',
-  '라이프스타일',
-  '뷰티/헬스',
+  '테크 가전',
+  '패션 잡화',
+  '취미 DIY',
+  '교육 키즈',
+  '여행 레저',
+  '라이프 스타일',
+  '뷰티 헬스',
   '게임',
   '반려동물',
-  '푸드/음료',
+  '푸드 음료',
 ];
+
+const baseUrl = process.env.REACT_APP_API_BASE_URL
 
 const LikeOverlay: React.FC<LikeOverlayProps> = ({
   onClose,
@@ -61,8 +62,8 @@ const LikeOverlay: React.FC<LikeOverlayProps> = ({
           const mapped: Product[] = res.data.data.projects.map((p: any) => ({
             id: p.id,
             title: p.title || '제목 없음',
-            price: p.price ? `${p.price}원` : '-', // price가 없을 경우 "-"
-            image: p.titleImg?.url || 'https://via.placeholder.com/200',
+            price: p.completionRate ? `${p.completionRate}%` : '-', // price가 없을 경우 "-"
+            image: p.titleImg?.uri,
             category: p.tags?.[0] || '기타',
             tags: p.tags || [],
             isLiked: p.isLiked ?? false,
@@ -83,7 +84,7 @@ const LikeOverlay: React.FC<LikeOverlayProps> = ({
   // 좋아요 토글
   const toggleLike = async (productId: number, current: boolean) => {
     try {
-      const res = await axios.post('/api/projects/like', {
+      const res = await api.post('/social/user/like', {
         like: !current,
         projectId: productId,
       });
@@ -105,7 +106,7 @@ const LikeOverlay: React.FC<LikeOverlayProps> = ({
   const filteredProducts =
     selectedFilter === '전체'
       ? products
-      : products.filter((p) => p.category === selectedFilter);
+      : products.filter((p) => p.tags.includes(selectedFilter));
 
   // 뒤 스크롤 막기
   useEffect(() => {
@@ -157,7 +158,7 @@ const LikeOverlay: React.FC<LikeOverlayProps> = ({
             <ProductGrid>
               {filteredProducts.map((product) => (
                 <ProductCardOverlay key={product.id}>
-                  <img src={product.image} alt={product.title} />
+                  <img src={`${baseUrl}/img/${product.image}`} alt={product.title} />
                   <CardContent>
                     <Price>
                       <span>{product.price}</span>

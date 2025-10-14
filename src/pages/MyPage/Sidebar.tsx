@@ -111,6 +111,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onOpenFollowing,
   onOpenMyProjects,
 }) => {
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+
   return (
     <Container>
       {/* 탭 버튼 */}
@@ -127,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <ProfileBox>
         <AvatarImg
           src={
-            profileImage ||
+            `${API_URL}/img/${profileImage}` ||
             'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA2MjVfMTkz%2FMDAxNzE5MjkxMTA5MzY4.6JsIEfv3ged1X5Tm8X64E27sIL935yGSV-9T_pNE9sUg.txCrKMz0Emxy98jwwxnmWi8mqcU91uaLyXx88Z1X1iQg.JPEG%2FB7A00E50-ABFD-43A4-AE4C-9901F147A4DC.jpeg&type=sc960_832'
           }
           alt="프로필"
