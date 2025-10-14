@@ -8,9 +8,16 @@ interface NewsContentProps {
 	title: string
 	content: string
 	id: number
+	createTime: string
+	img: {
+		id: number
+		uri: string
+	}
 }
 
-const NewsContent: React.FC<NewsContentProps> = ({ title, content, id }) => {
+const baseUrl = process.env.REACT_APP_API_BASE_URL
+
+const NewsContent: React.FC<NewsContentProps> = ({ title, content, id, createTime, img }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false)
 	const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
 	const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
@@ -33,7 +40,10 @@ const NewsContent: React.FC<NewsContentProps> = ({ title, content, id }) => {
 					isOpen ? 'bg-purple-50 border-b border-purple-100' : 'bg-white hover:bg-gray-50'
 				}`}
 				onClick={handleClick}>
-				<h3 className='text-lg font-semibold text-gray-800 pr-4 leading-relaxed'>{title}</h3>
+				<div>
+					<h3 className='text-lg font-semibold text-gray-800 pr-4 leading-relaxed'>{title}</h3>
+					<p className='text-sm text-gray-500'>{createTime.split('T')[0]}</p>
+				</div>
 				<div className='flex items-center gap-4'>
 					<button
 						className='text-gray-500 hover:text-purple-700'
@@ -63,6 +73,11 @@ const NewsContent: React.FC<NewsContentProps> = ({ title, content, id }) => {
 			{isOpen && (
 				<div className='px-4 py-4 bg-gray-50'>
 					<div className='text-gray-700 leading-relaxed whitespace-pre-wrap'>{content}</div>
+					{img && (
+						<div className='flex flex-wrap gap-2'>
+							<img src={`${baseUrl}/img/${img.uri}`} className='max-w-[400px]' alt='' />
+						</div>
+					)}
 				</div>
 			)}
 

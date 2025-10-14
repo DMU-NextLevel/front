@@ -97,7 +97,7 @@ export const FundingNews = ({ notice }: newsProps): JSX.Element => {
 			{/* 공지 목록 */}
 			<div className='space-y-4'>
 				{notice && notice.length > 0 ? (
-					notice.map((news) => <NewsContent title={news.title} content={news.content} id={news.id} />)
+					notice.map((news) => <NewsContent title={news.title} content={news.content} id={news.id} createTime={news.createTime} img={news.img} />)
 				) : (
 					<div className='text-center py-12'>
 						<div className='w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center'>
