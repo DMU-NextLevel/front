@@ -449,11 +449,11 @@ const ProjectMediaPage: React.FC = () => {
 					<h3 className='text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2'>
 						프로젝트 요약 <span className='text-red-500'>*</span>
 					</h3>
-					<p className='text-sm text-gray-600 mb-6'>프로젝트를 한 줄로 간단하게 소개해주세요. (최대 30자)</p>
+					<p className='text-sm text-gray-600 mb-6'>프로젝트를 한 줄로 간단하게 소개해주세요.</p>
 					<input
 						type='text'
 						placeholder='예: 혁신적인 기술로 일상의 문제 해결'
-						maxLength={30}
+						maxLength={100}
 						value={formData.summary}
 						onChange={scriptChange}
 						required
