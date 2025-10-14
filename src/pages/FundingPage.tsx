@@ -35,7 +35,7 @@ const FundingPage = (): JSX.Element => {
 					tag={projectInfo?.tag ?? []}
 					isAuthor={isAuthor}
 				/>
-				<StarterInfo starter={projectInfo?.user?.nickName ?? ''} />
+				<StarterInfo starter={projectInfo?.user} />
 			</div>
 			<FundingContent projectData={{ story, notice, community }} />
 			{payOpen && (

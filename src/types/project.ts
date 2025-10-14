@@ -16,6 +16,7 @@ export interface ProjectDetailData {
     tag: []
     user: {
         followCount: number
+        id: number
         img: {
             id: number
             uri: string
