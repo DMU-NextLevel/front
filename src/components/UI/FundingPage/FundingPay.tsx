@@ -4,6 +4,7 @@ import { api } from '../../../AxiosInstance'
 
 interface FundingPayProps {
 	reward: RewardData | undefined
+	setReward: (reward: RewardData) => void
 }
 
 interface responseCouponList {
@@ -23,7 +24,7 @@ interface CouponList {
 	percent: number
 }
 
-const FundingPay = ({ reward }: FundingPayProps): JSX.Element => {
+const FundingPay = ({ reward, setReward }: FundingPayProps): JSX.Element => {
 	const termsList = ['[필수] 구매조건, 결제 진행 및 결제 대행 서비스 동의', '[필수] 개인정보 제3자 제공 동의', '[필수] 책임 규정에 대한 동의']
 	const [allAgree, setAllAgree] = useState(false)
 	const [couponPercent, setCouponPercent] = useState<number>(0) // % 할인율
@@ -62,6 +63,7 @@ const FundingPay = ({ reward }: FundingPayProps): JSX.Element => {
 		const selectedCoupon = couponList.find((coupon) => coupon.id === selectedId)
 		if (selectedCoupon) {
 			setCouponPercent(selectedCoupon.percent)
+			setReward({...reward, data: {...reward?.data, couponId: selectedId}} as RewardData)
 		}
 	}
 
