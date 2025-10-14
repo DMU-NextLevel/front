@@ -7,8 +7,8 @@ import CategorySelector from "../components/UI/MainPage/CategorySelector";
 import CategoryBar from "../components/UI/shared/CategoryBar";
 import NewProject from "../components/UI/MainPage/NewProject";
 import HeroSection from "../components/UI/MainPage/HeroSection";
-import PopularProjectGallery from "../components/UI/MainPage/PersonalizedProjectGallery";
-import CustomizedProjectGallery from "../components/UI/MainPage/CustomizedProjectGallery";
+import PopularProjectGallery from "../components/UI/MainPage/PopularProjectGallery";
+import PersonalizedProjectGallery from "../components/UI/MainPage/PersonalizedProjectGallery";
 import StatsSection from "../components/UI/MainPage/StatsSection";
 import LoginSection from "../components/UI/MainPage/LoginSection";
 
@@ -85,7 +85,7 @@ const MainPage: React.FC = () => {
 
       {/* 취향 맞춤 프로젝트 섹션 */}
       <div className="mt-8">
-        <CustomizedProjectGallery />
+        <PersonalizedProjectGallery />
       </div>
 
       {/* 구분선 */}

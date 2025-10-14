@@ -117,7 +117,7 @@ const NewProject: React.FC = () => {
 			if (res.ok) {
 				setProjects((prev) =>
 					prev.map((p) =>
-						p.id === projectId ? { ...p, isLiked: like } : p
+						p.id === projectId ? { ...p, isLiked: like, recommendCount: like ? (p.recommendCount || 0) + 1 : Math.max(0, (p.recommendCount || 0) - 1) } : p
 					)
 				)
 			}
@@ -181,7 +181,7 @@ const NewProject: React.FC = () => {
 								<div className='relative'>
 									{/* 이미지와 프로그래스바 영역 */}
 									<div className='flex mb-4 sm:mb-6 gap-0 rounded-sm overflow-hidden'>
-										<div className='flex-1 relative overflow-hidden rounded-t-lg'>
+										<div className='flex-1 relative overflow-hidden rounded-t-lg border border-gray-200'>
 											<img
 												src={imgSrc || noImage}
 												alt={item.title}
@@ -194,6 +194,9 @@ const NewProject: React.FC = () => {
 													e.currentTarget.src = noImage
 												}}
 											/>
+											{/* 호버 시 그라데이션 오버레이 */}
+											                          {/* 그라데이션 오버레이 */}
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg'></div>
 
 											{/* 프로그래스 바 - 이미지 하단 border처럼 */}
 											<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
@@ -203,7 +206,7 @@ const NewProject: React.FC = () => {
 									</div>
 
 									{/* 타이틀 */}
-									<h3 className='text-base sm:text-[18px] font-bold line-clamp-2 mb-2 sm:mb-3 transition-colors duration-300 group-hover:text-purple-600'>
+									<h3 className='text-base sm:text-[18px] font-bold line-clamp-2 mb-0 transition-colors duration-300 group-hover:text-purple-600'>
 										<span className='cursor-pointer' onClick={() => navigate(`/project/${item.id}`)}>{item.title}</span>
 									</h3>
 
@@ -218,6 +221,11 @@ const NewProject: React.FC = () => {
 											{createdDate}
 										</span>
 									</div>
+
+									{/* 프로젝트 설명 */}
+									<p className='text-sm text-gray-500 line-clamp-2 mb-2 sm:mb-3'>
+										{item.content || item.shortDescription || item.description || item.summary || item.intro || '프로젝트 소개가 준비 중입니다.'}
+									</p>
 
 									{/* 진행률과 추천수 */}
 									<div className='flex items-center justify-between text-xs sm:text-sm mb-2 sm:mb-3'>

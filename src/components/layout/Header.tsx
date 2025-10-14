@@ -215,9 +215,15 @@ export const HeaderMain: React.FC = () => {
 							<a href={createSearchLink('NEW')} className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-gray-900 hover:text-gray-600 hover:bg-gray-100'} `}>
 								신규
 							</a>
-							<a href={createSearchLink('EXPIRED')} className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-gray-900 hover:text-gray-600 hover:bg-gray-100'} `}>
+							<button 
+								onClick={(e) => {
+									e.preventDefault()
+									alert('페이지가 준비중입니다')
+								}}
+								className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-gray-900 hover:text-gray-600 hover:bg-gray-100'} `}
+							>
 								마감임박
-							</a>
+							</button>
 							
 						
 						{/* 프로젝트 시작 버튼 - 마감임박 우측에 배치 */}
@@ -435,7 +441,11 @@ export const HeaderMain: React.FC = () => {
 									<span className='text-sm font-medium text-gray-900'>프로젝트 시작</span>
 								</button>
 								<button 
-									onClick={() => setIsMobileMenuOpen(false)}
+									onClick={(e) => {
+										e.preventDefault()
+										alert('페이지가 준비중입니다')
+										setIsMobileMenuOpen(false)
+									}}
 									className='flex items-center space-x-3 w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors'
 								>
 									<i className='bi bi-bookmark text-blue-600 text-lg'></i>
@@ -462,20 +472,26 @@ export const HeaderMain: React.FC = () => {
 								>
 									신규 프로젝트
 								</a>
-								<a 
-									href={createSearchLink('EXPIRED')} 
+								<button 
+									onClick={(e) => {
+										e.preventDefault()
+										alert('페이지가 준비중입니다')
+										setIsMobileMenuOpen(false)
+									}}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
-									onClick={() => setIsMobileMenuOpen(false)}
 								>
 									마감 임박 프로젝트
-								</a>
-								<a 
-									href={createSearchLink('COMPLETED')} 
+								</button>
+								<button 
+									onClick={(e) => {
+										e.preventDefault()
+										alert('페이지가 준비중입니다')
+										setIsMobileMenuOpen(false)
+									}}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
-									onClick={() => setIsMobileMenuOpen(false)}
 								>
 									완료된 프로젝트
-								</a>
+								</button>
 							</div>
 						</div>
 
@@ -626,7 +642,13 @@ export const HeaderMain: React.FC = () => {
 									<i className='bi bi-plus-circle text-blue-600 text-lg'></i>
 									<span className={`text-sm font-medium ${location.pathname === '/' && !isScrolled ? 'text-white' : 'text-gray-900'}`}>프로젝트 시작</span>
 								</button>
-								<button className={`flex items-center space-x-3 w-full text-left p-3 rounded-lg transition-colors ${location.pathname === '/' && !isScrolled ? 'bg-transparent border border-white/50 hover:bg-white/30 hover:border-white/70' : 'bg-white/80 border border-gray-300/50 hover:bg-white/90 hover:border-gray-400/50'}`}>
+								<button 
+									onClick={(e) => {
+										e.preventDefault()
+										alert('페이지가 준비중입니다')
+									}}
+									className={`flex items-center space-x-3 w-full text-left p-3 rounded-lg transition-colors ${location.pathname === '/' && !isScrolled ? 'bg-transparent border border-white/50 hover:bg-white/30 hover:border-white/70' : 'bg-white/80 border border-gray-300/50 hover:bg-white/90 hover:border-gray-400/50'}`}
+								>
 									<i className='bi bi-bookmark text-blue-600 text-lg'></i>
 									<span className={`text-sm font-medium ${location.pathname === '/' && !isScrolled ? 'text-white' : 'text-gray-900'}`}>팔로우 프로젝트</span>
 								</button>
@@ -667,12 +689,24 @@ export const HeaderMain: React.FC = () => {
 								<a href={createSearchLink('NEW')} className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}>
 									신규 프로젝트
 								</a>
-								<a href={createSearchLink('EXPIRED')} className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}>
+								<button 
+									onClick={(e) => {
+										e.preventDefault()
+										alert('페이지가 준비중입니다')
+									}}
+									className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}
+								>
 									마감 임박 프로젝트
-								</a>
-								<a href={createSearchLink('COMPLETED')} className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}>
+								</button>
+								<button 
+									onClick={(e) => {
+										e.preventDefault()
+										alert('페이지가 준비중입니다')
+									}}
+									className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}
+								>
 									완료된 프로젝트
-								</a>
+								</button>
 							</div>
 						</div>
 

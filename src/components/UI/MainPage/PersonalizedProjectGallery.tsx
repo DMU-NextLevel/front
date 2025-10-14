@@ -20,8 +20,8 @@ type ProjectItem = {
   title: string
   content?: string // 프로젝트 소개글
   titleImg: {
-    id: number
-    uri: string
+	id: number
+	uri: string
   }
   completionRate: number
   recommendCount: number
@@ -58,7 +58,7 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
   return `${diffDays}일 남음`
 }
 
-const PopularProjectGallery: React.FC = () => {
+const PersonalizedProjectGallery: React.FC = () => {
   const { isLoggedIn } = useAuth()
   const navigate = useNavigate()
   const [projects, setProjects] = useState<ProjectItem[]>([])
@@ -68,6 +68,44 @@ const PopularProjectGallery: React.FC = () => {
   const [canNext, setCanNext] = useState(true)
   const [showMoreButton, setShowMoreButton] = useState(false)
 
+  // 최근본 프로젝트 API 호출 함수
+  const fetchRecentViewedProjects = async () => {
+    try {
+      const response = await api.post('/social/user/project', {
+        page: 0,
+        pageCount: 5,
+        type: 'VIEW'
+      }, { withCredentials: true })
+
+      if (response.data.message === 'success' && response.data.data?.projects) {
+        const projectsData = response.data.data.projects.map((project: any) => ({
+          id: project.id,
+          title: project.title,
+          titleImg: project.titleImg?.uri || '',
+          completionRate: project.completionRate,
+          recommendCount: project.likeCount || 0,
+          tags: project.tags || [],
+          createdAt: project.createdAt,
+          expired: project.expiredAt,
+          isExpired: false,
+          isRecommend: false,
+          isLiked: project.isLiked || false,
+          author: project.author,
+          userCount: project.userCount || 0,
+          viewCount: project.viewCount || 0
+        }))
+        setProjects(projectsData.slice(0, 5)) // 최대 5개
+      }
+    } catch (error) {
+      console.error('최근본 프로젝트 로드 실패:', error)
+      // 실패 시 일반 프로젝트 로드
+      const data = await fetchProjectsFromServer({ order: 'RECOMMEND', desc: true, pageCount: 5 })
+      if (Array.isArray(data)) {
+        setProjects((data as any).slice(0, 5))
+      }
+    }
+  }
+
   // 좋아요 토글 API 함수 (api 인스턴스, withCredentials만 사용)
   const toggleProjectLike = async (projectId: number, like: boolean) => {
     try {
@@ -76,7 +114,7 @@ const PopularProjectGallery: React.FC = () => {
       if (res.data.message === 'success') {
         setProjects((prev) =>
           prev.map((p) =>
-            p.id === projectId ? { ...p, isLiked: like } : p
+            p.id === projectId ? { ...p, isLiked: like, recommendCount: like ? (p.recommendCount || 0) + 1 : Math.max(0, (p.recommendCount || 0) - 1) } : p
           )
         )
       }
@@ -122,17 +160,21 @@ const PopularProjectGallery: React.FC = () => {
     const load = async () => {
       try {
         setLoading(true)
-        const data = await fetchProjectsFromServer({ order: 'RECOMMEND', desc: true, pageCount: 6 })
-        if (Array.isArray(data)) {
-          const sliced = (data as any).slice(0, 5)
-          setProjects(sliced)
+        if (isLoggedIn) {
+          await fetchRecentViewedProjects()
+        } else {
+          // 비로그인 시 일반 추천 프로젝트 로드 (블러 처리용)
+          const data = await fetchProjectsFromServer({ order: 'RECOMMEND', desc: true, pageCount: 5 })
+          if (Array.isArray(data)) {
+            setProjects((data as any).slice(0, 5))
+          }
         }
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [])
+  }, [isLoggedIn])
 
   // 컴포넌트 마운트 시 WebKit 스크롤바 숨김 스타일 추가
   useEffect(() => {
@@ -197,15 +239,15 @@ const PopularProjectGallery: React.FC = () => {
   }
 
   return (
-    <section className='py-4 sm:py-5 px-4 sm:px-6 md:px-8 lg:px-[15%]' data-aos='fade-up' data-aos-once='true'>
+    <section className='py-4 sm:py-5 px-4 sm:px-6 md:px-8 lg:px-[15%] relative' data-aos='fade-up' data-aos-once='true'>
       <div className='flex items-end justify-start relative'>
         <div>
-          <h2 className='text-lg sm:text-xl md:text-2xl font-bold text-left'>인기 프로젝트</h2>
-          <p className='mt-1 text-xs sm:text-sm text-gray-500 text-left'>지금 가장 인기 있는 프로젝트들을 만나보세요</p>
+          <h2 className='text-lg sm:text-xl md:text-2xl font-bold text-left'>취향 맞춤 프로젝트</h2>
+          <p className='mt-1 text-xs sm:text-sm text-gray-500 text-left'>당신을 위한 맞춤 추천 프로젝트</p>
         </div>
 
         {/* Top-right nav buttons */}
-        <div className='absolute top-0 right-0 flex items-center gap-2'>
+        <div className={`absolute top-0 right-0 flex items-center gap-2 ${!isLoggedIn ? 'opacity-0 pointer-events-none' : ''}`}>
           <button
             aria-label='Previous'
             className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 text-gray-700 shadow grid place-items-center hover:bg-white ${!canPrev ? 'opacity-40 cursor-default' : ''}`}
@@ -236,11 +278,17 @@ const PopularProjectGallery: React.FC = () => {
         </div>
       )}
 
-      {!loading && (
+      {!loading && projects.length === 0 && isLoggedIn && (
+        <div className='mt-6 text-center py-12'>
+          <p className='text-gray-500 text-lg'>최근 활동을 통해서 좋아하실만한 프로젝트를 추천해드려요!</p>
+        </div>
+      )}
+
+      {!loading && (projects.length > 0 || !isLoggedIn) && (
         <div className='relative overflow-visible mt-6'>
           <div
             ref={sliderRef}
-            className='flex overflow-x-auto snap-x snap-proximity gap-1 pr-16 sm:pr-20 md:pr-24 pb-12 sm:pb-16 md:pb-20 webkit-scrollbar-hidden -ml-4'
+            className={`flex overflow-x-auto snap-x snap-proximity gap-1 pr-16 sm:pr-20 md:pr-24 pb-12 sm:pb-16 md:pb-20 webkit-scrollbar-hidden -ml-4 ${!isLoggedIn ? 'blur-sm pointer-events-none' : ''}`}
             style={{
               ...scrollbarHiddenStyle,
               WebkitOverflowScrolling: 'touch',
@@ -314,6 +362,8 @@ const PopularProjectGallery: React.FC = () => {
                               e.currentTarget.src = noImage
                             }}
                           />
+                          {/* 그라데이션 오버레이 */}
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg'></div>
 
                           {/* 프로그래스 바 - 이미지 하단 border처럼 */}
                           <div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
@@ -383,10 +433,22 @@ const PopularProjectGallery: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {/* 비로그인 시 로그인 유도 버튼 */}
+          {!isLoggedIn && (
+            <div className='absolute inset-0 flex items-center justify-center z-20'>
+              <button
+                onClick={() => navigate('/login')}
+                className='bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition-colors duration-200'
+              >
+                로그인하여 더보기
+              </button>
+            </div>
+          )}
         </div>
       )}
     </section>
   )
 }
 
-export default React.memo(PopularProjectGallery)
+export default React.memo(PersonalizedProjectGallery)

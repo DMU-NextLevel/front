@@ -20,8 +20,8 @@ type ProjectItem = {
   title: string
   content?: string // 프로젝트 소개글
   titleImg: {
-	id: number
-	uri: string
+    id: number
+    uri: string
   }
   completionRate: number
   recommendCount: number
@@ -58,7 +58,7 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
   return `${diffDays}일 남음`
 }
 
-const CustomizedProjectGallery: React.FC = () => {
+const PopularProjectGallery: React.FC = () => {
   const { isLoggedIn } = useAuth()
   const navigate = useNavigate()
   const [projects, setProjects] = useState<ProjectItem[]>([])
@@ -67,45 +67,6 @@ const CustomizedProjectGallery: React.FC = () => {
   const [canPrev, setCanPrev] = useState(false)
   const [canNext, setCanNext] = useState(true)
   const [showMoreButton, setShowMoreButton] = useState(false)
-
-  // 최근본 프로젝트 API 호출 함수
-  const fetchRecentViewedProjects = async () => {
-    try {
-      const response = await api.post('/social/user/project', {
-        page: 0,
-        pageCount: 6,
-        type: 'VIEW',
-        status: 'PROGRESS'
-      }, { withCredentials: true })
-
-      if (response.data.message === 'success' && response.data.data?.projects) {
-        const projectsData = response.data.data.projects.map((project: any) => ({
-          id: project.id,
-          title: project.title,
-          titleImg: project.titleImg?.uri || '',
-          completionRate: project.completionRate,
-          recommendCount: project.likeCount || 0,
-          tags: project.tags || [],
-          createdAt: project.createdAt,
-          expired: project.expiredAt,
-          isExpired: false,
-          isRecommend: false,
-          isLiked: project.isLiked || false,
-          author: project.author,
-          userCount: project.userCount || 0,
-          viewCount: project.viewCount || 0
-        }))
-        setProjects(projectsData.slice(0, 6)) // 최대 6개
-      }
-    } catch (error) {
-      console.error('최근본 프로젝트 로드 실패:', error)
-      // 실패 시 일반 프로젝트 로드
-      const data = await fetchProjectsFromServer({ order: 'RECOMMEND', desc: true, pageCount: 6 })
-      if (Array.isArray(data)) {
-        setProjects((data as any).slice(0, 6))
-      }
-    }
-  }
 
   // 좋아요 토글 API 함수 (api 인스턴스, withCredentials만 사용)
   const toggleProjectLike = async (projectId: number, like: boolean) => {
@@ -239,8 +200,8 @@ const CustomizedProjectGallery: React.FC = () => {
     <section className='py-4 sm:py-5 px-4 sm:px-6 md:px-8 lg:px-[15%]' data-aos='fade-up' data-aos-once='true'>
       <div className='flex items-end justify-start relative'>
         <div>
-          <h2 className='text-lg sm:text-xl md:text-2xl font-bold text-left'>취향 맞춤 프로젝트</h2>
-          <p className='mt-1 text-xs sm:text-sm text-gray-500 text-left'>당신을 위한 맞춤 추천 프로젝트</p>
+          <h2 className='text-lg sm:text-xl md:text-2xl font-bold text-left'>인기 프로젝트</h2>
+          <p className='mt-1 text-xs sm:text-sm text-gray-500 text-left'>지금 가장 인기 있는 프로젝트들을 만나보세요</p>
         </div>
 
         {/* Top-right nav buttons */}
@@ -341,7 +302,7 @@ const CustomizedProjectGallery: React.FC = () => {
                     {/* <a href={`/project/${p.id}`} className='block'> */}
                       {/* 이미지와 프로그래스바 영역 */}
                       <div className='flex mb-3 sm:mb-4 gap-0 rounded-sm overflow-hidden'>
-                        <div className='flex-1 relative overflow-hidden rounded-t-lg'>
+                        <div className='flex-1 relative overflow-hidden rounded-t-lg border border-gray-200'>
                           <img
                             src={imgSrc || noImage}
                             alt={p.title}
@@ -353,6 +314,9 @@ const CustomizedProjectGallery: React.FC = () => {
                               e.currentTarget.src = noImage
                             }}
                           />
+                          {/* 호버 시 그라데이션 오버레이 */}
+                                                    {/* 그라데이션 오버레이 */}
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg'></div>
 
                           {/* 프로그래스 바 - 이미지 하단 border처럼 */}
                           <div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
@@ -428,4 +392,4 @@ const CustomizedProjectGallery: React.FC = () => {
   )
 }
 
-export default React.memo(CustomizedProjectGallery)
+export default React.memo(PopularProjectGallery)

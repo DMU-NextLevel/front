@@ -79,7 +79,7 @@ const RecommendedProject: React.FC = () => {
 			if (res.ok) {
 				setProjects((prev) =>
 					prev.map((p) =>
-						p.id === projectId ? { ...p, isLiked: like } : p
+						p.id === projectId ? { ...p, isLiked: like, recommendCount: like ? (p.recommendCount || 0) + 1 : Math.max(0, (p.recommendCount || 0) - 1) } : p
 					)
 				)
 			}
@@ -175,6 +175,7 @@ const RecommendedProject: React.FC = () => {
 			slideWidth = second.offsetLeft - first.offsetLeft
 		}
 		el.scrollTo({ left: index * slideWidth, behavior: 'smooth' })
+		setCurrentSlide(index)
 	}
 
 	const goPrev = () => {
@@ -273,16 +274,19 @@ const RecommendedProject: React.FC = () => {
 										key={p.id}
 										className='group overflow-hidden transition flex-shrink-0 w-full snap-center'
 									>
-										<div className='relative w-full overflow-hidden rounded-t-2xl transition-all duration-500 cursor-pointer' style={{ aspectRatio: '16 / 9' }} onClick={() => navigate(`/project/${p.id}`)}>
+										<div className='relative w-full overflow-hidden rounded-t-2xl border border-gray-200 transition-all duration-500 cursor-pointer' style={{ aspectRatio: '16 / 9' }} onClick={() => navigate(`/project/${p.id}`)}>
 											<img
 												src={imgSrc || noImage}
 												alt={p.title}
-												className='absolute inset-0 w-full h-full object-cover rounded-t-2xl border border-gray-200 transition-all duration-500 ease-out group-hover:scale-105'
+												className='absolute inset-0 w-full h-full object-cover rounded-t-2xl transition-all duration-500 ease-out group-hover:scale-105'
 												onError={(e) => {
 													e.currentTarget.onerror = null
 													e.currentTarget.src = noImage
 												}}
 											/>
+											{/* 호버 시 그라데이션 오버레이 */}
+											                          {/* 그라데이션 오버레이 */}
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg'></div>
 
 											{/* 프로그래스 바 - 이미지 하단 border처럼 */}
 											<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
@@ -439,7 +443,7 @@ const RecommendedProject: React.FC = () => {
 											<a href={`/project/${p.id}`} className='block'>
 												{/* 이미지와 프로그래스바 영역 */}
 												<div className='flex mb-4 gap-0 rounded-sm overflow-hidden'>
-													<div className='flex-1 relative overflow-hidden rounded-t-lg'>
+													<div className='flex-1 relative overflow-hidden rounded-t-lg border border-gray-200'>
 														<img
 															src={imgSrc || noImage}
 															alt={p.title}
@@ -450,6 +454,8 @@ const RecommendedProject: React.FC = () => {
 																e.currentTarget.src = noImage
 															}}
 														/>
+														{/* 호버 시 그라데이션 오버레이 */}
+														<div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-lg'></div>
 
 														{/* 프로그래스 바 - 이미지 하단 border처럼 */}
 														<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
