@@ -3,205 +3,170 @@ import styled from 'styled-components';
 import Swal from 'sweetalert2';
 
 interface Props {
-  userInfo: any;
-  tempUserInfo: any;
-  profileImage: string | null;
-  tempProfileImage: string | null;
-  editFields: { [key: string]: boolean };
-  homePhone: { area: string; number: string };
-  setHomePhone: React.Dispatch<React.SetStateAction<{ area: string; number: string }>>; // ✅ 추가
-  onClose: () => void;
-  onReset: () => void;
-  onInputChange: (e: ChangeEvent<HTMLInputElement>, field: string) => void;
-  onHomePhoneChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  onEditClick: (field: string) => void;
-  onImageChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  setEditFields: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>;
-  setUserInfo: React.Dispatch<React.SetStateAction<any>>;
-  setTempUserInfo: React.Dispatch<React.SetStateAction<any>>;
-  setProfileImage: React.Dispatch<React.SetStateAction<string | null>>;
-  setTempProfileImage: React.Dispatch<React.SetStateAction<string | null>>;
+	userInfo: any
+	tempUserInfo: any
+	profileImage: string | null
+	tempProfileImage: string | null
+	editFields: { [key: string]: boolean }
+	homePhone: { area: string; number: string }
+	setHomePhone: React.Dispatch<React.SetStateAction<{ area: string; number: string }>>
+	onClose: () => void
+	onReset: () => void
+	onInputChange: (e: ChangeEvent<HTMLInputElement>, field: string) => void
+	onHomePhoneChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
+	onEditClick: (field: string) => void
+	onSaveField: (field: string) => void
+	onImageChange: (e: ChangeEvent<HTMLInputElement>) => void
+	setEditFields: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>
+	setUserInfo: React.Dispatch<React.SetStateAction<any>>
+	setTempUserInfo: React.Dispatch<React.SetStateAction<any>>
+	setProfileImage: React.Dispatch<React.SetStateAction<string | null>>
+	setTempProfileImage: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 const SettingsOverlay: React.FC<Props> = ({
-  userInfo,
-  tempUserInfo,
-  profileImage,
-  tempProfileImage,
-  editFields,
-  homePhone,
-  setHomePhone, // ✅ props 추가
-  onClose,
-  onReset,
-  onInputChange,
-  onHomePhoneChange,
-  onEditClick,
-  onImageChange,
-  setEditFields,
-  setUserInfo,
-  setTempUserInfo,
-  setProfileImage,
-  setTempProfileImage,
+	userInfo,
+	tempUserInfo,
+	profileImage,
+	tempProfileImage,
+	editFields,
+	homePhone,
+	setHomePhone,
+	onClose,
+	onReset,
+	onInputChange,
+	onHomePhoneChange,
+	onEditClick,
+	onSaveField,
+	onImageChange,
+	setEditFields,
+	setUserInfo,
+	setTempUserInfo,
+	setProfileImage,
+	setTempProfileImage,
 }) => {
-  return (
-    <Overlay>
-      <OverlayHeader>
-        <h2>내 정보 설정</h2>
-        <CloseButton onClick={onClose}>×</CloseButton>
-      </OverlayHeader>
+	return (
+		<Overlay>
+			<OverlayHeader>
+				<h2>내 정보 설정</h2>
+				<CloseButton onClick={onClose}>×</CloseButton>
+			</OverlayHeader>
 
-      <ScrollableContent>
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <ImageInputLabel>
-            <AvatarImg
-              src={
-                tempProfileImage || profileImage ||
-                'https://via.placeholder.com/100'
-              }
-              alt="프로필"
-              style={{ width: '100px', height: '100px' }}
-            />
-          </ImageInputLabel>
-          <HiddenFileInput
-            id="profile-upload-settings"
-            type="file"
-            accept="image/*"
-            onChange={onImageChange}
-          />
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <ChangeBtn as="label" htmlFor="profile-upload-settings" style={{ marginTop: '10px' }}>
-              이미지변경
-            </ChangeBtn>
-          </div>
-        </div>
+			<ScrollableContent>
+				<div style={{ textAlign: 'center', marginBottom: '24px' }}>
+					<ImageInputLabel>
+						<AvatarImg src={tempProfileImage || profileImage || 'https://via.placeholder.com/100'} alt='프로필' style={{ width: '100px', height: '100px' }} />
+					</ImageInputLabel>
+					<HiddenFileInput id='profile-upload-settings' type='file' accept='image/*' onChange={onImageChange} />
+					<div style={{ display: 'flex', justifyContent: 'center' }}>
+						<ChangeBtn as='label' htmlFor='profile-upload-settings' style={{ marginTop: '10px' }}>
+							이미지변경
+						</ChangeBtn>
+					</div>
+				</div>
 
-        {[
-          { label: '이름', field: 'name' },
-          { label: '닉네임', field: 'nickname' },
-          { label: '전화번호', field: 'phone' },
-          { label: '이메일 주소', field: 'email' },
-          { label: '비밀번호', field: 'password' },
-          { label: '비밀번호 확인', field: 'passwordcf' },
-        ].map(({ label, field }) => (
-          <InfoItem key={field}>
-            <Label>
-              {label}
-              {['이름', '닉네임', '전화번호', '이메일 주소'].includes(label) && (
-                <RequiredMark> *</RequiredMark>
-              )}
-            </Label>
-            <Content>
-              {editFields[field] ? (
-                <input
-                  type="text"
-                  value={tempUserInfo[field]}
-                  onChange={(e) => onInputChange(e, field)}
-                />
-              ) : (
-                tempUserInfo[field]
-              )}
-            </Content>
-            {editFields[field] ? (
-              <ChangeBtn
-                onClick={() => {
-                  setEditFields((prev) => ({ ...prev, [field]: false }));
-                }}
-              >
-                변경완료
-              </ChangeBtn>
-            ) : (
-              <ChangeBtn onClick={() => onEditClick(field)}>변경</ChangeBtn>
-            )}
-          </InfoItem>
-        ))}
+				{[
+					{ label: '이름', field: 'name' },
+					{ label: '닉네임', field: 'nickname' },
+					{ label: '전화번호', field: 'phone' },
+					{ label: '이메일 주소', field: 'email' },
+					{ label: '비밀번호', field: 'password' },
+					{ label: '비밀번호 확인', field: 'passwordcf' },
+				].map(({ label, field }) => (
+					<InfoItem key={field}>
+						<Label>
+							{label}
+							{['이름', '닉네임', '전화번호', '이메일 주소'].includes(label) && <RequiredMark> *</RequiredMark>}
+						</Label>
+						<Content>{editFields[field] ? <input type='text' value={tempUserInfo[field]} onChange={(e) => onInputChange(e, field)} /> : tempUserInfo[field]}</Content>
+						{editFields[field] ? (
+							<ChangeBtn
+								onClick={() => {
+									onSaveField(field)
+								}}>
+								변경완료
+							</ChangeBtn>
+						) : (
+							<ChangeBtn onClick={() => onEditClick(field)}>변경</ChangeBtn>
+						)}
+					</InfoItem>
+				))}
 
-        <InfoItem>
-          <Label>집전화번호</Label>
-          <FlexRow>
-            <AreaSelect
-              name="area"
-              value={homePhone.area}
-              onChange={onHomePhoneChange}
-            >
-              <option value="02">02 (서울)</option>
-              <option value="031">031 (경기)</option>
-              <option value="032">032 (인천)</option>
-              <option value="033">033 (강원)</option>
-              <option value="041">041 (충남)</option>
-              <option value="042">042 (대전)</option>
-              <option value="043">043 (충북)</option>
-              <option value="044">044 (세종)</option>
-              <option value="051">051 (부산)</option>
-              <option value="052">052 (울산)</option>
-              <option value="053">053 (대구)</option>
-              <option value="054">054 (경북)</option>
-              <option value="055">055 (경남)</option>
-              <option value="061">061 (전남)</option>
-              <option value="062">062 (광주)</option>
-              <option value="063">063 (전북)</option>
-              <option value="064">064 (제주)</option>
-            </AreaSelect>
-            <HomePhoneInput
-              name="number"
-              type="text"
-              maxLength={8}
-              placeholder="전화번호를 입력해주세요."
-              value={homePhone.number}
-              onChange={onHomePhoneChange}
-            />
-          </FlexRow>
-        </InfoItem>
-      </ScrollableContent>
+				<InfoItem>
+					<Label>집전화번호</Label>
+					<FlexRow>
+						<AreaSelect name='area' value={homePhone.area} onChange={onHomePhoneChange}>
+							<option value='02'>02 (서울)</option>
+							<option value='031'>031 (경기)</option>
+							<option value='032'>032 (인천)</option>
+							<option value='033'>033 (강원)</option>
+							<option value='041'>041 (충남)</option>
+							<option value='042'>042 (대전)</option>
+							<option value='043'>043 (충북)</option>
+							<option value='044'>044 (세종)</option>
+							<option value='051'>051 (부산)</option>
+							<option value='052'>052 (울산)</option>
+							<option value='053'>053 (대구)</option>
+							<option value='054'>054 (경북)</option>
+							<option value='055'>055 (경남)</option>
+							<option value='061'>061 (전남)</option>
+							<option value='062'>062 (광주)</option>
+							<option value='063'>063 (전북)</option>
+							<option value='064'>064 (제주)</option>
+						</AreaSelect>
+						<HomePhoneInput name='number' type='text' maxLength={8} placeholder='전화번호를 입력해주세요.' value={homePhone.number} onChange={onHomePhoneChange} />
+					</FlexRow>
+				</InfoItem>
+			</ScrollableContent>
 
-      <OverlayFooter>
-        <ChangeBtn onClick={onReset}>초기화</ChangeBtn>
+			<OverlayFooter>
+				<ChangeBtn onClick={onReset}>초기화</ChangeBtn>
 
-        <ChangeBtn
-          onClick={async () => {
-            const { name, nickname, phone, email } = tempUserInfo;
+				<ChangeBtn
+					onClick={async () => {
+						const { name, nickname, phone, email } = tempUserInfo
 
-            if (!name.trim() || !nickname.trim() || !phone.trim() || !email.trim()) {
-              await Swal.fire({
-                icon: 'error',
-                title: '필수 항목을 입력해주세요.',
-                text: '이름, 닉네임, 전화번호, 이메일은 필수입니다.',
-                confirmButtonColor: '#a66cff',
-              });
-              return;
-            }
+						if (!name.trim() || !nickname.trim() || !phone.trim() || !email.trim()) {
+							await Swal.fire({
+								icon: 'error',
+								title: '필수 항목을 입력해주세요.',
+								text: '이름, 닉네임, 전화번호, 이메일은 필수입니다.',
+								confirmButtonColor: '#a66cff',
+							})
+							return
+						}
 
-            const result = await Swal.fire({
-              title: '변경사항을 저장할까요?',
-              text: '입력한 정보가 저장됩니다.',
-              icon: 'question',
-              showCancelButton: true,
-              confirmButtonText: '저장',
-              cancelButtonText: '취소',
-              confirmButtonColor: '#A66CFF',
-              cancelButtonColor: '#ddd',
-            });
+						const result = await Swal.fire({
+							title: '변경사항을 저장할까요?',
+							text: '입력한 정보가 저장됩니다.',
+							icon: 'question',
+							showCancelButton: true,
+							confirmButtonText: '저장',
+							cancelButtonText: '취소',
+							confirmButtonColor: '#A66CFF',
+							cancelButtonColor: '#ddd',
+						})
 
-            if (result.isConfirmed) {
-              setUserInfo(tempUserInfo); // ✅ 변경 적용
-              setProfileImage(tempProfileImage); // ✅ 프로필 반영
+						if (result.isConfirmed) {
+							setUserInfo(tempUserInfo) // ✅ 변경 적용
+							setProfileImage(tempProfileImage) // ✅ 프로필 반영
 
-              await Swal.fire({
-                icon: 'success',
-                title: '정보가 변경되었습니다!',
-                showConfirmButton: false,
-                timer: 1500,
-              });
+							await Swal.fire({
+								icon: 'success',
+								title: '정보가 변경되었습니다!',
+								showConfirmButton: false,
+								timer: 1500,
+							})
 
-              onClose();
-            }
-          }}
-        >
-          완료
-        </ChangeBtn>
-      </OverlayFooter>
-    </Overlay>
-  );
-};
+							onClose()
+						}
+					}}>
+					완료
+				</ChangeBtn>
+			</OverlayFooter>
+		</Overlay>
+	)
+}
 
 export default SettingsOverlay;
 

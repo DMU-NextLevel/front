@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Swal from 'sweetalert2';
 import { api } from '../../AxiosInstance';
+import { useUserUpdate } from '../../apis/user/useUserUpdate'
 
-import Sidebar from './Sidebar';
-import SettingsOverlay from './SettingsOverlay';
-import RecentOverlay from './RecentOverlay';
-import PointOverlay from './PointOverlay';
-import LikeOverlay from './LikeOverlay';
-import FundingOverlay from './FundingOverlay';
-import MainContent from './MainContent';
+import Sidebar from './Sidebar'
+import SettingsOverlay from './SettingsOverlay'
+import RecentOverlay from './RecentOverlay'
+import PointOverlay from './PointOverlay'
+import LikeOverlay from './LikeOverlay'
+import FundingOverlay from './FundingOverlay'
+import MainContent from './MainContent'
 
 interface userResponse {
 	message: string
@@ -31,125 +32,122 @@ interface userResponse {
 }
 
 const MyPage = () => {
-  const [fundingCount, setFundingCount] = useState<number>(0);
-  const [homePhone, setHomePhone] = useState({ area: '02', number: '' });
-  const [showRecentView, setShowRecentView] = useState(false);
-  const [showSettingsOverlay, setShowSettingsOverlay] = useState(false);
-  const [showPointOverlay, setShowPointOverlay] = useState(false);
-  const [showLikeOverlay, setShowLikeOverlay] = useState(false);
-  const [showFundingOverlay, setShowFundingOverlay] = useState(false);
-  const navigate = useNavigate();
+	const [fundingCount, setFundingCount] = useState<number>(0)
+	const [homePhone, setHomePhone] = useState({ area: '02', number: '' })
+	const [showRecentView, setShowRecentView] = useState(false)
+	const [showSettingsOverlay, setShowSettingsOverlay] = useState(false)
+	const [showPointOverlay, setShowPointOverlay] = useState(false)
+	const [showLikeOverlay, setShowLikeOverlay] = useState(false)
+	const [showFundingOverlay, setShowFundingOverlay] = useState(false)
+	const navigate = useNavigate()
+	const { updateUser } = useUserUpdate()
 
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [tempProfileImage, setTempProfileImage] = useState<string | null>(null);
-  const [point, setPoint] = useState(0);
-  const [activeTab, setActiveTab] = useState<'서포터' | '메이커'>('서포터');
+	const [profileImage, setProfileImage] = useState<string | null>(null)
+	const [tempProfileImage, setTempProfileImage] = useState<string | null>(null)
+	const [point, setPoint] = useState(0)
+	const [activeTab, setActiveTab] = useState<'서포터' | '메이커'>('서포터')
 
-  const [userInfo, setUserInfo] = useState({
-    name: '',
-    nickname: '',
-    phone: '',
-    email: '',
-    password: '비밀번호 변경하기',
-    passwordcf: '비밀번호 확인',
-  });
-  const [tempUserInfo, setTempUserInfo] = useState(userInfo);
+	const [userInfo, setUserInfo] = useState({
+		name: '',
+		nickname: '',
+		phone: '',
+		email: '',
+		password: '비밀번호 변경하기',
+		passwordcf: '비밀번호 확인',
+	})
+	const [tempUserInfo, setTempUserInfo] = useState(userInfo)
 
-  const [editFields, setEditFields] = useState<{ [key: string]: boolean }>({});
-  const [selectedFilter, setSelectedFilter] = useState('전체');
+	const [editFields, setEditFields] = useState<{ [key: string]: boolean }>({})
+	const [selectedFilter, setSelectedFilter] = useState('전체')
 
-  // 📌 공통 닫기
-  const closeAll = () => {
-    setShowRecentView(false);
-    setShowSettingsOverlay(false);
-    setShowPointOverlay(false);
-    setShowLikeOverlay(false);
-    setShowFundingOverlay(false);
-  };
+	// 📌 공통 닫기
+	const closeAll = () => {
+		setShowRecentView(false)
+		setShowSettingsOverlay(false)
+		setShowPointOverlay(false)
+		setShowLikeOverlay(false)
+		setShowFundingOverlay(false)
+	}
 
-  // 📌 메뉴 클릭 핸들러
-  const handleClick = (menu: string) => {
-    switch (menu) {
-      case '내 정보 설정':
-        setShowSettingsOverlay(true);
-        break;
-      case '최근본':
-        setShowRecentView(true);
-        break;
-      case '포인트 충전':
-        setShowPointOverlay(true);
-        break;
-      case '좋아요':
-        setShowLikeOverlay(true);
-        break;
-      case '펀딩 목록':
-        setShowFundingOverlay(true);
-        break;
-      case '내 프로젝트':
-        // ✅ 페이지 이동으로 변경
-        navigate('/mypage/myprojects');
-        break;
-      case '팔로잉':
-        navigate('/following');
-        break;
-      default:
-        Swal.fire({
-          title: '알림',
-          text: `'${menu}' 메뉴로 이동합니다.'`,
-          confirmButtonColor: '#a66cff',
-        });
-        break;
-    }
-  };
+	// 📌 메뉴 클릭 핸들러
+	const handleClick = (menu: string) => {
+		switch (menu) {
+			case '내 정보 설정':
+				setShowSettingsOverlay(true)
+				break
+			case '최근본':
+				setShowRecentView(true)
+				break
+			case '포인트 충전':
+				setShowPointOverlay(true)
+				break
+			case '좋아요':
+				setShowLikeOverlay(true)
+				break
+			case '펀딩 목록':
+				setShowFundingOverlay(true)
+				break
+			case '내 프로젝트':
+				// ✅ 페이지 이동으로 변경
+				navigate('/mypage/myprojects')
+				break
+			case '팔로잉':
+				navigate('/following')
+				break
+			default:
+				Swal.fire({
+					title: '알림',
+					text: `'${menu}' 메뉴로 이동합니다.'`,
+					confirmButtonColor: '#a66cff',
+				})
+				break
+		}
+	}
 
-  // ✅ 포인트 오버레이 열릴 때 스크롤 막기
-  useEffect(() => {
-    if (showPointOverlay) {
-      const originalStyle = window.getComputedStyle(document.body).overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalStyle;
-      };
-    }
-  }, [showPointOverlay]);
+	// ✅ 포인트 오버레이 열릴 때 스크롤 막기
+	useEffect(() => {
+		if (showPointOverlay) {
+			const originalStyle = window.getComputedStyle(document.body).overflow
+			document.body.style.overflow = 'hidden'
+			return () => {
+				document.body.style.overflow = originalStyle
+			}
+		}
+	}, [showPointOverlay])
 
-  // 📌 Toss 결제 팝업 열기
-  const openPaymentWindow = (amount: number) => {
-    const width = 700;
-    const height = 900;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-    const url = `/popup-payment?amount=${amount}`;
+	// 📌 Toss 결제 팝업 열기
+	const openPaymentWindow = (amount: number) => {
+		const width = 700
+		const height = 900
+		const left = window.screenX + (window.outerWidth - width) / 2
+		const top = window.screenY + (window.outerHeight - height) / 2
+		const url = `/popup-payment?amount=${amount}`
 
-    window.open(
-      url,
-      'toss_payment_popup',
-      `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no`
-    );
+		window.open(url, 'toss_payment_popup', `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no`)
 
-    const messageListener = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
+		const messageListener = (event: MessageEvent) => {
+			if (event.origin !== window.location.origin) return
 
-      if (event.data === 'payment-success') {
-        api.get('/social/user/my-point').then((res) => {
-          setPoint(res.data.data.point);
-        });
-        window.removeEventListener('message', messageListener);
-      }
-    };
+			if (event.data === 'payment-success') {
+				api.get('/social/user/my-point').then((res) => {
+					setPoint(res.data.data.point)
+				})
+				window.removeEventListener('message', messageListener)
+			}
+		}
 
-    window.addEventListener('message', messageListener);
-  };
+		window.addEventListener('message', messageListener)
+	}
 
-  // 📌 API - 펀딩 카운트
-  useEffect(() => {
-    api
-      .post('/public/project/all', { tag: [], page: 0, myPageWhere: 'PROJECT' })
-      .then((res) => setFundingCount(res.data.data.totalCount))
-      .catch((e) => console.log(e));
-  }, []);
+	// 📌 API - 펀딩 카운트
+	useEffect(() => {
+		api
+			.post('/public/project/all', { tag: [], page: 0, myPageWhere: 'PROJECT' })
+			.then((res) => setFundingCount(res.data.data.totalCount))
+			.catch((e) => console.log(e))
+	}, [])
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+	const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
 		setTempUserInfo((prev) => ({ ...prev, [field]: e.target.value }))
 	}
 
@@ -162,16 +160,44 @@ const MyPage = () => {
 		setEditFields((prev) => ({ ...prev, [field]: true }))
 	}
 
+	const handleSaveField = async (field: string) => {
+		// 필드명 매핑 (UI 필드명 → API 필드명)
+		const fieldMapping: { [key: string]: string } = {
+			name: 'name',
+			nickname: 'nickName',
+			phone: 'number',
+			address: 'address',
+		}
+
+		const apiFieldName = fieldMapping[field]
+		if (!apiFieldName) {
+			console.error('Unknown field:', field)
+			return
+		}
+
+		const value = tempUserInfo[field as keyof typeof tempUserInfo]
+
+		try {
+			await updateUser({ name: apiFieldName, value: value.toString() })
+			// 저장 성공 - 실제 userInfo에 반영
+			setUserInfo(tempUserInfo)
+			setEditFields((prev) => ({ ...prev, [field]: false }))
+		} catch (error) {
+			console.error('유저 정보 수정 실패:', error)
+			alert('정보 수정에 실패했습니다.')
+		}
+	}
+
 	const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files[0]) {
 			const file = e.target.files[0]
 			setTempProfileImage(URL.createObjectURL(file))
-      const imagefetch = async () => {
-        const formData = new FormData()
-        formData.append('img', file)
-        const res = await api.put('/social/user/img', formData)
-      }
-      imagefetch()
+			const imagefetch = async () => {
+				const formData = new FormData()
+				formData.append('img', file)
+				const res = await api.put('/social/user/img', formData)
+			}
+			imagefetch()
 		}
 	}
 
@@ -191,9 +217,9 @@ const MyPage = () => {
 				password: '비밀번호 변경하기',
 				passwordcf: '',
 			})
-      if(res.data.data.img) {
-        setProfileImage(res.data.data.img.uri)
-      }
+			if (res.data.data.img) {
+				setProfileImage(res.data.data.img.uri)
+			}
 			setPoint(res.data.data.point)
 			setHomePhone({
 				area: res.data.data.areaNumber,
@@ -202,11 +228,11 @@ const MyPage = () => {
 		})
 	}, [])
 
-  useEffect(() => {
-    setTempUserInfo(userInfo)
-  },[userInfo])
+	useEffect(() => {
+		setTempUserInfo(userInfo)
+	}, [userInfo])
 
-  return (
+	return (
 		<Container>
 			<Sidebar
 				activeTab={activeTab}
@@ -249,6 +275,7 @@ const MyPage = () => {
 					onInputChange={handleInputChange}
 					onHomePhoneChange={handleHomePhoneChange}
 					onEditClick={handleEditClick}
+					onSaveField={handleSaveField}
 					onImageChange={handleImageChange}
 					onClose={closeAll}
 				/>
@@ -274,7 +301,7 @@ const MyPage = () => {
 			{showFundingOverlay && <FundingOverlay onClose={closeAll} />}
 		</Container>
 	)
-};
+}
 
 export default MyPage;
 

@@ -87,7 +87,7 @@ const MenuButton = styled.button`
 interface SidebarProps {
   activeTab: '서포터' | '메이커';
   setActiveTab: (tab: '서포터' | '메이커') => void;
-  userInfo: { name: string };
+  userInfo: { name: string; nickname: string };
   profileImage: string | null;
   onOpenSettings: () => void;
   onOpenRecent: () => void;
@@ -134,7 +134,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           }
           alt="프로필"
         />
-        <Name>{userInfo.name}</Name>
+        <Name>{userInfo.nickname}</Name>
         <SettingsBtn onClick={onOpenSettings}>내 정보 설정</SettingsBtn>
       </ProfileBox>
 
