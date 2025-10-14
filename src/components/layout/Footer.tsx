@@ -2,7 +2,7 @@ import React from 'react'
 
 const Footer: React.FC = () => {
 	return (
-		<div className="bg-white px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%] py-5">
+		<div className="bg-white px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%] pb-5">
 			<hr className="absolute left-0 right-0 h-px bg-gray-200 border-none mx-auto" />
 			<div className="flex items-center w-full h-[50px] px-2.5">
 				<a href='/' className="text-gray-600 no-underline text-sm mr-5 hover:text-gray-900 transition-colors">정책 & 약관 <i className="bi bi-chevron-down ml-1 text-xs"></i></a>

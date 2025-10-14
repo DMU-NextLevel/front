@@ -22,28 +22,30 @@ const FundingPage = (): JSX.Element => {
 	}, [projectInfo, user])
 
 	return (
-		<div className='flex pl-[2%] gap-[2%] mx-[15%] mt-10'>
-			<div className='flex flex-col items-center w-[26%] min-w-[380px] gap-[2%]'>
-				<FundingInfo
-					setPayOpen={setPayOpen}
-					title={projectInfo?.title ?? ''}
-					percent={projectInfo?.completionRate ?? 0}
-					image={projectInfo?.titleImg?.uri ?? ''}
-					description={projectInfo?.content ?? ''}
-					amount={projectInfo?.sum ?? 0}
-					peopleNum={projectInfo?.fundingCount ?? 0}
-					likeNum={projectInfo?.likeCount ?? 0}
-					tag={projectInfo?.tag ?? []}
-					isAuthor={isAuthor}
-				/>
-				<StarterInfo starter={projectInfo?.user} />
+		<div className='w-full min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50'>
+			<div className='flex pl-[2%] gap-[2%] mx-[15%] py-10'>
+				<div className='flex flex-col items-center w-[26%] min-w-[380px] gap-[2%]'>
+					<FundingInfo
+						setPayOpen={setPayOpen}
+						title={projectInfo?.title ?? ''}
+						percent={projectInfo?.completionRate ?? 0}
+						image={projectInfo?.titleImg?.uri ?? ''}
+						description={projectInfo?.content ?? ''}
+						amount={projectInfo?.sum ?? 0}
+						peopleNum={projectInfo?.fundingCount ?? 0}
+						likeNum={projectInfo?.likeCount ?? 0}
+						tag={projectInfo?.tag ?? []}
+						isAuthor={isAuthor}
+					/>
+					<StarterInfo starter={projectInfo?.user} />
+				</div>
+				<FundingContent projectData={{ story, notice, community }} />
+				{payOpen && (
+					<Modal onClose={() => setPayOpen(false)}>
+						<FundingModal />
+					</Modal>
+				)}
 			</div>
-			<FundingContent projectData={{ story, notice, community }} />
-			{payOpen && (
-				<Modal onClose={() => setPayOpen(false)}>
-					<FundingModal />
-				</Modal>
-			)}
 		</div>
 	)
 }

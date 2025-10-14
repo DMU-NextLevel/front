@@ -35,7 +35,7 @@ const StarterInfo = ({ starter }: props): JSX.Element => {
 	}
 
 	return (
-		<div className='flex flex-col justify-center p-[5%] w-[90%] min-h-[120px] border-4 border-gray-100 rounded-2xl gap-8 shadow-md hover:shadow-xl transition-all duration-300'>
+		<div className='flex flex-col justify-center p-[5%] w-[90%] min-h-[120px] border-4 border-gray-100 rounded-2xl gap-8 shadow-md hover:shadow-xl transition-all duration-300 bg-neutral-50'>
 			<div className='flex w-full h-[30%] items-center'>
 				<div className='flex items-center cursor-pointer' onClick={moveToSocial}>
 					<img
