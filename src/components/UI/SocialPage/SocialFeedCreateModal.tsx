@@ -47,7 +47,7 @@ export const SocialFeedCreateModal = ({ isOpen, onClose, editMode = false, feedI
 		setPreviewUrls(newUrls)
 	}
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		// 내용과 이미지 둘 다 없으면 에러
 		if (!content.trim() && images.length === 0 && previewUrls.length === 0) {
 			alert('내용 또는 이미지를 입력해주세요.')
@@ -56,14 +56,16 @@ export const SocialFeedCreateModal = ({ isOpen, onClose, editMode = false, feedI
 
 		if (editMode && feedId) {
 			// 수정 모드
-			editFeed({
+			await editFeed({
 				id: feedId,
 				text: content.trim() || null,
 				img: images.length > 0 ? images : null,
 			})
+			// 서버가 처리할 시간을 주기 위해 딜레이 추가
+			await new Promise((resolve) => setTimeout(resolve, 800))
 		} else {
 			// 생성 모드
-			createFeed({
+			await createFeed({
 				text: content.trim() || null,
 				imgs: images.length > 0 ? images : null,
 			})
