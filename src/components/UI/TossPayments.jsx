@@ -165,6 +165,10 @@ export function SuccessPage() {
 export function FailPage() {
 	const [searchParams] = useSearchParams()
 
+	useEffect(() => {
+		window.close()
+	}, [])
+
 	return (
 		<div className='result wrapper'>
 			<div className='box_section'>

@@ -66,6 +66,8 @@ const AppWrapper = () => {
 		'/google/callback',
 		'/creater',
 		'/admin',
+		'/fail',
+		'/success',
 	]
 
 	// AOS 초기화
