@@ -24,7 +24,6 @@ export interface RewardData {
 const FundingModal = (): JSX.Element => {
 	const [step, setStep] = useState<number>(1)
 	const [isShow, setIsShow] = useState<boolean>(false)
-	const [checked, setChecked] = useState<boolean>(false)
 	const [selectReward, setSelectReward] = useState<number | null>(null)
 	const [reward, setReward] = useState<RewardData>()
 	const { no } = useParams<{ no: string }>()
@@ -58,6 +57,7 @@ const FundingModal = (): JSX.Element => {
 			await fetchFunding({ reward })
 			alert('펀딩이 완료되었습니다! 🎉')
 			// 성공 후 처리 (예: 모달 닫기, 페이지 이동 등)
+			window.location.reload()
 		} catch (error) {
 			alert('펀딩에 실패했습니다. 다시 시도해주세요.')
 		}
@@ -105,7 +105,7 @@ const FundingModal = (): JSX.Element => {
 								<FundingReward
 									key={reward.id}
 									id={reward.id}
-									price={reward.price?.toString?.()}
+									price={reward.price}
 								title={reward.description}
 								checked={selectReward}
 								setSelectReward={handleReward}

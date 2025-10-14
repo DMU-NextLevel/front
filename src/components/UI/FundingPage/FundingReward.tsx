@@ -3,7 +3,7 @@ import { OptionRewardData } from './modals/FundingModal'
 
 interface props {
 	id: number
-	price: string
+	price: number
 	title: string
 	checked: number | null
 	setSelectReward: (type: 'option' | 'free', data: OptionRewardData, rewardNum: number) => void
@@ -14,7 +14,7 @@ const FundingReward = ({ id, price, title, checked, setSelectReward }: props): J
 
 	const onCheck = () => {
 		// price에서 'P' 제거하고 숫자로 변환
-		const priceNumber = parseInt(price.replace('P', ''))
+		const priceNumber = parseInt(price.toString().replace('P', ''))
 		setSelectReward('option', { optionId: id, couponId: 0, price: priceNumber }, id)
 	}
 
@@ -41,9 +41,9 @@ const FundingReward = ({ id, price, title, checked, setSelectReward }: props): J
 				/>
 				<div className='flex-1'>
 					<div className='flex items-center justify-between mb-2'>
-						<span className={`font-bold text-xl transition-colors duration-200 ${check ? 'text-purple-600' : 'text-gray-400'}`}>{price} P</span>
+						<span className={`font-bold text-xl transition-colors duration-200 ${check ? 'text-purple-600' : 'text-gray-400'}`}>{price.toLocaleString()} P</span>
 					</div>
-					<p className={`font-medium text-base mb-2 transition-colors duration-200 ${check ? 'text-gray-600' : 'text-gray-400'}`}>{title}</p>
+					<p className={`font-normal text-sm mb-2 transition-colors duration-200 ${check ? 'text-gray-600' : 'text-gray-400'}`}>{title}</p>
 					<p className={`text-xs flex items-center gap-1 transition-colors duration-200 ${check ? 'text-purple-600' : 'text-gray-400'}`}>
 					</p>
 				</div>
