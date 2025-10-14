@@ -145,7 +145,7 @@ const AppWrapper = () => {
 					<Route path='projects' element={<AdminProjects />} />
 					<Route path='notices' element={<AdminNotices />} />
 				</Route>
-				<Route path='/social/:id' element={<SocialPage />} />
+				<Route path='/socialfeed/:id' element={<SocialPage />} />
 			</Routes>
 			{!shouldHideFooter && <Footer />}
 		</AuthProvider>

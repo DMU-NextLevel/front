@@ -31,7 +31,7 @@ const StarterInfo = ({ starter }: props): JSX.Element => {
 	}
 
 	const moveToSocial = () => {
-		navigate(`/social/${starter?.id}`)
+		navigate(`/socialfeed/${starter?.id}`)
 	}
 
 	return (

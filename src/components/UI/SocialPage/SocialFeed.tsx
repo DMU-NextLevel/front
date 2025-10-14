@@ -91,7 +91,7 @@ export const SocialFeed = ({ id, nickName, content, img, date, like, type, isLik
 						{img.length === 1 ? (
 							// 이미지가 1개일 때
 							<div className='relative w-full' style={{ paddingBottom: '75%' }}>
-								<img src={img[0]} alt='피드 이미지' className='absolute top-0 left-0 w-full h-full object-cover' />
+								<img src={`${baseUrl}/img/${img[0]}`} alt='피드 이미지' className='absolute top-0 left-0 w-full h-full object-cover' />
 							</div>
 						) : (
 							// 이미지가 여러 개일 때 슬라이더
@@ -99,7 +99,7 @@ export const SocialFeed = ({ id, nickName, content, img, date, like, type, isLik
 								{img.map((image, index) => (
 									<div key={index}>
 										<div className='relative w-full' style={{ paddingBottom: '75%' }}>
-											<img src={image} alt={`피드 이미지 ${index + 1}`} className='absolute top-0 left-0 w-full h-full object-cover' />
+											<img src={`${baseUrl}/img/${image}`} alt={`피드 이미지 ${index + 1}`} className='absolute top-0 left-0 w-full h-full object-cover' />
 										</div>
 									</div>
 								))}
