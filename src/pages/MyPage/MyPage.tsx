@@ -315,4 +315,6 @@ const Container = styled.div`
   max-width: 100vw;
   min-height: 100vh;
   overflow-x: hidden;
+  padding-left: 200px;
+  padding-right: 200px;
 `;

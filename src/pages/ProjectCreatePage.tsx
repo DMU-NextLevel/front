@@ -26,7 +26,7 @@ const categories = [
 
 const ProjectCreatePage: React.FC = () => {
 	const navigate = useNavigate()
-	const { isLoggedIn } = useAuth()
+	const { isLoggedIn, user } = useAuth()
 	const [isLoading, setIsLoading] = useState(false)
 	const [formData, setFormData] = useState<ProjectFormData>({
 		title: '',
@@ -149,15 +149,6 @@ const ProjectCreatePage: React.FC = () => {
 		})
 	}
 
-	const [userName, setUserName] = useState<string>('사용자')
-
-	useEffect(() => {
-		const savedName = localStorage.getItem('userName')
-		if (savedName) {
-			setUserName(savedName)
-		}
-	}, [])
-
 	return (
 		<div className='max-w-4xl mx-auto mt-12 p-16 bg-white rounded-xl shadow-lg'>
 			{isLoading && (
@@ -166,7 +157,7 @@ const ProjectCreatePage: React.FC = () => {
 					<div className='mt-5 text-white text-xl font-medium'>프로젝트 생성 중...</div>
 				</div>
 			)}
-			<div className='text-xl font-medium text-gray-800 mb-7 py-5 px-5 bg-gray-50 rounded-lg text-center'>{userName}님, 환영합니다!</div>
+			<div className='text-xl font-medium text-gray-800 mb-7 py-5 px-5 bg-gray-50 rounded-lg text-center'>{user?.nickName}님, 환영합니다!</div>
 			<form onSubmit={handleSubmit} className='flex flex-col items-center mx-auto w-full gap-8'>
 				<h1 className='text-3xl font-semibold m-0 mb-8 pb-5 border-b-2 border-gray-100'>프로젝트 생성</h1>
 

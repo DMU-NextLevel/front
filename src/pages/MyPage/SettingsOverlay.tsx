@@ -45,6 +45,8 @@ const SettingsOverlay: React.FC<Props> = ({
 	setProfileImage,
 	setTempProfileImage,
 }) => {
+	const baseUrl = process.env.REACT_APP_API_BASE_URL
+
 	return (
 		<Overlay>
 			<OverlayHeader>
@@ -55,7 +57,7 @@ const SettingsOverlay: React.FC<Props> = ({
 			<ScrollableContent>
 				<div style={{ textAlign: 'center', marginBottom: '24px' }}>
 					<ImageInputLabel>
-						<AvatarImg src={tempProfileImage || profileImage || 'https://via.placeholder.com/100'} alt='프로필' style={{ width: '100px', height: '100px' }} />
+						<AvatarImg src={tempProfileImage || `${baseUrl}/img/${profileImage}`} alt='프로필' style={{ width: '100px', height: '100px' }} />
 					</ImageInputLabel>
 					<HiddenFileInput id='profile-upload-settings' type='file' accept='image/*' onChange={onImageChange} />
 					<div style={{ display: 'flex', justifyContent: 'center' }}>

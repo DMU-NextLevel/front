@@ -4,7 +4,7 @@ import { api } from '../../AxiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  userInfo: { name: string };
+  userInfo: { name: string, nickname: string };
   fundingCount: number;
   point: number;
   selectedFilter: string;
@@ -73,7 +73,7 @@ const MainContent: React.FC<Props> = ({
   return (
     <Main>
       <Greeting>
-        <h2>{userInfo.name}님 안녕하세요.</h2>
+        <h2>{userInfo.nickname}님 안녕하세요.</h2>
         <InviteBox>당신의 아이디어, 펀딩으로 연결하세요!</InviteBox>
 
         <StatGrid>
