@@ -81,7 +81,7 @@ const PersonalizedProjectGallery: React.FC = () => {
         const projectsData = response.data.data.projects.map((project: any) => ({
           id: project.id,
           title: project.title,
-          titleImg: project.titleImg?.uri || '',
+          titleImg: project.titleImg ? { id: project.titleImg.id || 0, uri: project.titleImg.uri } : null,
           completionRate: project.completionRate,
           recommendCount: project.likeCount || 0,
           tags: project.tags || [],
@@ -296,7 +296,9 @@ const PersonalizedProjectGallery: React.FC = () => {
           >
             {projects.slice(0, 5).map((p) => {
               const rate = Math.max(0, Math.min(100, Math.round(p.completionRate ?? 0)))
-              const imgSrc = p.titleImg ? `${baseUrl}/img/${p.titleImg.uri}` : ''
+              // titleImg can be a string or an object with uri
+              const titleImgPath = p?.titleImg?.uri ? p.titleImg.uri : p.titleImg
+              const imgSrc = titleImgPath ? `${baseUrl}/img/${titleImgPath}` : ''
               return (
                 <div
                   key={p.id}
