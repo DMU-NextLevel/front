@@ -53,6 +53,8 @@ export const HeaderMain: React.FC = () => {
 	const notificationRef = useRef<HTMLDivElement>(null)
 	const searchFormRef = useRef<HTMLFormElement>(null)
 
+	const baseUrl = process.env.REACT_APP_API_BASE_URL
+
 	// 검색 제출 핸들러
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
@@ -301,7 +303,7 @@ export const HeaderMain: React.FC = () => {
 								{/* 프로필 */}
 								<div className='relative inline-block' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
 									<img
-										src={user?.img || UserImage}
+										src={`${baseUrl}/img/${user?.img?.uri}`}
 										alt='profile'
 										onClick={() => navigate('/mypage')}
 										onError={(e) => {
@@ -317,9 +319,9 @@ export const HeaderMain: React.FC = () => {
 										<div className='bg-gradient-to-r from-[#5e60ce] to-[#4361ee] rounded-xl p-5 text-center text-white relative overflow-hidden'>
 											{/* 배경 패턴 */}
 											<div className='absolute inset-0 bg-white/5 rounded-xl'></div>
-											<img 
-												src={user?.img || UserImage} 
-												alt='프로필' 
+											<img
+												src={`${baseUrl}/img/${user?.img?.uri}`}
+												alt='프로필'
 												className='w-[60px] h-[60px] rounded-full mx-auto mb-3 border-2 border-white/30 relative z-10'
 												onError={(e) => {
 													const target = e.target as HTMLImageElement;
@@ -340,8 +342,16 @@ export const HeaderMain: React.FC = () => {
 												<span>{user?.email}</span>
 											</div>
 											<div className='flex items-center text-[13px] text-gray-500 px-2'>
-												<i className='bi bi-shield-check text-gray-400 mr-2 text-base'></i>
-												<span>{role == 'ADMIN' ? '관리자' : '일반 사용자'}</span>
+    											<i className='bi bi-shield-check text-gray-400 mr-2 text-base'></i>
+												<div className='flex items-center justify-between w-full'>
+													<span>{role == 'ADMIN' ? '관리자' : '일반 사용자'}</span>
+													{role == 'ADMIN' && (
+														<i
+															onClick={() => navigate('/admin')}
+															className='bi bi-gear text-gray-400 hover:text-gray-600 cursor-pointer'
+														></i>
+													)}
+												</div>
 											</div>
 											<div className='flex items-center text-[13px] text-blue-600 font-medium px-2'>
 												<i className='bi bi-coin text-blue-500 mr-2 text-base'></i>
@@ -549,7 +559,7 @@ export const HeaderMain: React.FC = () => {
 						) : (
 							<div className='flex items-center space-x-4 p-3 bg-gray-50 rounded-lg'>
 								<img
-									src={user?.img || UserImage}
+									src={`${baseUrl}/img/${user?.img?.uri}`}
 									alt='profile'
 									onClick={() => {
 										navigate('/mypage')

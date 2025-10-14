@@ -10,6 +10,8 @@ interface SocialFeedCreateModalProps {
 	initialImages?: string[]
 }
 
+const baseUrl = process.env.REACT_APP_API_BASE_URL
+
 export const SocialFeedCreateModal = ({ isOpen, onClose, editMode = false, feedId, initialContent = '', initialImages = [] }: SocialFeedCreateModalProps) => {
 	const [content, setContent] = useState(initialContent)
 	const [images, setImages] = useState<File[]>([])
@@ -69,6 +71,7 @@ export const SocialFeedCreateModal = ({ isOpen, onClose, editMode = false, feedI
 				text: content.trim() || null,
 				imgs: images.length > 0 ? images : null,
 			})
+			await new Promise((resolve) => setTimeout(resolve, 800))
 		}
 		handleClose()
 		window.location.reload()
@@ -134,7 +137,7 @@ export const SocialFeedCreateModal = ({ isOpen, onClose, editMode = false, feedI
 							<div className='grid grid-cols-3 gap-3 mt-4'>
 								{previewUrls.map((url, index) => (
 									<div key={index} className='relative group'>
-										<img src={url} alt={`미리보기 ${index + 1}`} className='w-full h-24 object-cover rounded-lg' />
+										<img src={`${baseUrl}/img/${url}`} alt={`미리보기 ${index + 1}`} className='w-full h-24 object-cover rounded-lg' />
 										<button
 											onClick={() => handleRemoveImage(index)}
 											className='absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600'>

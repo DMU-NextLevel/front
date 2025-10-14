@@ -24,8 +24,6 @@ const SocialLogin = ({ loginType }: Props) => {
 				api
 					.get(`/public/auth/${loginType}?code=${code}`)
 					.then((r) => {
-						alert('소셜 로그인 성공')
-						// 예시: 로그인 성공 후 메인 페이지로
 
 						setTimeout(() => {
 							if (window.opener && !window.opener.closed) {

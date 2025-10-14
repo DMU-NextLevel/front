@@ -84,10 +84,10 @@ const FundingContent = ({ projectData }: props): JSX.Element => {
 	}
 
 	return (
-		<div className='flex flex-col w-4/5 border-4 border-gray-100 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300'>
+		<div className='flex flex-col w-4/5 border-4 border-gray-100 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 bg-neutral-50'>
 			<div className='flex flex-row w-full h-14'>
 				<button
-					className={`${activeSection === 'story' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center bg-white ${
+					className={`${activeSection === 'story' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center ${
 						activeSection === 'story' ? 'text-black' : 'text-gray-300'
 					} text-lg font-bold cursor-pointer border-none rounded-3xl relative transition-all duration-300 ease-in-out after:content-[''] after:absolute after:left-0 after:bottom-0 ${
 						activeSection === 'story' ? 'after:w-full' : 'after:w-0'
@@ -96,7 +96,7 @@ const FundingContent = ({ projectData }: props): JSX.Element => {
 					스토리
 				</button>
 				<button
-					className={`${activeSection === 'news' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center bg-white ${
+					className={`${activeSection === 'news' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center ${
 						activeSection === 'news' ? 'text-black' : 'text-gray-300'
 					} text-lg font-bold cursor-pointer border-none rounded-3xl relative transition-all duration-300 ease-in-out after:content-[''] after:absolute after:left-0 after:bottom-0 ${
 						activeSection === 'news' ? 'after:w-full' : 'after:w-0'
@@ -105,7 +105,7 @@ const FundingContent = ({ projectData }: props): JSX.Element => {
 					새 소식
 				</button>
 				<button
-					className={`${activeSection === 'commu' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center bg-white ${
+					className={`${activeSection === 'commu' ? 'flex-[2]' : 'flex-1'} h-15 flex justify-center items-center ${
 						activeSection === 'commu' ? 'text-black' : 'text-gray-300'
 					} text-lg font-bold cursor-pointer border-none rounded-3xl relative transition-all duration-300 ease-in-out after:content-[''] after:absolute after:left-0 after:bottom-0 ${
 						activeSection === 'commu' ? 'after:w-full' : 'after:w-0'

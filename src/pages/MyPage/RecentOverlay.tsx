@@ -24,18 +24,9 @@ interface Props {
 }
 
 // 카테고리 목록
-const categories = [
-  '테크/가전',
-  '패션/잡화',
-  '취미/DIY',
-  '교육/키즈',
-  '여행/레저',
-  '라이프스타일',
-  '뷰티/헬스',
-  '게임',
-  '반려동물',
-  '푸드/음료',
-];
+const categories = ['테크 가전', '패션 잡화', '취미 DIY', '교육 키즈', '여행 레저', '라이프 스타일', '뷰티 헬스', '게임', '반려동물', '푸드 음료']
+
+const baseUrl = process.env.REACT_APP_API_BASE_URL
 
 const RecentOverlay: React.FC<Props> = ({
   onClose,
@@ -69,13 +60,13 @@ const RecentOverlay: React.FC<Props> = ({
         const apiProjects = res.data.data?.projects || [];
 
         const mapped: Product[] = apiProjects.map((p: any) => ({
-          id: p.id,
-          name: p.title,
-          price: `${p.likeCount || 0}명이 좋아요`, // 가격이 없으므로 likeCount 대체
-          image: p.titleImg?.url || 'https://via.placeholder.com/200',
-          category: p.tags?.[0] || '기타',
-          tags: p.tags || [],
-        }));
+					id: p.id,
+					name: p.title,
+					price: `${p.likeCount || 0}명이 좋아요`, // 가격이 없으므로 likeCount 대체
+					image: p.titleImg?.uri,
+					category: p.tags?.[0] || '기타',
+					tags: p.tags || [],
+				}))
 
         setProducts(mapped);
       } catch (err) {
@@ -89,10 +80,7 @@ const RecentOverlay: React.FC<Props> = ({
   }, []);
 
   // 선택된 카테고리에 따라 필터링
-  const filteredProducts =
-    selectedFilter === '전체'
-      ? products
-      : products.filter((product) => product.category === selectedFilter);
+  const filteredProducts = selectedFilter === '전체' ? products : products.filter((product) => product.tags.includes(selectedFilter))
 
   // 오버레이가 열릴 때 body 스크롤 막기
   useEffect(() => {
@@ -105,109 +93,87 @@ const RecentOverlay: React.FC<Props> = ({
   }, []);
 
   return (
-    <>
-      {/* 뒤 배경 */}
-      <Backdrop />
+		<>
+			{/* 뒤 배경 */}
+			<Backdrop />
 
-      {/* 가운데 흰색 박스 */}
-      <Overlay>
-        <OverlayHeader>
-          <h2>나의 활동</h2>
-          <CloseButton
-            onClick={() => {
-              const hasChanges =
-                JSON.stringify(userInfo) !== JSON.stringify(tempUserInfo) ||
-                profileImage !== tempProfileImage;
+			{/* 가운데 흰색 박스 */}
+			<Overlay>
+				<OverlayHeader>
+					<h2>나의 활동</h2>
+					<CloseButton
+						onClick={() => {
+							onClose()
+						}}>
+						×
+					</CloseButton>
+				</OverlayHeader>
 
-              if (hasChanges) {
-                Swal.fire({
-                  icon: 'warning',
-                  title: '변경 사항이 저장되지 않았습니다',
-                  text: '입력한 내용이 저장되지 않은 채 창이 닫힙니다.',
-                  confirmButtonColor: '#a66cff',
-                });
-              }
-              onClose();
-            }}
-          >
-            ×
-          </CloseButton>
-        </OverlayHeader>
+				<ScrollableContent>
+					<Tabs>
+						<TabGroup>
+							<ActiveTab>최근 본</ActiveTab>
+						</TabGroup>
 
-        <ScrollableContent>
-          <Tabs>
-            <TabGroup>
-              <ActiveTab>최근 본</ActiveTab>
-            </TabGroup>
+						{/* 카테고리 필터 */}
+						<FilterGroup>
+							{displayedCategories.map((cat) => (
+								<FilterBtn key={cat} active={selectedFilter === cat} onClick={() => setSelectedFilter(cat)}>
+									{cat}
+								</FilterBtn>
+							))}
 
-            {/* 카테고리 필터 */}
-            <FilterGroup>
-              {displayedCategories.map((cat) => (
-                <FilterBtn
-                  key={cat}
-                  active={selectedFilter === cat}
-                  onClick={() => setSelectedFilter(cat)}
-                >
-                  {cat}
-                </FilterBtn>
-              ))}
+							{/* 더보기 / 접기 버튼 */}
+							<MoreBtn onClick={() => setShowAllCategories(!showAllCategories)}>{showAllCategories ? '접기 ▲' : '더보기 ▼'}</MoreBtn>
+						</FilterGroup>
+					</Tabs>
 
-              {/* 더보기 / 접기 버튼 */}
-              <MoreBtn onClick={() => setShowAllCategories(!showAllCategories)}>
-                {showAllCategories ? '접기 ▲' : '더보기 ▼'}
-              </MoreBtn>
-            </FilterGroup>
-          </Tabs>
+					{loading ? (
+						<ItemCount>불러오는 중...</ItemCount>
+					) : (
+						<>
+							<ItemCount>전체 {selectedFilter === '전체' ? products.length : filteredProducts.length}개</ItemCount>
 
-          {loading ? (
-            <ItemCount>불러오는 중...</ItemCount>
-          ) : (
-            <>
-              <ItemCount>
-                전체 {selectedFilter === '전체' ? products.length : filteredProducts.length}개
-              </ItemCount>
-
-              <ProductGrid>
-                {filteredProducts.map((item: Product) => (
-                  <ProductCardOverlay key={item.id}>
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      style={{
-                        width: '100%',
-                        height: '120px',
-                        objectFit: 'cover',
-                        borderRadius: '8px',
-                      }}
-                    />
-                    <CardContent>
-                      <Price>
-                        <span>{item.price}</span>
-                      </Price>
-                      <p
-                        style={{
-                          margin: '8px 0',
-                          fontSize: '14px',
-                          lineHeight: '1.4',
-                        }}
-                      >
-                        {item.name}
-                      </p>
-                      <HashtagList>
-                        {item.tags.map((tag: string, i: number) => (
-                          <Hashtag key={i}>#{tag}</Hashtag>
-                        ))}
-                      </HashtagList>
-                    </CardContent>
-                  </ProductCardOverlay>
-                ))}
-              </ProductGrid>
-            </>
-          )}
-        </ScrollableContent>
-      </Overlay>
-    </>
-  );
+							<ProductGrid>
+								{filteredProducts.map((item: Product) => (
+									<ProductCardOverlay key={item.id}>
+										<img
+											src={`${baseUrl}/img/${item.image}`}
+											alt={item.name}
+											style={{
+												width: '100%',
+												height: '120px',
+												objectFit: 'cover',
+												borderRadius: '8px',
+											}}
+										/>
+										<CardContent>
+											<Price>
+												<span>{item.price}</span>
+											</Price>
+											<p
+												style={{
+													margin: '8px 0',
+													fontSize: '14px',
+													lineHeight: '1.4',
+												}}>
+												{item.name}
+											</p>
+											<HashtagList>
+												{item.tags.map((tag: string, i: number) => (
+													<Hashtag key={i}>#{tag}</Hashtag>
+												))}
+											</HashtagList>
+										</CardContent>
+									</ProductCardOverlay>
+								))}
+							</ProductGrid>
+						</>
+					)}
+				</ScrollableContent>
+			</Overlay>
+		</>
+	)
 };
 
 export default RecentOverlay;

@@ -12,7 +12,10 @@ export interface User {
 	areaNumber?: string | null
 	email?: string
 	socialProvider?: string | null
-	img?: string | null
+	img?: {
+		id: number
+		uri: string
+	} | null
 }
 
 // 컨텍스트 타입 정의

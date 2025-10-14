@@ -44,7 +44,7 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 	}
 
 	return (
-		<div className='flex flex-col w-[90%] rounded-2xl border-4 border-gray-100 p-[5%] shadow-md hover:shadow-xl transition-all duration-300'>
+		<div className='flex flex-col w-[90%] rounded-2xl border-4 border-gray-100 p-[5%] shadow-md hover:shadow-xl transition-all duration-300 bg-neutral-50'>
 			<img src={`${baseUrl}/img/${image}`} className='w-full h-75 rounded-lg' alt='' />
 			<div className='flex items-center h-12 gap-2.5'>
 				{tag.map((tag, index) => (

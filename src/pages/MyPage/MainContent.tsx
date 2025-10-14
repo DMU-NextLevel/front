@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
+import { api } from '../../AxiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   userInfo: { name: string };
@@ -34,8 +35,8 @@ const MainContent: React.FC<Props> = ({
   onHandleClick,
 }) => {
   //const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-
+  const API_URL = process.env.REACT_APP_API_BASE_URL
+  const navigate = useNavigate()
   const [recentProjects, setRecentProjects] = useState<Project[]>([]);
   const [couponCount, setCouponCount] = useState<number>(0);
 
@@ -43,9 +44,7 @@ const MainContent: React.FC<Props> = ({
   useEffect(() => {
     const fetchRecentProjects = async () => {
       try {
-        const response = await axios.post(`${API_URL}/api/projects`, {
-          page: 0,
-          pageCount: 10,
+        const response = await api.post(`/social/user/project`, {
           type: 'VIEW',
           status: 'PROGRESS',
         });
@@ -61,7 +60,7 @@ const MainContent: React.FC<Props> = ({
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/coupons`);
+        const response = await api.get(`/social/coupon`);
         const list: Coupon[] = response.data.data || [];
         setCouponCount(list.length);
       } catch (error) {
@@ -108,11 +107,11 @@ const MainContent: React.FC<Props> = ({
       <ProductList>
         {recentProjects.length > 0 ? (
           recentProjects.map((p) => (
-            <ProductCardNormal key={p.id}>
+            <ProductCardNormal key={p.id} onClick={() => navigate(`/project/${p.id}`)}>
               <img
                 src={
                   p.titleImg?.uri
-                    ? `${API_URL}/images/${p.titleImg.uri}`
+                    ? `${API_URL}/img/${p.titleImg.uri}`
                     : 'https://via.placeholder.com/200x180?text=No+Image'
                 }
                 alt={p.title}
@@ -215,6 +214,7 @@ const ProductCardNormal = styled.div`
   text-align: center;
   padding: 12px;
   transition: transform 0.2s;
+  cursor: pointer;
 
   img {
     width: 100%;

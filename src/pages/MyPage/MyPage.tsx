@@ -166,6 +166,12 @@ const MyPage = () => {
 		if (e.target.files && e.target.files[0]) {
 			const file = e.target.files[0]
 			setTempProfileImage(URL.createObjectURL(file))
+      const imagefetch = async () => {
+        const formData = new FormData()
+        formData.append('img', file)
+        const res = await api.put('/social/user/img', formData)
+      }
+      imagefetch()
 		}
 	}
 
@@ -180,7 +186,7 @@ const MyPage = () => {
 			setUserInfo({
 				name: res.data.data.name,
 				nickname: res.data.data.nickName,
-				phone: res.data.data.number + '-' + res.data.data.areaNumber,
+				phone: res.data.data.number,
 				email: res.data.data.email,
 				password: '비밀번호 변경하기',
 				passwordcf: '',
