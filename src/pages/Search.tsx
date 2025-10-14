@@ -91,7 +91,10 @@ const Search: React.FC = () => {
 				}
 			})
 
-  if (node) observer.current.observe(node);}, [loading, hasMore]);
+			if (node) observer.current.observe(node)
+		},
+		[loading, hasMore]
+	)
 
 	// 검색 키워드 저장
 	useEffect(() => {
@@ -131,9 +134,9 @@ const Search: React.FC = () => {
 		const diffTime = expiredDate.getTime() - today.getTime()
 		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-    // 생성일로부터 24시간 이내면 NEW
-    const createdDiff = today.getTime() - createdDate.getTime();
-    const createdHours = Math.floor(createdDiff / (1000 * 60 * 60));
+		// 생성일로부터 24시간 이내면 NEW
+		const createdDiff = today.getTime() - createdDate.getTime()
+		const createdHours = Math.floor(createdDiff / (1000 * 60 * 60))
 
 		return createdHours <= 24 ? 'New' : diffDays < 0 ? '마감' : `${diffDays}일 남음`
 	}

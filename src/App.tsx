@@ -33,6 +33,8 @@ import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminProjects from './pages/Admin/AdminProjects'
 import AdminNotices from './pages/Admin/AdminNotices'
+import SocialPage from './pages/SocialPage'
+import AdditionalInfo from './pages/AdditionalInfo'
 
 // AOS 초기화
 declare global {
@@ -53,7 +55,18 @@ function App() {
 const AppWrapper = () => {
 	const [loginType, setLoginType] = useState<string>('')
 	const location = useLocation()
-	const hideLayout = ['/login', '/signup', '/popup-payment', '/popup-payment-success', '/kakao/callback', '/naver/callback', '/google/callback', '/creater', '/admin']
+	const hideLayout = [
+		'/login',
+		'/signup',
+		'/additional-info',
+		'/popup-payment',
+		'/popup-payment-success',
+		'/kakao/callback',
+		'/naver/callback',
+		'/google/callback',
+		'/creater',
+		'/admin',
+	]
 
 	// AOS 초기화
 	useEffect(() => {
@@ -61,14 +74,14 @@ const AppWrapper = () => {
 			window.AOS.init({
 				duration: 800,
 				easing: 'ease-out-cubic',
-				once: false,  // 매번 실행되도록 변경
+				once: false, // 매번 실행되도록 변경
 				offset: 50,
 				disable: false, // 모든 디바이스에서 활성화
 				startEvent: 'DOMContentLoaded',
 				useClassNames: false,
 				disableMutationObserver: false,
 				debounceDelay: 50,
-				throttleDelay: 99
+				throttleDelay: 99,
 			})
 		}
 	}, [])
@@ -77,25 +90,30 @@ const AppWrapper = () => {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			if (window.AOS) {
-				window.AOS.refreshHard(); // 완전 재초기화
+				window.AOS.refreshHard() // 완전 재초기화
 				setTimeout(() => {
-					window.AOS.refresh(); // 한번 더 refresh
-				}, 100);
+					window.AOS.refresh() // 한번 더 refresh
+				}, 100)
 			}
-		}, 50);
+		}, 50)
 
-		return () => clearTimeout(timer);
-}, [location.pathname])
+		return () => clearTimeout(timer)
+	}, [location.pathname])
 
-const shouldHideLayout = hideLayout.includes(location.pathname) || location.pathname.startsWith('/admin')
+	const pattern = ['/admin']
+	const footerHidePattern = ['/admin', '/social']
 
-return (
-	<AuthProvider>
-		{!shouldHideLayout && <HeaderMain />}
-		<Routes>
+	const shouldHideLayout = hideLayout.includes(location.pathname) || pattern.some((pattern) => location.pathname.startsWith(pattern))
+	const shouldHideFooter = hideLayout.includes(location.pathname) || footerHidePattern.some((pattern) => location.pathname.startsWith(pattern))
+
+	return (
+		<AuthProvider>
+			{!shouldHideLayout && <HeaderMain />}
+			<Routes>
 				<Route path='/' element={<MainPage />} />
 				<Route path='/login' element={<Login setLoginType={setLoginType} />} />
 				<Route path='/signup' element={<Signup />} />
+				<Route path='/additional-info' element={<AdditionalInfo />} />
 				<Route path='/idfind' element={<IDFindPage />} />
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/project/:no' element={<FundingPage />} />
@@ -119,14 +137,15 @@ return (
 				<Route path='/support/faq' element={<SupportFAQ />} />
 				<Route path='/support/inquiry' element={<SupportInquiry />} />
 				<Route path='/admin' element={<AdminLayout />}>
-				<Route index element={<AdminPage />} />
+					<Route index element={<AdminPage />} />
 					<Route path='dashboard' element={<AdminDashboard />} />
 					<Route path='users' element={<AdminUsers />} />
 					<Route path='projects' element={<AdminProjects />} />
 					<Route path='notices' element={<AdminNotices />} />
 				</Route>
+				<Route path='/social/:id' element={<SocialPage />} />
 			</Routes>
-			{!shouldHideLayout && <Footer />}
+			{!shouldHideFooter && <Footer />}
 		</AuthProvider>
 	)
 }

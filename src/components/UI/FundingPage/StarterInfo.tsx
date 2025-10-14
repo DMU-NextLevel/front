@@ -2,26 +2,42 @@ import React, { JSX, useState } from 'react'
 import UserImage from '../../../assets/images/default_profile.png'
 import FollowImage from '../../../assets/images/Heart.svg'
 import StarterScore from './StarterScore'
+import { useNavigate } from 'react-router-dom'
 
 interface props {
-	starter: string | undefined
+	starter: {
+		id: number
+		nickName: string
+		img: {
+			id: number
+			uri: string
+		}
+		followCount: number
+		isFollow: boolean
+	} | undefined
 }
 
 const StarterInfo = ({ starter }: props): JSX.Element => {
 	const [isFollowed, setIsFollowed] = useState<boolean>(false)
-	const [follower, setFollower] = useState<number>(0)
+	const navigate = useNavigate()
 
 	const handleFllow = () => {
 		setIsFollowed((prev) => !prev)
 	}
 
+	const moveToSocial = () => {
+		navigate(`/social/${starter?.id}`)
+	}
+
 	return (
 		<div className='flex flex-col justify-center p-[5%] w-[90%] min-h-[120px] border-4 border-gray-100 rounded-2xl gap-8 shadow-md hover:shadow-xl transition-all duration-300'>
 			<div className='flex w-full h-[30%] items-center'>
-				<img src={UserImage} className='w-10 h-10 rounded-full ring-2 ring-purple-200' alt='프로필' />
-				<div className='ml-2.5'>
-					<p className='text-base font-bold m-0'>{starter}</p>
-					<p className='text-xs m-0 text-purple-500'>{follower} 명 팔로우 중</p>
+				<div className='flex items-center cursor-pointer' onClick={moveToSocial}>
+					<img src={starter?.img.uri ?? UserImage} className='w-10 h-10 rounded-full ring-2 ring-purple-200' alt='프로필' />
+					<div className='ml-2.5'>
+						<p className='text-base font-bold m-0'>{starter?.nickName}</p>
+						<p className='text-xs m-0 text-purple-500'>{starter?.followCount} 명 팔로우 중</p>
+					</div>
 				</div>
 				<button
 					className={`flex flex-row w-24 h-10 border-none rounded-xl items-center justify-center gap-2.5 ml-auto hover:cursor-pointer transition-all duration-200 ${

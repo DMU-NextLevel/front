@@ -4,7 +4,10 @@ import { api } from '../AxiosInstance';
 interface ProjectItem {
   id: number;
   title: string;
-  titleImg: string;
+  titleImg: {
+    id: number
+    uri: string
+  }
   completionRate: number;
   recommendCount: number;
   tags: string[];

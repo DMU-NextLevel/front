@@ -3,15 +3,16 @@ import { api } from '../AxiosInstance'; // 실제 API 인스턴스로 바꿔주�
 
 // 유저 타입 정의
 export interface User {
-  name?: string;
-  nickName?: string;
-  point?: number;
-  address?: string;
-  number?: string;
-  areaNumber?: string | null;
-  email?: string;
-  socialProvider?: string | null;
-  img?: string | null;
+	id?: number
+	name?: string
+	nickName?: string
+	point?: number
+	address?: string
+	number?: string
+	areaNumber?: string | null
+	email?: string
+	socialProvider?: string | null
+	img?: string | null
 }
 
 // 컨텍스트 타입 정의
@@ -63,25 +64,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		api
 			.get('/public/login/token')
 			.then((res) => {
-        console.log('토큰 조회' + res.data.data)
-				if (res.data.data !== 'no login') {
-					setIsLoggedIn(true)
-          console.log('토큰이 존재하므로 유저 정보 조회시작')
-          api.get('/social/user', {withCredentials: true}).then(
-            (res) => {
-              if(res.data.message === 'success') {
-                console.log('유저 정보 조회 성공')
-                setUser(res.data.data)
-              }
-            })
-				} else {
-          console.log('토큰 존재 안함')
+				console.log('토큰 조회: ' + res.data.data)
+				const tokenStatus = res.data.data
+
+				if (tokenStatus === 'no login') {
+					console.log('토큰 존재 안함')
 					setUser(null)
 					setIsLoggedIn(false)
+					return
 				}
+
+				// SOCIAL 로그인인 경우 추가 정보 입력 페이지로 리다이렉트
+				// 단, 이미 추가 정보 입력 페이지에 있다면 리다이렉트하지 않음
+				if (tokenStatus === 'SOCIAL') {
+					console.log('소셜 로그인 사용자')
+					setIsLoggedIn(true)
+
+					const currentPath = window.location.pathname
+					if (currentPath !== '/additional-info') {
+						console.log('추가 정보 입력 페이지로 이동')
+						window.location.href = '/additional-info'
+					} else {
+						console.log('이미 추가 정보 입력 페이지에 있음')
+					}
+				}
+
+					setIsLoggedIn(true)
+					console.log('토큰이 존재하므로 유저 정보 조회시작')
+					api
+						.get('/social/user', { withCredentials: true })
+						.then((res) => {
+							if (res.data.message === 'success') {
+								console.log('유저 정보 조회 성공')
+								setUser(res.data.data)
+							}
+						})
+						.catch((err) => {
+							console.error('유저 정보 조회 실패:', err)
+						})
 			})
 			.catch(() => {
-        console.log('토큰 조회 에러 발생')
+				console.log('토큰 조회 에러 발생')
 				setUser(null)
 				setIsLoggedIn(false)
 			})

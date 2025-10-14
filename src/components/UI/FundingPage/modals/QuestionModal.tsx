@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Modal from '../../../layout/Modal'
 import { useParams } from 'react-router-dom'
-import { useQuestionAdd, useAnswerAdd, useCommunityUpdate } from '../../../../apis/useCommuFetch'
+import { useQuestionAdd, useAnswerAdd, useCommunityUpdate } from '../../../../apis/funding/useCommuFetch'
 
 interface QuestionFormData {
 	content: string
