@@ -80,7 +80,13 @@ const Search: React.FC = () => {
 	const [loadingCompleted, setLoadingCompleted] = useState<boolean>(false)
 	const [completedTotalCount, setCompletedTotalCount] = useState(0)
 
-	const [order, setOrder] = useState('RECOMMEND')
+	const [order, setOrder] = useState(() => {
+		const orderParam = searchParams.get('order')
+		// NEW 파라미터는 CREATED로 매핑
+		if (orderParam === 'NEW') return 'CREATED'
+		// 유효한 order 값인지 확인
+		return orderOptions.some(opt => opt.value === orderParam) ? orderParam : 'RECOMMEND'
+	})
 	const [currentPage, setCurrentPage] = useState(0) // 현재 페이지
 	const [hasNextPage, setHasNextPage] = useState(true) // 다음 페이지 존재 여부
 	const [loadingMore, setLoadingMore] = useState(false) // 더 보기 로딩 상태
@@ -219,7 +225,7 @@ const Search: React.FC = () => {
 					order: order || 'RECOMMEND',
 					page: page,
 					search: searchTerm,
-					desc: (order === 'COMPLETION' || order === 'RECOMMEND') ? true : false, // 달성률순과 추천순은 역순(내림차순)으로
+					desc: (order === 'COMPLETION' || order === 'RECOMMEND' || order === 'CREATED' || order === 'USER') ? true : false, // 달성률순, 추천순, 생성일순, 유저순은 역순(내림차순)으로
 					tag: tag !== null && tag !== undefined && !isNaN(parseInt(tag)) ? parseInt(tag) : undefined,
 					pageCount: 8,
 					returnFullResponse: true,
