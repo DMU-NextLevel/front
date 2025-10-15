@@ -68,7 +68,6 @@ const NewProject: React.FC = () => {
 	useEffect(() => {
 		const loadProjects = async () => {
 			const data = await fetchProjectsFromServer({ order: 'CREATED', desc: true, pageCount: 3 })
-			console.log('📦 서버에서 받아온 프로젝트:', data)
 			if (Array.isArray(data)) {
 				setProjects(data)
 			}

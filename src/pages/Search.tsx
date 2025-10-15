@@ -173,7 +173,6 @@ const Search: React.FC = () => {
 							returnFullResponse: true,
 							status: ['SUCCESS', 'FAIL', 'END'],
 						}) as ProjectResponseData
-						console.log('📦 서버에서 받아온 완료된 프로젝트:', data)
 						if (data && data.projects && Array.isArray(data.projects)) {
 							// 더미 소개 텍스트 추가 (동일)
 							const dummyDescriptions = [
@@ -220,12 +219,11 @@ const Search: React.FC = () => {
 					order: order || 'RECOMMEND',
 					page: page,
 					search: searchTerm,
-					desc: false,
+					desc: (order === 'COMPLETION' || order === 'RECOMMEND') ? true : false, // 달성률순과 추천순은 역순(내림차순)으로
 					tag: tag !== null && tag !== undefined && !isNaN(parseInt(tag)) ? parseInt(tag) : undefined,
 					pageCount: 8,
 					returnFullResponse: true,
 				}) as ProjectResponseData
-				console.log(`📦 서버에서 받아온 프로젝트 (페이지 ${page}):`, data)
 				if (data && data.projects && Array.isArray(data.projects)) {
 					// totalCount 설정
 					setTotalCount(data.totalCount || 0)
@@ -520,7 +518,7 @@ const Search: React.FC = () => {
     handleLikeToggle(item.id, !!item.isRecommend)
   }}
 >
-  <i className={`text-base transition-all duration-200 group-hover:scale-150 group-hover:text-red-500 relative z-10 ${item.isRecommend ? 'bi-heart-fill text-red-500 group-hover:brightness-75' : 'bi-heart group-hover:brightness-75'}`} />
+  <i className={`text-base transition-all duration-200 group-hover:scale-150 group-hover:text-red-500 relative z-10 ${item.isRecommend ? 'bi-heart-fill text-red-500 group-hover:brightness-75' : 'bi-heart text-gray-800 group-hover:brightness-75'}`} />
 </button>
 							</div>
 							{/* 작성자와 시작일/진행률을 한 줄에 배치 */}
@@ -643,7 +641,7 @@ const Search: React.FC = () => {
 											    handleLikeToggle(item.id, !!item.isLiked)
 											  }}
 											>
-											  <i className={`text-base transition-all duration-200 hover:scale-125 hover:text-red-500 relative z-10 ${item.isLiked ? 'bi-heart-fill text-red-500 hover:brightness-75' : 'bi-heart hover:brightness-75'}`} />
+											  <i className={`text-base transition-all duration-200 hover:scale-125 hover:text-red-500 relative z-10 ${item.isLiked ? 'bi-heart-fill text-red-500 hover:brightness-75' : 'bi-heart text-gray-800 hover:brightness-75'}`} />
 											</button>
 
 											{/* 프로그래스 바 - 이미지 하단 border처럼 */}
@@ -757,7 +755,7 @@ const Search: React.FC = () => {
 													handleLikeToggle(item.id, !!item.isLiked)
 												}}
 											>
-												<i className={`text-base transition-all duration-200 group-hover:scale-150 group-hover:text-red-500 relative z-10 ${item.isLiked ? 'bi-heart-fill text-red-500 group-hover:brightness-75' : 'bi-heart group-hover:brightness-75'}`} />
+												<i className={`text-base transition-all duration-200 group-hover:scale-150 group-hover:text-red-500 relative z-10 ${item.isLiked ? 'bi-heart-fill text-red-500 group-hover:brightness-75' : 'bi-heart text-gray-800 group-hover:brightness-75'}`} />
 											</button>
 										</div>
 										{/* 작성자와 상태 표시 */}
@@ -855,7 +853,7 @@ const Search: React.FC = () => {
 																handleLikeToggle(item.id, !!item.isLiked)
 															}}
 														>
-															<i className={`text-base transition-all duration-200 hover:scale-125 hover:text-red-500 relative z-10 ${item.isLiked ? 'bi-heart-fill text-red-500 hover:brightness-75' : 'bi-heart hover:brightness-75'}`} />
+															<i className={`text-base transition-all duration-200 hover:scale-125 hover:text-red-500 relative z-10 ${item.isLiked ? 'bi-heart-fill text-red-500 hover:brightness-75' : 'bi-heart text-gray-800 hover:brightness-75'}`} />
 														</button>
 
 														{/* 프로그래스 바 - 이미지 하단 border처럼 */}

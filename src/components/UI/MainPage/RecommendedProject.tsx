@@ -63,6 +63,59 @@ const RecommendedProject: React.FC = () => {
 	const [canPrev, setCanPrev] = useState(false)
 	const [canNext, setCanNext] = useState(true)
 	const [currentSlide, setCurrentSlide] = useState(0)
+	const slideRefs = useRef<(HTMLDivElement | null)[]>([])
+
+	// canPrev/canNext 상태 업데이트
+	useEffect(() => {
+		setCanPrev(currentSlide > 0)
+		setCanNext(currentSlide < projects.slice(0, 3).length - 1)
+	}, [currentSlide, projects.length])
+
+	// 슬라이드 refs 초기화
+	useEffect(() => {
+		slideRefs.current = Array(projects.slice(0, 3).length).fill(null)
+	}, [projects.length])
+
+	// IntersectionObserver를 사용한 슬라이드 인덱스 업데이트
+	useEffect(() => {
+		const el = sliderRef.current
+		if (!el || projects.length === 0) return
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				let maxRatio = 0
+				let maxRatioIndex = 0
+
+				entries.forEach((entry) => {
+					if (entry.intersectionRatio > maxRatio) {
+						maxRatio = entry.intersectionRatio
+						maxRatioIndex = parseInt(entry.target.getAttribute('data-slide-index') || '0')
+					}
+				})
+
+				if (maxRatio >= 0.3) { // 30% 이상 보이는 슬라이드를 현재 슬라이드로 설정
+					setCurrentSlide(maxRatioIndex)
+				}
+			},
+			{
+				root: el,
+				threshold: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+				rootMargin: '0px'
+			}
+		)
+
+		// 모든 슬라이드 아이템 관찰
+		slideRefs.current.forEach((ref, index) => {
+			if (ref) {
+				ref.setAttribute('data-slide-index', index.toString())
+				observer.observe(ref)
+			}
+		})
+
+		return () => {
+			observer.disconnect()
+		}
+	}, [projects.length])
 
 	// 좋아요 토글 API 함수
 	const toggleProjectLike = async (projectId: number, like: boolean) => {
@@ -143,25 +196,9 @@ const RecommendedProject: React.FC = () => {
 		}
 	}, [])
 
-	// 슬라이더 상태 업데이트 함수 (useCallback으로 메모이제이션)
+	// 슬라이더 상태 업데이트 함수 (더 이상 사용하지 않음 - IntersectionObserver로 대체)
 	const updateSliderState = useCallback(() => {
-		const el = sliderRef.current
-		if (!el) return
-
-		setCanPrev(el.scrollLeft > 0)
-		setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
-
-		// 현재 슬라이드 인덱스 계산 (gap-4 고려)
-		// robust slide width: measure distance between first two children if available
-		let slideWidth = el.clientWidth
-		if (el.children.length >= 2) {
-			const first = el.children[0] as HTMLElement
-			const second = el.children[1] as HTMLElement
-			slideWidth = second.offsetLeft - first.offsetLeft
-		}
-		const currentIndex = Math.round(el.scrollLeft / slideWidth)
-		const maxIndex = Math.max(0, el.children.length - 1)
-		setCurrentSlide(Math.max(0, Math.min(currentIndex, maxIndex)))
+		// IntersectionObserver가 대신 처리하므로 비워둠
 	}, [])
 
 	const goToSlide = (index: number) => {
@@ -202,35 +239,7 @@ const RecommendedProject: React.FC = () => {
 		el.scrollBy({ left: slideWidth, behavior: 'smooth' })
 	}
 
-	// 슬라이더 관련 useEffect들
-	useEffect(() => {
-		const el = sliderRef.current
-		if (!el) return
-
-		let ticking = false
-
-		const update = () => {
-			if (!ticking) {
-				requestAnimationFrame(() => {
-					updateSliderState()
-					ticking = false
-				})
-				ticking = true
-			}
-		}
-
-		const timer = setTimeout(update, 100)
-
-		update()
-		el.addEventListener('scroll', update, { passive: true })
-		window.addEventListener('resize', update)
-
-		return () => {
-			clearTimeout(timer)
-			el.removeEventListener('scroll', update)
-			window.removeEventListener('resize', update)
-		}
-	}, [updateSliderState])
+	// 이전 스크롤 이벤트 기반 업데이트는 IntersectionObserver로 대체되었음
 
 	return (
 		<section className='py-5 px-4 sm:px-6 md:px-8 lg:px-[15%]' data-aos='fade-up' data-aos-once='true'>
@@ -272,6 +281,9 @@ const RecommendedProject: React.FC = () => {
 								return (
 									<div
 										key={p.id}
+										ref={(el) => {
+											slideRefs.current[index] = el
+										}}
 										className='group overflow-hidden transition flex-shrink-0 w-full snap-center'
 									>
 										<div className='relative w-full overflow-hidden rounded-t-2xl border border-gray-200 transition-all duration-500 cursor-pointer' style={{ aspectRatio: '16 / 9' }} onClick={() => navigate(`/project/${p.id}`)}>

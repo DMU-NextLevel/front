@@ -73,9 +73,6 @@ export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<Pr
     status: status || null, // status가 null이면 기본 ["PROGRESS", "STOPPED"]
   };
 
-  console.log('✅ 전달된 input:', input);
-  console.log('📦 요청 보낼 데이터:', JSON.stringify(requestData, null, 2));
-
   const response = await api.post<ProjectResponse>('/public/project/all', requestData); // ✅ 고정된 경로 사용
   
   if (returnFullResponse) {
