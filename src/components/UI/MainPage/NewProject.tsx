@@ -238,7 +238,7 @@ const NewProject: React.FC = () => {
 											}}
 										>
 											<i className={`text-xs transition-all duration-200 ${item.isLiked ? 'bi-heart-fill text-red-500' : 'bi-heart'}`} />
-											<span className='text-xs'>{item?.recommendCount?.toLocaleString?.('ko-KR') ?? 0}</span>
+											{/* <span className='text-xs'>{item?.recommendCount?.toLocaleString?.('ko-KR') ?? 0}</span> */}
 										</button>
 									</div>
 
