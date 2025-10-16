@@ -4,7 +4,6 @@ import 'bootstrap-icons/font/bootstrap-icons.min.css'
 import Swal from 'sweetalert2'
 import { useCreateStore } from '../store/store'
 import { useAuth } from '../hooks/AuthContext'
-import { useAuth } from '../hooks/AuthContext'
 
 interface ProjectFormData {
 	title: string
