@@ -74,7 +74,7 @@ export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<Pr
   };
 
   const response = await api.post<ProjectResponse>('/public/project/all', requestData); // ✅ 고정된 경로 사용
-
+  
   if (returnFullResponse) {
     return response.data.data;
   } else {

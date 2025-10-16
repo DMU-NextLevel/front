@@ -4,6 +4,7 @@ import 'bootstrap-icons/font/bootstrap-icons.min.css'
 import Swal from 'sweetalert2'
 import { useCreateStore } from '../store/store'
 import { useAuth } from '../hooks/AuthContext'
+import { useAuth } from '../hooks/AuthContext'
 
 interface ProjectFormData {
 	title: string
@@ -34,6 +35,12 @@ const ProjectCreatePage: React.FC = () => {
 		category2: null,
 	})
 	const { setTitle, setTag1, setTag2 } = useCreateStore()
+
+	useEffect(() => {
+		if (!isLoggedIn) {
+			navigate('/login')
+		}
+	}, [isLoggedIn, navigate])
 
 	useEffect(() => {
 		if (!isLoggedIn) {
