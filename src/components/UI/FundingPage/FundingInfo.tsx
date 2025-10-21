@@ -4,6 +4,7 @@ import LikeImage from '../../../assets/images/Like.svg'
 import { api } from '../../../AxiosInstance'
 import { useParams } from 'react-router-dom'
 import { FundingOptionManageModal } from './modals/FundingOptionManageModal'
+import Swal from 'sweetalert2'
 
 interface props {
 	setPayOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -28,7 +29,8 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 
 	useEffect(() => {
 		setIsLiked(isLike)
-	}, [isLike])
+		setLikeCount(likeNum)
+	}, [isLike, likeNum])
 
 	const PayClick = () => {
 		setPayOpen(true)
@@ -48,8 +50,13 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 				setLikeCount(likeCount + (!isLiked ? 1 : -1))
 			})
 		} catch (e) {
-			console.log(e)
-			alert('좋아요 실패')
+			Swal.fire({
+				title: '좋아요 실패',
+				text: '프로젝트 좋아요에 실패했습니다. 다시 시도해주세요.',
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 

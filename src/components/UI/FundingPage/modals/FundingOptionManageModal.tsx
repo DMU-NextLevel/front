@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FundingOptionList } from './FundingOptionList'
 import { FundingOptionForm } from './FundingOptionForm'
 import { useAddFundingOption, useDeleteFundingOption, useGetFundingOptionList, useUpdateFundingOption } from '../../../../apis/funding/useFundingOptionFetch'
+import Swal from 'sweetalert2'
 
 interface FundingOptionManageModalProps {
 	isOpen: boolean
@@ -28,13 +29,28 @@ export const FundingOptionManageModal = ({ isOpen, onClose, projectId }: Funding
 	}
 
 	const handleDelete = async (id: number) => {
-		if (window.confirm('정말 삭제하시겠습니까?')) {
+		const result = await Swal.fire({
+			title: '정말 삭제하시겠습니까?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#a66bff',
+			cancelButtonColor: '#9e9e9e',
+			confirmButtonText: '삭제하기',
+			cancelButtonText: '돌아가기',
+		})
+		if (result.isConfirmed) {
 			try {
 				await deleteFundingOption({ optionId: id })
 				// 삭제 성공 후 리스트 새로고침
 				refetch()
 			} catch (error) {
-				console.error('삭제 실패:', error)
+				Swal.fire({
+					title: '에러',
+					text: '삭제에 실패했습니다. 다시 시도해주세요.',
+					icon: 'error',
+					confirmButtonColor: '#a66bff',
+					confirmButtonText: '확인',
+				})
 			}
 		}
 	}

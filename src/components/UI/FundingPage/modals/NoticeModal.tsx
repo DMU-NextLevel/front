@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Modal from '../../../layout/Modal'
 import { useNoticeAdd, useNoticeUpdate } from '../../../../apis/funding/useNoticeFetch'
 import { useParams } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 interface NoticeFormData {
 	title: string
@@ -61,7 +62,13 @@ const NoticeModal = ({ isOpen, onClose, mode = 'create', editData }: NoticeAddMo
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!noticeData.title.trim() || !noticeData.content.trim()) {
-			alert('제목과 내용을 모두 입력해주세요.')
+			Swal.fire({
+				title: `경고`,
+				text: '제목과 내용을 모두 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
@@ -86,8 +93,13 @@ const NoticeModal = ({ isOpen, onClose, mode = 'create', editData }: NoticeAddMo
 			// 페이지 새로고침 또는 공지 목록 업데이트
 			window.location.reload()
 		} catch (error) {
-			console.error(`공지 ${mode === 'create' ? '추가' : '수정'} 실패:`, error)
-			alert(error || `공지 ${mode === 'create' ? '추가' : '수정'}에 실패했습니다. 다시 시도해주세요.`)
+			Swal.fire({
+				title: `${mode === 'create' ? '공지 추가' : '공지 수정'} 실패`,
+				text: `${mode === 'create' ? '공지 추가' : '공지 수정'}에 실패했습니다. 다시 시도해주세요.`,
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인'
+			})
 		}
 	}
 

@@ -4,6 +4,7 @@ import FundingPay from '../FundingPay'
 import FundingFree from '../FundingFree'
 import { useFundingFetch, useGetFundingOption } from '../../../../apis/funding/useFundingFetch'
 import { useParams } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 export interface OptionRewardData {
 	optionId: number
@@ -29,6 +30,16 @@ const FundingModal = (): JSX.Element => {
 	const { no } = useParams<{ no: string }>()
 	const { fetchFunding, isLoading, error } = useFundingFetch()
 	const { fundingOption } = useGetFundingOption(no ?? '')
+	const termsList = ['[필수] 구매조건, 결제 진행 및 결제 대행 서비스 동의', '[필수] 개인정보 제3자 제공 동의', '[필수] 책임 규정에 대한 동의']
+	const [checkedTerms, setCheckedTerms] = useState(new Array(termsList.length).fill(false))
+	const [allAgree, setAllAgree] = useState(false)
+
+	const handleTermChange = (index: number) => {
+		const updated = [...checkedTerms]
+		updated[index] = !updated[index]
+		setCheckedTerms(updated)
+		setAllAgree(updated.every(Boolean))
+	}
 
 	useEffect(() => {
 		if (step === 1) {
@@ -39,6 +50,16 @@ const FundingModal = (): JSX.Element => {
 	}, [step])
 
 	const nextClick = () => {
+		if (reward?.type === 'free' && reward?.data.price <= 0) {
+			Swal.fire({
+				title: '경고',
+				text: '금액을 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
+			return
+		}
 		setStep(2)
 	}
 
@@ -49,17 +70,28 @@ const FundingModal = (): JSX.Element => {
 
 	const handleFundingSubmit = async () => {
 		if (!reward) {
-			alert('리워드를 선택해주세요')
+			Swal.fire({
+				title: '경고',
+				text: '리워드를 선택해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
 		try {
 			await fetchFunding({ reward })
-			alert('펀딩이 완료되었습니다! 🎉')
 			// 성공 후 처리 (예: 모달 닫기, 페이지 이동 등)
 			window.location.reload()
 		} catch (error) {
-			alert('펀딩에 실패했습니다. 다시 시도해주세요.')
+			Swal.fire({
+				title: '에러',
+				text: '펀딩에 실패했습니다. 다시 시도해주세요.',
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 
@@ -114,7 +146,7 @@ const FundingModal = (): JSX.Element => {
 					</div>
 				) : (
 					<div className='space-y-6'>
-						<FundingPay reward={reward} setReward={setReward} />
+						<FundingPay reward={reward} setReward={setReward} checkedTerms={checkedTerms} termsList={termsList} handleTermChange={handleTermChange} />
 					</div>
 				)}
 			</div>
@@ -132,7 +164,7 @@ const FundingModal = (): JSX.Element => {
 					<button
 						className='w-full h-12 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:from-purple-600 hover:to-purple-700 hover:shadow-lg hover:transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed'
 						onClick={handleFundingSubmit}
-						disabled={isLoading}>
+						disabled={isLoading || !allAgree}>
 						{isLoading ? '처리 중...' : '💜 함께하기'}
 					</button>
 				)}
