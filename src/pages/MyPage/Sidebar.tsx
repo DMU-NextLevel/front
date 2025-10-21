@@ -96,6 +96,8 @@ interface SidebarProps {
   onOpenLike: () => void;
   onOpenFunding: () => void;
   onOpenMyProjects: () => void;
+  onOpenFollowing: () => void;
+
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
