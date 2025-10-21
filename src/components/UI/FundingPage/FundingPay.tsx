@@ -1,10 +1,14 @@
 import { JSX, useEffect, useState } from 'react'
 import { RewardData } from './modals/FundingModal'
 import { api } from '../../../AxiosInstance'
+import Swal from 'sweetalert2'
 
 interface FundingPayProps {
 	reward: RewardData | undefined
 	setReward: (reward: RewardData) => void
+	checkedTerms: boolean[]
+	termsList: string[]
+	handleTermChange: (index: number) => void
 }
 
 interface responseCouponList {
@@ -24,19 +28,9 @@ interface CouponList {
 	percent: number
 }
 
-const FundingPay = ({ reward, setReward }: FundingPayProps): JSX.Element => {
-	const termsList = ['[필수] 구매조건, 결제 진행 및 결제 대행 서비스 동의', '[필수] 개인정보 제3자 제공 동의', '[필수] 책임 규정에 대한 동의']
-	const [allAgree, setAllAgree] = useState(false)
+const FundingPay = ({ reward, setReward, checkedTerms, termsList, handleTermChange }: FundingPayProps): JSX.Element => {
 	const [coupon, setCoupon] = useState<number>(0) // 쿠폰 절대값
-	const [checkedTerms, setCheckedTerms] = useState(new Array(termsList.length).fill(false))
 	const [couponList, setCouponList] = useState<CouponList[] | null>(null)
-
-	const handleTermChange = (index: number) => {
-		const updated = [...checkedTerms]
-		updated[index] = !updated[index]
-		setCheckedTerms(updated)
-		setAllAgree(updated.every(Boolean))
-	}
 
 	// reward 데이터에서 price 가져오기
 	const getRewardPrice = (): number => {
@@ -47,11 +41,21 @@ const FundingPay = ({ reward, setReward }: FundingPayProps): JSX.Element => {
 	}
 
 	useEffect(() => {
-		const getCouponList = async () => {
-			const response = await api.get<responseCouponList>(`/social/coupon`)
-			setCouponList(response.data.data)
+		try {
+			const getCouponList = async () => {
+				const response = await api.get<responseCouponList>(`/social/coupon`)
+				setCouponList(response.data.data)
+			}
+			getCouponList()
+		} catch (error) {
+			Swal.fire({
+				title: '에러',
+				text: '쿠폰 목록 조회에 실패했습니다. 다시 시도해주세요.',
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
-		getCouponList()
 	}, [])
 
 	const handleCouponChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

@@ -109,12 +109,29 @@ export const StoryModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =
     }
 
     const handleSubmit = async () => {
+		if (formData.images.length === 0) {
+			Swal.fire({
+				title: '경고',
+				text: '이미지를 추가해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
+			return
+		}
+
         try {
             await updateStory({ projectId: no ?? '', imgs: formData.images.map((image) => image.file) })
             closeModal()
             window.location.reload()
         } catch (error) {
-            console.error(error)
+            Swal.fire({
+                title: '에러',
+                text: '스토리 수정에 실패했습니다. 다시 시도해주세요.',
+                icon: 'error',
+                confirmButtonColor: '#a66bff',
+                confirmButtonText: '확인',
+            })
         }
     }
 

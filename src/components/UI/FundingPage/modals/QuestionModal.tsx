@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Modal from '../../../layout/Modal'
 import { useParams } from 'react-router-dom'
 import { useQuestionAdd, useAnswerAdd, useCommunityUpdate } from '../../../../apis/funding/useCommuFetch'
+import Swal from 'sweetalert2'
 
 interface QuestionFormData {
 	content: string
@@ -47,7 +48,13 @@ const QuestionModal = ({ isOpen, onClose, mode = 'question', askId, editData }: 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!questionData.content.trim()) {
-			alert(`${mode === 'question' ? '질문' : mode === 'answer' ? '답변' : '질문'} 내용을 입력해주세요.`)
+			Swal.fire({
+				title: '경고',
+				text: '내용을 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
@@ -78,7 +85,13 @@ const QuestionModal = ({ isOpen, onClose, mode = 'question', askId, editData }: 
 			window.location.reload()
 		} catch (error) {
 			console.error(`${mode === 'question' ? '질문' : mode === 'answer' ? '답변' : '질문'} ${mode === 'edit' ? '수정' : '추가'} 실패:`, error)
-			alert(`${mode === 'question' ? '질문' : mode === 'answer' ? '답변' : '질문'} ${mode === 'edit' ? '수정' : '추가'}에 실패했습니다. 다시 시도해주세요.`)
+			Swal.fire({
+				title: '에러',
+				text: `${mode === 'question' ? '질문' : mode === 'answer' ? '답변' : '질문'} ${mode === 'edit' ? '수정' : '추가'}에 실패했습니다. 다시 시도해주세요.`,
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 

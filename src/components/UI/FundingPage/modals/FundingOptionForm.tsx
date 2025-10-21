@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Swal from 'sweetalert2'
 
 interface FundingOptionFormProps {
 	onSubmit: (price: number, description: string) => void
@@ -19,12 +20,24 @@ export const FundingOptionForm = ({ onSubmit, onCancel, editMode = false, initia
 
 		// 유효성 검사
 		if (!price || parseInt(price) <= 0) {
-			alert('올바른 금액을 입력해주세요.')
+			Swal.fire({
+				title: '경고',
+				text: '올바른 금액을 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
 		if (!description.trim()) {
-			alert('옵션 설명을 입력해주세요.')
+			Swal.fire({
+				title: '경고',
+				text: '옵션 설명을 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
