@@ -36,6 +36,7 @@ const FundingPage = (): JSX.Element => {
 						likeNum={projectInfo?.likeCount ?? 0}
 						tag={projectInfo?.tag ?? []}
 						isAuthor={isAuthor}
+						isLike={projectInfo?.isLike ?? false}
 					/>
 					<StarterInfo starter={projectInfo?.user} />
 				</div>

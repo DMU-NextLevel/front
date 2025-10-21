@@ -1,5 +1,5 @@
-import React, { JSX, useState } from 'react'
-import ExamImage from '../../../assets/images/nextlevel.png'
+import React, { JSX, useEffect, useState } from 'react'
+import Like_Disabled from '../../../assets/images/Like_disable.svg'
 import LikeImage from '../../../assets/images/Like.svg'
 import { api } from '../../../AxiosInstance'
 import { useParams } from 'react-router-dom'
@@ -16,12 +16,19 @@ interface props {
 	likeNum: number
 	tag: []
 	isAuthor: boolean
+	isLike: boolean
 }
 
-const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, peopleNum, likeNum, tag, isAuthor }: props): JSX.Element => {
+const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, peopleNum, likeNum, tag, isAuthor, isLike }: props): JSX.Element => {
 	const baseUrl = process.env.REACT_APP_API_BASE_URL
 	const { no } = useParams<{ no: string }>()
 	const [isOptionModalOpen, setIsOptionModalOpen] = useState(false)
+	const [isLiked, setIsLiked] = useState(isLike)
+	const [likeCount, setLikeCount] = useState(likeNum)
+
+	useEffect(() => {
+		setIsLiked(isLike)
+	}, [isLike])
 
 	const PayClick = () => {
 		setPayOpen(true)
@@ -34,8 +41,11 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 	const handleLike = async () => {
 		try {
 			await api.post('/social/user/like', {
-				like: true,
+				like: !isLiked,
 				projectId: no,
+			}).then((res) => {
+				setIsLiked(!isLiked)
+				setLikeCount(likeCount + (!isLiked ? 1 : -1))
 			})
 		} catch (e) {
 			console.log(e)
@@ -67,8 +77,8 @@ const FundingInfo = ({ setPayOpen, title, percent, image, description, amount, p
 			</div>
 			<div className='flex w-full h-[75px] gap-5'>
 				<div className='flex flex-col items-center group'>
-					<img src={LikeImage} className='w-12 h-12 mb-1.5 hover:cursor-pointer transition-transform duration-200 group-hover:scale-110' onClick={handleLike} alt='좋아요' />
-					<p className='flex justify-center text-sm m-0 text-gray-500'>{likeNum}</p>
+					<img src={isLiked ? LikeImage : Like_Disabled} className='w-12 h-12 mb-1.5 hover:cursor-pointer transition-transform duration-200 group-hover:scale-110' onClick={handleLike} alt='좋아요' />
+					<p className='flex justify-center text-sm m-0 text-gray-500'>{likeCount}</p>
 				</div>
 				<div className='flex gap-2.5 ml-auto w-full'>
 					<button
