@@ -244,7 +244,6 @@ const MyPage = () => {
 				onOpenPoint={() => handleClick('포인트 충전')}
 				onOpenLike={() => handleClick('좋아요')}
 				onOpenFunding={() => handleClick('펀딩 목록')}
-				onOpenFollowing={() => handleClick('팔로잉')}
 				onOpenMyProjects={() => handleClick('내 프로젝트')}
 			/>
 
