@@ -964,7 +964,7 @@ const AdminPage: React.FC = () => {
             )}
           </div>
 
-          {/* 운영진 설정 */}
+          {/* 운영진 설정
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base font-semibold text-gray-900">운영진 설정</h3>
@@ -974,7 +974,7 @@ const AdminPage: React.FC = () => {
               <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
               <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
             </div>
-          </div>
+          </div> */}
 
           {/* 공지사항 */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
