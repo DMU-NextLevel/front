@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // ✅ 페이지 이동용 추가
 
 /* ---------------------- Styled Components ---------------------- */
 const Container = styled.aside`
@@ -94,7 +95,6 @@ interface SidebarProps {
   onOpenPoint: () => void;
   onOpenLike: () => void;
   onOpenFunding: () => void;
-  onOpenFollowing: () => void;
   onOpenMyProjects: () => void;
 }
 
@@ -108,10 +108,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   onOpenPoint,
   onOpenLike,
   onOpenFunding,
-  onOpenFollowing,
   onOpenMyProjects,
 }) => {
-  const API_URL = process.env.REACT_APP_API_BASE_URL
+  const API_URL = process.env.REACT_APP_API_BASE_URL;
+  const navigate = useNavigate(); // ✅ 페이지 이동 훅
 
   return (
     <Container>
@@ -138,13 +138,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         <SettingsBtn onClick={onOpenSettings}>내 정보 설정</SettingsBtn>
       </ProfileBox>
 
+      {/* 메뉴 */}
       {activeTab === '서포터' ? (
         <ActivityMenu>
           <MenuButton onClick={onOpenRecent}>최근본</MenuButton>
           <MenuButton onClick={onOpenPoint}>포인트 충전</MenuButton>
           <MenuButton onClick={onOpenLike}>좋아요</MenuButton>
           <MenuButton onClick={onOpenFunding}>내 펀딩</MenuButton>
-        <MenuButton onClick={onOpenFollowing}>팔로잉</MenuButton>
+          {/* ✅ 팔로잉 페이지로 이동 */}
+          <MenuButton onClick={() => navigate('/mypage/following')}>팔로잉</MenuButton>
         </ActivityMenu>
       ) : (
         <ActivityMenu>
