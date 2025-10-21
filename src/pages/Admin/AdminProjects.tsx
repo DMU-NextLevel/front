@@ -334,85 +334,86 @@ const AdminProjects: React.FC = () => {
 
       {/* 프로젝트 테이블 */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden animate-slideInDown animate-delay-200">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('id')}
-              >
-                <div className="flex items-center">
-                  ID
-                  {getSortIcon('id')}
-                </div>
-              </th>
-              <th
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('title')}
-              >
-                <div className="flex items-center">
-                  제목
-                  {getSortIcon('title')}
-                </div>
-              </th>
-              <th
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('author')}
-              >
-                <div className="flex items-center">
-                  창작자
-                  {getSortIcon('author')}
-                </div>
-              </th>
-              <th
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('category')}
-              >
-                <div className="flex items-center">
-                  카테고리
-                  {getSortIcon('category')}
-                </div>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">상태</th>
-              <th
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('completionRate')}
-              >
-                <div className="flex items-center">
-                  달성률
-                  {getSortIcon('completionRate')}
-                </div>
-              </th>
-              <th
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('userCount')}
-              >
-                <div className="flex items-center">
-                  후원자
-                  {getSortIcon('userCount')}
-                </div>
-              </th>
-              <th
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('remainingDays')}
-              >
-                <div className="flex items-center">
-                  남은 일수
-                  {getSortIcon('remainingDays')}
-                </div>
-              </th>
-              <th
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('startAt')}
-              >
-                <div className="flex items-center">
-                  시작일
-                  {getSortIcon('startAt')}
-                </div>
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">관리</th>
-            </tr>
-          </thead>
+        <div className="overflow-x-auto">
+          <table className="min-w-[1000px] w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th
+                  className="px-4 py-3 min-w-[60px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                  onClick={() => handleSort('id')}
+                >
+                  <div className="flex items-center">
+                    ID
+                    {getSortIcon('id')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[240px] max-w-[420px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                  onClick={() => handleSort('title')}
+                >
+                  <div className="flex items-center">
+                    제목
+                    {getSortIcon('title')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[120px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
+                  onClick={() => handleSort('author')}
+                >
+                  <div className="flex items-center">
+                    창작자
+                    {getSortIcon('author')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[120px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden md:table-cell"
+                  onClick={() => handleSort('category')}
+                >
+                  <div className="flex items-center">
+                    카테고리
+                    {getSortIcon('category')}
+                  </div>
+                </th>
+                <th className="px-4 py-3 min-w-[80px] text-left text-xs font-semibold text-gray-700 hidden sm:table-cell">상태</th>
+                <th
+                  className="px-4 py-3 min-w-[80px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                  onClick={() => handleSort('completionRate')}
+                >
+                  <div className="flex items-center">
+                    달성률
+                    {getSortIcon('completionRate')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[80px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
+                  onClick={() => handleSort('userCount')}
+                >
+                  <div className="flex items-center">
+                    후원자
+                    {getSortIcon('userCount')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[90px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden md:table-cell"
+                  onClick={() => handleSort('remainingDays')}
+                >
+                  <div className="flex items-center">
+                    남은 일수
+                    {getSortIcon('remainingDays')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[110px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden md:table-cell"
+                  onClick={() => handleSort('startAt')}
+                >
+                  <div className="flex items-center">
+                    시작일
+                    {getSortIcon('startAt')}
+                  </div>
+                </th>
+                <th className="px-4 py-3 min-w-[80px] text-center text-xs font-semibold text-gray-700">관리</th>
+              </tr>
+            </thead>
           <tbody className="divide-y divide-gray-200">
             {filteredProjects.length === 0 ? (
               <tr>
@@ -509,6 +510,7 @@ const AdminProjects: React.FC = () => {
           </tbody>
         </table>
       </div>
+    </div>
 
       {/* 상세 모달 */}
       {showDetailModal && selectedProject && (

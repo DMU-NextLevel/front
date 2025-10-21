@@ -106,7 +106,7 @@ const AdminLayout: React.FC = () => {
               />
               <div className="flex-1">
                 <p className="text-white text-sm font-medium">관리자</p>
-                <p className="text-white/60 text-xs">admin@example.com</p>
+                <p className="text-white/60 text-xs"></p>
               </div>
             </div>
             <button 

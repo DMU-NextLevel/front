@@ -549,12 +549,12 @@ const AdminUsers: React.FC = () => {
       {/* 유저 테이블 */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden animate-slideInDown animate-delay-200">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="min-w-[900px] w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th 
                   onClick={() => handleSort('id')}
-                  className="px-4 py-2 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-2 min-w-[50px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   ID {getSortIcon('id')}
                 </th>
@@ -563,37 +563,37 @@ const AdminUsers: React.FC = () => {
                 </th>
                 <th 
                   onClick={() => handleSort('name')}
-                  className="px-4 py-2 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-2 min-w-[140px] max-w-[220px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   이름 {getSortIcon('name')}
                 </th>
                 <th 
                   onClick={() => handleSort('nickName')}
-                  className="px-4 py-2 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-2 min-w-[100px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   닉네임 {getSortIcon('nickName')}
                 </th>
                 <th 
                   onClick={() => handleSort('email')}
-                  className="px-4 py-2 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-2 min-w-[180px] max-w-[260px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
                 >
                   이메일 {getSortIcon('email')}
                 </th>
                 <th 
                   onClick={() => handleSort('point')}
-                  className="px-4 py-2 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-2 min-w-[80px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   포인트 {getSortIcon('point')}
                 </th>
                 <th 
                   onClick={() => handleSort('provider')}
-                  className="px-4 py-2 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-2 min-w-[100px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
                 >
                   가입경로 {getSortIcon('provider')}
                 </th>
                 <th 
                   onClick={() => handleSort('createdAt')}
-                  className="px-4 py-2 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
+                  className="px-4 py-2 min-w-[120px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
                 >
                   가입일 {getSortIcon('createdAt')}
                 </th>
@@ -617,10 +617,10 @@ const AdminUsers: React.FC = () => {
                       expandedUserId === user.id ? 'bg-blue-50/50' : ''
                     }`}
                   >
-                    <td className="px-4 py-2 text-sm text-gray-900">
+                    <td className="px-4 py-2 min-w-[50px] text-sm text-gray-900 whitespace-nowrap">
                       {user.id}
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 min-w-[56px]">
                       <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                         {user.img?.uri ? (
                           <img 
@@ -641,22 +641,22 @@ const AdminUsers: React.FC = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-900 font-medium">
+                    <td className="px-4 py-2 min-w-[140px] max-w-[220px] text-sm text-gray-900 font-medium truncate whitespace-nowrap">
                       {user.name}
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-600">
+                    <td className="px-4 py-2 min-w-[100px] text-sm text-gray-600 truncate whitespace-nowrap">
                       @{user.nickName}
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-600">
+                    <td className="px-4 py-2 min-w-[180px] max-w-[260px] text-sm text-gray-600 truncate whitespace-nowrap hidden sm:table-cell">
                       {user.email}
                     </td>
                     <td className="px-4 py-2 text-sm text-gray-900 font-semibold">
                       {user.point.toLocaleString()}P
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 hidden sm:table-cell">
                       {getProviderBadge(user.socialProvider)}
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-600">
+                    <td className="px-4 py-2 hidden sm:table-cell text-sm text-gray-600">
                       {new Date(user.createdAt).toLocaleDateString('ko-KR')}
                     </td>
                     <td className="px-4 py-2 text-center relative action-menu">
