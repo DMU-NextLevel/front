@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import StatisticsOverlay from './StatisticsOverlay'
+import Swal from 'sweetalert2'
 
 type ProjectStatus = '전체' | '진행 중' | '완료' | '준비 중'
 
@@ -50,7 +51,13 @@ const MyProjects: React.FC = () => {
 
       setProjects(response.data.data.projects)
     } catch (error) {
-      console.error('❌ 프로젝트 리스트 불러오기 실패:', error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
     }
   }
 

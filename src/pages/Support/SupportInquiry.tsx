@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import SupportLayout from './SupportLayout'
+import Swal from 'sweetalert2'
 
 const SupportInquiry: React.FC = () => {
   const [inquiryForm, setInquiryForm] = useState({
@@ -13,8 +14,12 @@ const SupportInquiry: React.FC = () => {
   const handleInquirySubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: API 연동
-    console.log('문의 등록:', inquiryForm)
-    alert('문의가 등록되었습니다. 빠른 시일 내에 답변드리겠습니다.')
+    Swal.fire({
+      icon: 'success',
+      title: '문의가 등록되었습니다.',
+      confirmButtonColor: '#a66bff',
+      confirmButtonText: '확인',
+    })
     setInquiryForm({
       name: '',
       email: '',

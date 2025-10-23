@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/AuthContext'
 import { api } from '../AxiosInstance'
 import { useUserRole } from '../hooks/useUserRole'
 import noImage from '../assets/images/noImage.jpg'
+import Swal from 'sweetalert2'
 
 type Notice = {
 	id: number
@@ -49,7 +50,13 @@ const NoticeBoard: React.FC = () => {
 				}
 			})
 			.catch((err) => {
-				console.error('공지 불러오기 실패:', err)
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+					confirmButtonColor: '#a66bff',
+					confirmButtonText: '확인',
+				})
 			})
 	}, [])
 

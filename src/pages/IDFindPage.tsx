@@ -28,7 +28,7 @@ const IDFindPage = () => {
       alert('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
       return;
     }
-  
+
     try {
       const response = await fetch('/api/user/update-password', {
         method: 'POST',
@@ -40,19 +40,19 @@ const IDFindPage = () => {
           newPassword: newPassword,
         }),
       });
-  
+
       if (response.status === 400) {
         alert('모든 값을 입력해 주세요.');
         return;
       }
-  
+
       if (response.status === 404) {
         alert('기존 비밀번호가 일치하지 않습니다.');
         return;
       }
-  
+
       const result = await response.json();
-  
+
       if (result.message === 'success') {
         alert('비밀번호 변경이 완료되었습니다.');
         setCurrentPassword('');
@@ -62,11 +62,10 @@ const IDFindPage = () => {
         alert('비밀번호 변경에 실패했습니다.');
       }
     } catch (error) {
-      console.error('서버 오류:', error);
       alert('서버 오류가 발생했습니다.');
     }
   };
-  
+
 
   return (
     <div

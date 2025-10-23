@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../AxiosInstance'
+import Swal from 'sweetalert2'
 
 type NoticeArticle = {
   id: number
@@ -28,7 +29,13 @@ const AdminNotices: React.FC = () => {
         setNotices(response.data.data)
       }
     } catch (error) {
-      console.error('공지사항 로딩 실패:', error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
     } finally {
       setLoading(false)
     }
@@ -51,7 +58,6 @@ const AdminNotices: React.FC = () => {
         alert('삭제 실패: ' + res.data.message)
       }
     } catch (err) {
-      console.error('삭제 중 오류:', err)
       alert('삭제 중 오류가 발생했습니다.')
     }
   }
@@ -101,12 +107,12 @@ const AdminNotices: React.FC = () => {
           animation-delay: 0.1s;
           animation-fill-mode: both;
         }
-        
+
         .animate-delay-200 {
           animation-delay: 0.2s;
           animation-fill-mode: both;
         }
-        
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -115,7 +121,7 @@ const AdminNotices: React.FC = () => {
             opacity: 1;
           }
         }
-        
+
         @keyframes slideInDown {
           from {
             opacity: 0;
@@ -127,7 +133,7 @@ const AdminNotices: React.FC = () => {
           }
         }
       `}</style>
-      
+
       {/* Header */}
       <div className="flex justify-between items-center animate-slideInDown">
         <div>

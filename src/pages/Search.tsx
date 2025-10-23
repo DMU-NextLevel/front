@@ -9,6 +9,7 @@ import { fetchProjectsFromServer, ProjectResponseData } from '../hooks/fetchProj
 import CategoryBar from '../components/UI/shared/CategoryBar'
 import { api } from '../AxiosInstance'
 import toast from 'react-hot-toast'
+import Swal from 'sweetalert2'
 
 type ProjectItem = {
   id: number
@@ -211,7 +212,13 @@ const Search: React.FC = () => {
 						// 완료된 프로젝트 총 개수 설정
 						setCompletedTotalCount(data.totalCount || 0)
 					} catch (error) {
-						console.error('완료된 프로젝트 불러오기 실패:', error)
+						Swal.fire({
+							icon: 'error',
+							title: 'Error',
+							text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+							confirmButtonColor: '#a66bff',
+							confirmButtonText: '확인',
+						})
 						setCompletedProjects([])
 						setCompletedTotalCount(0)
 					} finally {
@@ -282,7 +289,13 @@ const Search: React.FC = () => {
 			}
 			await Promise.all([loadProjects(), loadCompletedProjects(), new Promise((resolve) => setTimeout(resolve, page === 0 ? 500 : 200))])
 		} catch (error) {
-			console.error('프로젝트 불러오기 실패:', error)
+			Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			setError('프로젝트 불러오기 실패')
 			setHasNextPage(false)
 		} finally {
@@ -304,21 +317,18 @@ const Search: React.FC = () => {
 				)
 			}
 		} catch (err) {
-			console.error('좋아요 토글 실패', err)
+			toast.error('좋아요 토글 실패')
 		}
 	}
 
 	// 좋아요 버튼 클릭 핸들러
 	const handleLikeToggle = async (projectId: number, current: boolean) => {
-		console.log('handleLikeToggle called:', { projectId, current, isLoggedIn })
 		if (!isLoggedIn) {
 			navigate('/login')
 			return
 		}
 		await toggleProjectLike(projectId, !current)
-		console.log('After toggleProjectLike, current:', current)
 		if (!current) {
-			console.log('Showing success toast')
 			toast.success('위시리스트에 추가됐어요!', {
 				duration: 4000,
 				style: {
@@ -326,7 +336,6 @@ const Search: React.FC = () => {
 				},
 			})
 		} else {
-			console.log('Showing remove toast')
 			toast('위시리스트에서 제외했어요.', {
 				duration: 3000,
 				style: {

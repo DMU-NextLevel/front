@@ -1,3 +1,4 @@
+import Swal from "sweetalert2"
 import { api } from "../../AxiosInstance"
 
 interface RequestFollow {
@@ -16,8 +17,12 @@ export const useFollow = () => {
             const response = await api.post<ResponseFollow>('/social/follow', request)
             return response
         } catch (e: any) {
-            console.log(e.response.data.message)
-            alert(e.response.data.message)
+            Swal.fire({
+                title: e.response.data.message,
+                icon: 'error',
+                confirmButtonColor: '#a66bff',
+                confirmButtonText: '확인',
+            })
         }
     }
     return { follow }

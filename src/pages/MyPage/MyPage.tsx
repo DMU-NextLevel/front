@@ -12,6 +12,7 @@ import PointOverlay from './PointOverlay'
 import LikeOverlay from './LikeOverlay'
 import FundingOverlay from './FundingOverlay'
 import MainContent from './MainContent'
+import toast from 'react-hot-toast';
 
 interface userResponse {
 	message: string
@@ -144,7 +145,7 @@ const MyPage = () => {
 		api
 			.post('/public/project/all', { tag: [], page: 0, myPageWhere: 'PROJECT' })
 			.then((res) => setFundingCount(res.data.data.totalCount))
-			.catch((e) => console.log(e))
+			.catch((e) => toast.error('펀딩 카운트 조회 실패'))
 	}, [])
 
 	const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
@@ -183,8 +184,12 @@ const MyPage = () => {
 			setUserInfo(tempUserInfo)
 			setEditFields((prev) => ({ ...prev, [field]: false }))
 		} catch (error) {
-			console.error('유저 정보 수정 실패:', error)
-			alert('정보 수정에 실패했습니다.')
+			Swal.fire({
+				title: '정보 수정에 실패했습니다.',
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 

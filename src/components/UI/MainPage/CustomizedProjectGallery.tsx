@@ -3,6 +3,7 @@ import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
 import { useAuth } from '../../../hooks/AuthContext'
 import noImage from '../../../assets/images/noImage.jpg'
 import { api } from '../../../AxiosInstance'
+import toast from 'react-hot-toast'
 
 // 스크롤바 숨김을 위한 스타일
 const scrollbarHiddenStyle = {
@@ -94,7 +95,6 @@ const CustomizedProjectGallery: React.FC = () => {
         setProjects(projectsData.slice(0, 6)) // 최대 6개
       }
     } catch (error) {
-      console.error('최근본 프로젝트 로드 실패:', error)
       // 실패 시 일반 프로젝트 로드
       const data = await fetchProjectsFromServer({ order: 'RECOMMEND', desc: true, pageCount: 6 })
       if (Array.isArray(data)) {
@@ -116,7 +116,7 @@ const CustomizedProjectGallery: React.FC = () => {
         )
       }
     } catch (err) {
-      console.error('좋아요 토글 실패', err)
+      toast.error('좋아요 토글 실패')
     }
   }
 

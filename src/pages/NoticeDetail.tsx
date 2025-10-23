@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useUserRole } from '../hooks/useUserRole'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { api } from '../AxiosInstance'
+import Swal from 'sweetalert2'
+import toast from 'react-hot-toast'
 
 type NoticeArticle = {
 	id: number
@@ -48,7 +50,7 @@ const NoticeDetail: React.FC = () => {
 					}
 				}
 			} catch (error) {
-				console.error('이전글/다음글 로딩 실패:', error)
+				toast.error('이전글/다음글 로딩 실패')
 			}
 		}
 
@@ -62,21 +64,42 @@ const NoticeDetail: React.FC = () => {
 	//삭제 함수
 	const handleDelete = async () => {
 		if (!id) return
-		console.log(id)
-		const confirm = window.confirm('정말 삭제하시겠습니까?')
-		if (!confirm) return
+		const confirm = await Swal.fire({
+			title: '정말 삭제하시겠습니까?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#a66bff',
+			cancelButtonColor: '#d33',
+			confirmButtonText: '삭제',
+			cancelButtonText: '취소',
+		})
+		if (!confirm.isConfirmed) return
 
 		try {
 			const res = await api.post(`/admin/notice/${id}`)
 			if (res.data.message === 'success') {
-				alert('삭제가 완료되었습니다.')
+				Swal.fire({
+					icon: 'success',
+					title: '삭제가 완료되었습니다.',
+					showConfirmButton: false,
+					timer: 1500,
+				})
 				navigate('/notice')
 			} else {
-				alert('삭제 실패: ' + res.data.message)
+				Swal.fire({
+					icon: 'error',
+					title: '삭제 실패: ' + res.data.message,
+					showConfirmButton: false,
+					timer: 1500,
+				})
 			}
 		} catch (err) {
-			console.error('삭제 중 오류:', err)
-			alert('삭제 중 오류가 발생했습니다.')
+			Swal.fire({
+				icon: 'error',
+				title: '삭제 중 오류가 발생했습니다.',
+				showConfirmButton: false,
+				timer: 1500,
+			})
 		}
 	}
 	// 🧩 이미지 삽입된 content HTML에 실제 이미지 경로 삽입

@@ -3,6 +3,7 @@ import { api } from '../../AxiosInstance'
 import { useNavigate } from 'react-router-dom'
 import { fetchProjectsFromServer, ProjectResponseData } from '../../hooks/fetchProjectsFromServer'
 import noImage from '../../assets/images/noImage.jpg'
+import Swal from 'sweetalert2'
 
 interface Project {
   id: number
@@ -91,7 +92,13 @@ const AdminProjects: React.FC = () => {
 
       setProjects(filteredProjects)
     } catch (error) {
-      console.error('프로젝트 목록 로딩 실패:', error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
       setProjects([])
     } finally {
       setLoading(false)
@@ -112,8 +119,13 @@ const AdminProjects: React.FC = () => {
       fetchProjects()
       setShowActionMenu(null)
     } catch (error) {
-      console.error('프로젝트 삭제 실패:', error)
-      alert('프로젝트 삭제에 실패했습니다.')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '프로젝트 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
     }
   }
 

@@ -21,7 +21,6 @@ api.interceptors.response.use(
 	(error) => {
 		// 401 Unauthorized 에러 처리
 		if (error.response && error.response.status === 401) {
-			console.log('인증 에러 발생: 로그인 페이지로 이동합니다.')
 			// 로그인 페이지로 리다이렉트
 			window.location.href = '/login'
 		}

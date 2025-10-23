@@ -3,6 +3,8 @@ import { motion } from 'framer-motion'
 import signupImage from '../assets/images/Signup.png'
 import { api, apiWithoutCredentials } from '../AxiosInstance'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import Swal from 'sweetalert2'
 
 const Signup = () => {
 	const [password, setPassword] = useState('')
@@ -105,7 +107,7 @@ const Signup = () => {
 		formdata.append('address', 'test')
 		if (!nameError && !emailError && !passwordError && !termsError) {
 			apiWithoutCredentials.post('/public/login', formdata)
-			alert('회원가입 완료!')
+			toast.success('회원가입 완료!')
 			navigate('/login')
 		}
 	}
@@ -115,12 +117,11 @@ const Signup = () => {
 			apiWithoutCredentials.post('/public/login/email', {
 				email,
 			})
-			alert('인증번호가 전송되었습니다.')
+			toast.success('인증번호가 전송되었습니다.')
 			setIsVerifying(true)
 			setTimer(300)
 		} catch (e: any) {
-			console.log(e)
-			alert('인증번호 전송 실패')
+			toast.error('인증번호 전송 실패')
 		}
 	}
 
@@ -130,12 +131,17 @@ const Signup = () => {
 				email: email,
 				key: emailCode,
 			})
-			alert('인증 완료!')
+			toast.success('인증 완료!')
 			setIsVerifying(false)
 			setTimer(0)
 		} catch (e: any) {
-			console.log(e)
-			alert('이메일 인증 실패')
+			Swal.fire({
+				icon: 'error',
+				title: '이메일 인증 실패',
+				text: '인증번호가 일치하지 않습니다.',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 
@@ -144,11 +150,16 @@ const Signup = () => {
 			apiWithoutCredentials.post('/public/login/email', {
 				email,
 			})
-			alert('인증번호가 재전송되었습니다.')
+			toast.success('인증번호가 재전송되었습니다.')
 			setTimer(300)
 		} catch (e: any) {
-			console.log(e)
-			alert('인증번호 전송 실패')
+			Swal.fire({
+				icon: 'error',
+				title: '인증번호 전송 실패',
+				text: '잠시 후 다시 시도해주세요.',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 
@@ -168,8 +179,13 @@ const Signup = () => {
 				}
 			})
 		} catch (e) {
-			console.log(e)
-			alert('닉네임 검증 오류')
+			Swal.fire({
+				icon: 'error',
+				title: '닉네임 검증 오류',
+				text: '잠시 후 다시 시도해주세요.',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 

@@ -64,7 +64,6 @@ const AdditionalInfo = () => {
 			})
 
 			if (response.data.message === 'success') {
-				console.log(`${steps[currentStep].label} 업데이트 성공`)
 
 				// 마지막 단계가 아니면 다음 단계로
 				if (currentStep < steps.length - 1) {
@@ -77,8 +76,13 @@ const AdditionalInfo = () => {
 				}
 			}
 		} catch (error) {
-			console.error(`${steps[currentStep].label} 업데이트 실패:`, error)
-			Swal.fire('오류', `${steps[currentStep].label} 업데이트에 실패했습니다. 다시 시도해주세요.`, 'error')
+			Swal.fire({
+				title: '에러',
+				text: `${steps[currentStep].label} 업데이트에 실패했습니다. 다시 시도해주세요.`,
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 

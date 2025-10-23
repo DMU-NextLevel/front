@@ -84,7 +84,6 @@ const QuestionModal = ({ isOpen, onClose, mode = 'question', askId, editData }: 
 			// 페이지 새로고침 또는 목록 업데이트
 			window.location.reload()
 		} catch (error) {
-			console.error(`${mode === 'question' ? '질문' : mode === 'answer' ? '답변' : '질문'} ${mode === 'edit' ? '수정' : '추가'} 실패:`, error)
 			Swal.fire({
 				title: '에러',
 				text: `${mode === 'question' ? '질문' : mode === 'answer' ? '답변' : '질문'} ${mode === 'edit' ? '수정' : '추가'}에 실패했습니다. 다시 시도해주세요.`,
