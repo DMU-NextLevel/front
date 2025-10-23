@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../AxiosInstance'
 import Swal from 'sweetalert2'
+import toast from 'react-hot-toast'
 
 type NoticeArticle = {
   id: number
@@ -47,18 +48,36 @@ const AdminNotices: React.FC = () => {
   }
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('정말 삭제하시겠습니까?')) return
+    const confirmResult = await Swal.fire({
+      title: '정말 삭제하시겠습니까？',
+      icon: 'warning',
+      confirmButtonColor: '#a666ff',
+      confirmButtonText: '확인',
+      cancelButtonColor: '#9e9e9e',
+      cancelButtonText: '취소',
+    })
+    if (!confirmResult.isConfirmed) return
 
     try {
       const res = await api.post(`/admin/notice/${id}`)
       if (res.data.message === 'success') {
-        alert('삭제가 완료되었습니다.')
+        Swal.fire({
+          icon: 'success',
+          title: '삭제가 완료되었습니다.',
+          confirmButtonColor: '#a666ff',
+          confirmButtonText: '확인',
+        })
         fetchNotices()
       } else {
-        alert('삭제 실패: ' + res.data.message)
+        toast.error(`삭제 실패: ${res.data.message}`)
       }
     } catch (err) {
-      alert('삭제 중 오류가 발생했습니다.')
+      Swal.fire({
+        icon: 'error',
+        title: '삭제 중 오류가 발생했습니다.',
+        confirmButtonColor: '#a666ff',
+        confirmButtonText: '확인',
+      })
     }
   }
 

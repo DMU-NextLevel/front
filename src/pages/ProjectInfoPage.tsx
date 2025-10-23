@@ -75,11 +75,23 @@ const ProjectInfoPage: React.FC = () => {
 	const validateAmount = (amount: string) => {
 		const numAmount = parseNumber(amount)
 		if (numAmount < 5000) {
-			alert('최소 5천 원 이상 입력해주세요.')
+			Swal.fire({
+				title: '경고',
+				text: '최소 5천 원 이상 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return false
 		}
 		if (numAmount > 100000000) {
-			alert('최대 1억 원 이하로 입력해주세요.')
+			Swal.fire({
+				title: '경고',
+				text: '최대 1억 원 이하로 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return false
 		}
 		return true

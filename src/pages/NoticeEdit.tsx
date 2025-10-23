@@ -12,6 +12,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useUserRole } from '../hooks/useUserRole'
 import { api } from '../AxiosInstance'
 import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 // ✅ CustomImage 확장 (data-filename 유지)
 const CustomImage = BaseImage.extend({
@@ -141,7 +142,13 @@ const NoticeEdit: React.FC = () => {
 
 	useEffect(() => {
 		if (!article) {
-			alert('게시글 정보를 불러오지 못했습니다.')
+			Swal.fire({
+				title: '경고',
+				text: '게시글 정보를 불러오지 못했습니다.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			navigate('/notice')
 		}
 	}, [article, navigate])
@@ -230,15 +237,25 @@ const NoticeEdit: React.FC = () => {
 			})
 
 			if (res.data.message === 'success') {
-				alert('공지사항이 성공적으로 수정되었습니다.')
+				Swal.fire({
+					title: '공지사항이 성공적으로 수정되었습니다.',
+					icon: 'success',
+					confirmButtonColor: '#a66bff',
+					confirmButtonText: '확인',
+				})
 				navigate(`/support/notice/${id}`, {
 					state: { ...article, title, content: processedContent },
 				})
 			} else {
-				alert(`수정 실패: ${res.data.message}`)
+				toast.error(`수정 실패: ${res.data.message}`)
 			}
 		} catch (err) {
-			alert('수정 중 오류가 발생했습니다.')
+			Swal.fire({
+				title: '수정 중 오류가 발생했습니다.',
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 

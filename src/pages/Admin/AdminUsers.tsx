@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import noImage from '../../assets/images/noImage.jpg'
+import toast from 'react-hot-toast'
+import Swal from 'sweetalert2'
 
 interface User {
   id: number
@@ -156,7 +158,7 @@ const AdminUsers: React.FC = () => {
       img: undefined,
       createdAt: '2024-04-12T09:15:00'
     }
-    
+
   ]
 
   const [users] = useState<User[]>(dummyUsers)
@@ -164,11 +166,11 @@ const AdminUsers: React.FC = () => {
 
   // 검색 및 필터 적용
   const filteredUsers = users.filter(user => {
-    const matchesSearch = 
+    const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.nickName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    
+
     const matchesProvider = providerFilter === 'ALL' || user.socialProvider === providerFilter
 
     return matchesSearch && matchesProvider
@@ -230,7 +232,7 @@ const AdminUsers: React.FC = () => {
 
   const getSortIcon = (field: string) => {
     if (sortField !== field) return <i className="bi bi-caret-down-fill text-gray-300 text-xs ms-1"></i>
-    return sortDirection === 'asc' 
+    return sortDirection === 'asc'
       ? <i className="bi bi-caret-up-fill text-blue-600 text-xs ms-1"></i>
       : <i className="bi bi-caret-down-fill text-blue-600 text-xs ms-1"></i>
   }
@@ -244,7 +246,7 @@ const AdminUsers: React.FC = () => {
         </span>
       )
     }
-    
+
     const providerMap = {
       'google': { class: 'bg-red-100 text-red-700', icon: 'bi-google', text: 'Google' },
       'naver': { class: 'bg-green-100 text-green-700', icon: 'bi-circle-fill', text: 'Naver' },
@@ -262,37 +264,58 @@ const AdminUsers: React.FC = () => {
   const handleEditNickname = (userId: number, currentNickname: string) => {
     const newNickname = prompt('새로운 닉네임을 입력하세요:', currentNickname)
     if (newNickname && newNickname !== currentNickname) {
-      alert(`${currentNickname} → ${newNickname} 변경 완료 (API 연결 후 실제 적용)`)
+      toast.success(`${currentNickname} → ${newNickname} 변경 완료 (API 연결 후 실제 적용)`)
       // TODO: API 연결
       // await api.patch(`/admin/users/${userId}/nickname`, { nickName: newNickname })
     }
     setOpenMenuId(null)
   }
 
-  const handleDeleteUser = (userId: number, userName: string) => {
-    if (window.confirm(`정말로 "${userName}" 유저를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
-      alert(`${userName} 유저 삭제 완료 (API 연결 후 실제 적용)`)
+  const handleDeleteUser = async (userId: number, userName: string) => {
+    const confirmResult = await Swal.fire({
+      title: `정말로 "${userName}" 유저를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`,
+      icon: 'warning',
+      confirmButtonColor: '#a666ff',
+      confirmButtonText: '확인',
+      cancelButtonColor: '#9e9e9e',
+      cancelButtonText: '취소',
+    })
+    if (!confirmResult.isConfirmed) return
+      toast.success(`${userName} 유저 삭제 완료 (API 연결 후 실제 적용)`)
       // TODO: API 연결
       // await api.delete(`/admin/users/${userId}`)
-    }
     setOpenMenuId(null)
   }
 
-  const handleResetPassword = (userId: number, userName: string) => {
-    if (window.confirm(`"${userName}" 유저의 비밀번호를 초기화하시겠습니까?`)) {
-      alert(`${userName} 비밀번호 초기화 완료 (API 연결 후 실제 적용)`)
+  const handleResetPassword = async (userId: number, userName: string) => {
+    const confirmResult = await Swal.fire({
+      title: `"${userName}" 유저의 비밀번호를 초기화하시겠습니까?`,
+      icon: 'warning',
+      confirmButtonColor: '#a666ff',
+      confirmButtonText: '확인',
+      cancelButtonColor: '#9e9e9e',
+      cancelButtonText: '취소',
+    })
+    if (!confirmResult.isConfirmed) return
+      toast.success(`${userName} 비밀번호 초기화 완료 (API 연결 후 실제 적용)`)
       // TODO: API 연결
       // await api.post(`/admin/users/${userId}/reset-password`)
-    }
     setOpenMenuId(null)
   }
 
-  const handleSuspendUser = (userId: number, userName: string) => {
-    if (window.confirm(`"${userName}" 유저를 정지하시겠습니까?`)) {
-      alert(`${userName} 유저 정지 완료 (API 연결 후 실제 적용)`)
+  const handleSuspendUser = async (userId: number, userName: string) => {
+    const confirmResult = await Swal.fire({
+      title: `"${userName}" 유저를 정지하시겠습んグめか？`,
+      icon: 'warning',
+      confirmButtonColor: '#a666ff',
+      confirmButtonText: '확인',
+      cancelButtonColor: '#9e9e9e',
+      cancelButtonText: '취소',
+    })
+    if (!confirmResult.isConfirmed) return
+      toast.success(`${userName} 유저 정지 완료 (API 연결 후 실제 적용)`)
       // TODO: API 연결
       // await api.patch(`/admin/users/${userId}/status`, { status: 'SUSPENDED' })
-    }
     setOpenMenuId(null)
   }
 
@@ -388,7 +411,7 @@ const AdminUsers: React.FC = () => {
             transform: translateY(0);
           }
         }
-        
+
         @keyframes slideInDown {
           from {
             opacity: 0;
@@ -399,25 +422,25 @@ const AdminUsers: React.FC = () => {
             transform: translateY(0);
           }
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out;
         }
-        
+
         .animate-slideInDown {
           animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .animate-delay-100 {
           animation-delay: 0.1s;
           animation-fill-mode: backwards;
         }
-        
+
         .animate-delay-200 {
           animation-delay: 0.2s;
           animation-fill-mode: backwards;
         }
-        
+
         @keyframes expandDown {
           from {
             opacity: 0;
@@ -428,7 +451,7 @@ const AdminUsers: React.FC = () => {
             transform: translateY(0) scaleY(1);
           }
         }
-        
+
         @keyframes collapseUp {
           from {
             opacity: 1;
@@ -439,22 +462,22 @@ const AdminUsers: React.FC = () => {
             transform: translateY(-20px) scaleY(0.95);
           }
         }
-        
+
         .detail-row-wrapper {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .detail-expand-enter {
           animation: expandDown 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
           transform-origin: top;
         }
-        
+
         .detail-expand-exit {
           animation: collapseUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
           transform-origin: top;
         }
       `}</style>
-      
+
       {/* 헤더 */}
       <div className="flex justify-between items-center animate-slideInDown">
         <div>
@@ -552,7 +575,7 @@ const AdminUsers: React.FC = () => {
           <table className="min-w-[900px] w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th 
+                <th
                   onClick={() => handleSort('id')}
                   className="px-4 py-2 min-w-[50px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
@@ -561,37 +584,37 @@ const AdminUsers: React.FC = () => {
                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                   프로필
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('name')}
                   className="px-4 py-2 min-w-[140px] max-w-[220px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   이름 {getSortIcon('name')}
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('nickName')}
                   className="px-4 py-2 min-w-[100px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   닉네임 {getSortIcon('nickName')}
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('email')}
                   className="px-4 py-2 min-w-[180px] max-w-[260px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
                 >
                   이메일 {getSortIcon('email')}
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('point')}
                   className="px-4 py-2 min-w-[80px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   포인트 {getSortIcon('point')}
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('provider')}
                   className="px-4 py-2 min-w-[100px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
                 >
                   가입경로 {getSortIcon('provider')}
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('createdAt')}
                   className="px-4 py-2 min-w-[120px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
                 >
@@ -606,7 +629,7 @@ const AdminUsers: React.FC = () => {
               {sortedUsers.map((user) => (
                 <>
                   <tr
-                    key={user.id} 
+                    key={user.id}
                     onClick={(e) => {
                       // 관리 메뉴 영역 클릭 시 확장 방지
                       if (!(e.target as HTMLElement).closest('.action-menu')) {
@@ -623,8 +646,8 @@ const AdminUsers: React.FC = () => {
                     <td className="px-4 py-2 min-w-[56px]">
                       <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                         {user.img?.uri ? (
-                          <img 
-                            src={user.img.uri} 
+                          <img
+                            src={user.img.uri}
                             alt={user.name}
                             onError={(e) => {
                               e.currentTarget.onerror = null
@@ -672,10 +695,10 @@ const AdminUsers: React.FC = () => {
                           >
                             <i className="bi bi-three-dots-vertical text-base"></i>
                           </button>
-                          
+
                           {openMenuId === user.id && (
                             <>
-                              <div 
+                              <div
                                 className="fixed inset-0 z-10"
                                 onClick={() => setOpenMenuId(null)}
                               ></div>
@@ -718,12 +741,12 @@ const AdminUsers: React.FC = () => {
                       </div>
                     </td>
                   </tr>
-                  
+
                   {/* 확장된 상세 정보 행 */}
                   {expandedUserId === user.id && selectedUser && (
                     <tr key={`${user.id}-detail`}>
                       <td colSpan={9} className="p-0">
-                        <div 
+                        <div
                           className={`overflow-hidden ${isClosing ? 'detail-expand-exit' : 'detail-expand-enter'}`}
                         >
                           <div className="px-4 py-3 bg-gradient-to-b from-blue-50/30 to-transparent border-l-4 border-blue-500">
@@ -732,8 +755,8 @@ const AdminUsers: React.FC = () => {
                               <div className="flex-shrink-0">
                                 <div className="w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center shadow-sm">
                                   {selectedUser.img?.uri ? (
-                                    <img 
-                                      src={selectedUser.img.uri} 
+                                    <img
+                                      src={selectedUser.img.uri}
                                       alt={selectedUser.name}
                                       onError={(e) => {
                                         e.currentTarget.onerror = null
@@ -859,7 +882,7 @@ const AdminUsers: React.FC = () => {
                                                 <td className="px-4 py-3 text-gray-600">{project.category}</td>
                                                 <td className="px-4 py-3 text-center">
                                                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                    project.status === '펀딩성공' 
+                                                    project.status === '펀딩성공'
                                                       ? 'bg-green-100 text-green-800'
                                                       : project.status === '펀딩중'
                                                       ? 'bg-blue-100 text-blue-800'
@@ -916,7 +939,7 @@ const AdminUsers: React.FC = () => {
                                                 </button>
                                                 <div className="absolute inset-x-0 bottom-0 p-2 flex items-center gap-2">
                                                   <span className={`inline-flex items-center rounded-full text-xs px-2 py-0.5 backdrop-blur ${
-                                                    project.status === '펀딩성공' 
+                                                    project.status === '펀딩성공'
                                                       ? 'bg-green-500/90 text-white'
                                                       : project.status === '펀딩중'
                                                       ? 'bg-blue-500/90 text-white'
@@ -927,8 +950,8 @@ const AdminUsers: React.FC = () => {
                                                 </div>
                                                 {/* 프로그래스바를 이미지 하단 테두리처럼 */}
                                                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200">
-                                                  <div 
-                                                    className="h-full bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 transition-all duration-300" 
+                                                  <div
+                                                    className="h-full bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 transition-all duration-300"
                                                     style={{ width: `${Math.min(rate, 100)}%` }}
                                                   />
                                                 </div>

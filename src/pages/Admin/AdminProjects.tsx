@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { fetchProjectsFromServer, ProjectResponseData } from '../../hooks/fetchProjectsFromServer'
 import noImage from '../../assets/images/noImage.jpg'
 import Swal from 'sweetalert2'
+import toast from 'react-hot-toast'
 
 interface Project {
   id: number
@@ -111,11 +112,19 @@ const AdminProjects: React.FC = () => {
   }
 
   const handleDeleteProject = async (projectId: number) => {
-    if (!window.confirm('정말 이 프로젝트를 삭제하시겠습니까?')) return
+    const confirmResult = await Swal.fire({
+      title: '정말 이 프로젝트를 삭제하시겠습니까?',
+      icon: 'warning',
+      confirmButtonColor: '#a666ff',
+      confirmButtonText: '확인',
+      cancelButtonColor: '#9e9e9e',
+      cancelButtonText: '취소',
+    })
+    if (!confirmResult.isConfirmed) return
 
     try {
       await api.delete(`/admin/projects/${projectId}`)
-      alert('프로젝트가 삭제되었습니다.')
+      toast.success('프로젝트가 삭제되었습니다.')
       fetchProjects()
       setShowActionMenu(null)
     } catch (error) {
