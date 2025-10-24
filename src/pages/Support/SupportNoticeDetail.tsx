@@ -3,6 +3,8 @@ import { useUserRole } from '../../hooks/useUserRole'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { api } from '../../AxiosInstance'
 import SupportLayout from './SupportLayout'
+import Swal from 'sweetalert2'
+import toast from 'react-hot-toast'
 
 type NoticeArticle = {
 	id: number
@@ -17,7 +19,7 @@ const SupportNoticeDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>()
 	const location = useLocation()
 	const navigate = useNavigate()
-	
+
 	const [prevNotice, setPrevNotice] = useState<NoticeArticle | null>(null)
 	const [nextNotice, setNextNotice] = useState<NoticeArticle | null>(null)
 
@@ -53,11 +55,11 @@ const SupportNoticeDetail: React.FC = () => {
 	useEffect(() => {
 		const fetchAdjacentNotices = async () => {
 			if (!id) return
-			
+
 			try {
 				const response = await api.get('/public/notice')
 				const notices = response.data.data as NoticeArticle[]
-				
+
 				const currentIndex = notices.findIndex(notice => notice.id === parseInt(id))
 				if (currentIndex !== -1) {
 					// 다음글 (더 최신글)
@@ -70,7 +72,7 @@ const SupportNoticeDetail: React.FC = () => {
 					}
 				}
 			} catch (error) {
-				console.error('이전글/다음글 로딩 실패:', error)
+				toast.error('이전글/다음글 로딩 실패')
 			}
 		}
 
@@ -88,21 +90,42 @@ const SupportNoticeDetail: React.FC = () => {
 	//삭제 함수
 	const handleDelete = async () => {
 		if (!id) return
-		console.log(id)
-		const confirm = window.confirm('정말 삭제하시겠습니까?')
-		if (!confirm) return
+		const confirm = await Swal.fire({
+			title: '정말 삭제하시겠습니까?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#a66bff',
+			cancelButtonColor: '#d33',
+			confirmButtonText: '삭제',
+			cancelButtonText: '취소',
+		})
+		if (!confirm.isConfirmed) return
 
 		try {
 			const res = await api.post(`/admin/notice/${id}`)
 			if (res.data.message === 'success') {
-				alert('삭제가 완료되었습니다.')
+				Swal.fire({
+					icon: 'success',
+					title: '삭제가 완료되었습니다.',
+					showConfirmButton: false,
+					timer: 1500,
+				})
 				navigate('/support/notice')
 			} else {
-				alert('삭제 실패: ' + res.data.message)
+				Swal.fire({
+					icon: 'error',
+					title: '삭제 실패: ' + res.data.message,
+					showConfirmButton: false,
+					timer: 1500,
+				})
 			}
 		} catch (err) {
-			console.error('삭제 중 오류:', err)
-			alert('삭제 중 오류가 발생했습니다.')
+			Swal.fire({
+				icon: 'error',
+				title: '삭제 중 오류가 발생했습니다.',
+				showConfirmButton: false,
+				timer: 1500,
+			})
 		}
 	}
 
@@ -133,10 +156,10 @@ const SupportNoticeDetail: React.FC = () => {
 							</h1>
 							<div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500'>
 								<div className='flex items-center gap-2'>
-									<img 
-										src={`https://placehold.co/32x32?text=WU`} 
-										alt='작성자 이미지' 
-										className='w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200' 
+									<img
+										src={`https://placehold.co/32x32?text=WU`}
+										alt='작성자 이미지'
+										className='w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200'
 									/>
 									<span className='font-medium'>위드유</span>
 								</div>
@@ -176,12 +199,12 @@ const SupportNoticeDetail: React.FC = () => {
 
 				{/* Content Section - Responsive */}
 				<div className='py-6 sm:py-8'>
-					<div 
+					<div
 						className='prose prose-sm sm:prose-base lg:prose-lg max-w-none text-gray-800 leading-relaxed
 						[&_img]:w-full [&_img]:rounded-lg [&_img]:my-4 [&_img]:border [&_img]:border-gray-200
 						[&_p]:mb-4 [&_h1]:text-xl [&_h1]:sm:text-2xl [&_h2]:text-lg [&_h2]:sm:text-xl
 						[&_h3]:text-base [&_h3]:sm:text-lg [&_ul]:ml-4 [&_ol]:ml-4'
-						dangerouslySetInnerHTML={getProcessedContent()} 
+						dangerouslySetInnerHTML={getProcessedContent()}
 					/>
 				</div>
 
@@ -190,7 +213,7 @@ const SupportNoticeDetail: React.FC = () => {
 					<div className='space-y-0 border border-gray-200 rounded-lg overflow-hidden mb-6 sm:mb-8'>
 						{/* 다음글 */}
 						{nextNotice ? (
-							<div 
+							<div
 								onClick={() => navigate(`/support/notice/${nextNotice.id}`, { state: nextNotice })}
 								className='flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-purple-50 transition-colors duration-200 border-b border-gray-200 gap-2 sm:gap-0'>
 								<div className='flex items-start sm:items-center gap-3 min-w-0 flex-1'>
@@ -224,7 +247,7 @@ const SupportNoticeDetail: React.FC = () => {
 
 						{/* 이전글 */}
 						{prevNotice ? (
-							<div 
+							<div
 								onClick={() => navigate(`/support/notice/${prevNotice.id}`, { state: prevNotice })}
 								className='flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-purple-50 transition-colors duration-200 gap-2 sm:gap-0'>
 								<div className='flex items-start sm:items-center gap-3 min-w-0 flex-1'>

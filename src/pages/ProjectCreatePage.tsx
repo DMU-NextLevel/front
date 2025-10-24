@@ -59,7 +59,6 @@ const ProjectCreatePage: React.FC = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		console.log('프로젝트 생성 데이터:', formData)
 
 		const { isConfirmed } = await Swal.fire({
 			title: '개인정보 수집 및 이용 동의',

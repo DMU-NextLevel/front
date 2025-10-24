@@ -60,17 +60,14 @@ const FundingPay = ({ reward, setReward, checkedTerms, termsList, handleTermChan
 
 	const handleCouponChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedId = parseInt(e.target.value)
-		console.log(selectedId)
 
 		if (selectedId > 0 && couponList) {
 			const selectedCoupon = couponList.find((item) => item.id === selectedId)
 			setCoupon(selectedCoupon?.percent ?? 0) // percent 필드에 절대값이 들어있음
 			setReward({ ...reward, data: { ...reward?.data, couponId: selectedId } } as RewardData)
-			console.log(reward)
 		} else if (selectedId === 0) {
 			setCoupon(0)
 			setReward({ ...reward, data: { ...reward?.data, couponId: null } } as RewardData)
-			console.log(reward)
 		}
 	}
 

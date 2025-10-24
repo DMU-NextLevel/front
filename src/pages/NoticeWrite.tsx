@@ -10,6 +10,8 @@ import TextStyle from '@tiptap/extension-text-style'
 import { Mark, mergeAttributes } from '@tiptap/core'
 import { useUserRole } from '../hooks/useUserRole'
 import { api } from '../AxiosInstance'
+import Swal from 'sweetalert2';
+import toast from 'react-hot-toast';
 
 // ✅ CustomImage 확장 (data-filename 유지)
 const CustomImage = BaseImage.extend({
@@ -108,14 +110,14 @@ const NoticeWrite: React.FC = () => {
 		extensions: [
 			StarterKit.configure({
 				heading: false, // 헤딩 기능 비활성화
-			}), 
-			CustomImage.configure({ 
-				inline: false, 
-				allowBase64: true 
-			}), 
-			Underline, 
-			Strike, 
-			Blockquote, 
+			}),
+			CustomImage.configure({
+				inline: false,
+				allowBase64: true
+			}),
+			Underline,
+			Strike,
+			Blockquote,
 			HorizontalRule,
 			TextStyle, // 기본 TextStyle 유지
 			FontSize,  // 커스텀 폰트 사이즈 Mark
@@ -158,7 +160,7 @@ const NoticeWrite: React.FC = () => {
 		}
 
 		const { from, to } = editor.state.selection
-		
+
 		if (from === to) {
 			// 선택된 텍스트가 없으면 다음에 입력할 텍스트의 색상을 설정
 			setCurrentColor(color)
@@ -184,7 +186,7 @@ const NoticeWrite: React.FC = () => {
 		}
 
 		const { from, to } = editor.state.selection
-		
+
 		if (from === to) {
 			// 선택된 텍스트가 없으면 다음에 입력할 텍스트의 크기를 설정
 			setCurrentFontSize(size)
@@ -227,12 +229,24 @@ const NoticeWrite: React.FC = () => {
 		const rawContent = editor?.getHTML()
 
 		if (!title || !rawContent) {
-			alert('제목과 내용을 모두 입력해주세요.')
+			Swal.fire({
+				title: '경고',
+				text: '제목과 내용을 모두 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
 		if (role !== 'ADMIN' && !loading) {
-			alert('관리자만 공지사항을 작성할 수 있습니다.')
+			Swal.fire({
+				title: '경고',
+				text: '관리자만 공지사항을 작성할 수 있습니다.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
@@ -267,14 +281,23 @@ const NoticeWrite: React.FC = () => {
 			})
 
 			if (res.data.message === 'success') {
-				alert('공지사항이 성공적으로 등록되었습니다!')
+				Swal.fire({
+					title: '공지사항이 성공적으로 등록되었습니다!',
+					icon: 'success',
+					confirmButtonColor: '#a66bff',
+					confirmButtonText: '확인',
+				})
 				window.location.href = '/support/notice'
 			} else {
-				alert(`등록 실패: ${res.data.message}`)
+				toast.error(`등록 실패: ${res.data.message}`)
 			}
 		} catch (err) {
-			console.error('공지사항 등록 중 오류:', err)
-			alert('공지사항 등록 중 오류가 발생했습니다.')
+			Swal.fire({
+				title: '공지사항 등록 중 오류가 발생했습니다.',
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 
@@ -305,7 +328,7 @@ const NoticeWrite: React.FC = () => {
 				{/* Content Editor - Responsive */}
 				<div className='mb-6 sm:mb-8'>
 					<label className='block mb-2 sm:mb-3 text-base sm:text-lg font-semibold text-gray-900'>본문 내용</label>
-					
+
 					{/* Toolbar - Responsive */}
 					<div className='flex flex-wrap gap-1 sm:gap-2 p-2 sm:p-4 bg-gray-50 border border-gray-200 rounded-t-lg border-b-0 overflow-x-auto'>
 						{/* Basic Formatting */}
@@ -314,8 +337,8 @@ const NoticeWrite: React.FC = () => {
 								type='button'
 								onClick={() => executeCommand(() => editor?.chain().focus().toggleBold().run())}
 								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-									editor?.isActive('bold') 
-										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									editor?.isActive('bold')
+										? 'bg-blue-600 text-white border-blue-600 shadow-md'
 										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
 								}`}
 								title="굵게">
@@ -325,8 +348,8 @@ const NoticeWrite: React.FC = () => {
 								type='button'
 								onClick={() => executeCommand(() => editor?.chain().focus().toggleItalic().run())}
 								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-									editor?.isActive('italic') 
-										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									editor?.isActive('italic')
+										? 'bg-blue-600 text-white border-blue-600 shadow-md'
 										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
 								}`}
 								title="기울임">
@@ -336,8 +359,8 @@ const NoticeWrite: React.FC = () => {
 								type='button'
 								onClick={() => executeCommand(() => editor?.chain().focus().toggleUnderline().run())}
 								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-									editor?.isActive('underline') 
-										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									editor?.isActive('underline')
+										? 'bg-blue-600 text-white border-blue-600 shadow-md'
 										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
 								}`}
 								title="밑줄">
@@ -347,17 +370,17 @@ const NoticeWrite: React.FC = () => {
 								type='button'
 								onClick={() => executeCommand(() => editor?.chain().focus().toggleStrike().run())}
 								className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium border rounded-lg cursor-pointer transition-all duration-200 ${
-									editor?.isActive('strike') 
-										? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+									editor?.isActive('strike')
+										? 'bg-blue-600 text-white border-blue-600 shadow-md'
 										: 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700'
 								}`}
 								title="취소선">
 								<span className='line-through'>S</span>
 							</button>
 						</div>
-						
+
 						<div className='w-px h-6 sm:h-10 bg-gray-200 mx-1 sm:mx-2'></div>
-						
+
 						{/* Text Size Controls - Responsive */}
 						<div className="flex items-center space-x-1">
 							<span className="hidden sm:inline text-xs text-gray-500 mr-1 sm:mr-2">크기</span>
@@ -436,9 +459,9 @@ const NoticeWrite: React.FC = () => {
 								📷
 							</button>
 						</div>
-						
+
 						<div className='w-px h-6 sm:h-10 bg-gray-200 mx-1 sm:mx-2'></div>
-						
+
 						{/* Undo/Redo */}
 						<div className="flex gap-1 sm:gap-2">
 							<button
@@ -468,8 +491,8 @@ const NoticeWrite: React.FC = () => {
 					<div className='border border-gray-200 rounded-b-lg bg-white'>
 						<EditorContent
 							editor={editor}
-							className='min-h-64 sm:min-h-96 p-3 sm:p-6 
-								[&_.ProseMirror]:min-h-56 sm:[&_.ProseMirror]:min-h-80 [&_.ProseMirror]:outline-none [&_.ProseMirror]:leading-relaxed [&_.ProseMirror]:text-sm sm:[&_.ProseMirror]:text-base 
+							className='min-h-64 sm:min-h-96 p-3 sm:p-6
+								[&_.ProseMirror]:min-h-56 sm:[&_.ProseMirror]:min-h-80 [&_.ProseMirror]:outline-none [&_.ProseMirror]:leading-relaxed [&_.ProseMirror]:text-sm sm:[&_.ProseMirror]:text-base
 								[&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2 sm:[&_img]:my-4 [&_img]:border [&_img]:border-gray-200
 								[&_span[style*="font-size"]]:inline
 								[&_span[style*="color"]]:inline'
@@ -487,7 +510,7 @@ const NoticeWrite: React.FC = () => {
 						</svg>
 						취소
 					</button>
-					
+
 					<button
 						onClick={handleSave}
 						className='w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md'>

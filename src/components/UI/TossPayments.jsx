@@ -97,7 +97,6 @@ export function PopupPaymentPage() {
 							})
 						} catch (error) {
 							// 에러 처리하기
-							console.error(error)
 						}
 					}}>
 					결제하기

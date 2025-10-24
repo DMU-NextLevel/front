@@ -3,6 +3,9 @@ import { fetchProjectsFromServer } from '../../../hooks/fetchProjectsFromServer'
 import { useAuth } from '../../../hooks/AuthContext'
 import noImage from '../../../assets/images/noImage.jpg'
 import { api } from '../../../AxiosInstance'
+import toast from 'react-hot-toast'
+import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom'
 
 // 스크롤바 숨김을 위한 스타일
 const scrollbarHiddenStyle = {
@@ -63,6 +66,7 @@ const CustomizedProjectGallery: React.FC = () => {
   const [canPrev, setCanPrev] = useState(false)
   const [canNext, setCanNext] = useState(true)
   const [showMoreButton, setShowMoreButton] = useState(false)
+  const navigate = useNavigate()
 
   // 최근본 프로젝트 API 호출 함수
   const fetchRecentViewedProjects = async () => {
@@ -94,7 +98,6 @@ const CustomizedProjectGallery: React.FC = () => {
         setProjects(projectsData.slice(0, 6)) // 최대 6개
       }
     } catch (error) {
-      console.error('최근본 프로젝트 로드 실패:', error)
       // 실패 시 일반 프로젝트 로드
       const data = await fetchProjectsFromServer({ order: 'RECOMMEND', desc: true, pageCount: 6 })
       if (Array.isArray(data)) {
@@ -116,7 +119,7 @@ const CustomizedProjectGallery: React.FC = () => {
         )
       }
     } catch (err) {
-      console.error('좋아요 토글 실패', err)
+      toast.error('좋아요 토글 실패')
     }
   }
 
@@ -132,7 +135,13 @@ const CustomizedProjectGallery: React.FC = () => {
   // 좋아요 버튼 클릭 핸들러
   const handleLikeToggle = async (projectId: number, current: boolean) => {
     if (!isLoggedIn) {
-      alert('로그인이 필요합니다.')
+      Swal.fire({
+        title: '로그인이 필요합니다.',
+        icon: 'warning',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
+      navigate('/login')
       return
     }
     await toggleProjectLike(projectId, !current)

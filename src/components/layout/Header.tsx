@@ -5,6 +5,7 @@ import UserImage from '../../assets/images/default_profile.png'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/AuthContext'
 import { useUserRole } from '../../hooks/useUserRole'
+import Swal from 'sweetalert2'
 
 // 링크 설정 객체
 const searchLinks = {
@@ -172,6 +173,17 @@ export const HeaderMain: React.FC = () => {
 		}
 	}, [isSearchExpanded])
 
+	const handleAlert = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault()
+		Swal.fire({
+			icon: 'warning',
+			title: '경고',
+			text: '페이지가 준비중입니다.',
+			confirmButtonColor: '#a66bff',
+			confirmButtonText: '확인',
+		})
+	}
+
 	return (
 		<div className='relative'>
 			{/* 헤더 */}
@@ -216,10 +228,7 @@ export const HeaderMain: React.FC = () => {
 								신규
 							</a>
 							<button
-								onClick={(e) => {
-									e.preventDefault()
-									alert('페이지가 준비중입니다')
-								}}
+								onClick={handleAlert}
 								className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-gray-900 hover:text-gray-600 hover:bg-gray-100'} `}
 							>
 								마감임박
@@ -442,8 +451,7 @@ export const HeaderMain: React.FC = () => {
 								</button>
 								<button
 									onClick={(e) => {
-										e.preventDefault()
-										alert('페이지가 준비중입니다')
+										handleAlert(e)
 										setIsMobileMenuOpen(false)
 									}}
 									className='flex items-center space-x-3 w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors'
@@ -474,8 +482,7 @@ export const HeaderMain: React.FC = () => {
 								</a>
 								<button
 									onClick={(e) => {
-										e.preventDefault()
-										alert('페이지가 준비중입니다')
+										handleAlert(e)
 										setIsMobileMenuOpen(false)
 									}}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
@@ -484,8 +491,7 @@ export const HeaderMain: React.FC = () => {
 								</button>
 								<button
 									onClick={(e) => {
-										e.preventDefault()
-										alert('페이지가 준비중입니다')
+										handleAlert(e)
 										setIsMobileMenuOpen(false)
 									}}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
@@ -643,10 +649,7 @@ export const HeaderMain: React.FC = () => {
 									<span className={`text-sm font-medium ${location.pathname === '/' && !isScrolled ? 'text-white' : 'text-gray-900'}`}>프로젝트 시작</span>
 								</button>
 								<button
-									onClick={(e) => {
-										e.preventDefault()
-										alert('페이지가 준비중입니다')
-									}}
+									onClick={handleAlert}
 									className={`flex items-center space-x-3 w-full text-left p-3 rounded-lg transition-colors ${location.pathname === '/' && !isScrolled ? 'bg-transparent border border-white/50 hover:bg-white/30 hover:border-white/70' : 'bg-white/80 border border-gray-300/50 hover:bg-white/90 hover:border-gray-400/50'}`}
 								>
 									<i className='bi bi-bookmark text-blue-600 text-lg'></i>
@@ -690,19 +693,13 @@ export const HeaderMain: React.FC = () => {
 									신규 프로젝트
 								</a>
 								<button
-									onClick={(e) => {
-										e.preventDefault()
-										alert('페이지가 준비중입니다')
-									}}
+									onClick={handleAlert}
 									className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}
 								>
 									마감 임박 프로젝트
 								</button>
 								<button
-									onClick={(e) => {
-										e.preventDefault()
-										alert('페이지가 준비중입니다')
-									}}
+									onClick={handleAlert}
 									className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}
 								>
 									완료된 프로젝트

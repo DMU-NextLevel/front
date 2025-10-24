@@ -8,6 +8,7 @@ import bannerImage from '../assets/images/banner.png';
 import { useNavigate } from 'react-router-dom';
 import { api  } from '../AxiosInstance';
 import { useAuth } from '../hooks/AuthContext';
+import Swal from 'sweetalert2';
 
 interface props {
   setLoginType: React.Dispatch<React.SetStateAction<string>>
@@ -38,11 +39,20 @@ const Login = ({setLoginType}:props) => {
 				})
     } catch(e:any) {
       const errorCode = e.response?.data?.code
-      console.log(e)
       if(errorCode === '02001') {
-        alert('아이디와 비밀번호를 잘못 입력하였습니다.')
+        Swal.fire({
+          title: '이메일 또는 비밀번호를 다시 확인해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#a66bff',
+          confirmButtonText: '확인',
+        })
       } else {
-        alert("다시 시도해주세요. (서버에러)")
+        Swal.fire({
+          title: '잠시 후 다시 시도해주세요.',
+          icon: 'error',
+          confirmButtonColor: '#a66bff',
+          confirmButtonText: '확인',
+        })
       }
     }
   }

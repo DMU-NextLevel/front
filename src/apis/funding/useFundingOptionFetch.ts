@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { api, apiWithoutCredentials } from "../../AxiosInstance"
+import toast from "react-hot-toast"
 
 interface fundingOptionList {
     id: number
@@ -21,7 +22,7 @@ export const useGetFundingOptionList = (projectId: string) => {
             const res = await apiWithoutCredentials.get<responseFundingOptionList>(`/public/option/${projectId}`)
             setOptionList(res.data.data)
         } catch (error) {
-            console.error('옵션 리스트 조회 실패:', error)
+            toast.error('옵션 리스트 조회 실패')
         }
     }, [projectId])
 
@@ -62,7 +63,7 @@ export const useAddFundingOption = () => {
             })
             return response.data
         } catch (error) {
-            setError(error instanceof Error ? error.message : '옵션 추가에 실패했습니다.')
+            toast.error('옵션 추가에 실패했습니다.')
             throw error
         } finally {
             setIsLoading(false)

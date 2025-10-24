@@ -42,14 +42,10 @@ export const useFundingFetch = () => {
                 }
             }
 
-            console.log('📤 펀딩 요청 데이터:', requestData)
-
             const response = await api.post(`/api1/funding`, requestData)
 
-            console.log('✅ 펀딩 응답:', response.data)
             return response.data
         } catch (error) {
-            console.error('❌ 펀딩 오류:', error)
             setError(error as string)
             throw error
         } finally {

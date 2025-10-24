@@ -24,7 +24,6 @@ export const useProjectDetailFetch = ({ projectId }: ProjectFetchProps) => {
 	useEffect(() => {
 		api.get<detailResponse<ProjectDetailData>>(`/public/project/${projectId}`).then((res) => {
 			setProjectInfo(res.data.data)
-			console.log(res.data.data)
 			setIsAuthor(res.data.data.isAuthor)
 		})
 	}, [projectId])

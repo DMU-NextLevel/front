@@ -97,7 +97,6 @@ const PersonalizedProjectGallery: React.FC = () => {
         setProjects(projectsData.slice(0, 5)) // 최대 5개
       }
     } catch (error) {
-      console.error('최근본 프로젝트 로드 실패:', error)
       // 실패 시 일반 프로젝트 로드
       const data = await fetchProjectsFromServer({ order: 'RECOMMEND', desc: true, pageCount: 5 })
       if (Array.isArray(data)) {
@@ -119,7 +118,7 @@ const PersonalizedProjectGallery: React.FC = () => {
         )
       }
     } catch (err) {
-      console.error('좋아요 토글 실패', err)
+      toast.error('좋아요 토글 실패')
     }
   }
 

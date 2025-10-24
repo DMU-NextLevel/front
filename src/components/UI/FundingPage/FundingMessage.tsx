@@ -4,6 +4,7 @@ import Modal from '../../layout/Modal'
 import { useCommunityDelete } from '../../../apis/funding/useCommuFetch'
 import { useAuthorStore } from '../../../store/authorStore'
 import { useAuth } from '../../../hooks/AuthContext'
+import Swal from 'sweetalert2'
 
 interface AnswerData {
 	id: number
@@ -164,8 +165,12 @@ const DeleteModal = ({ isOpen, onClose, communityId, isType }: { isOpen: boolean
 			onClose()
 			window.location.reload()
 		} catch (error) {
-			console.error('질문 삭제 실패:', error)
-			alert('질문 삭제에 실패했습니다. 다시 시도해주세요.')
+			Swal.fire({
+				icon: 'error',
+				title: '질문 삭제에 실패했습니다. 다시 시도해주세요.',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 

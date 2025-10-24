@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 interface Creator {
   id: number;
@@ -37,7 +38,13 @@ const FollowingPage: React.FC = () => {
 
         setCreators(list);
       } catch (err) {
-        console.error(`${activeTab} 목록 불러오기 실패:`, err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+          confirmButtonColor: '#a66bff',
+          confirmButtonText: '확인',
+        })
       }
     };
 
@@ -60,12 +67,13 @@ const FollowingPage: React.FC = () => {
         );
       }
     } catch (err: any) {
-      if (axios.isAxiosError(err) && err.response) {
-        const { status, data } = err.response;
-        console.error(`에러 (${status}): ${data.message}`);
-      } else {
-        console.error('팔로우 상태 변경 실패:', err);
-      }
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+          confirmButtonColor: '#a66bff',
+          confirmButtonText: '확인',
+        })
     }
   };
 

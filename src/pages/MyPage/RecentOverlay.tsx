@@ -70,7 +70,13 @@ const RecentOverlay: React.FC<Props> = ({
 
         setProducts(mapped);
       } catch (err) {
-        console.error('최근 본 목록 불러오기 실패:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+          confirmButtonColor: '#a66bff',
+          confirmButtonText: '확인',
+        })
       } finally {
         setLoading(false);
       }
