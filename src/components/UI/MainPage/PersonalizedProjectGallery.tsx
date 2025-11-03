@@ -81,6 +81,7 @@ const PersonalizedProjectGallery: React.FC = () => {
         const projectsData = response.data.data.projects.map((project: any) => ({
           id: project.id,
           title: project.title,
+          content: project.content || project.description || project.intro || project.summary,
           titleImg: project.titleImg ? { id: project.titleImg.id || 0, uri: project.titleImg.uri } : null,
           completionRate: project.completionRate,
           recommendCount: project.likeCount || 0,
@@ -287,7 +288,7 @@ const PersonalizedProjectGallery: React.FC = () => {
         <div className='relative overflow-visible mt-6'>
           <div
             ref={sliderRef}
-            className={`flex overflow-x-auto snap-x snap-proximity gap-1 pr-16 sm:pr-20 md:pr-24 pb-12 sm:pb-16 md:pb-20 webkit-scrollbar-hidden -ml-4 ${!isLoggedIn ? 'blur-sm pointer-events-none' : ''}`}
+            className={`flex overflow-x-auto overflow-y-visible snap-x snap-proximity gap-1 pr-16 sm:pr-20 md:pr-24 pb-16 sm:pb-20 md:pb-24 webkit-scrollbar-hidden -ml-4 ${!isLoggedIn ? 'blur-sm pointer-events-none' : ''}`}
             style={{
               ...scrollbarHiddenStyle,
               WebkitOverflowScrolling: 'touch',
@@ -301,38 +302,32 @@ const PersonalizedProjectGallery: React.FC = () => {
               return (
                 <div
                   key={p.id}
-                  className='group bg-transparent rounded-sm overflow-visible relative hover:z-[9999] cursor-pointer snap-center shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%]'
+                  className='group bg-transparent rounded-sm overflow-visible relative group-hover:z-[9999999] cursor-pointer snap-center shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%]'
                   style={{
                     '--expanded-height': '200px',
                     'transitionProperty': 'all',
                     'transitionDuration': '200ms',
-                    'zIndex': 'var(--z-index, 0)',
-                    '--z-index': '0'
+                    'transform': 'translateZ(0)',
+                    'willChange': 'transform'
                   } as React.CSSProperties}
-                  onMouseEnter={(e) => {
-                    const element = e.currentTarget as HTMLElement;
-                    if (element && element.style) {
-                      element.style.setProperty('--z-index', '9999');
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    const element = e.currentTarget as HTMLElement;
-                    if (element && element.style) {
-                      element.style.setProperty('--z-index', '0');
-                    }
-                  }}
                 >
                   {/* 호버 시 전체 확장된 카드의 통합 배경 */}
                   <div className='absolute inset-0 bg-white border border-transparent group-hover:border-gray-200 group-hover:rounded-sm group-hover:shadow-lg transition-all duration-300 ease-out z-10'></div>
                   {/* 호버 시 카드 하단 확장 배경 - 위에서 아래로 내려오는 슬라이드 효과 */}
                   <div
-                    className='absolute left-0 right-0 bg-white border-l border-r border-b border-gray-200 rounded-b-sm max-h-0 group-hover:max-h-[200px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out shadow-lg z-10'
-                    style={{ top: '100%', marginTop: '-1px', overflow: 'hidden' }}
+                    className='absolute left-0 right-0 bg-white border-l border-r border-b border-gray-200 rounded-b-sm h-auto max-h-[200px] opacity-0 group-hover:opacity-100 transition-all duration-400 ease-out shadow-lg z-[9999999] transform group-hover:translate-z-0'
+                    style={{
+                      top: '100%',
+                      marginTop: '-1px',
+                      overflow: 'visible',
+                      transform: 'translateZ(0)',
+                      willChange: 'transform'
+                    }}
                   >
                     {/* 실제 표시되는 내용 */}
                     <div className='pb-4 px-4 space-y-2'>
-                      <p className='text-sm text-gray-600 leading-relaxed mt-0.5'>
-                        {p.content || p.shortDescription || p.description || p.summary || p.intro || '프로젝트 소개가 준비 중입니다.'}
+                      <p className='text-sm text-gray-600 leading-relaxed mt-0.5 line-clamp-2'>
+                        {p.content || p.shortDescription || p.description || p.summary || p.intro}
                       </p>
                       <div className='flex flex-wrap gap-2'>
                         {Array.isArray(p.tags) && p.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
