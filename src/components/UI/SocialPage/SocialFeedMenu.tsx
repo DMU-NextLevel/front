@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { MoreVertical } from 'lucide-react'
 import { useFeedDelete } from '../../../apis/social/useFeedFetch'
 import { useFeedModalStore } from '../../../store/useFeedModalStore'
+import Swal from 'sweetalert2'
 
 interface SocialFeedMenuProps {
 	feedId: number
@@ -20,9 +21,17 @@ export const SocialFeedMenu = ({ feedId, content, images }: SocialFeedMenuProps)
 		setShowMenu(false)
 	}
 
-	const handleDelete = () => {
-		if (window.confirm('정말 삭제하시겠습니까?')) {
-			deleteFeed({ socialId: feedId })
+	const handleDelete = async () => {
+		const confirmResult = await Swal.fire({
+			title: '정말 삭제하시겠습니까？',
+			icon: 'warning',
+			confirmButtonColor: '#a666ff',
+			cancelButtonColor: '#9e9e9e',
+			cancelButtonText: '취소',
+			confirmButtonText: '확인',
+		})
+		if (confirmResult.isConfirmed) {
+			await deleteFeed({ socialId: feedId })
 			window.location.reload()
 		}
 		setShowMenu(false)

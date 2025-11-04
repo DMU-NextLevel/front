@@ -81,7 +81,7 @@ const PopularProjectGallery: React.FC = () => {
         )
       }
     } catch (err) {
-      console.error('좋아요 토글 실패', err)
+      toast.error('좋아요 토글 실패')
     }
   }
 

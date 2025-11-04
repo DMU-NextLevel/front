@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../../AxiosInstance'
 import defaultProfile from '../../assets/images/default_profile.png'
+import Swal from 'sweetalert2'
 
 const AdminLayout: React.FC = () => {
   const location = useLocation()
@@ -14,18 +15,25 @@ const AdminLayout: React.FC = () => {
     const checkAdminAuth = async () => {
       try {
         const response = await api.get('/public/login/token')
-        console.log('Admin Layout - API 응답:', response.data) // 디버깅용
-        
+
         if (response.data.message === 'success' && response.data.data === 'ADMIN') {
           setIsAuthorized(true)
         } else {
-          console.log('권한 없음 - 받은 권한:', response.data.data)
-          alert('관리자 권한이 필요합니다.')
+          Swal.fire({
+            icon: 'error',
+            title: '관리자 권한이 필요합니다.',
+            confirmButtonColor: '#a66bff',
+            confirmButtonText: '확인',
+          })
           navigate('/') // 메인 페이지로 리다이렉트
         }
       } catch (error) {
-        console.error('권한 체크 실패:', error)
-        alert('로그인이 필요합니다.')
+        Swal.fire({
+          icon: 'error',
+          title: '로그인이 필요합니다.',
+          confirmButtonColor: '#a66bff',
+          confirmButtonText: '확인',
+        })
         navigate('/login') // 로그인 페이지로 리다이렉트
       } finally {
         setIsLoading(false)
@@ -66,7 +74,7 @@ const AdminLayout: React.FC = () => {
       <aside className="w-64 bg-gradient-to-b from-blue-600 to-blue-800 flex flex-col">
         {/* 로고 영역 */}
         <div className="p-6 flex items-center gap-3">
-    
+
           <div>
             <Link to="/" className="text-white font-bold text-lg hover:text-blue-100 transition-colors">
               WithU
@@ -106,10 +114,10 @@ const AdminLayout: React.FC = () => {
               />
               <div className="flex-1">
                 <p className="text-white text-sm font-medium">관리자</p>
-                <p className="text-white/60 text-xs">admin@example.com</p>
+                <p className="text-white/60 text-xs"></p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => navigate('/')}
               className="w-full bg-blue-500 hover:bg-blue-400 text-white text-sm py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
             >

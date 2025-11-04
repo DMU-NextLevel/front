@@ -3,6 +3,8 @@ import { api } from '../../AxiosInstance'
 import { useNavigate } from 'react-router-dom'
 import { fetchProjectsFromServer, ProjectResponseData } from '../../hooks/fetchProjectsFromServer'
 import noImage from '../../assets/images/noImage.jpg'
+import Swal from 'sweetalert2'
+import toast from 'react-hot-toast'
 
 interface Project {
   id: number
@@ -63,7 +65,7 @@ const AdminProjects: React.FC = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true)
-      
+
       const projectsData = await fetchProjectsFromServer({
         order: 'CREATED',
         page: 0,
@@ -77,7 +79,7 @@ const AdminProjects: React.FC = () => {
         if (statusFilter !== 'ALL' && project.status !== statusFilter) {
           return false
         }
-        
+
         // 카테고리 필터
         if (categoryFilter !== 'ALL') {
           const projectCategory = getProjectCategory(project.tags)
@@ -85,13 +87,19 @@ const AdminProjects: React.FC = () => {
             return false
           }
         }
-        
+
         return true
       })
 
       setProjects(filteredProjects)
     } catch (error) {
-      console.error('프로젝트 목록 로딩 실패:', error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
       setProjects([])
     } finally {
       setLoading(false)
@@ -104,16 +112,29 @@ const AdminProjects: React.FC = () => {
   }
 
   const handleDeleteProject = async (projectId: number) => {
-    if (!window.confirm('정말 이 프로젝트를 삭제하시겠습니까?')) return
+    const confirmResult = await Swal.fire({
+      title: '정말 이 프로젝트를 삭제하시겠습니까?',
+      icon: 'warning',
+      confirmButtonColor: '#a666ff',
+      confirmButtonText: '확인',
+      cancelButtonColor: '#9e9e9e',
+      cancelButtonText: '취소',
+    })
+    if (!confirmResult.isConfirmed) return
 
     try {
       await api.delete(`/admin/projects/${projectId}`)
-      alert('프로젝트가 삭제되었습니다.')
+      toast.success('프로젝트가 삭제되었습니다.')
       fetchProjects()
       setShowActionMenu(null)
     } catch (error) {
-      console.error('프로젝트 삭제 실패:', error)
-      alert('프로젝트 삭제에 실패했습니다.')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '프로젝트 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
     }
   }
 
@@ -182,7 +203,7 @@ const AdminProjects: React.FC = () => {
 
   const getSortIcon = (field: string) => {
     if (sortField !== field) return <i className="bi bi-caret-down-fill text-gray-300 text-xs ms-1"></i>
-    return sortDirection === 'asc' 
+    return sortDirection === 'asc'
       ? <i className="bi bi-caret-up-fill text-blue-600 text-xs ms-1"></i>
       : <i className="bi bi-caret-down-fill text-blue-600 text-xs ms-1"></i>
   }
@@ -243,12 +264,12 @@ const AdminProjects: React.FC = () => {
           animation-delay: 0.1s;
           animation-fill-mode: both;
         }
-        
+
         .animate-delay-200 {
           animation-delay: 0.2s;
           animation-fill-mode: both;
         }
-        
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -257,7 +278,7 @@ const AdminProjects: React.FC = () => {
             opacity: 1;
           }
         }
-        
+
         @keyframes slideInDown {
           from {
             opacity: 0;
@@ -269,7 +290,7 @@ const AdminProjects: React.FC = () => {
           }
         }
       `}</style>
-      
+
       {/* 헤더 */}
       <div className="flex justify-between items-center animate-slideInDown">
         <div>
@@ -312,7 +333,7 @@ const AdminProjects: React.FC = () => {
               <option value="END">종료</option>
             </select>
           </div>
-          
+
           {/* 카테고리 필터 */}
           <div className="flex gap-2 flex-wrap">
             {categories.map((category) => (
@@ -334,85 +355,86 @@ const AdminProjects: React.FC = () => {
 
       {/* 프로젝트 테이블 */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden animate-slideInDown animate-delay-200">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th 
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('id')}
-              >
-                <div className="flex items-center">
-                  ID
-                  {getSortIcon('id')}
-                </div>
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('title')}
-              >
-                <div className="flex items-center">
-                  제목
-                  {getSortIcon('title')}
-                </div>
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('author')}
-              >
-                <div className="flex items-center">
-                  창작자
-                  {getSortIcon('author')}
-                </div>
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('category')}
-              >
-                <div className="flex items-center">
-                  카테고리
-                  {getSortIcon('category')}
-                </div>
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">상태</th>
-              <th 
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('completionRate')}
-              >
-                <div className="flex items-center">
-                  달성률
-                  {getSortIcon('completionRate')}
-                </div>
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('userCount')}
-              >
-                <div className="flex items-center">
-                  후원자
-                  {getSortIcon('userCount')}
-                </div>
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('remainingDays')}
-              >
-                <div className="flex items-center">
-                  남은 일수
-                  {getSortIcon('remainingDays')}
-                </div>
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('startAt')}
-              >
-                <div className="flex items-center">
-                  시작일
-                  {getSortIcon('startAt')}
-                </div>
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">관리</th>
-            </tr>
-          </thead>
+        <div className="overflow-x-auto">
+          <table className="min-w-[1000px] w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th
+                  className="px-4 py-3 min-w-[60px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                  onClick={() => handleSort('id')}
+                >
+                  <div className="flex items-center">
+                    ID
+                    {getSortIcon('id')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[240px] max-w-[420px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                  onClick={() => handleSort('title')}
+                >
+                  <div className="flex items-center">
+                    제목
+                    {getSortIcon('title')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[120px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
+                  onClick={() => handleSort('author')}
+                >
+                  <div className="flex items-center">
+                    창작자
+                    {getSortIcon('author')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[120px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden md:table-cell"
+                  onClick={() => handleSort('category')}
+                >
+                  <div className="flex items-center">
+                    카테고리
+                    {getSortIcon('category')}
+                  </div>
+                </th>
+                <th className="px-4 py-3 min-w-[80px] text-left text-xs font-semibold text-gray-700 hidden sm:table-cell">상태</th>
+                <th
+                  className="px-4 py-3 min-w-[80px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                  onClick={() => handleSort('completionRate')}
+                >
+                  <div className="flex items-center">
+                    달성률
+                    {getSortIcon('completionRate')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[80px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
+                  onClick={() => handleSort('userCount')}
+                >
+                  <div className="flex items-center">
+                    후원자
+                    {getSortIcon('userCount')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[90px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden md:table-cell"
+                  onClick={() => handleSort('remainingDays')}
+                >
+                  <div className="flex items-center">
+                    남은 일수
+                    {getSortIcon('remainingDays')}
+                  </div>
+                </th>
+                <th
+                  className="px-4 py-3 min-w-[110px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden md:table-cell"
+                  onClick={() => handleSort('startAt')}
+                >
+                  <div className="flex items-center">
+                    시작일
+                    {getSortIcon('startAt')}
+                  </div>
+                </th>
+                <th className="px-4 py-3 min-w-[80px] text-center text-xs font-semibold text-gray-700">관리</th>
+              </tr>
+            </thead>
           <tbody className="divide-y divide-gray-200">
             {filteredProjects.length === 0 ? (
               <tr>
@@ -467,15 +489,15 @@ const AdminProjects: React.FC = () => {
                         >
                           <i className="bi bi-gear text-lg"></i>
                         </button>
-                        
+
                         {showActionMenu === project.id && (
                           <>
                             {/* 배경 클릭 시 닫기 */}
-                            <div 
-                              className="fixed inset-0 z-10" 
+                            <div
+                              className="fixed inset-0 z-10"
                               onClick={() => setShowActionMenu(null)}
                             ></div>
-                            
+
                             {/* 액션 메뉴 */}
                             <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[120px]">
                               <button
@@ -509,6 +531,7 @@ const AdminProjects: React.FC = () => {
           </tbody>
         </table>
       </div>
+    </div>
 
       {/* 상세 모달 */}
       {showDetailModal && selectedProject && (
@@ -539,7 +562,7 @@ const AdminProjects: React.FC = () => {
                   <div className="space-y-1 text-sm">
                     <p className="text-gray-600">ID: #{selectedProject.id}</p>
                     <p className="text-gray-600">
-                      창작자: {selectedProject.author?.name || '-'} 
+                      창작자: {selectedProject.author?.name || '-'}
                       {selectedProject.author?.nickName && ` (@${selectedProject.author.nickName})`}
                     </p>
                     <p className="text-gray-600">카테고리: {getCategoryDisplay(selectedProject.tags)}</p>

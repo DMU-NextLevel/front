@@ -71,7 +71,6 @@ const LikeOverlay: React.FC<LikeOverlayProps> = ({
           setProducts(mapped);
         }
       } catch (err) {
-        console.error('좋아요 목록 불러오기 실패:', err);
         Swal.fire('오류', '좋아요 목록을 불러올 수 없습니다.', 'error');
       } finally {
         setLoading(false);
@@ -97,7 +96,6 @@ const LikeOverlay: React.FC<LikeOverlayProps> = ({
         );
       }
     } catch (err) {
-      console.error('좋아요 처리 실패:', err);
       Swal.fire('오류', '좋아요 요청 실패', 'error');
     }
   };

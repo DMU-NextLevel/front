@@ -5,6 +5,7 @@ import { api } from '../../AxiosInstance'
 import { useUserRole } from '../../hooks/useUserRole'
 import noImage from '../../assets/images/noImage.jpg'
 import SupportLayout from './SupportLayout'
+import Swal from 'sweetalert2'
 
 type Notice = {
 	id: number
@@ -48,10 +49,10 @@ const SupportNotice: React.FC = () => {
 		const checkScreenSize = () => {
 			setIsMobile(window.innerWidth < 640)
 		}
-		
+
 		checkScreenSize()
 		window.addEventListener('resize', checkScreenSize)
-		
+
 		return () => window.removeEventListener('resize', checkScreenSize)
 	}, [])
 
@@ -64,7 +65,13 @@ const SupportNotice: React.FC = () => {
 				}
 			})
 			.catch((err) => {
-				console.error('공지 불러오기 실패:', err)
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+					confirmButtonColor: '#a66bff',
+					confirmButtonText: '확인',
+				})
 			})
 	}, [])
 
@@ -113,7 +120,7 @@ const SupportNotice: React.FC = () => {
 			if (searchType === 'title') {
 				return notice.title.toLowerCase().includes(lowerSearchTerm)
 			} else {
-				return notice.title.toLowerCase().includes(lowerSearchTerm) || 
+				return notice.title.toLowerCase().includes(lowerSearchTerm) ||
 				       (notice.content && notice.content.toLowerCase().includes(lowerSearchTerm))
 			}
 		})
@@ -142,10 +149,10 @@ const SupportNotice: React.FC = () => {
 							<h2 className='text-2xl font-bold text-gray-900 mb-2'>공지사항</h2>
 							<p className='text-sm text-gray-500'>NextLevel의 주요 공지사항을 확인하세요</p>
 						</div>
-						
+
 						{/* Admin Button */}
 						{!loading && role === 'ADMIN' && (
-							<button 
+							<button
 								onClick={handleCreate}
 								className='hidden sm:flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm'>
 								<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -156,7 +163,7 @@ const SupportNotice: React.FC = () => {
 						)}
 					</div>
 
-					{/* Controls */}    
+					{/* Controls */}
 					<div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50 p-4 rounded-lg'>
 						<div className='flex items-center gap-3'>
 							<span className='text-sm text-gray-600'>
@@ -167,8 +174,8 @@ const SupportNotice: React.FC = () => {
 								<button
 									onClick={() => handleSortChange('newest')}
 									className={`px-3 py-1.5 text-sm rounded-md font-medium transition-all ${
-										sortOrder === 'newest' 
-											? 'bg-purple-600 text-white' 
+										sortOrder === 'newest'
+											? 'bg-purple-600 text-white'
 											: 'bg-white text-gray-600 hover:bg-gray-100'
 									}`}>
 									최신순
@@ -176,8 +183,8 @@ const SupportNotice: React.FC = () => {
 								<button
 									onClick={() => handleSortChange('oldest')}
 									className={`px-3 py-1.5 text-sm rounded-md font-medium transition-all ${
-										sortOrder === 'oldest' 
-											? 'bg-purple-600 text-white' 
+										sortOrder === 'oldest'
+											? 'bg-purple-600 text-white'
 											: 'bg-white text-gray-600 hover:bg-gray-100'
 									}`}>
 									과거순
@@ -228,11 +235,11 @@ const SupportNotice: React.FC = () => {
 						{/* Notice List */}
 						<div className='space-y-0 border-t border-gray-200'>
 							{currentNotices.map((notice) => (
-								<div 
-									key={notice.id} 
-									onClick={() => handleNoticeClick(notice)} 
+								<div
+									key={notice.id}
+									onClick={() => handleNoticeClick(notice)}
 									className='border-b border-gray-100 py-3 sm:py-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200'>
-									
+
 									{/* Desktop/Tablet Layout */}
 									<div className='hidden sm:flex items-stretch justify-between'>
 										<div className='flex-1 pr-4 lg:pr-6 py-2 lg:py-3.5'>
@@ -297,17 +304,17 @@ const SupportNotice: React.FC = () => {
 						{/* Pagination */}
 						{totalPages > 1 && (
 							<div className='flex justify-center items-center mt-8 sm:mt-12 gap-1'>
-								<button 
+								<button
 									onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
 									disabled={currentPage === 1}
 									className={`w-8 h-8 flex items-center justify-center text-sm transition-colors duration-200 ${
-										currentPage === 1 
+										currentPage === 1
 											? 'text-gray-300 cursor-not-allowed'
 											: 'text-gray-400 hover:text-gray-600'
 									}`}>
 									&lt;
 								</button>
-								
+
 								{Array.from({ length: Math.min(totalPages, isMobile ? 5 : 7) }, (_, i) => {
 									const maxPages = isMobile ? 5 : 7;
 									let pageNum;
@@ -320,13 +327,13 @@ const SupportNotice: React.FC = () => {
 									} else {
 										pageNum = currentPage - Math.floor(maxPages/2) + i;
 									}
-									
+
 									return (
 										<button
 											key={pageNum}
 											className={`w-8 h-8 flex items-center justify-center text-sm transition-colors duration-200 ${
-												pageNum === currentPage 
-													? 'bg-purple-600 text-white rounded' 
+												pageNum === currentPage
+													? 'bg-purple-600 text-white rounded'
 													: 'text-gray-600 hover:text-gray-900'
 											}`}
 											onClick={() => setCurrentPage(pageNum)}>
@@ -334,12 +341,12 @@ const SupportNotice: React.FC = () => {
 										</button>
 									);
 								})}
-								
-								<button 
+
+								<button
 									onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
 									disabled={currentPage === totalPages}
 									className={`w-8 h-8 flex items-center justify-center text-sm transition-colors duration-200 ${
-										currentPage === totalPages 
+										currentPage === totalPages
 											? 'text-gray-300 cursor-not-allowed'
 											: 'text-gray-400 hover:text-gray-600'
 									}`}>
@@ -353,7 +360,7 @@ const SupportNotice: React.FC = () => {
 				{/* Mobile Admin Button */}
 				{!loading && role === 'ADMIN' && (
 					<div className='sm:hidden mt-8'>
-						<button 
+						<button
 							onClick={handleCreate}
 							className='w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm hover:shadow-md'>
 							<svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

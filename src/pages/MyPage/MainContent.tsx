@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { api } from '../../AxiosInstance';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 interface Props {
   userInfo: { name: string, nickname: string };
@@ -50,7 +51,7 @@ const MainContent: React.FC<Props> = ({
         });
         setRecentProjects(response.data.data?.projects || []);
       } catch (error) {
-        console.error('최근 본 프로젝트 불러오기 실패:', error);
+        toast.error('최근 본 프로젝트 불러오기 실패');
       }
     };
     fetchRecentProjects();
@@ -64,7 +65,7 @@ const MainContent: React.FC<Props> = ({
         const list: Coupon[] = response.data.data || [];
         setCouponCount(list.length);
       } catch (error) {
-        console.error('쿠폰 데이터 불러오기 실패:', error);
+        toast.error('쿠폰 데이터 불러오기 실패');
       }
     };
     fetchCoupons();

@@ -59,7 +59,7 @@ const NewProject: React.FC = () => {
 			}
 		`
 		document.head.appendChild(style)
-		
+
 		return () => {
 			document.head.removeChild(style)
 		}
@@ -121,7 +121,7 @@ const NewProject: React.FC = () => {
 				)
 			}
 		} catch (err) {
-			console.error('좋아요 토글 실패', err)
+			toast.error('좋아요 토글 실패')
 		}
 	}
 

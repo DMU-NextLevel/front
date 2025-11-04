@@ -267,15 +267,6 @@ const ProjectMediaPage: React.FC = () => {
 			return
 		}
 
-		// 폼 데이터 처리 로직 (예: 서버 전송)
-		console.log('프로젝트 전체 데이터:', {
-			...state, // ProjectInfoPage에서 전달된 데이터 (대표 이미지 포함)
-			images: formData.images.map((f) => f.file),
-			videos: formData.videos.map((f) => f.file),
-			summary: formData.summary,
-			story: formData.story,
-		})
-
 		// 다음 단계(프로젝트 소개 페이지)로 이동
 		navigate('/project/introduction', {
 			state: {

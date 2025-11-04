@@ -10,6 +10,8 @@ import TextStyle from '@tiptap/extension-text-style'
 import { Mark, mergeAttributes } from '@tiptap/core'
 import { useUserRole } from '../hooks/useUserRole'
 import { api } from '../AxiosInstance'
+import Swal from 'sweetalert2';
+import toast from 'react-hot-toast';
 
 // ✅ CustomImage 확장 (data-filename 유지)
 const CustomImage = BaseImage.extend({
@@ -227,12 +229,24 @@ const NoticeWrite: React.FC = () => {
 		const rawContent = editor?.getHTML()
 
 		if (!title || !rawContent) {
-			alert('제목과 내용을 모두 입력해주세요.')
+			Swal.fire({
+				title: '경고',
+				text: '제목과 내용을 모두 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
 		if (role !== 'ADMIN' && !loading) {
-			alert('관리자만 공지사항을 작성할 수 있습니다.')
+			Swal.fire({
+				title: '경고',
+				text: '관리자만 공지사항을 작성할 수 있습니다.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 			return
 		}
 
@@ -267,14 +281,23 @@ const NoticeWrite: React.FC = () => {
 			})
 
 			if (res.data.message === 'success') {
-				alert('공지사항이 성공적으로 등록되었습니다!')
+				Swal.fire({
+					title: '공지사항이 성공적으로 등록되었습니다!',
+					icon: 'success',
+					confirmButtonColor: '#a66bff',
+					confirmButtonText: '확인',
+				})
 				window.location.href = '/support/notice'
 			} else {
-				alert(`등록 실패: ${res.data.message}`)
+				toast.error(`등록 실패: ${res.data.message}`)
 			}
 		} catch (err) {
-			console.error('공지사항 등록 중 오류:', err)
-			alert('공지사항 등록 중 오류가 발생했습니다.')
+			Swal.fire({
+				title: '공지사항 등록 중 오류가 발생했습니다.',
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 

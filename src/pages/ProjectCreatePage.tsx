@@ -41,6 +41,12 @@ const ProjectCreatePage: React.FC = () => {
 		}
 	}, [isLoggedIn, navigate])
 
+	useEffect(() => {
+		if (!isLoggedIn) {
+			navigate('/login')
+		}
+	}, [isLoggedIn, navigate])
+
 	const isFormValid = formData.title.trim() !== '' && formData.category1 !== null && formData.category2 !== null
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -53,7 +59,6 @@ const ProjectCreatePage: React.FC = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		console.log('프로젝트 생성 데이터:', formData)
 
 		const { isConfirmed } = await Swal.fire({
 			title: '개인정보 수집 및 이용 동의',

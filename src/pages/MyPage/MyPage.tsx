@@ -12,6 +12,7 @@ import PointOverlay from './PointOverlay'
 import LikeOverlay from './LikeOverlay'
 import FundingOverlay from './FundingOverlay'
 import MainContent from './MainContent'
+import toast from 'react-hot-toast';
 
 interface userResponse {
 	message: string
@@ -125,8 +126,8 @@ const MyPage = () => {
 
 		window.open(url, 'toss_payment_popup', `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no`)
 
-		const messageListener = (event: MessageEvent) => {
-			if (event.origin !== window.location.origin) return
+    const messageListener = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
 
 			if (event.data === 'payment-success') {
 				api.get('/social/user/my-point').then((res) => {
@@ -136,25 +137,25 @@ const MyPage = () => {
 			}
 		}
 
-		window.addEventListener('message', messageListener)
-	}
+    window.addEventListener('message', messageListener);
+  };
 
 	// 📌 API - 펀딩 카운트
 	useEffect(() => {
 		api
 			.post('/public/project/all', { tag: [], page: 0, myPageWhere: 'PROJECT' })
 			.then((res) => setFundingCount(res.data.data.totalCount))
-			.catch((e) => console.log(e))
+			.catch((e) => toast.error('펀딩 카운트 조회 실패'))
 	}, [])
 
 	const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
 		setTempUserInfo((prev) => ({ ...prev, [field]: e.target.value }))
 	}
 
-	const handleHomePhoneChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		const { name, value } = e.target
-		setHomePhone((prev) => ({ ...prev, [name]: value }))
-	}
+  const handleHomePhoneChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setHomePhone((prev) => ({ ...prev, [name]: value }));
+  };
 
 	const handleEditClick = (field: string) => {
 		setEditFields((prev) => ({ ...prev, [field]: true }))
@@ -183,8 +184,12 @@ const MyPage = () => {
 			setUserInfo(tempUserInfo)
 			setEditFields((prev) => ({ ...prev, [field]: false }))
 		} catch (error) {
-			console.error('유저 정보 수정 실패:', error)
-			alert('정보 수정에 실패했습니다.')
+			Swal.fire({
+				title: '정보 수정에 실패했습니다.',
+				icon: 'error',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 	}
 
@@ -201,11 +206,11 @@ const MyPage = () => {
 		}
 	}
 
-	const handleResetClick = () => {
-		setTempUserInfo(userInfo)
-		setTempProfileImage(profileImage)
-		setEditFields({})
-	}
+  const handleResetClick = () => {
+    setTempUserInfo(userInfo);
+    setTempProfileImage(profileImage);
+    setEditFields({});
+  };
 
 	useEffect(() => {
 		api.get<userResponse>('/social/user').then((res) => {
@@ -244,7 +249,6 @@ const MyPage = () => {
 				onOpenPoint={() => handleClick('포인트 충전')}
 				onOpenLike={() => handleClick('좋아요')}
 				onOpenFunding={() => handleClick('펀딩 목록')}
-				onOpenFollowing={() => handleClick('팔로잉')}
 				onOpenMyProjects={() => handleClick('내 프로젝트')}
 			/>
 

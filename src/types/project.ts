@@ -6,6 +6,7 @@ export interface ProjectDetailData {
     createdAt: Date
     expiredAt: Date
     isAuthor: boolean
+    isLike: boolean
     goal: number
     sum: number
     completionRate: number

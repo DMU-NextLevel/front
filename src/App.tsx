@@ -7,6 +7,7 @@ import IDFindPage from './pages/IDFindPage'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
 import MyPage from './pages/MyPage/MyPage'
+import FollowingPage from './pages/MyPage/FollowingPage' // ✅ 추가
 import MainPage from './pages/MainPage'
 import FundingPage from './pages/FundingPage'
 import Search from './pages/Search'
@@ -56,6 +57,7 @@ function App() {
 const AppWrapper = () => {
 	const [loginType, setLoginType] = useState<string>('')
 	const location = useLocation()
+
 	const hideLayout = [
 		'/login',
 		'/signup',
@@ -71,15 +73,14 @@ const AppWrapper = () => {
 		'/success',
 	]
 
-	// AOS 초기화
 	useEffect(() => {
 		if (window.AOS) {
 			window.AOS.init({
 				duration: 800,
 				easing: 'ease-out-cubic',
-				once: false, // 매번 실행되도록 변경
+				once: false,
 				offset: 50,
-				disable: false, // 모든 디바이스에서 활성화
+				disable: false,
 				startEvent: 'DOMContentLoaded',
 				useClassNames: false,
 				disableMutationObserver: false,
@@ -89,13 +90,12 @@ const AppWrapper = () => {
 		}
 	}, [])
 
-	// 라우트 변경시마다 AOS 새로고침 - 더 강력한 방법
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			if (window.AOS) {
-				window.AOS.refreshHard() // 완전 재초기화
+				window.AOS.refreshHard()
 				setTimeout(() => {
-					window.AOS.refresh() // 한번 더 refresh
+					window.AOS.refresh()
 				}, 100)
 			}
 		}, 50)
@@ -112,6 +112,7 @@ const AppWrapper = () => {
 	return (
 		<AuthProvider>
 			{!shouldHideLayout && <HeaderMain />}
+
 			<Routes>
 				<Route path='/' element={<MainPage />} />
 				<Route path='/login' element={<Login setLoginType={setLoginType} />} />
@@ -119,6 +120,7 @@ const AppWrapper = () => {
 				<Route path='/additional-info' element={<AdditionalInfo />} />
 				<Route path='/idfind' element={<IDFindPage />} />
 				<Route path='/mypage' element={<MyPage />} />
+				<Route path='/mypage/following' element={<FollowingPage />} /> {/* ✅ 추가 */}
 				<Route path='/project/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
 				<Route path='/project/create' element={<ProjectCreatePage />} />
@@ -148,30 +150,33 @@ const AppWrapper = () => {
 				</Route>
 				<Route path='/socialfeed/:id' element={<SocialPage />} />
 			</Routes>
-		       <Toaster
-			       position="bottom-right"
-			       reverseOrder={true}
-			       toastOptions={{
-				       duration: 3000,
-				       style: {
-					       background: '#363636',
-					       color: '#fff',
-					       fontSize: '14px',
-				       },
-			       }}
-		       />
-		       <style>{`
-			 @keyframes slideInRightToLeft {
-			   from {
-			     transform: translateX(100%);
-			     opacity: 0.7;
-			   }
-			   to {
-			     transform: translateX(0);
-			     opacity: 1;
-			   }
-			 }
-		       `}</style>
+
+			<Toaster
+				position="bottom-right"
+				reverseOrder={true}
+				toastOptions={{
+					duration: 3000,
+					style: {
+						background: '#363636',
+						color: '#fff',
+						fontSize: '14px',
+					},
+				}}
+			/>
+
+			<style>{`
+				@keyframes slideInRightToLeft {
+					from {
+						transform: translateX(100%);
+						opacity: 0.7;
+					}
+					to {
+						transform: translateX(0);
+						opacity: 1;
+					}
+				}
+			`}</style>
+
 			{!shouldHideFooter && <Footer />}
 		</AuthProvider>
 	)

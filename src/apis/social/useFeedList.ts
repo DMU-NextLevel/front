@@ -50,7 +50,6 @@ export const useFeedList = (userId: number) => {
             setFeedList(res.data.data)
         } catch (e: any) {
             const errorMessage = e.response?.data?.message || '피드를 불러오는데 실패했습니다.'
-            console.log(errorMessage)
             setError(errorMessage)
         } finally {
             setIsLoading(false)

@@ -11,7 +11,7 @@ const HeroSection: React.FC = () => {
         <div className='absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000' />
         <div className='absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000' />
       </div>
-      
+
       <div className='relative py-14 md:py-20 lg:py-24 px-4 sm:px-6 md:px-[8%] lg:px-[10%] xl:px-[12%] 2xl:px-[15%]'>
         <div className='max-w-3xl'>
           <h1 className='text-3xl md:text-5xl font-extrabold tracking-tight leading-tight drop-shadow-lg'>

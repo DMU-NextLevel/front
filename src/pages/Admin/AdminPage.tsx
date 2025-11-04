@@ -6,6 +6,7 @@ import { api } from '../../AxiosInstance'
 import { fetchProjectsFromServer } from '../../hooks/fetchProjectsFromServer'
 import noImage from '../../assets/images/noImage.jpg'
 import defaultProfile from '../../assets/images/default_profile.png'
+import Swal from 'sweetalert2'
 
 // 타입 단언을 위한 변수
 const ApexChart = Chart as any
@@ -80,7 +81,13 @@ const RecentNotices: React.FC = () => {
         setNotices(sortedNotices.slice(0, 5))
       }
     } catch (error) {
-      console.error('공지사항 로딩 실패:', error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
     } finally {
       setLoading(false)
     }
@@ -168,7 +175,6 @@ const AdminPage: React.FC = () => {
       const response = await api.get('/admin/dashboard/stats')
       setStats(response.data)
     } catch (error) {
-      console.warn('통계 로딩 실패, 더미 데이터 사용:', error)
       // 기본 더미 데이터 설정
       setStats({
         totalUsers: 150,
@@ -281,7 +287,13 @@ const AdminPage: React.FC = () => {
         setPopularProjects(data as RecentProject[])
       }
     } catch (error) {
-      console.warn('인기 프로젝트 로딩 실패:', error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
     }
   }
 
@@ -964,7 +976,7 @@ const AdminPage: React.FC = () => {
             )}
           </div>
 
-          {/* 운영진 설정 */}
+          {/* 운영진 설정
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base font-semibold text-gray-900">운영진 설정</h3>
@@ -974,7 +986,7 @@ const AdminPage: React.FC = () => {
               <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
               <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
             </div>
-          </div>
+          </div> */}
 
           {/* 공지사항 */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">

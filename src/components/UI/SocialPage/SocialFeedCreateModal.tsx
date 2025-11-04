@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useFeedCreate, useFeedEdit } from '../../../apis/social/useFeedFetch'
+import Swal from 'sweetalert2'
 
 interface SocialFeedCreateModalProps {
 	isOpen: boolean
@@ -52,8 +53,13 @@ export const SocialFeedCreateModal = ({ isOpen, onClose, editMode = false, feedI
 	const handleSubmit = async () => {
 		// 내용과 이미지 둘 다 없으면 에러
 		if (!content.trim() && images.length === 0 && previewUrls.length === 0) {
-			alert('내용 또는 이미지를 입력해주세요.')
-			return
+			Swal.fire({
+				title: '경고',
+				text: '내용 또는 이미지를 입력해주세요.',
+				icon: 'warning',
+				confirmButtonColor: '#a66bff',
+				confirmButtonText: '확인',
+			})
 		}
 
 		if (editMode && feedId) {

@@ -128,30 +128,30 @@ const SettingsOverlay: React.FC<Props> = ({
 					onClick={async () => {
 						const { name, nickname, phone, email } = tempUserInfo
 
-						if (!name.trim() || !nickname.trim() || !phone.trim() || !email.trim()) {
-							await Swal.fire({
-								icon: 'error',
-								title: '필수 항목을 입력해주세요.',
-								text: '이름, 닉네임, 전화번호, 이메일은 필수입니다.',
-								confirmButtonColor: '#a66cff',
-							})
-							return
-						}
+            if (!name.trim() || !nickname.trim() || !phone.trim() || !email.trim()) {
+              await Swal.fire({
+                icon: 'error',
+                title: '필수 항목을 입력해주세요.',
+                text: '이름, 닉네임, 전화번호, 이메일은 필수입니다.',
+                confirmButtonColor: '#a66cff',
+              });
+              return;
+            }
 
-						const result = await Swal.fire({
-							title: '변경사항을 저장할까요?',
-							text: '입력한 정보가 저장됩니다.',
-							icon: 'question',
-							showCancelButton: true,
-							confirmButtonText: '저장',
-							cancelButtonText: '취소',
-							confirmButtonColor: '#A66CFF',
-							cancelButtonColor: '#ddd',
-						})
+            const result = await Swal.fire({
+              title: '변경사항을 저장할까요?',
+              text: '입력한 정보가 저장됩니다.',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: '저장',
+              cancelButtonText: '취소',
+              confirmButtonColor: '#A66CFF',
+              cancelButtonColor: '#ddd',
+            });
 
-						if (result.isConfirmed) {
-							setUserInfo(tempUserInfo) // ✅ 변경 적용
-							setProfileImage(tempProfileImage) // ✅ 프로필 반영
+            if (result.isConfirmed) {
+              setUserInfo(tempUserInfo); // ✅ 변경 적용
+              setProfileImage(tempProfileImage); // ✅ 프로필 반영
 
 							await Swal.fire({
 								icon: 'success',

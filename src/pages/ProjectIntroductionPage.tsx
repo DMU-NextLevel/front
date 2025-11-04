@@ -76,8 +76,6 @@ const ProjectIntroductionPage: React.FC = () => {
 				projectData.append('goal', String(goal))
 				projectData.append('startAt', startAt)
 
-				console.log(projectData)
-
 				await api.post('/api1/project', projectData)
 
 				await Swal.fire({
@@ -92,11 +90,12 @@ const ProjectIntroductionPage: React.FC = () => {
 
 				navigate('/')
 			} catch (error) {
-				console.error('프로젝트 소개 저장 실패:', error)
 				await Swal.fire({
 					icon: 'error',
 					title: '제출 실패',
 					text: '제출 중 오류가 발생했습니다. 다시 시도해주세요.',
+					confirmButtonColor: '#a66bff',
+					confirmButtonText: '확인',
 				})
 			}
 		}

@@ -94,7 +94,6 @@ const FundingOverlay: React.FC<FundingOverlayProps> = ({ onClose }) => {
 					setFundingList(mapped)
 				}
 			} catch (err) {
-				console.error('펀딩 내역 불러오기 실패:', err)
 				Swal.fire('오류', '펀딩 내역을 불러올 수 없습니다.', 'error')
 			} finally {
 				setIsLoading(false)
@@ -256,7 +255,6 @@ const FundingOverlay: React.FC<FundingOverlayProps> = ({ onClose }) => {
 				}
 				setIsLoading(false)
 			} catch (err) {
-				console.error('펀딩 취소 실패:', err)
 				Swal.fire('오류', '펀딩 취소에 실패했습니다.', 'error')
 			}
 		}
