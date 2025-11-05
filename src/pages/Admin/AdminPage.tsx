@@ -12,20 +12,18 @@ import Swal from 'sweetalert2'
 const ApexChart = Chart as any
 
 interface DashboardStats {
-  totalUsers: number
-  newUsers: number
-  totalProjects: number
-  activeProjects: number
-  completedProjects: number
-  totalFunding: number
+  totalFundingPrice: number
+  totalFundingCount: number
+  totalProgressProjectCount: number
+  totalSuccessProjectCount: number
 }
 
 interface RecentActivity {
-  id: number
-  type: 'signup' | 'project' | 'funding'
-  user: string
-  message: string
-  time: string
+  projectTitle: string
+  userNickName: string
+  price: number
+  type: string
+  createdAt: string
 }
 
 interface RecentProject {
@@ -142,25 +140,21 @@ const RecentNotices: React.FC = () => {
 const AdminPage: React.FC = () => {
   const navigate = useNavigate()
   const [stats, setStats] = useState<DashboardStats>({
-    totalUsers: 0,
-    newUsers: 0,
-    totalProjects: 0,
-    activeProjects: 0,
-    completedProjects: 0,
-    totalFunding: 0,
+    totalFundingPrice: 0,
+    totalFundingCount: 0,
+    totalProgressProjectCount: 0,
+    totalSuccessProjectCount: 0,
   })
+  const [loading, setLoading] = useState(true)
 
   const [adminInfo, setAdminInfo] = useState<AdminInfo | null>(null)
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
 
   const [chartPeriod, setChartPeriod] = useState<'week' | 'month'>('week')
+  const [mainTab, setMainTab] = useState<'stats' | 'activity'>('activity')
   const [activeChartTab, setActiveChartTab] = useState<'visitor' | 'funding' | 'category' | 'success'>('visitor')
-  const [recentActivities] = useState<RecentActivity[]>([
-    { id: 1, type: 'signup', user: '새 회원', message: '회원가입이 완료되었습니다.', time: '2017년 12월 12일' },
-    { id: 2, type: 'project', user: '김철수', message: '신규 프로젝트가 등록되었습니다.', time: '2017년 12월 09일' },
-    { id: 3, type: 'funding', user: '이영희', message: '2017년 연말 후원 공지', time: '2017년 11월 29일' },
-  ])
+  const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([])
 
   const [popularProjects, setPopularProjects] = useState<RecentProject[]>([])
 
@@ -168,22 +162,19 @@ const AdminPage: React.FC = () => {
     fetchDashboardStats()
     fetchAdminInfo()
     fetchPopularProjects()
+    fetchRecentActivities()
   }, [])
 
   const fetchDashboardStats = async () => {
     try {
-      const response = await api.get('/admin/dashboard/stats')
-      setStats(response.data)
+      const response = await api.get('/public/summery/mainpage')
+      if (response.data.message === 'success' && response.data.data) {
+        setStats(response.data.data)
+      }
     } catch (error) {
-      // 기본 더미 데이터 설정
-      setStats({
-        totalUsers: 150,
-        newUsers: 12,
-        totalProjects: 45,
-        activeProjects: 23,
-        completedProjects: 18,
-        totalFunding: 125000000,
-      })
+      console.warn('통계 로딩 실패:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -287,13 +278,28 @@ const AdminPage: React.FC = () => {
         setPopularProjects(data as RecentProject[])
       }
     } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
-        confirmButtonColor: '#a66bff',
-        confirmButtonText: '확인',
-      })
+      console.warn('인기 프로젝트 로딩 실패:', error)
+    }
+  }
+
+  const formatDate = (isoDate: string) => {
+    const d = new Date(isoDate)
+    return `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`
+  }
+
+  const fetchRecentActivities = async () => {
+    try {
+      const response = await api.get('/admin/project/funding', { params: { pageCount: 10, page: 0 } })
+      if (response.data.message === 'success') {
+        setRecentActivities(response.data.data)
+      }
+    } catch (error) {
+      console.error('펀딩 활동 로딩 실패:', error)
+      // API가 없을 경우 기본 정적 데이터 사용
+      setRecentActivities([
+        { projectTitle: '전기 밥솥', userNickName: 'nick123', price: 1200, type: 'option', createdAt: '2025-10-23' },
+        { projectTitle: '전기 밥솥', userNickName: 'nick1231', price: 1000, type: 'free', createdAt: '2025-11-05' },
+      ])
     }
   }
 
@@ -485,19 +491,6 @@ const AdminPage: React.FC = () => {
     data: chartData.success.series
   }]
 
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'signup':
-        return 'bi-person-plus'
-      case 'project':
-        return 'bi-folder-plus'
-      case 'funding':
-        return 'bi-credit-card'
-      default:
-        return 'bi-bell'
-    }
-  }
-
   return (
     <div className="space-y-6 animate-fadeIn">
       <style>{`
@@ -600,47 +593,66 @@ const AdminPage: React.FC = () => {
       </div>
 
       {/* 통계 카드 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 주요 지표 카드 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fadeIn">
         {/* 총 펀딩 금액 */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow animate-scaleIn animate-delay-100">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-medium text-gray-600">총 펀딩 금액</h3>
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <i className="bi bi-currency-dollar text-blue-600 text-xl"></i>
+              <i className="bi bi-cash-stack text-blue-600 text-xl"></i>
             </div>
           </div>
-          <p className="text-2xl font-bold text-gray-900">₩{stats.totalFunding.toLocaleString()}</p>
-          <p className="text-xs text-green-600 mt-2">
-            <i className="bi bi-arrow-up"></i> 전월 대비 12.5% 증가
-          </p>
+          {loading ? (
+            <div className="h-8 bg-gray-100 rounded animate-pulse"></div>
+          ) : (
+            <>
+              <p className="text-2xl font-bold text-gray-900">₩{stats.totalFundingPrice.toLocaleString()}</p>
+              <p className="text-xs text-gray-500 mt-2">
+                실시간 펀딩 현황
+              </p>
+            </>
+          )}
         </div>
 
-        {/* 진행 중인 프로젝트 */}
+        {/* 전체 프로젝트 */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow animate-scaleIn animate-delay-200">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">진행 중인 프로젝트</h3>
+            <h3 className="text-sm font-medium text-gray-600">전체 프로젝트</h3>
+            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <i className="bi bi-folder text-purple-600 text-xl"></i>
+            </div>
+          </div>
+          {loading ? (
+            <div className="h-8 bg-gray-100 rounded animate-pulse"></div>
+          ) : (
+            <>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalFundingCount}개</p>
+              <p className="text-xs text-gray-500 mt-2">
+                등록된 전체 프로젝트
+              </p>
+            </>
+          )}
+        </div>
+
+        {/* 진행중인 프로젝트 */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow animate-scaleIn animate-delay-300">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-600">진행중인 프로젝트</h3>
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
               <i className="bi bi-rocket-takeoff text-green-600 text-xl"></i>
             </div>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.activeProjects}개</p>
-          <p className="text-xs text-gray-500 mt-2">
-            총 {stats.totalProjects}개 중 {stats.completedProjects}개 완료
-          </p>
-        </div>
-
-        {/* 신규 가입자 */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow animate-scaleIn animate-delay-300">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">신규 가입자</h3>
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <i className="bi bi-person-plus text-purple-600 text-xl"></i>
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.newUsers}명</p>
-          <p className="text-xs text-gray-500 mt-2">
-            총 회원 {stats.totalUsers}명
-          </p>
+          {loading ? (
+            <div className="h-8 bg-gray-100 rounded animate-pulse"></div>
+          ) : (
+            <>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalProgressProjectCount}개</p>
+              <p className="text-xs text-gray-500 mt-2">
+                현재 진행 중
+              </p>
+            </>
+          )}
         </div>
 
         {/* 완료된 프로젝트 */}
@@ -651,10 +663,16 @@ const AdminPage: React.FC = () => {
               <i className="bi bi-check-circle text-yellow-600 text-xl"></i>
             </div>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.completedProjects}개</p>
-          <p className="text-xs text-green-600 mt-2">
-            성공률 {Math.round((stats.completedProjects / stats.totalProjects) * 100)}%
-          </p>
+          {loading ? (
+            <div className="h-8 bg-gray-100 rounded animate-pulse"></div>
+          ) : (
+            <>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalSuccessProjectCount}개</p>
+              <p className="text-xs text-gray-500 mt-2">
+                성공적으로 완료
+              </p>
+            </>
+          )}
         </div>
       </div>
 
@@ -695,126 +713,219 @@ const AdminPage: React.FC = () => {
           {/* 통계 차트 - 탭 형식 */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">통계 요약</h2>
               <div className="flex gap-2">
+                {/* 상단 메인 탭: 펀딩 내역 | 통계요약 */}
                 <button
-                  onClick={() => setChartPeriod('week')}
-                  className={`px-3 py-1 text-xs rounded transition-all ${
-                    chartPeriod === 'week'
-                      ? 'bg-blue-600 text-white shadow-md'
+                  onClick={() => setMainTab('activity')}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                    mainTab === 'activity'
+                      ? 'bg-orange-600 text-white shadow-lg'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  주간
+                  <i className="bi bi-receipt mr-1"></i>
+                  펀딩 내역
                 </button>
                 <button
-                  onClick={() => setChartPeriod('month')}
-                  className={`px-3 py-1 text-xs rounded transition-all ${
-                    chartPeriod === 'month'
-                      ? 'bg-blue-600 text-white shadow-md'
+                  onClick={() => setMainTab('stats')}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                    mainTab === 'stats'
+                      ? 'bg-blue-600 text-white shadow-lg'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  월간
+                  <i className="bi bi-graph-up mr-1"></i>
+                  통계요약
                 </button>
               </div>
+              
+              {/* 기간 선택 버튼 - 통계요약 탭일 때만 표시 */}
+              {mainTab === 'stats' && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setChartPeriod('week')}
+                    className={`px-3 py-1 text-xs rounded transition-all ${
+                      chartPeriod === 'week'
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    주간
+                  </button>
+                  <button
+                    onClick={() => setChartPeriod('month')}
+                    className={`px-3 py-1 text-xs rounded transition-all ${
+                      chartPeriod === 'month'
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    월간
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* 탭 버튼 */}
-            <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-              <button
-                onClick={() => setActiveChartTab('visitor')}
-                className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                  activeChartTab === 'visitor'
-                    ? 'bg-blue-500 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <i className="bi bi-people mr-1"></i>
-                방문자
-              </button>
-              <button
-                onClick={() => setActiveChartTab('funding')}
-                className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                  activeChartTab === 'funding'
-                    ? 'bg-purple-500 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <i className="bi bi-cash-stack mr-1"></i>
-                펀딩
-              </button>
-              <button
-                onClick={() => setActiveChartTab('category')}
-                className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                  activeChartTab === 'category'
-                    ? 'bg-pink-500 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <i className="bi bi-pie-chart mr-1"></i>
-                카테고리
-              </button>
-              <button
-                onClick={() => setActiveChartTab('success')}
-                className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                  activeChartTab === 'success'
-                    ? 'bg-green-500 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <i className="bi bi-graph-up-arrow mr-1"></i>
-                성공률
-              </button>
-            </div>
+            {/* 통계요약 탭 내용 */}
+            {mainTab === 'stats' && (
+              <>
+                {/* 하단 서브 탭: 방문자 | 펀딩 | 카테고리 | 성공률 */}
+                <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                  <button
+                    onClick={() => setActiveChartTab('visitor')}
+                    className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                      activeChartTab === 'visitor'
+                        ? 'bg-blue-500 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <i className="bi bi-people mr-1"></i>
+                    방문자
+                  </button>
+                  <button
+                    onClick={() => setActiveChartTab('funding')}
+                    className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                      activeChartTab === 'funding'
+                        ? 'bg-purple-500 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <i className="bi bi-cash-stack mr-1"></i>
+                    펀딩
+                  </button>
+                  <button
+                    onClick={() => setActiveChartTab('category')}
+                    className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                      activeChartTab === 'category'
+                        ? 'bg-pink-500 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <i className="bi bi-pie-chart mr-1"></i>
+                    카테고리
+                  </button>
+                  <button
+                    onClick={() => setActiveChartTab('success')}
+                    className={`flex-1 min-w-[100px] px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                      activeChartTab === 'success'
+                        ? 'bg-green-500 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <i className="bi bi-graph-up-arrow mr-1"></i>
+                    성공률
+                  </button>
+                </div>
+              </>
+            )}
 
             {/* 차트 영역 */}
             <div className="relative">
-              {activeChartTab === 'visitor' && (
-                <ApexChart
-                  options={visitorChartOptions}
-                  series={visitorChartSeries}
-                  type="area"
-                  height={280}
-                />
+              {/* 통계요약 탭 - 차트들 */}
+              {mainTab === 'stats' && (
+                <>
+                  {activeChartTab === 'visitor' && (
+                    <ApexChart
+                      options={visitorChartOptions}
+                      series={visitorChartSeries}
+                      type="area"
+                      height={280}
+                    />
+                  )}
+                  {activeChartTab === 'funding' && (
+                    <ApexChart
+                      options={fundingChartOptions}
+                      series={fundingChartSeries}
+                      type="bar"
+                      height={280}
+                    />
+                  )}
+                  {activeChartTab === 'category' && (
+                    <ApexChart
+                      options={categoryChartOptions}
+                      series={chartData.category.series}
+                      type="donut"
+                      height={280}
+                    />
+                  )}
+                  {activeChartTab === 'success' && (
+                    <ApexChart
+                      options={successChartOptions}
+                      series={successChartSeries}
+                      type="line"
+                      height={280}
+                    />
+                  )}
+                </>
               )}
-              {activeChartTab === 'funding' && (
-                <ApexChart
-                  options={fundingChartOptions}
-                  series={fundingChartSeries}
-                  type="bar"
-                  height={280}
-                />
-              )}
-              {activeChartTab === 'category' && (
-                <ApexChart
-                  options={categoryChartOptions}
-                  series={chartData.category.series}
-                  type="donut"
-                  height={280}
-                />
-              )}
-              {activeChartTab === 'success' && (
-                <ApexChart
-                  options={successChartOptions}
-                  series={successChartSeries}
-                  type="line"
-                  height={280}
-                />
+              
+              {/* 활동 탭 - 활동 테이블 */}
+              {mainTab === 'activity' && (
+                <div className="overflow-x-auto max-h-96 overflow-y-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          활동
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          닉네임
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          프로젝트 타이틀
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          타입
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          가격
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {recentActivities.map((activity, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mr-3">
+                                <i className="bi bi-credit-card text-gray-600 text-sm"></i>
+                              </div>
+                              <span className="text-sm text-gray-500">{formatDate(activity.createdAt)}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {activity.userNickName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {activity.projectTitle}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {activity.type}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                            {activity.price.toLocaleString()}원
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
 
-            {/* 하단 통계 */}
-            <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t">
-              <div>
-                <p className="text-xs text-gray-500 mb-1">총 신규회원 수</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.newUsers}명</p>
+            {/* 하단 통계 - 통계요약 탭일 때만 표시 */}
+            {mainTab === 'stats' && (
+              <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t">
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">전체 프로젝트</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.totalFundingCount}개</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">총 펀딩 금액</p>
+                  <p className="text-2xl font-bold text-gray-900">₩{stats.totalFundingPrice.toLocaleString()}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-gray-500 mb-1">총 펀딩 금액</p>
-                <p className="text-2xl font-bold text-gray-900">₩{stats.totalFunding.toLocaleString()}</p>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* 인기 프로젝트 */}
@@ -874,24 +985,6 @@ const AdminPage: React.FC = () => {
                 <p className="text-sm">인기 프로젝트가 없습니다.</p>
               </div>
             )}
-          </div>
-
-          {/* 활동 */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">활동</h2>
-            <div className="space-y-3">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className={`bi ${getActivityIcon(activity.type)} text-gray-600 text-sm`}></i>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{activity.message}</p>
-                    <p className="text-xs text-gray-500">{activity.user} · {activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 

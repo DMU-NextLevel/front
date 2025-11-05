@@ -22,9 +22,16 @@ export const useProjectDetailFetch = ({ projectId }: ProjectFetchProps) => {
 	const { setIsAuthor } = useProjectStore()
 
 	useEffect(() => {
+		// projectId가 없거나 빈 문자열이면 요청하지 않음
+		if (!projectId || projectId === '') {
+			return
+		}
+
 		api.get<detailResponse<ProjectDetailData>>(`/public/project/${projectId}`).then((res) => {
 			setProjectInfo(res.data.data)
 			setIsAuthor(res.data.data.isAuthor)
+		}).catch((error) => {
+			console.error('프로젝트 정보 조회 실패:', error)
 		})
 	}, [projectId])
 
