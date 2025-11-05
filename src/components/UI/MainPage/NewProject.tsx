@@ -170,7 +170,7 @@ const NewProject: React.FC = () => {
 						const rate = Math.max(0, Math.min(100, Math.round(item?.completionRate ?? 0)))
 						const tagText = Array.isArray(item?.tags) && item.tags.length > 0 ? item.tags[0] : 'New'
 						const remain = getRemainingText(item?.expired, item?.createdAt)
-						const creatorName = item?.creator?.name || item?.author?.name || item?.user?.name || '알 수 없음'
+						const creatorName = item?.creator?.nickName || item?.author?.nickName || item?.user?.nickName || '알 수 없음'
 						const createdDate = item?.createdAt ? new Date(item.createdAt).toLocaleDateString('ko-KR') : ''
 						return (
 							<div
@@ -195,10 +195,10 @@ const NewProject: React.FC = () => {
 											/>
 											{/* 호버 시 그라데이션 오버레이 */}
 											                          {/* 그라데이션 오버레이 */}
-                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg'></div>
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg pointer-events-none'></div>
 
 											{/* 프로그래스 바 - 이미지 하단 border처럼 */}
-											<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
+											<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden pointer-events-none'>
 												<div className={`h-full ${gradients} transition-all duration-300`} style={{ width: `${rate}%` }} />
 											</div>
 										</div>

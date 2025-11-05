@@ -29,6 +29,7 @@ type ProjectItem = {
   expired: string
   isExpired: boolean
   isRecommend: boolean
+  status?: string // 프로젝트 상태 추가
   shortDescription?: string
   description?: string
   summary?: string
@@ -52,6 +53,23 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
 	if (createdHours <= 24) return 'New'
 	if (diffDays < 0) return '마감'
 	return `${diffDays}일 남음`
+}
+
+const getStatusBadge = (status?: string) => {
+	const statusMap: { [key: string]: { text: string; color: string } } = {
+		PENDING: { text: '시작 전', color: 'bg-gray-100 text-gray-700' },
+		PROGRESS: { text: '진행중', color: 'bg-blue-100 text-blue-700' },
+		STOPPED: { text: '중단됨', color: 'bg-orange-100 text-orange-700' },
+		SUCCESS: { text: '완료', color: 'bg-green-100 text-green-700' },
+		FAIL: { text: '실패', color: 'bg-red-100 text-red-700' },
+		END: { text: '종료', color: 'bg-purple-100 text-purple-700' },
+	}
+	
+	if (!status || !statusMap[status]) {
+		return { text: '진행중', color: 'bg-blue-100 text-blue-700' }
+	}
+	
+	return statusMap[status]
 }
 
 const RecommendedProject: React.FC = () => {
@@ -298,10 +316,10 @@ const RecommendedProject: React.FC = () => {
 											/>
 											{/* 호버 시 그라데이션 오버레이 */}
 											                          {/* 그라데이션 오버레이 */}
-                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg'></div>
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg pointer-events-none'></div>
 
 											{/* 프로그래스 바 - 이미지 하단 border처럼 */}
-											<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
+											<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden pointer-events-none'>
 												<div className={`h-full ${gradients} transition-all duration-300`} style={{ width: `${rate}%` }} />
 											</div>
 										</div>
@@ -369,6 +387,10 @@ const RecommendedProject: React.FC = () => {
 														{tag}
 													</span>
 												))}
+												{/* 상태 태그 추가 */}
+												<span className={`inline-flex items-center rounded-full text-xs px-2.5 py-1 ${getStatusBadge(p.status).color} transition-colors duration-200`}>
+													{getStatusBadge(p.status).text}
+												</span>
 												{getRemainingText(p.expired, p.createdAt) && (
 													<span className='inline-flex items-center rounded-full text-[11px] px-2 py-0.5 bg-white/80 text-gray-700 backdrop-blur'>
 														{getRemainingText(p.expired, p.createdAt)}
@@ -447,6 +469,10 @@ const RecommendedProject: React.FC = () => {
 															{tag}
 														</span>
 													))}
+													{/* 상태 태그 추가 */}
+													<span className={`inline-flex items-center rounded-full text-xs px-2.5 py-1 ${getStatusBadge(p.status).color} transition-colors duration-200`}>
+														{getStatusBadge(p.status).text}
+													</span>
 												</div>
 											</div>
 										</div>
@@ -467,10 +493,10 @@ const RecommendedProject: React.FC = () => {
 															}}
 														/>
 														{/* 호버 시 그라데이션 오버레이 */}
-														<div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-lg'></div>
+														<div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-lg pointer-events-none'></div>
 
 														{/* 프로그래스 바 - 이미지 하단 border처럼 */}
-														<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
+														<div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden pointer-events-none'>
 															<div className={`h-full ${gradients} transition-all duration-300`} style={{ width: `${rate}%` }} />
 														</div>
 													</div>

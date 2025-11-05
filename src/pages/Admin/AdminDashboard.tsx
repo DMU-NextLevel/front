@@ -14,7 +14,7 @@ const AdminDashboard: React.FC = () => {
   const stats = {
     totalVisitors: 45231,
     totalFunding: 1250000000,
-    activeProjects: 128,
+    activeProjects: 23,
     successRate: 87.5,
     visitorChange: 12.5,
     fundingChange: 8.3,

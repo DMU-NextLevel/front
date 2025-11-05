@@ -30,6 +30,7 @@ type ProjectItem = {
   expired: string
   isExpired: boolean
   isRecommend: boolean
+  status?: string // 프로젝트 상태 추가
   // Optional textual fields for temporary intro fallback
   shortDescription?: string
   description?: string
@@ -56,6 +57,23 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
   if (createdHours <= 24) return 'New'
   if (diffDays < 0) return '마감'
   return `${diffDays}일 남음`
+}
+
+const getStatusBadge = (status?: string) => {
+	const statusMap: { [key: string]: { text: string; color: string } } = {
+		PENDING: { text: '시작 전', color: 'bg-gray-100 text-gray-700' },
+		PROGRESS: { text: '진행중', color: 'bg-blue-100 text-blue-700' },
+		STOPPED: { text: '중단됨', color: 'bg-orange-100 text-orange-700' },
+		SUCCESS: { text: '완료', color: 'bg-green-100 text-green-700' },
+		FAIL: { text: '실패', color: 'bg-red-100 text-red-700' },
+		END: { text: '종료', color: 'bg-purple-100 text-purple-700' },
+	}
+	
+	if (!status || !statusMap[status]) {
+		return { text: '진행중', color: 'bg-blue-100 text-blue-700' }
+	}
+	
+	return statusMap[status]
 }
 
 const PopularProjectGallery: React.FC = () => {
@@ -202,7 +220,7 @@ const PopularProjectGallery: React.FC = () => {
       {/* 헤더 */}
       <div className='flex items-center justify-between mb-6'>
         <div>
-          <h2 className='text-2xl sm:text-3xl font-bold text-gray-900'>인기 프로젝트</h2>
+          <h2 className='text-lg sm:text-xl md:text-2xl font-bold text-gray-900'>인기 프로젝트</h2>
           <p className='text-gray-600 mt-1'>지금 가장 핫한 프로젝트들을 만나보세요</p>
         </div>
 
@@ -254,7 +272,7 @@ const PopularProjectGallery: React.FC = () => {
               return (
                 <div
                   key={p.id}
-                  className='group bg-transparent rounded-sm overflow-visible relative group-hover:z-[9999999] cursor-pointer snap-center shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%]'
+                  className='group bg-transparent rounded-sm overflow-visible relative group-hover:z-[9999999] cursor-pointer snap-center shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%] mb-2.5'
                   style={{
                     '--expanded-height': '200px',
                     'transitionProperty': 'all',
@@ -290,6 +308,10 @@ const PopularProjectGallery: React.FC = () => {
                             {tag}
                           </span>
                         ))}
+                        {/* 상태 태그 추가 */}
+                        <span className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full ${getStatusBadge(p.status).color} transition-colors duration-200`}>
+                          {getStatusBadge(p.status).text}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -304,7 +326,7 @@ const PopularProjectGallery: React.FC = () => {
                             alt={p.title}
                             className='w-full object-cover rounded-t-lg border border-gray-200 transition-all duration-500 ease-out group-hover:scale-105 cursor-pointer'
                             style={{ aspectRatio: '16 / 9' }}
-                            onClick={() => window.location.href = `/project/${p.id}`}
+                            onClick={() => navigate(`/project/${p.id}`)}
                             onError={(e) => {
                               e.currentTarget.onerror = null
                               e.currentTarget.src = noImage
@@ -312,10 +334,10 @@ const PopularProjectGallery: React.FC = () => {
                           />
                           {/* 호버 시 그라데이션 오버레이 */}
                                                     {/* 그라데이션 오버레이 */}
-                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg'></div>
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg pointer-events-none'></div>
 
                           {/* 프로그래스 바 - 이미지 하단 border처럼 */}
-                          <div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
+                          <div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden pointer-events-none'>
                             <div className={`h-full ${gradients} transition-all duration-300`} style={{ width: `${rate}%` }} />
                           </div>
                         </div>
@@ -323,7 +345,7 @@ const PopularProjectGallery: React.FC = () => {
 
                       <div className='flex items-center justify-between mb-0'>
                         <h4 className='text-xs sm:text-sm font-bold line-clamp-2 hover:underline transition-all'>
-													<span className='cursor-pointer' onClick={() => window.location.href = `/project/${p.id}`}>{p.title}</span>
+													<span className='cursor-pointer' onClick={() => navigate(`/project/${p.id}`)}>{p.title}</span>
 												</h4>
                         <button
                           onClick={(e) => {
@@ -375,7 +397,9 @@ const PopularProjectGallery: React.FC = () => {
             })}
             <div className='shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%] flex items-center justify-center'>
               <button
-                className={`bg-white rounded-full w-20 h-20 sm:w-24 sm:h-24 flex flex-col items-center justify-center text-gray-600 text-xl sm:text-2xl font-bold hover:bg-gray-50 shadow transition-opacity duration-300 ${showMoreButton ? 'opacity-100' : 'opacity-0'}`}
+                onClick={() => navigate('/search?order=RECOMMEND')}
+                className={`bg-white rounded-full w-20 h-20 sm:w-24 sm:h-24 flex flex-col items-center justify-center text-gray-600 text-xl sm:text-2xl font-bold hover:bg-gray-50 shadow transition-all duration-300 ${showMoreButton ? 'opacity-100' : 'opacity-60 hover:opacity-80'} cursor-pointer`}
+                style={{ pointerEvents: 'auto' }}
               >
                 <i className='bi bi-chevron-right' />
                 <span className='text-xs mt-1'>더보기</span>

@@ -30,6 +30,7 @@ type ProjectItem = {
   expired: string
   isExpired: boolean
   isRecommend: boolean
+  status?: string // 프로젝트 상태 추가
   // Optional textual fields for temporary intro fallback
   shortDescription?: string
   description?: string
@@ -56,6 +57,23 @@ const getRemainingText = (expiredDateStr?: string, createdDateStr?: string): str
   if (createdHours <= 24) return 'New'
   if (diffDays < 0) return '마감'
   return `${diffDays}일 남음`
+}
+
+const getStatusBadge = (status?: string) => {
+	const statusMap: { [key: string]: { text: string; color: string } } = {
+		PENDING: { text: '시작 전', color: 'bg-gray-100 text-gray-700' },
+		PROGRESS: { text: '진행중', color: 'bg-blue-100 text-blue-700' },
+		STOPPED: { text: '중단됨', color: 'bg-orange-100 text-orange-700' },
+		SUCCESS: { text: '완료', color: 'bg-green-100 text-green-700' },
+		FAIL: { text: '실패', color: 'bg-red-100 text-red-700' },
+		END: { text: '종료', color: 'bg-purple-100 text-purple-700' },
+	}
+	
+	if (!status || !statusMap[status]) {
+		return { text: '진행중', color: 'bg-blue-100 text-blue-700' }
+	}
+	
+	return statusMap[status]
 }
 
 const PersonalizedProjectGallery: React.FC = () => {
@@ -286,6 +304,24 @@ const PersonalizedProjectGallery: React.FC = () => {
 
       {!loading && (projects.length > 0 || !isLoggedIn) && (
         <div className='relative overflow-visible mt-6'>
+          {/* 비로그인 시 중앙 로그인 버튼 */}
+          {!isLoggedIn && (
+            <div className='absolute inset-0 flex flex-col items-center justify-center z-50 pointer-events-none' style={{ minHeight: '400px' }}>
+              <div className='text-center mb-6 pointer-events-none'>
+                <h3 className='text-2xl font-bold text-gray-800 mb-2'>로그인하고 맞춤 추천 받기</h3>
+                <p className='text-sm text-gray-600'>당신의 취향에 맞는 프로젝트를 추천해드려요</p>
+              </div>
+              <button
+                onClick={() => navigate('/login')}
+                className='pointer-events-auto bg-gradient-to-r from-purple-500 to-blue-500 text-white px-10 py-4 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300 flex items-center gap-3 w-[350px]'
+              >
+                <i className='bi bi-lock-fill text-2xl'></i>
+                <span className='text-base font-semibold'>로그인하러 가기</span>
+                <i className='bi bi-arrow-right text-xl ml-auto'></i>
+              </button>
+            </div>
+          )}
+          
           <div
             ref={sliderRef}
             className={`flex overflow-x-auto overflow-y-visible snap-x snap-proximity gap-1 pr-16 sm:pr-20 md:pr-24 pb-16 sm:pb-20 md:pb-24 webkit-scrollbar-hidden -ml-4 ${!isLoggedIn ? 'blur-sm pointer-events-none' : ''}`}
@@ -302,7 +338,7 @@ const PersonalizedProjectGallery: React.FC = () => {
               return (
                 <div
                   key={p.id}
-                  className='group bg-transparent rounded-sm overflow-visible relative group-hover:z-[9999999] cursor-pointer snap-center shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%]'
+                  className='group bg-transparent rounded-sm overflow-visible relative group-hover:z-[9999999] cursor-pointer snap-center shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%] mb-2.5'
                   style={{
                     '--expanded-height': '200px',
                     'transitionProperty': 'all',
@@ -338,6 +374,10 @@ const PersonalizedProjectGallery: React.FC = () => {
                             {tag}
                           </span>
                         ))}
+                        {/* 상태 태그 추가 */}
+                        <span className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full ${getStatusBadge(p.status).color} transition-colors duration-200`}>
+                          {getStatusBadge(p.status).text}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -352,17 +392,17 @@ const PersonalizedProjectGallery: React.FC = () => {
                             alt={p.title}
                             className='w-full object-cover rounded-t-lg border border-gray-200 transition-all duration-500 ease-out group-hover:scale-105 cursor-pointer'
                             style={{ aspectRatio: '16 / 9' }}
-                            onClick={() => window.location.href = `/project/${p.id}`}
+                            onClick={() => navigate(`/project/${p.id}`)}
                             onError={(e) => {
                               e.currentTarget.onerror = null
                               e.currentTarget.src = noImage
                             }}
                           />
                           {/* 그라데이션 오버레이 */}
-                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg'></div>
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg pointer-events-none'></div>
 
                           {/* 프로그래스 바 - 이미지 하단 border처럼 */}
-                          <div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden'>
+                          <div className='absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden pointer-events-none'>
                             <div className={`h-full ${gradients} transition-all duration-300`} style={{ width: `${rate}%` }} />
                           </div>
                         </div>
@@ -370,7 +410,7 @@ const PersonalizedProjectGallery: React.FC = () => {
 
                       <div className='flex items-center justify-between mb-0'>
                         <h4 className='text-xs sm:text-sm font-bold line-clamp-2 hover:underline transition-all'>
-													<span className='cursor-pointer' onClick={() => window.location.href = `/project/${p.id}`}>{p.title}</span>
+													<span className='cursor-pointer' onClick={() => navigate(`/project/${p.id}`)}>{p.title}</span>
 												</h4>
                         <button
                           onClick={(e) => {
@@ -422,7 +462,15 @@ const PersonalizedProjectGallery: React.FC = () => {
             })}
             <div className='shrink-0 w-full sm:w-1/2 md:w-[27%] lg:w-[27%] xl:w-[27%] flex items-center justify-center'>
               <button
-                className={`bg-white rounded-full w-20 h-20 sm:w-24 sm:h-24 flex flex-col items-center justify-center text-gray-600 text-xl sm:text-2xl font-bold hover:bg-gray-50 shadow transition-opacity duration-300 ${showMoreButton ? 'opacity-100' : 'opacity-0'}`}
+                onClick={() => {
+                  if (!isLoggedIn) {
+                    navigate('/login')
+                  } else {
+                    window.location.href = 'http://localhost:3000/mypage'
+                  }
+                }}
+                className={`bg-white rounded-full w-20 h-20 sm:w-24 sm:h-24 flex flex-col items-center justify-center text-gray-600 text-xl sm:text-2xl font-bold hover:bg-gray-50 shadow transition-all duration-300 ${showMoreButton ? 'opacity-100' : 'opacity-60 hover:opacity-80'} cursor-pointer`}
+                style={{ pointerEvents: 'auto' }}
               >
                 <i className='bi bi-chevron-right' />
                 <span className='text-xs mt-1'>더보기</span>
@@ -430,17 +478,6 @@ const PersonalizedProjectGallery: React.FC = () => {
             </div>
           </div>
 
-          {/* 비로그인 시 로그인 유도 버튼 */}
-          {!isLoggedIn && (
-            <div className='absolute inset-0 flex items-center justify-center z-20'>
-              <button
-                onClick={() => navigate('/login')}
-                className='bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition-colors duration-200'
-              >
-                로그인하여 더보기
-              </button>
-            </div>
-          )}
         </div>
       )}
     </section>

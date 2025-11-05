@@ -34,6 +34,8 @@ import AdminPage from './pages/Admin/AdminPage'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminProjects from './pages/Admin/AdminProjects'
+import AdminFundingHistory from './pages/Admin/AdminFundingHistory'
+import AdminCoupon from './pages/Admin/AdminCoupon'
 import AdminNotices from './pages/Admin/AdminNotices'
 import SocialPage from './pages/SocialPage'
 import AdditionalInfo from './pages/AdditionalInfo'
@@ -146,6 +148,8 @@ const AppWrapper = () => {
 					<Route path='dashboard' element={<AdminDashboard />} />
 					<Route path='users' element={<AdminUsers />} />
 					<Route path='projects' element={<AdminProjects />} />
+					<Route path='funding-history' element={<AdminFundingHistory />} />
+					<Route path='coupons' element={<AdminCoupon />} />
 					<Route path='notices' element={<AdminNotices />} />
 				</Route>
 				<Route path='/socialfeed/:id' element={<SocialPage />} />

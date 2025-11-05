@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, CheckCircle, Star, TrendingUp, Users, Award, Smartphone, BookOpen, PieChart, ChevronDown, Monitor, Home, Shirt, Heart, Palette, Gamepad2, PawPrint, Plane, UtensilsCrossed, Edit, BarChart3, Bell, MessageSquare, Users2, Ticket } from 'lucide-react'
+import { ArrowRight, CheckCircle, Star, TrendingUp, Users, Award, Smartphone, BookOpen, PieChart, ChevronDown, Monitor, Home, Shirt, Heart, Palette, Gamepad2, PawPrint, Plane, UtensilsCrossed, Edit, BarChart3, Bell, MessageSquare, Users2, Ticket, Rocket } from 'lucide-react'
 import './Creater.css'
 import AnimatedBanner from '../components/UI/CreaterPage/AnimatedBanner'
 
@@ -1106,7 +1106,7 @@ const Creater: React.FC = () => {
 						to='/project/create'
 						className='inline-flex items-center gap-2 md:gap-3 bg-white text-blue-600 px-6 py-3 md:px-8 md:py-4 rounded-lg text-base md:text-lg font-semibold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
 					>
-						프로젝트 시작하기 <ArrowRight className='w-4 h-4 md:w-5 md:h-5' />
+						프로젝트 시작하기 <Rocket className='w-4 h-4 md:w-5 md:h-5' />
 					</Link>
 				</div>
 			</section>
