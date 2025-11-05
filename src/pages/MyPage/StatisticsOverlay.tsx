@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
-
+import {api} from '../../AxiosInstance';
 interface StatisticsOverlayProps {
   project: {
     id: number;
@@ -13,6 +13,12 @@ interface StatisticsOverlayProps {
     fundingGoal: number;
   };
   onClose: () => void;
+}
+
+interface MonthlyStat {
+  month: number;
+  userCount: number;
+  fundingPrice: number;
 }
 
 // --- 유틸: 날짜를 "YYYY년 M월" 형식으로 변환 ---
@@ -29,7 +35,6 @@ const getFiveMonthRange = (year: number, month: number) => {
 };
 
 const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose }) => {
-  // ✅ 모달 열릴 때 body 스크롤 완전 비활성화
   useEffect(() => {
     const originalStyle = {
       overflow: document.body.style.overflow,
@@ -48,28 +53,48 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
     };
   }, []);
 
-  // ✅ 현재 날짜를 기준으로 기본 년/월 설정
   const now = new Date();
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
 
-  // ✅ 예시 데이터 (Record 타입 명시로 타입 에러 방지)
-  const allMonthlyData: Record<string, { amount: number; backers: number }> = {
-    '2025년 6월': { amount: 3000000, backers: 25 },
-    '2025년 7월': { amount: 5200000, backers: 48 },
-    '2025년 8월': { amount: 7500000, backers: 73 },
-    '2025년 9월': { amount: 9000000, backers: 95 },
-    '2025년 10월': { amount: 10800000, backers: 120 },
-    '2025년 11월': { amount: 0, backers: 0 },
-  };
+  // ✅ API
+  const [allMonthlyData, setAllMonthlyData] = useState<
+    Record<string, { amount: number; backers: number }>
+  >({});
 
-  // ✅ 선택된 년/월 기준으로 ±2개월 구간 계산
+  // ✅ API 연동
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const response = await api.get(`/statistics/${project.id}`);
+        if (response.data?.message === 'success' && Array.isArray(response.data.data)) {
+          const formatted: Record<string, { amount: number; backers: number }> = {};
+          response.data.data.forEach((item: MonthlyStat) => {
+            const label = formatMonth(selectedYear, item.month);
+            formatted[label] = {
+              amount: item.fundingPrice || 0,
+              backers: item.userCount || 0,
+            };
+          });
+          setAllMonthlyData(formatted);
+        } else {
+          console.warn('⚠️ 예상치 못한 응답 구조:', response.data);
+        }
+      } catch (error) {
+        console.error('📉 통계 데이터 불러오기 실패:', error);
+      }
+    };
+
+    fetchStatistics();
+  }, [project.id, selectedYear]);
+
+  // ✅ 선택된 년/월 기준 ±2개월 구간 계산
   const displayedMonths = useMemo(
     () => getFiveMonthRange(selectedYear, selectedMonth),
     [selectedYear, selectedMonth]
   );
 
-  // ✅ 현재 구간에 해당하는 데이터 구성 (없으면 0 처리)
+  // ✅ 표시용 데이터 구성 (없으면 0 처리)
   const monthlyData = displayedMonths.map(({ year, month }) => {
     const key = formatMonth(year, month);
     return {
@@ -79,8 +104,8 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
     };
   });
 
-  const maxAmount = Math.max(...monthlyData.map((item) => item.amount));
-  const maxBackers = Math.max(...monthlyData.map((item) => item.backers));
+  const maxAmount = Math.max(...monthlyData.map((item) => item.amount), 1);
+  const maxBackers = Math.max(...monthlyData.map((item) => item.backers), 1);
 
   return (
     <Overlay>
@@ -145,7 +170,7 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
             <ChartContainer>
               {monthlyData.map((item, index) => (
                 <ChartBar key={index}>
-                  <Bar $height={(item.amount / (maxAmount || 1)) * 150} $isMax={item.amount === maxAmount} />
+                  <Bar $height={(item.amount / maxAmount) * 150} $isMax={item.amount === maxAmount} />
                   <BarLabel>{item.month}</BarLabel>
                   <BarValue>{Math.round(item.amount / 10000)}만원</BarValue>
                 </ChartBar>
@@ -158,7 +183,7 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
               {monthlyData.map((item, index) => (
                 <ChartBar key={index}>
                   <Bar
-                    $height={(item.backers / (maxBackers || 1)) * 150}
+                    $height={(item.backers / maxBackers) * 150}
                     $isMax={item.backers === maxBackers}
                     $isTrend
                   />
@@ -371,18 +396,6 @@ const Bar = styled.div<{ $height: number; $isMax: boolean; $isTrend?: boolean }>
   border-radius: 4px 4px 0 0;
   margin-bottom: 8px;
   transition: height 0.3s ease;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px 4px 0 0;
-  }
 `;
 
 const BarLabel = styled.div`
