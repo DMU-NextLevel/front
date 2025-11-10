@@ -40,6 +40,10 @@ const AdminProjects: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL')
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [showActionMenu, setShowActionMenu] = useState<string | null>(null)
+  // 펀딩 로그 상태
+  const [fundingLog, setFundingLog] = useState<any | null>(null)
+  const [fundingLoading, setFundingLoading] = useState(false)
+  const [fundingError, setFundingError] = useState<string | null>(null)
   const [sortField, setSortField] = useState<string>('id')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [currentPage, setCurrentPage] = useState(1)
@@ -181,6 +185,36 @@ const AdminProjects: React.FC = () => {
   const { projectInfo } = useProjectDetailFetch({
     projectId: selectedProject?.id ? selectedProject.id.toString() : ''
   })
+
+  // 선택된 프로젝트가 변경되면 펀딩 로그를 조회
+  useEffect(() => {
+    const fetchFundingLog = async (projectId: number) => {
+      try {
+        setFundingLoading(true)
+        setFundingError(null)
+        const res = await api.get(`/admin/project/${projectId}`)
+        // 백엔드가 { message, data } 형태로 준다고 가정
+        if (res.data && res.data.message === 'success') {
+          setFundingLog(res.data.data)
+        } else {
+          setFundingLog(null)
+        }
+      } catch (err: any) {
+        console.error('펀딩 로그 조회 실패', err)
+        setFundingError(err?.response?.data?.message || '펀딩 로그를 불러오지 못했습니다.')
+        setFundingLog(null)
+      } finally {
+        setFundingLoading(false)
+      }
+    }
+
+    if (selectedProject && selectedProject.id) {
+      fetchFundingLog(selectedProject.id)
+    } else {
+      setFundingLog(null)
+      setFundingError(null)
+    }
+  }, [selectedProject])
 
   const handleDeleteProject = async (projectId: number) => {
     const confirmResult = await Swal.fire({
@@ -1187,8 +1221,109 @@ const AdminProjects: React.FC = () => {
               </div>
             </div>
           </div>
+              {/* 펀딩 로그 섹션 (테이블 형태) */}
+              <div className="px-8 py-6 bg-white border-t border-gray-100">
+                <h4 className="text-base font-semibold text-gray-900 mb-4">펀딩 로그</h4>
 
-          {/* 푸터 액션 */}
+                {fundingLoading ? (
+                  <div className="text-center text-sm text-gray-500 py-6">펀딩 로그를 불러오는 중...</div>
+                ) : fundingError ? (
+                  <div className="text-sm text-red-500">{fundingError}</div>
+                ) : !fundingLog ? (
+                  <div className="text-sm text-gray-500">펀딩 로그가 없습니다.</div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-6">
+                      <div className="text-sm text-gray-600">총 후원수</div>
+                      <div className="text-lg font-semibold text-gray-900">{fundingLog.total?.count ?? 0}건</div>
+                      <div className="text-sm text-gray-600">총 금액</div>
+                      <div className="text-lg font-semibold text-gray-900">{fundingLog.total?.price ?? 0}원</div>
+                    </div>
+
+                    {/* 옵션형 후원: 하나의 테이블로 표시 (옵션별로 후원내역 행을 반복) */}
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-800 mb-2">옵션 후원</h5>
+                      {fundingLog.optionFunding == null ? (
+                        <div className="text-sm text-gray-500">옵션 후원 데이터가 없습니다.</div>
+                      ) : fundingLog.optionFunding.length === 0 ? (
+                        <div className="text-sm text-gray-500">옵션이 존재하지 않습니다.</div>
+                      ) : (
+                        <div className="overflow-x-auto border rounded-md">
+                          <table className="min-w-full text-sm">
+                            <thead className="bg-gray-50 text-left text-xs text-gray-600">
+                              <tr>
+                                <th className="px-4 py-2">옵션 ID</th>
+                                <th className="px-4 py-2">옵션 설명</th>
+                                <th className="px-4 py-2">옵션 가격</th>
+                                <th className="px-4 py-2">후원자</th>
+                                <th className="px-4 py-2">연락처</th>
+                                <th className="px-4 py-2">수량</th>
+                                <th className="px-4 py-2">금액</th>
+                                <th className="px-4 py-2">일시</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y">
+                              {fundingLog.optionFunding.map((of: any, idx: number) => {
+                                const option = of.option || {}
+                                const rows = (of.optionFunding && of.optionFunding.length > 0) ? of.optionFunding : [null]
+                                return rows.map((f: any, rIdx: number) => (
+                                  <tr key={`${idx}-${rIdx}`} className={`bg-white`}> 
+                                    <td className="px-4 py-2 align-top">{option.id ?? '-'}</td>
+                                    <td className="px-4 py-2 align-top">{option.description ?? '-'}</td>
+                                    <td className="px-4 py-2 align-top">{option.price != null ? `${option.price}원` : '-'}</td>
+                                    <td className="px-4 py-2 align-top">{f ? (f.user?.name || f.user?.nickName || '익명') : <span className="text-gray-500">-</span>}</td>
+                                    <td className="px-4 py-2 align-top">{f ? (f.user?.number || f.user?.areaNumber || '-') : '-'}</td>
+                                    <td className="px-4 py-2 align-top">{f ? f.count : '-'}</td>
+                                    <td className="px-4 py-2 align-top">{f ? `${f.price}원` : '-'}</td>
+                                    <td className="px-4 py-2 align-top">{f && f.createdAt ? new Date(f.createdAt).toLocaleString() : '-'}</td>
+                                  </tr>
+                                ))
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 자유 후원: 테이블 */}
+                    <div>
+                      <h5 className="text-sm font-semibold text-gray-800 mb-2">자유 후원</h5>
+                      {fundingLog.freeFunding == null ? (
+                        <div className="text-sm text-gray-500">자유 후원 데이터가 없습니다.</div>
+                      ) : fundingLog.freeFunding.length === 0 ? (
+                        <div className="text-sm text-gray-500">자유 후원 기록이 없습니다.</div>
+                      ) : (
+                        <div className="overflow-x-auto border rounded-md">
+                          <table className="min-w-full text-sm">
+                            <thead className="bg-gray-50 text-left text-xs text-gray-600">
+                              <tr>
+                                <th className="px-4 py-2">ID</th>
+                                <th className="px-4 py-2">후원자</th>
+                                <th className="px-4 py-2">연락처</th>
+                                <th className="px-4 py-2">금액</th>
+                                <th className="px-4 py-2">일시</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y">
+                              {fundingLog.freeFunding.map((f: any) => (
+                                <tr key={f.id} className="bg-white">
+                                  <td className="px-4 py-2 align-top">{f.id}</td>
+                                  <td className="px-4 py-2 align-top">{f.user?.name || f.user?.nickName || '익명'}</td>
+                                  <td className="px-4 py-2 align-top">{f.user?.number || f.user?.areaNumber || '-'}</td>
+                                  <td className="px-4 py-2 align-top">{f.price}원</td>
+                                  <td className="px-4 py-2 align-top">{f.createdAt ? new Date(f.createdAt).toLocaleString() : '-'}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 푸터 액션 */}
           <div className="bg-white px-8 py-6 border-t border-gray-200">
             <div className="flex justify-end gap-4">
               <button
