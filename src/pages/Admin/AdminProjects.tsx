@@ -956,7 +956,7 @@ const AdminProjects: React.FC = () => {
               <span className="font-semibold text-gray-900">{startIndex + 1}</span>-
               <span className="font-semibold text-gray-900">{Math.min(endIndex, sortedProjects.length)}</span>개 표시
             </div>
-            
+
             <div className="flex items-center gap-2">
               {/* 처음으로 */}
               <button
@@ -1043,7 +1043,6 @@ const AdminProjects: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
 
     {showDetailModal && selectedProject && (
       <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-4" style={{ margin: 0, padding: '1rem' }}>
