@@ -27,6 +27,7 @@ type ProjectItem = {
   expired: string
   isExpired: boolean
   isRecommend: boolean
+  status: 'PENDING' | 'PROGRESS' | 'STOPPED' | 'SUCCESS' | 'FAIL' | 'END'
   // 소개 텍스트를 위한 임시 필드들
   shortDescription?: string
   description?: string
@@ -143,6 +144,24 @@ const Search: React.FC = () => {
 		const createdHours = Math.floor(createdDiff / (1000 * 60 * 60))
 
 		return createdHours <= 24 ? 'New' : diffDays < 0 ? '마감' : `${diffDays}일 남음`
+	}
+
+	// 프로젝트 상태 표시 함수
+	const getStatusBadge = (status?: string) => {
+		const statusMap: { [key: string]: { text: string; color: string } } = {
+			PENDING: { text: '시작 전', color: 'bg-gray-100 text-gray-700' },
+			PROGRESS: { text: '진행중', color: 'bg-blue-100 text-blue-700' },
+			STOPPED: { text: '중단됨', color: 'bg-orange-100 text-orange-700' },
+			SUCCESS: { text: '완료', color: 'bg-green-100 text-green-700' },
+			FAIL: { text: '실패', color: 'bg-red-100 text-red-700' },
+			END: { text: '종료', color: 'bg-purple-100 text-purple-700' },
+		}
+
+		if (!status || !statusMap[status]) {
+			return { text: '진행중', color: 'bg-blue-100 text-blue-700' }
+		}
+
+		return statusMap[status]
 	}
 
 	// 시작일 표시 함수 (메인페이지 스타일)
@@ -623,6 +642,13 @@ const Search: React.FC = () => {
 												{tag}
 											</span>
 										))}
+										{item.status && (
+											<div className='inline-flex items-center'>
+												<span className={`inline-flex items-center rounded-full text-xs px-2.5 py-1 ${getStatusBadge(item.status).color} transition-colors duration-200`}>
+													{getStatusBadge(item.status).text}
+												</span>
+											</div>
+										)}
 										<span className='inline-flex items-center text-xs font-medium text-white bg-gray-600 px-2.5 py-1 rounded-full'>
 											Redondo Beach, CA
 										</span>
@@ -706,6 +732,13 @@ const Search: React.FC = () => {
 															{tag}
 														</span>
 													))}
+													{item.status && (
+														<div className='inline-flex items-center'>
+															<span className={`inline-flex items-center rounded-full text-xs px-2.5 py-1 ${getStatusBadge(item.status).color} transition-colors duration-200`}>
+																{getStatusBadge(item.status).text}
+															</span>
+														</div>
+													)}
 												</div>
 											</div>
 										</div>
@@ -838,6 +871,13 @@ const Search: React.FC = () => {
 															{tag}
 														</span>
 													))}
+													{item.status && (
+														<div className='inline-flex items-center'>
+															<span className={`inline-flex items-center rounded-full text-xs px-2.5 py-1 ${getStatusBadge(item.status).color} transition-colors duration-200`}>
+																{getStatusBadge(item.status).text}
+															</span>
+														</div>
+													)}
 												</div>
 											</div>
 										</div>
@@ -892,7 +932,9 @@ const Search: React.FC = () => {
 														{item.author?.nickName || '익명'}
 													</div>
 													<div className='text-gray-600 font-bold flex items-center gap-2'>
-														<span className='text-green-600 font-semibold'>완료됨</span>
+														<span className={`inline-flex items-center rounded-full text-xs px-2.5 py-1 ${getStatusBadge(item.status).color} transition-colors duration-200`}>
+															{getStatusBadge(item.status).text}
+														</span>
 													</div>
 												</div>
 
@@ -908,6 +950,13 @@ const Search: React.FC = () => {
 																	{tag}
 																</span>
 															))}
+															{item.status && (
+																<div className='inline-flex items-center'>
+																	<span className={`inline-flex items-center rounded-full text-xs px-2.5 py-1 ${getStatusBadge(item.status).color} transition-colors duration-200`}>
+																		{getStatusBadge(item.status).text}
+																	</span>
+																</div>
+															)}
 														</div>
 													</div>
 												</div>

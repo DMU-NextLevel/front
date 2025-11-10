@@ -67,8 +67,54 @@ export const HeaderMain: React.FC = () => {
 
 	// 로그아웃 핸들러
 	const handleLogout = () => {
+		const currentPath = location.pathname
+		const isAuthRequiredPage = 
+			currentPath.includes('/mypage') || 
+			currentPath.includes('/admin') || 
+			currentPath.includes('/funding/create')
+		
+		// 로그아웃 실행 (토큰 삭제 포함)
 		logout()
-		window.location.href = '/login'
+		
+		// 추가로 모든 토큰 관련 데이터 삭제
+		localStorage.removeItem('accessToken')
+		localStorage.removeItem('refreshToken')
+		localStorage.removeItem('LoginStatus')
+		localStorage.removeItem('UserData')
+		sessionStorage.clear()
+		
+		// 쿠키 완전 삭제 (모든 경로와 도메인에서)
+		const deleteCookie = (name: string) => {
+			// 현재 경로에서 삭제
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+			// 루트 경로에서 삭제
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`
+			// www 포함 도메인에서 삭제
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname}`
+		}
+		
+		// 모든 쿠키 삭제
+		document.cookie.split(';').forEach((cookie) => {
+			const cookieName = cookie.split('=')[0].trim()
+			if (cookieName) {
+				deleteCookie(cookieName)
+			}
+		})
+		
+		// 특정 쿠키들 명시적으로 삭제 (혹시 모를 경우 대비)
+		deleteCookie('accessToken')
+		deleteCookie('refreshToken')
+		deleteCookie('JSESSIONID')
+		deleteCookie('LoginStatus')
+		
+		if (isAuthRequiredPage) {
+			// 로그인이 필요한 페이지였다면 메인으로 이동
+			alert('로그인이 필요한 페이지입니다. 메인 페이지로 이동합니다.')
+			window.location.href = '/'
+		} else {
+			// 그 외의 페이지는 현재 페이지 유지 (새로고침)
+			window.location.reload()
+		}
 	}
 
 	// 알림 토글
@@ -227,15 +273,9 @@ export const HeaderMain: React.FC = () => {
 							<a href={createSearchLink('NEW')} className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-gray-900 hover:text-gray-600 hover:bg-gray-100'} `}>
 								신규
 							</a>
-							<button
-								onClick={handleAlert}
-								className={`text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-gray-200 hover:bg-white/10' : 'text-gray-900 hover:text-gray-600 hover:bg-gray-100'} `}
-							>
-								마감임박
-							</button>
 
 
-						{/* 프로젝트 시작 버튼 - 마감임박 우측에 배치 */}
+						{/* 프로젝트 시작 버튼 */}
 						<button
 							onClick={() => navigate('/creater')}
 							className='bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-blue-700 transition-colors'
@@ -451,7 +491,8 @@ export const HeaderMain: React.FC = () => {
 								</button>
 								<button
 									onClick={(e) => {
-										handleAlert(e)
+										e.preventDefault()
+										navigate('/following')
 										setIsMobileMenuOpen(false)
 									}}
 									className='flex items-center space-x-3 w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors'
@@ -481,17 +522,8 @@ export const HeaderMain: React.FC = () => {
 									신규 프로젝트
 								</a>
 								<button
-									onClick={(e) => {
-										handleAlert(e)
-										setIsMobileMenuOpen(false)
-									}}
-									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
-								>
-									마감 임박 프로젝트
-								</button>
-								<button
-									onClick={(e) => {
-										handleAlert(e)
+									onClick={() => {
+										navigate(createSearchLink('COMPLETED'))
 										setIsMobileMenuOpen(false)
 									}}
 									className='block text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-gray-50'
@@ -649,7 +681,10 @@ export const HeaderMain: React.FC = () => {
 									<span className={`text-sm font-medium ${location.pathname === '/' && !isScrolled ? 'text-white' : 'text-gray-900'}`}>프로젝트 시작</span>
 								</button>
 								<button
-									onClick={handleAlert}
+									onClick={(e) => {
+										e.preventDefault()
+										navigate('/following')
+									}}
 									className={`flex items-center space-x-3 w-full text-left p-3 rounded-lg transition-colors ${location.pathname === '/' && !isScrolled ? 'bg-transparent border border-white/50 hover:bg-white/30 hover:border-white/70' : 'bg-white/80 border border-gray-300/50 hover:bg-white/90 hover:border-gray-400/50'}`}
 								>
 									<i className='bi bi-bookmark text-blue-600 text-lg'></i>
@@ -693,13 +728,7 @@ export const HeaderMain: React.FC = () => {
 									신규 프로젝트
 								</a>
 								<button
-									onClick={handleAlert}
-									className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}
-								>
-									마감 임박 프로젝트
-								</button>
-								<button
-									onClick={handleAlert}
+									onClick={() => navigate(createSearchLink('COMPLETED'))}
 									className={`block text-xs ${location.pathname === '/' && !isScrolled ? 'text-white hover:text-blue-400' : 'text-gray-700 hover:text-purple-600'} transition-colors py-0.5`}
 								>
 									완료된 프로젝트

@@ -7,7 +7,8 @@ import IDFindPage from './pages/IDFindPage'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
 import MyPage from './pages/MyPage/MyPage'
-import FollowingPage from './pages/MyPage/FollowingPage' // ✅ 추가
+import FollowingPage from './pages/MyPage/FollowingPage'
+import MyProjects from './pages/MyPage/MyProjects'
 import MainPage from './pages/MainPage'
 import FundingPage from './pages/FundingPage'
 import Search from './pages/Search'
@@ -20,6 +21,7 @@ import ScrollToTop from './hooks/ScrollToTop'
 import NoticeWrite from './pages/NoticeWrite'
 import NoticeEdit from './pages/NoticeEdit'
 import ProfileHeader from './pages/ProfileHeader'
+import StatisticsOverlay from './pages/MyPage/StatisticsOverlay';
 import Creater from './pages/Creater'
 import { PopupPaymentPage } from './components/UI/TossPayments'
 import { SuccessPage } from './components/UI/TossPayments'
@@ -34,6 +36,8 @@ import AdminPage from './pages/Admin/AdminPage'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AdminUsers from './pages/Admin/AdminUsers'
 import AdminProjects from './pages/Admin/AdminProjects'
+import AdminFundingHistory from './pages/Admin/AdminFundingHistory'
+import AdminCoupon from './pages/Admin/AdminCoupon'
 import AdminNotices from './pages/Admin/AdminNotices'
 import SocialPage from './pages/SocialPage'
 import AdditionalInfo from './pages/AdditionalInfo'
@@ -121,6 +125,7 @@ const AppWrapper = () => {
 				<Route path='/idfind' element={<IDFindPage />} />
 				<Route path='/mypage' element={<MyPage />} />
 				<Route path='/mypage/following' element={<FollowingPage />} /> {/* ✅ 추가 */}
+				<Route path='/mypage/myprojects' element={<MyProjects />} /> {/* ✅ MyProjects 라우트 추가 */}
 				<Route path='/project/:no' element={<FundingPage />} />
 				<Route path='/search' element={<Search />} />
 				<Route path='/project/create' element={<ProjectCreatePage />} />
@@ -146,6 +151,8 @@ const AppWrapper = () => {
 					<Route path='dashboard' element={<AdminDashboard />} />
 					<Route path='users' element={<AdminUsers />} />
 					<Route path='projects' element={<AdminProjects />} />
+					<Route path='funding-history' element={<AdminFundingHistory />} />
+					<Route path='coupons' element={<AdminCoupon />} />
 					<Route path='notices' element={<AdminNotices />} />
 				</Route>
 				<Route path='/socialfeed/:id' element={<SocialPage />} />

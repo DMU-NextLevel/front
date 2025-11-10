@@ -70,7 +70,7 @@ export const fetchProjectsFromServer = async (input: ProjectRequest): Promise<Pr
     search: search.trim() !== '' ? search.trim() : null,
     desc,
     pageCount,
-    status: status || null, // status가 null이면 기본 ["PROGRESS", "STOPPED"]
+    ...(status && { status }), // status가 있으면 포함, 없으면 제외
   };
 
   const response = await api.post<ProjectResponse>('/public/project/all', requestData); // ✅ 고정된 경로 사용

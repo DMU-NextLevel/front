@@ -92,7 +92,7 @@ const MainPage: React.FC = () => {
       <hr className="h-px bg-gray-200 border-none w-full" />
 
       {/* 신규 프로젝트 섹션 */}
-      <div className="mt-8 py-16 px-4 sm:px-6 lg:px-8">
+      <div className=" py-16 px-4 sm:px-6 lg:px-8">
         <div>
           {/* 우측 슬라이드 */}
           <div className="w-full min-h-[400px]">
@@ -100,13 +100,9 @@ const MainPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-                  {/* 인터렉티브 배너 섹션 */}
-
       <hr className="h-px bg-gray-100 border-none w-full" />
 
       <div className="w-full bg-gray-50">
-        {/* Legacy sections retained below while we transition */}
 
         <div className="" />
               <FeatureOverview />

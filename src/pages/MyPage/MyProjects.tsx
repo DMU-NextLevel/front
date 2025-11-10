@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { api } from '../../AxiosInstance'
 import StatisticsOverlay from './StatisticsOverlay'
 import Swal from 'sweetalert2'
 
@@ -24,9 +24,6 @@ const MyProjects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([])
   const [selectedProject, setSelectedProject] = useState<number | null>(null)
 
-  // ✅ API 기본 URL
-  const baseUrl = process.env.REACT_APP_API_BASE_URL
-
   // ✅ 상태 필터 매핑
   const statusMap: Record<ProjectStatus, string | undefined> = {
     전체: undefined,
@@ -38,16 +35,12 @@ const MyProjects: React.FC = () => {
   // ✅ 프로젝트 데이터 불러오기
   const fetchProjects = async () => {
     try {
-      const response = await axios.post(
-        `${baseUrl}/project/list`,
-        {
-          page: 0,
-          pageCount: 10,
-          type: 'PROJECT',
-          status: statusMap[activeFilter],
-        },
-        { withCredentials: true }
-      )
+      const response = await api.post('/project/list', {
+        page: 0,
+        pageCount: 10,
+        type: 'PROJECT',
+        status: statusMap[activeFilter],
+      })
 
       setProjects(response.data.data.projects)
     } catch (error) {

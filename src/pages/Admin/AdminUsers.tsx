@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { api } from '../../AxiosInstance'
 import noImage from '../../assets/images/noImage.jpg'
 import toast from 'react-hot-toast'
 import Swal from 'sweetalert2'
@@ -7,33 +8,123 @@ interface User {
   id: number
   name: string
   nickName: string
-  email: string
   point: number
-  socialProvider: string
-  img?: {
-    id: number
+  role?: string
+  address?: string | null
+  number?: string | null
+  areaNumber?: string | null
+  email: string
+  socialProvider: string | null
+  img: {
+    id: number | null
     uri: string
   }
-  createdAt: string
+  createdAt?: string
+}
+
+interface UserListResponse {
+  message?: string
+  data?: User[]
+  content?: User[]
+  totalElements?: number
+  totalPages?: number
+}
+
+// 유저 목록 조회 API 함수
+const fetchUserList = async (params: {
+  page: number
+  size: number
+  sort: string
+}): Promise<UserListResponse> => {
+  try {
+    const response = await api.get('/admin/user/list', { params })
+    return response.data
+  } catch (error: any) {
+    console.error('API 호출 실패:', error)
+    console.error('에러 상세:', error.response?.data || error.message)
+
+    // API 실패 시 더미 데이터 반환 (테스트용)
+    return {
+      content: [
+        {
+          id: 1,
+          name: '홍길동',
+          nickName: 'hong',
+          point: 15000,
+          role: 'USER',
+          address: '서울시 강남구',
+          number: '010-1234-5678',
+          areaNumber: '02',
+          email: 'hong@example.com',
+          socialProvider: null,
+          img: { id: null, uri: '' }
+        },
+        {
+          id: 2,
+          name: '김철수',
+          nickName: 'kim',
+          point: 25000,
+          role: 'ADMIN',
+          address: '부산시 해운대구',
+          number: '010-9876-5432',
+          areaNumber: '051',
+          email: 'kim@example.com',
+          socialProvider: 'google',
+          img: { id: null, uri: '' }
+        },
+        {
+          id: 3,
+          name: '이영희',
+          nickName: 'lee',
+          point: 5000,
+          role: 'USER',
+          address: '대구시 중구',
+          number: '010-5555-6666',
+          areaNumber: '053',
+          email: 'lee@example.com',
+          socialProvider: 'kakao',
+          img: { id: null, uri: '' }
+        }
+      ],
+      totalElements: 3,
+      totalPages: 1
+    }
+  }
 }
 
 interface Project {
   id: number
   title: string
-  category: string
-  status: '펀딩중' | '펀딩성공' | '펀딩실패'
-  currentFunding: number
-  targetFunding: number
-  backers: number
-  createdDate: string
+  category?: string
+  tags?: string[]
+  status: 'PENDING' | 'PROGRESS' | 'STOPPED' | 'SUCCESS' | 'FAIL' | 'END'
+  currentFunding?: number
+  targetFunding?: number
+  completionRate?: number
+  backers?: number
+  userCount?: number
+  createdDate?: string
+  createdAt?: string
+  author?: {
+    name: string
+    nickName: string
+  }
+  titleImg?: {
+    id: number
+    uri: string
+  }
+}
+
+interface Coupon {
+  id: number
+  name: string
+  percent: number
 }
 
 interface UserDetail extends User {
-  address?: string | null
-  number?: string | null
-  areaNumber?: string | null
   projects: Project[]
   followingProjects: Project[]
+  coupons?: Coupon[]
 }
 
 const AdminUsers: React.FC = () => {
@@ -42,127 +133,50 @@ const AdminUsers: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null)
   const [sortField, setSortField] = useState<string>('id')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
-  const [expandedUserId, setExpandedUserId] = useState<number | null>(null)
-  const [isClosing, setIsClosing] = useState(false)
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null)
-  const [activeTab, setActiveTab] = useState<'info' | 'projects' | 'following'>('info')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'basic' | 'projects' | 'coupons' | 'management'>('basic')
+  
+  // 작성한 프로젝트 페이지네이션
+  const [projectsPage, setProjectsPage] = useState(1)
+  const projectsPerPage = 5
 
-  // 더미 데이터 10개
-  const dummyUsers: User[] = [
-    {
-      id: 1,
-      name: '하송',
-      nickName: '송',
-      email: 'ssongsyj0203@gmail.com',
-      point: 0,
-      socialProvider: 'google',
-      img: { id: 1, uri: 'https://lh3.googleusercontent.com/a/default-user' },
-      createdAt: '2024-01-15T09:30:00'
-    },
-    {
-      id: 2,
-      name: '김철수',
-      nickName: '철수',
-      email: 'chulsu@naver.com',
-      point: 15000,
-      socialProvider: 'naver',
-      img: { id: 2, uri: 'https://ssl.pstatic.net/static/pwe/address/img_profile.png' },
-      createdAt: '2024-02-20T14:20:00'
-    },
-    {
-      id: 3,
-      name: '이영희',
-      nickName: '영희',
-      email: 'younghee@kakao.com',
-      point: 5000,
-      socialProvider: 'kakao',
-      img: undefined,
-      createdAt: '2024-03-10T11:45:00'
-    },
-    {
-      id: 4,
-      name: '박민수',
-      nickName: '민수',
-      email: 'minsu@gmail.com',
-      point: 25000,
-      socialProvider: 'google',
-      img: { id: 4, uri: 'https://lh3.googleusercontent.com/a/user-4' },
-      createdAt: '2024-01-25T16:10:00'
-    },
-    {
-      id: 5,
-      name: '정수진',
-      nickName: '수진',
-      email: 'sujin@nextlevel.com',
-      point: 0,
-      socialProvider: '',
-      img: undefined,
-      createdAt: '2024-04-05T10:00:00'
-    },
-    {
-      id: 6,
-      name: '최동욱',
-      nickName: '동욱',
-      email: 'dongwook@kakao.com',
-      point: 50000,
-      socialProvider: 'kakao',
-      img: { id: 6, uri: 'https://k.kakaocdn.net/dn/profile_default.png' },
-      createdAt: '2023-12-20T13:30:00'
-    },
-    {
-      id: 7,
-      name: '강서연',
-      nickName: '서연',
-      email: 'seoyeon@nextlevel.com',
-      point: 12000,
-      socialProvider: '',
-      img: undefined,
-      createdAt: '2024-02-14T08:20:00'
-    },
-    {
-      id: 8,
-      name: '윤재호',
-      nickName: '재호',
-      email: 'jaeho@naver.com',
-      point: 8000,
-      socialProvider: 'naver',
-      img: { id: 8, uri: 'https://ssl.pstatic.net/static/pwe/address/img_profile.png' },
-      createdAt: '2024-03-25T15:45:00'
-    },
-    {
-      id: 9,
-      name: '임혜진',
-      nickName: '혜진',
-      email: 'hyejin@nextlevel.com',
-      point: 30000,
-      socialProvider: '',
-      img: { id: 9, uri: 'https://k.kakaocdn.net/dn/profile_default.png' },
-      createdAt: '2024-01-08T12:00:00'
-    },
-    {
-      id: 10,
-      name: '오준석',
-      nickName: '준석',
-      email: 'junseok@gmail.com',
-      point: 0,
-      socialProvider: 'google',
-      img: undefined,
-      createdAt: '2024-04-12T09:15:00'
-    },{
-      id: 13,
-      name: '오준석',
-      nickName: '준석',
-      email: 'junseok@gmail.com',
-      point: 0,
-      socialProvider: 'google',
-      img: undefined,
-      createdAt: '2024-04-12T09:15:00'
+  // API 데이터 상태
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // API에서 유저 데이터 가져오기
+  const fetchUsers = async () => {
+    try {
+      setLoading(true)
+      const response = await fetchUserList({
+        page: 0,
+        size: 50,
+        sort: 'id,desc'
+      })
+
+      // 다양한 응답 형식 지원
+      let userData: User[] = []
+      if (response.content) {
+        userData = response.content // Spring Boot Pageable 형식
+      } else if (response.data) {
+        userData = response.data // 커스텀 API 형식
+      } else if (Array.isArray(response)) {
+        userData = response // 직접 배열 형식
+      }
+
+      setUsers(userData)
+    } catch (error) {
+      console.error('유저 목록 조회 실패:', error)
+      toast.error('유저 목록을 불러오는데 실패했습니다.')
+      setUsers([]) // 에러 시 빈 배열로 설정
+    } finally {
+      setLoading(false)
     }
+  }
 
-  ]
-
-  const [users] = useState<User[]>(dummyUsers)
-
+  useEffect(() => {
+    fetchUsers()
+  }, [])
 
   // 검색 및 필터 적용
   const filteredUsers = users.filter(user => {
@@ -212,13 +226,17 @@ const AdminUsers: React.FC = () => {
         aValue = a.point
         bValue = b.point
         break
+      case 'role':
+        aValue = a.role || 'USER'
+        bValue = b.role || 'USER'
+        break
       case 'provider':
         aValue = a.socialProvider
         bValue = b.socialProvider
         break
       case 'createdAt':
-        aValue = new Date(a.createdAt).getTime()
-        bValue = new Date(b.createdAt).getTime()
+        aValue = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        bValue = b.createdAt ? new Date(b.createdAt).getTime() : 0
         break
       default:
         aValue = a.id
@@ -237,7 +255,7 @@ const AdminUsers: React.FC = () => {
       : <i className="bi bi-caret-down-fill text-blue-600 text-xs ms-1"></i>
   }
 
-  const getProviderBadge = (provider: string) => {
+  const getProviderBadge = (provider: string | null) => {
     if (!provider) {
       return (
         <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded inline-flex items-center gap-1">
@@ -268,7 +286,6 @@ const AdminUsers: React.FC = () => {
       // TODO: API 연결
       // await api.patch(`/admin/users/${userId}/nickname`, { nickName: newNickname })
     }
-    setOpenMenuId(null)
   }
 
   const handleDeleteUser = async (userId: number, userName: string) => {
@@ -284,7 +301,6 @@ const AdminUsers: React.FC = () => {
       toast.success(`${userName} 유저 삭제 완료 (API 연결 후 실제 적용)`)
       // TODO: API 연결
       // await api.delete(`/admin/users/${userId}`)
-    setOpenMenuId(null)
   }
 
   const handleResetPassword = async (userId: number, userName: string) => {
@@ -300,7 +316,7 @@ const AdminUsers: React.FC = () => {
       toast.success(`${userName} 비밀번호 초기화 완료 (API 연결 후 실제 적용)`)
       // TODO: API 연결
       // await api.post(`/admin/users/${userId}/reset-password`)
-    setOpenMenuId(null)
+    }
   }
 
   const handleSuspendUser = async (userId: number, userName: string) => {
@@ -314,92 +330,221 @@ const AdminUsers: React.FC = () => {
     })
     if (!confirmResult.isConfirmed) return
       toast.success(`${userName} 유저 정지 완료 (API 연결 후 실제 적용)`)
-      // TODO: API 연결
-      // await api.patch(`/admin/users/${userId}/status`, { status: 'SUSPENDED' })
-    setOpenMenuId(null)
   }
 
-  const handleViewDetail = (user: User) => {
-    if (expandedUserId === user.id) {
-      // 닫을 때 애니매이션 시작
-      setIsClosing(true)
-      setTimeout(() => {
-        setExpandedUserId(null)
-        setSelectedUser(null)
-        setIsClosing(false)
-      }, 300) // 애니매이션 시간과 동일
-    } else {
-      // 열 때
-      setIsClosing(false)
-      // 실제 API에서 상세 정보 가져오기 (더미 데이터로 시뮬레이션)
+  // 역할 변경 핸들러
+  const handleRoleChange = async (userId: number, newRole: string) => {
+    try {
+      const response = await api.put('/admin/user/update', {
+        id: userId,
+        name: 'role',
+        value: newRole
+      })
+
+      if (response.data.message === 'success') {
+        toast.success('역할이 성공적으로 변경되었습니다.')
+        // 사용자 목록 새로고침
+        fetchUsers()
+        // 선택된 사용자 정보 업데이트
+        if (selectedUser && selectedUser.id === userId) {
+          setSelectedUser({ ...selectedUser, role: newRole })
+        }
+      }
+    } catch (error) {
+      console.error('역할 변경 실패:', error)
+      toast.error('역할 변경에 실패했습니다.')
+    }
+  }
+
+  // 포인트 변경 핸들러
+  const handlePointChange = async (userId: number, adjustValue: number) => {
+    try {
+      // 음수 포인트 검증
+      const currentPoint = selectedUser?.point || 0
+      const newPoint = currentPoint + adjustValue
+      
+      if (newPoint < 0) {
+        toast.error('포인트가 음수가 될 수 없습니다.')
+        return
+      }
+
+      // API에 조정값을 전달 (절대값이 아닌 증감값)
+      const response = await api.put('/admin/user/update', {
+        id: userId,
+        name: 'point',
+        value: adjustValue  // 증감값을 그대로 전달
+      })
+
+      if (response.data.message === 'success') {
+        toast.success(`포인트가 ${adjustValue > 0 ? '+' : ''}${adjustValue.toLocaleString()}P 조정되었습니다.`)
+        // 사용자 목록 새로고침
+        fetchUsers()
+        // 선택된 사용자 정보 업데이트
+        if (selectedUser && selectedUser.id === userId) {
+          setSelectedUser({ ...selectedUser, point: newPoint })
+        }
+      }
+    } catch (error: any) {
+      console.error('포인트 변경 실패:', error)
+      console.error('에러 상세:', error.response?.data)
+      toast.error('포인트 변경에 실패했습니다.')
+    }
+  }
+
+  // 프로젝트 상태 변경 핸들러
+  const handleProjectStatusChange = async (projectId: number, newStatus: string) => {
+    try {
+      const response = await api.post(`/admin/project/status/${projectId}?status=${newStatus}`)
+
+      if (response.data.message === 'success') {
+        toast.success('프로젝트 상태가 성공적으로 변경되었습니다.')
+        // 사용자 목록 새로고침
+        fetchUsers()
+        // 선택된 사용자 정보 업데이트
+        if (selectedUser && selectedUser.projects) {
+          const updatedProjects = selectedUser.projects.map(project => 
+            project.id === projectId ? { ...project, status: newStatus as Project['status'] } : project
+          )
+          setSelectedUser({ ...selectedUser, projects: updatedProjects })
+        }
+      }
+    } catch (error: any) {
+      console.error('프로젝트 상태 변경 실패:', error)
+      toast.error(error.response?.data?.message || '프로젝트 상태 변경에 실패했습니다.')
+    }
+  }
+
+  // 프로젝트 상태 표시 텍스트 변환
+  const getStatusDisplayText = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'PENDING': '시작 전',
+      'PROGRESS': '진행 중',
+      'STOPPED': '중단됨',
+      'SUCCESS': '펀딩성공',
+      'FAIL': '펀딩실패',
+      'END': '종료'
+    }
+    return statusMap[status] || status
+  }
+
+  // 프로젝트 상태 값 변환 (표시 텍스트 -> API 값)
+  const getStatusApiValue = (displayText: string) => {
+    const statusMap: { [key: string]: string } = {
+      '시작 전': 'PENDING',
+      '진행 중': 'PROGRESS',
+      '중단됨': 'STOPPED',
+      '펀딩성공': 'SUCCESS',
+      '펀딩실패': 'FAIL',
+      '종료': 'END'
+    }
+    return statusMap[displayText] || displayText
+  }
+
+  const handleViewDetail = async (user: User) => {
+    try {
+      let projects: Project[] = []
+      let fundingProjects: Project[] = []
+      let coupons: Coupon[] = []
+
+      // 프로젝트 조회 (에러 발생해도 계속 진행)
+      try {
+        const projectsRes = await api.post('/admin/project', {
+          userId: user.id,
+          page: 0,
+          pageCount: 100,
+          type: 'PROJECT',
+        })
+        
+        projects = projectsRes.data.data?.projects?.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          tags: item.tags || [],
+          status: item.status,
+          completionRate: item.completionRate || 0,
+          userCount: item.userCount || 0,
+          createdAt: item.createdAt,
+          author: item.author,
+          titleImg: item.titleImg
+        })) || []
+        
+        console.log('생성한 프로젝트:', projects)
+      } catch (err: any) {
+        console.error('프로젝트 조회 실패:', err)
+        console.error('에러 응답:', err.response?.data)
+        console.log('프로젝트를 불러올 수 없어 빈 배열로 설정합니다.')
+      }
+
+      // 펀딩한 프로젝트 조회 (에러 발생해도 계속 진행)
+      try {
+        const fundingRes = await api.post('/admin/project', {
+          userId: user.id,
+          page: 0,
+          pageCount: 100,
+          type: 'FUNDING',
+        })
+        
+        fundingProjects = fundingRes.data.data?.projects?.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          tags: item.tags || [],
+          status: item.status,
+          completionRate: item.completionRate || 0,
+          userCount: item.userCount || 0,
+          createdAt: item.createdAt,
+          author: item.author,
+          titleImg: item.titleImg
+        })) || []
+        
+        console.log('펀딩한 프로젝트:', fundingProjects)
+      } catch (err: any) {
+        console.error('펀딩한 프로젝트 조회 실패:', err)
+        console.error('에러 응답:', err.response?.data)
+        console.log('펀딩한 프로젝트를 불러올 수 없어 빈 배열로 설정합니다.')
+      }
+
+      // 쿠폰 조회 (에러 발생해도 계속 진행)
+      try {
+        const couponsRes = await api.get('/admin/coupon', {
+          params: { userId: user.id }
+        })
+        
+        coupons = couponsRes.data.data || []
+        console.log('쿠폰 조회 결과:', coupons)
+      } catch (err: any) {
+        console.error('쿠폰 조회 실패:', err)
+        console.error('에러 응답:', err.response?.data)
+        console.log('쿠폰을 불러올 수 없어 빈 배열로 설정합니다.')
+      }
+
       const detailUser: UserDetail = {
         ...user,
-        address: '서울특별시 강남구 테헤란로 123',
-        number: '010-1234-5678',
-        areaNumber: '02-1234-5678',
-        projects: [
-          {
-            id: 101,
-            title: '스마트 홈 IoT 디바이스',
-            category: '테크/가전',
-            status: '펀딩중',
-            currentFunding: 1200000,
-            targetFunding: 2000000,
-            backers: 45,
-            createdDate: '2024-10-01'
-          },
-          {
-            id: 102,
-            title: '에코 프렌들리 텀블러',
-            category: '라이프스타일',
-            status: '펀딩성공',
-            currentFunding: 800000,
-            targetFunding: 500000,
-            backers: 32,
-            createdDate: '2024-08-15'
-          }
-        ],
-        followingProjects: [
-          {
-            id: 201,
-            title: 'VR 교육 플랫폼',
-            category: '교육/키즈',
-            status: '펀딩중',
-            currentFunding: 950000,
-            targetFunding: 1500000,
-            backers: 67,
-            createdDate: '2024-09-10'
-          },
-          {
-            id: 202,
-            title: '천연 화장품 라인',
-            category: '뷰티/헬스',
-            status: '펀딩성공',
-            currentFunding: 650000,
-            targetFunding: 600000,
-            backers: 28,
-            createdDate: '2024-07-05'
-          },
-          {
-            id: 203,
-            title: '보드게임 세트',
-            category: '취미/DIY',
-            status: '펀딩중',
-            currentFunding: 500000,
-            targetFunding: 800000,
-            backers: 25,
-            createdDate: '2024-09-25'
-          }
-        ]
+        projects: projects,
+        followingProjects: fundingProjects,
+        coupons: coupons
+      }
+
+      setSelectedUser(detailUser)
+      setActiveTab('basic')
+      setProjectsPage(1) // 페이지 초기화
+      setIsModalOpen(true)
+    } catch (error) {
+      console.error('유저 상세 정보 조회 실패:', error)
+      // API 실패 시 기본 데이터로 표시
+      const detailUser: UserDetail = {
+        ...user,
+        projects: [],
+        followingProjects: [],
+        coupons: []
       }
       setSelectedUser(detailUser)
-      setExpandedUserId(user.id)
-      setActiveTab('info') // 유저 선택 시 기본 정보 탭으로 리셋
+      setActiveTab('basic')
+      setIsModalOpen(true)
+      toast.error('일부 정보를 불러오는데 실패했습니다.')
     }
   }
 
   return (
-    <div className="space-y-4 animate-fadeIn">
+    <div className="min-h-screen flex flex-col animate-fadeIn">
       <style>{`
         @keyframes fadeIn {
           from {
@@ -570,9 +715,9 @@ const AdminUsers: React.FC = () => {
       </div>
 
       {/* 유저 테이블 */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden animate-slideInDown animate-delay-200">
-        <div className="overflow-x-auto">
-          <table className="min-w-[900px] w-full text-sm">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden animate-slideInDown animate-delay-200 flex-grow min-h-[600px]">
+        <div className="overflow-x-auto h-full">
+          <table className="min-w-[900px] w-full text-sm h-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th
@@ -608,37 +753,47 @@ const AdminUsers: React.FC = () => {
                 >
                   포인트 {getSortIcon('point')}
                 </th>
-                <th
+                <th 
+                  onClick={() => handleSort('role')}
+                  className="px-4 py-2 min-w-[90px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                >
+                  권한 {getSortIcon('role')}
+                </th>
+                <th 
                   onClick={() => handleSort('provider')}
                   className="px-4 py-2 min-w-[100px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
                 >
                   가입경로 {getSortIcon('provider')}
                 </th>
-                <th
-                  onClick={() => handleSort('createdAt')}
-                  className="px-4 py-2 min-w-[120px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
-                >
-                  가입일 {getSortIcon('createdAt')}
-                </th>
-                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-700 w-32">
-                  관리
-                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {sortedUsers.map((user) => (
-                <>
+              {loading ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-2"></div>
+                      유저 목록을 불러오는 중...
+                    </div>
+                  </td>
+                </tr>
+              ) : sortedUsers.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                    {searchTerm ? '검색 결과가 없습니다.' : '등록된 유저가 없습니다.'}
+                  </td>
+                </tr>
+              ) : (
+                sortedUsers.map((user) => (
                   <tr
                     key={user.id}
                     onClick={(e) => {
-                      // 관리 메뉴 영역 클릭 시 확장 방지
+                      // 관리 메뉴 영역 클릭 시 모달 열기 방지
                       if (!(e.target as HTMLElement).closest('.action-menu')) {
                         handleViewDetail(user)
                       }
                     }}
-                    className={`hover:bg-gray-50 cursor-pointer transition-colors ${
-                      expandedUserId === user.id ? 'bg-blue-50/50' : ''
-                    }`}
+                    className="hover:bg-gray-50 cursor-pointer transition-colors"
                   >
                     <td className="px-4 py-2 min-w-[50px] text-sm text-gray-900 whitespace-nowrap">
                       {user.id}
@@ -676,319 +831,20 @@ const AdminUsers: React.FC = () => {
                     <td className="px-4 py-2 text-sm text-gray-900 font-semibold">
                       {user.point.toLocaleString()}P
                     </td>
+                    <td className="px-4 py-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        (user.role || 'USER') === 'ADMIN' 
+                          ? 'bg-red-100 text-red-700' 
+                          : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {(user.role || 'USER') === 'ADMIN' ? '관리자' : '유저'}
+                      </span>
+                    </td>
                     <td className="px-4 py-2 hidden sm:table-cell">
-                      {getProviderBadge(user.socialProvider)}
-                    </td>
-                    <td className="px-4 py-2 hidden sm:table-cell text-sm text-gray-600">
-                      {new Date(user.createdAt).toLocaleDateString('ko-KR')}
-                    </td>
-                    <td className="px-4 py-2 text-center relative action-menu">
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="relative">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setOpenMenuId(openMenuId === user.id ? null : user.id)
-                            }}
-                            className="p-1 text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded"
-                            title="관리 메뉴"
-                          >
-                            <i className="bi bi-three-dots-vertical text-base"></i>
-                          </button>
-
-                          {openMenuId === user.id && (
-                            <>
-                              <div
-                                className="fixed inset-0 z-10"
-                                onClick={() => setOpenMenuId(null)}
-                              ></div>
-                              <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
-                                <button
-                                  onClick={() => handleEditNickname(user.id, user.nickName)}
-                                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                >
-                                  <i className="bi bi-pencil text-blue-600"></i>
-                                  닉네임 변경
-                                </button>
-                                {!user.socialProvider && (
-                                  <button
-                                    onClick={() => handleResetPassword(user.id, user.name)}
-                                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                  >
-                                    <i className="bi bi-key text-yellow-600"></i>
-                                    비밀번호 초기화
-                                  </button>
-                                )}
-                                <button
-                                  onClick={() => handleSuspendUser(user.id, user.name)}
-                                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                >
-                                  <i className="bi bi-pause-circle text-orange-600"></i>
-                                  유저 정지
-                                </button>
-                                <hr className="my-1" />
-                                <button
-                                  onClick={() => handleDeleteUser(user.id, user.name)}
-                                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                                >
-                                  <i className="bi bi-trash"></i>
-                                  유저 삭제
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
+                      {getProviderBadge(user.socialProvider || '')}
                     </td>
                   </tr>
-
-                  {/* 확장된 상세 정보 행 */}
-                  {expandedUserId === user.id && selectedUser && (
-                    <tr key={`${user.id}-detail`}>
-                      <td colSpan={9} className="p-0">
-                        <div
-                          className={`overflow-hidden ${isClosing ? 'detail-expand-exit' : 'detail-expand-enter'}`}
-                        >
-                          <div className="px-4 py-3 bg-gradient-to-b from-blue-50/30 to-transparent border-l-4 border-blue-500">
-                            <div className="flex items-start gap-6">
-                              {/* 왼쪽: 프로필 이미지 */}
-                              <div className="flex-shrink-0">
-                                <div className="w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center shadow-sm">
-                                  {selectedUser.img?.uri ? (
-                                    <img
-                                      src={selectedUser.img.uri}
-                                      alt={selectedUser.name}
-                                      onError={(e) => {
-                                        e.currentTarget.onerror = null
-                                        e.currentTarget.src = noImage
-                                      }}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                                      <span className="text-3xl font-bold text-blue-600">
-                                        {selectedUser.name.charAt(0)}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* 오른쪽: 상세 정보 */}
-                              <div className="flex-1">
-                                {/* 탭 메뉴 */}
-                                <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit mb-4">
-                                  <button
-                                    onClick={() => setActiveTab('info')}
-                                    className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
-                                      activeTab === 'info'
-                                        ? 'bg-white text-gray-900 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-900'
-                                    }`}
-                                  >
-                                    기본 정보
-                                  </button>
-                                  <button
-                                    onClick={() => setActiveTab('projects')}
-                                    className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
-                                      activeTab === 'projects'
-                                        ? 'bg-white text-gray-900 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-900'
-                                    }`}
-                                  >
-                                    작성한 프로젝트 ({selectedUser.projects.length})
-                                  </button>
-                                  <button
-                                    onClick={() => setActiveTab('following')}
-                                    className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
-                                      activeTab === 'following'
-                                        ? 'bg-white text-gray-900 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-900'
-                                    }`}
-                                  >
-                                    팔로우한 프로젝트 ({selectedUser.followingProjects.length})
-                                  </button>
-                                </div>
-
-                                <div className="flex items-center gap-3 mb-4">
-                                  <h3 className="text-base font-bold text-gray-900">{selectedUser.name}</h3>
-                                  <span className="text-sm text-gray-600">@{selectedUser.nickName}</span>
-                                  {getProviderBadge(selectedUser.socialProvider)}
-                                </div>
-
-                                {/* 탭 콘텐츠 */}
-                                {activeTab === 'info' && (
-                                  <div>
-                                    <div className="grid grid-cols-3 gap-x-6 gap-y-3">
-                                    <div>
-                                      <p className="text-xs text-gray-500 mb-0.5">유저 ID</p>
-                                      <p className="text-sm font-medium text-gray-900">#{selectedUser.id}</p>
-                                    </div>
-                                    <div>
-                                      <p className="text-xs text-gray-500 mb-0.5">포인트</p>
-                                      <p className="text-sm font-semibold text-blue-600">{selectedUser.point.toLocaleString()}P</p>
-                                    </div>
-                                    <div>
-                                      <p className="text-xs text-gray-500 mb-0.5">가입일</p>
-                                      <p className="text-sm text-gray-900">
-                                        {new Date(selectedUser.createdAt).toLocaleDateString('ko-KR')}
-                                      </p>
-                                    </div>
-                                    <div className="col-span-3">
-                                      <p className="text-xs text-gray-500 mb-0.5">이메일</p>
-                                      <p className="text-sm font-medium text-gray-900">{selectedUser.email}</p>
-                                    </div>
-                                    <div className="col-span-3">
-                                      <p className="text-xs text-gray-500 mb-0.5">주소</p>
-                                      <p className="text-sm text-gray-700">{selectedUser.address || '등록된 주소가 없습니다.'}</p>
-                                    </div>
-                                    <div>
-                                      <p className="text-xs text-gray-500 mb-0.5">휴대폰</p>
-                                      <p className="text-sm text-gray-700">{selectedUser.number || '-'}</p>
-                                    </div>
-                                    <div>
-                                      <p className="text-xs text-gray-500 mb-0.5">지역번호</p>
-                                      <p className="text-sm text-gray-700">{selectedUser.areaNumber || '-'}</p>
-                                    </div>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {activeTab === 'projects' && (
-                                  <div className="overflow-x-auto">
-                                    {selectedUser.projects.length > 0 ? (
-                                      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                                        <table className="w-full text-xs">
-                                          <thead className="bg-gray-50 border-b border-gray-200">
-                                            <tr>
-                                              <th className="px-4 py-3 text-left font-semibold text-gray-900">프로젝트명</th>
-                                              <th className="px-4 py-3 text-left font-semibold text-gray-900">카테고리</th>
-                                              <th className="px-4 py-3 text-center font-semibold text-gray-900">상태</th>
-                                              <th className="px-4 py-3 text-center font-semibold text-gray-900">후원자</th>
-                                              <th className="px-4 py-3 text-right font-semibold text-gray-900">현재금액</th>
-                                              <th className="px-4 py-3 text-right font-semibold text-gray-900">목표금액</th>
-                                              <th className="px-4 py-3 text-center font-semibold text-gray-900">달성률</th>
-                                              <th className="px-4 py-3 text-center font-semibold text-gray-900">관리</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody className="divide-y divide-gray-200">
-                                            {selectedUser.projects.map((project) => (
-                                              <tr key={project.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-4 py-3 font-medium text-gray-900 max-w-md">
-                                                  <div className="truncate" title={project.title}>
-                                                    {project.title}
-                                                  </div>
-                                                </td>
-                                                <td className="px-4 py-3 text-gray-600">{project.category}</td>
-                                                <td className="px-4 py-3 text-center">
-                                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                    project.status === '펀딩성공'
-                                                      ? 'bg-green-100 text-green-800'
-                                                      : project.status === '펀딩중'
-                                                      ? 'bg-blue-100 text-blue-800'
-                                                      : 'bg-red-100 text-red-800'
-                                                  }`}>
-                                                    {project.status}
-                                                  </span>
-                                                </td>
-                                                <td className="px-4 py-3 text-center text-gray-600 font-medium">{project.backers}명</td>
-                                                <td className="px-4 py-3 text-right font-medium text-gray-900">{project.currentFunding.toLocaleString()}원</td>
-                                                <td className="px-4 py-3 text-right font-medium text-gray-900">{project.targetFunding.toLocaleString()}원</td>
-                                                <td className="px-4 py-3 text-center">
-                                                  <span className="font-semibold text-blue-600">
-                                                    {Math.round((project.currentFunding / project.targetFunding) * 100)}%
-                                                  </span>
-                                                </td>
-                                                <td className="px-4 py-3 text-center">
-                                                  <button className="inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                                                    <i className="bi bi-gear text-xs"></i>
-                                                  </button>
-                                                </td>
-                                              </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    ) : (
-                                      <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-                                        <div className="flex flex-col items-center">
-                                          <i className="bi bi-folder-x text-4xl text-gray-400 mb-3"></i>
-                                          <p className="text-gray-500 font-medium">작성한 프로젝트가 없습니다.</p>
-                                          <p className="text-sm text-gray-400 mt-1">새로운 프로젝트를 시작해보세요.</p>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {activeTab === 'following' && (
-                                  <div className="overflow-x-auto">
-                                    {selectedUser.followingProjects.length > 0 ? (
-                                      <div className="py-6">
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                                        {selectedUser.followingProjects.map((project) => {
-                                          const rate = Math.round((project.currentFunding / project.targetFunding) * 100);
-                                          return (
-                                            <div key={project.id} className="group block rounded-xl ring-1 ring-gray-200 overflow-hidden bg-white hover:ring-purple-300 hover:shadow-lg transition">
-                                              <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 10' }}>
-                                                <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                                  <i className="bi bi-image text-2xl text-gray-400"></i>
-                                                </div>
-                                                <button className="absolute top-2 right-2 z-10 grid place-items-center w-7 h-7 rounded-full bg-white/90 text-gray-800 hover:bg-white shadow">
-                                                  <i className="bi bi-gear text-xs"></i>
-                                                </button>
-                                                <div className="absolute inset-x-0 bottom-0 p-2 flex items-center gap-2">
-                                                  <span className={`inline-flex items-center rounded-full text-xs px-2 py-0.5 backdrop-blur ${
-                                                    project.status === '펀딩성공'
-                                                      ? 'bg-green-500/90 text-white'
-                                                      : project.status === '펀딩중'
-                                                      ? 'bg-blue-500/90 text-white'
-                                                      : 'bg-red-500/90 text-white'
-                                                  }`}>
-                                                    {project.status}
-                                                  </span>
-                                                </div>
-                                                {/* 프로그래스바를 이미지 하단 테두리처럼 */}
-                                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200">
-                                                  <div
-                                                    className="h-full bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 transition-all duration-300"
-                                                    style={{ width: `${Math.min(rate, 100)}%` }}
-                                                  />
-                                                </div>
-                                              </div>
-                                              <div className="px-3 pt-2 pb-3">
-                                                <h3 className="text-sm font-bold leading-tight line-clamp-2 mb-1" title={project.title}>
-                                                  {project.title}
-                                                </h3>
-                                                <div className="text-xs font-semibold text-purple-600">
-                                                  {rate}% 달성
-                                                </div>
-                                              </div>
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                      </div>
-                                    ) : (
-                                      <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-                                        <div className="flex flex-col items-center">
-                                          <i className="bi bi-heart text-4xl text-gray-400 mb-3"></i>
-                                          <p className="text-gray-500 font-medium">팔로우한 프로젝트가 없습니다.</p>
-                                          <p className="text-sm text-gray-400 mt-1">관심 있는 프로젝트를 팔로우해보세요.</p>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
@@ -1000,6 +856,617 @@ const AdminUsers: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* 사용자 상세 모달 */}
+      {isModalOpen && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-[1200px] h-[85vh] max-h-[900px] overflow-hidden">
+            {/* 모달 헤더 */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex items-center gap-4">
+                {/* 프로필 이미지 */}
+                <div className="w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center shadow-sm">
+                  {selectedUser.img?.uri ? (
+                    <img 
+                      src={selectedUser.img.uri} 
+                      alt={selectedUser.name}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null
+                        e.currentTarget.src = noImage
+                      }}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-blue-600">
+                        {selectedUser.name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {/* 사용자 정보 */}
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">{selectedUser.name}</h2>
+                  <p className="text-sm text-gray-600">@{selectedUser.nickName}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {getProviderBadge(selectedUser.socialProvider || 'LOCAL')}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      (selectedUser.role || 'USER') === 'ADMIN' 
+                        ? 'bg-red-100 text-red-800' 
+                        : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {(selectedUser.role || 'USER') === 'ADMIN' ? '관리자' : '일반 사용자'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {/* 닫기 버튼 */}
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <i className="bi bi-x-lg text-xl text-gray-500"></i>
+              </button>
+            </div>
+
+            {/* 모달 콘텐츠 */}
+            <div className="p-6 overflow-y-auto" style={{ height: 'calc(85vh - 120px)', maxHeight: 'calc(900px - 120px)' }}>
+              {/* 탭 메뉴 */}
+              <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit mb-6">
+                <button
+                  onClick={() => setActiveTab('basic')}
+                  className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
+                    activeTab === 'basic'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  기본 정보
+                </button>
+                <button
+                  onClick={() => setActiveTab('projects')}
+                  className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
+                    activeTab === 'projects'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  작성한 프로젝트 ({selectedUser.projects.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('coupons')}
+                  className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
+                    activeTab === 'coupons'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  보유 쿠폰 ({selectedUser.coupons?.length || 0})
+                </button>
+                <button
+                  onClick={() => setActiveTab('management')}
+                  className={`px-4 py-2 rounded-md font-medium transition-all text-sm ${
+                    activeTab === 'management'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  관리
+                </button>
+              </div>
+
+              {/* 탭 콘텐츠 */}
+              {activeTab === 'basic' && (
+                <div className="space-y-4">
+                  {/* 전체 정보를 하나의 깔끔한 카드로 */}
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    {/* 계정 정보 섹션 */}
+                    <div className="p-6 border-b border-gray-100">
+                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">계정 정보</h3>
+                      <div className="grid grid-cols-3 gap-6">
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">유저 ID</label>
+                          <p className="text-base font-semibold text-gray-900">#{selectedUser.id}</p>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">이름</label>
+                          <p className="text-base font-semibold text-gray-900">{selectedUser.name}</p>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">닉네임</label>
+                          <p className="text-base font-medium text-gray-700">@{selectedUser.nickName}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-6 mt-4">
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">역할</label>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${
+                            (selectedUser.role || 'USER') === 'ADMIN' 
+                              ? 'bg-red-50 text-red-700 border border-red-200' 
+                              : 'bg-blue-50 text-blue-700 border border-blue-200'
+                          }`}>
+                            <i className={`bi ${(selectedUser.role || 'USER') === 'ADMIN' ? 'bi-shield-check' : 'bi-person'} mr-1.5`}></i>
+                            {(selectedUser.role || 'USER') === 'ADMIN' ? '관리자' : '일반 사용자'}
+                          </span>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">포인트</label>
+                          <p className="text-base font-bold text-gray-900">{selectedUser.point.toLocaleString()}<span className="text-sm text-gray-500 ml-1">P</span></p>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">가입 경로</label>
+                          <div className="mt-0.5">
+                            {getProviderBadge(selectedUser.socialProvider || 'LOCAL')}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 연락처 정보 섹션 */}
+                    <div className="p-6 border-b border-gray-100 bg-gray-50">
+                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">연락처</h3>
+                      <div className="grid grid-cols-3 gap-6">
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">이메일</label>
+                          <p className="text-sm text-gray-900 flex items-center gap-2 truncate" title={selectedUser.email}>
+                            <i className="bi bi-envelope text-gray-400 text-xs"></i>
+                            {selectedUser.email}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">전화번호</label>
+                          <p className="text-sm text-gray-900 flex items-center gap-2">
+                            <i className="bi bi-telephone text-gray-400 text-xs"></i>
+                            {selectedUser.number || (selectedUser.areaNumber ? `${selectedUser.areaNumber}` : '미등록')}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">주소</label>
+                          <p className="text-sm text-gray-900 flex items-center gap-2 truncate" title={selectedUser.address || '등록된 주소가 없습니다.'}>
+                            <i className="bi bi-geo-alt text-gray-400 text-xs"></i>
+                            {selectedUser.address || '미등록'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 계정 상태 섹션 */}
+                    <div className="p-6">
+                      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">계정 상태</h3>
+                      <div className="flex items-center gap-2">
+                        <i className="bi bi-calendar-check text-gray-400"></i>
+                        <span className="text-xs text-gray-500">가입일</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString('ko-KR', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          }) : '정보 없음'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'projects' && (
+                <div className="overflow-x-auto">
+                  {selectedUser.projects.length > 0 ? (
+                    <>
+                      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <table className="w-full text-xs">
+                          <thead className="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                              <th className="px-4 py-3 text-left font-semibold text-gray-900">프로젝트</th>
+                              <th className="px-4 py-3 text-left font-semibold text-gray-900">카테고리</th>
+                              <th className="px-4 py-3 text-center font-semibold text-gray-900">상태</th>
+                              <th className="px-4 py-3 text-center font-semibold text-gray-900">달성률</th>
+                              <th className="px-4 py-3 text-center font-semibold text-gray-900">후원자</th>
+                              <th className="px-4 py-3 text-center font-semibold text-gray-900">생성일</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {selectedUser.projects
+                              .slice((projectsPage - 1) * projectsPerPage, projectsPage * projectsPerPage)
+                              .map((project) => (
+                            <tr key={project.id} className="hover:bg-gray-50 transition-colors">
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-3">
+                                  <img
+                                    src={project.titleImg?.uri || noImage}
+                                    alt={project.title}
+                                    className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                                    onError={(e) => {
+                                      e.currentTarget.src = noImage
+                                    }}
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-medium text-gray-900 truncate max-w-xs" title={project.title}>
+                                      {project.title}
+                                    </div>
+                                    <div className="text-xs text-gray-500">ID: #{project.id}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex flex-wrap gap-1">
+                                  {project.tags && project.tags.length > 0 ? (
+                                    project.tags.map((tag, idx) => (
+                                      <span key={idx} className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
+                                        {tag}
+                                      </span>
+                                    ))
+                                  ) : (
+                                    <span className="text-gray-400">-</span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <select
+                                  value={project.status}
+                                  onChange={(e) => handleProjectStatusChange(project.id, e.target.value)}
+                                  className="px-2 py-1 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                >
+                                  <option value="PENDING">시작 전</option>
+                                  <option value="PROGRESS">진행 중</option>
+                                  <option value="STOPPED">중단됨</option>
+                                  <option value="SUCCESS">펀딩성공</option>
+                                  <option value="FAIL">펀딩실패</option>
+                                  <option value="END">종료</option>
+                                </select>
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <div className="flex flex-col items-center gap-1">
+                                  <span className="font-semibold text-blue-600">
+                                    {Math.round(project.completionRate || 0)}%
+                                  </span>
+                                  <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                    <div 
+                                      className="h-full bg-blue-600 rounded-full transition-all"
+                                      style={{ width: `${Math.min(project.completionRate || 0, 100)}%` }}
+                                    ></div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <span className="inline-flex items-center gap-1 text-gray-600 font-medium">
+                                  <i className="bi bi-people-fill text-gray-400"></i>
+                                  {project.userCount || 0}명
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-center text-gray-600">
+                                {project.createdAt ? new Date(project.createdAt).toLocaleDateString('ko-KR', {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit'
+                                }) : '-'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    {/* 페이지네이션 */}
+                    {selectedUser.projects.length > projectsPerPage && (
+                      <div className="mt-6 flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => setProjectsPage(prev => Math.max(1, prev - 1))}
+                          disabled={projectsPage === 1}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                            projectsPage === 1
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                        >
+                          <i className="bi bi-chevron-left"></i>
+                        </button>
+
+                        {Array.from({ length: Math.ceil(selectedUser.projects.length / projectsPerPage) }, (_, i) => i + 1).map((pageNum) => (
+                          <button
+                            key={pageNum}
+                            onClick={() => setProjectsPage(pageNum)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                              projectsPage === pageNum
+                                ? 'bg-gray-900 text-white'
+                                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        ))}
+
+                        <button
+                          onClick={() => setProjectsPage(prev => Math.min(Math.ceil(selectedUser.projects.length / projectsPerPage), prev + 1))}
+                          disabled={projectsPage === Math.ceil(selectedUser.projects.length / projectsPerPage)}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                            projectsPage === Math.ceil(selectedUser.projects.length / projectsPerPage)
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                        >
+                          <i className="bi bi-chevron-right"></i>
+                        </button>
+                      </div>
+                    )}
+                  </>
+                  ) : (
+                    <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+                      <div className="flex flex-col items-center">
+                        <i className="bi bi-folder-x text-4xl text-gray-400 mb-3"></i>
+                        <p className="text-gray-500 font-medium">작성한 프로젝트가 없습니다.</p>
+                        <p className="text-sm text-gray-400 mt-1">새로운 프로젝트를 시작해보세요.</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'coupons' && (
+                <div className="space-y-6">
+                  <div className="bg-white rounded-lg border border-gray-200">
+                    <div className="p-6 border-b border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <i className="bi bi-ticket-perforated text-purple-600"></i>
+                        보유 쿠폰 목록
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        이 유저가 보유하고 있는 쿠폰 내역입니다.
+                      </p>
+                    </div>
+                    
+                    {selectedUser.coupons && selectedUser.coupons.length > 0 ? (
+                      <div className="p-6">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {selectedUser.coupons.map((coupon) => (
+                            <div key={coupon.id} className="relative bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all group">
+                              {/* 쿠폰 상단 */}
+                              <div className="p-3 relative">
+                                {/* 배경 패턴 */}
+                                <div className="absolute inset-0 opacity-10">
+                                  <div className="absolute inset-0" style={{
+                                    backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+                                    backgroundSize: '15px 15px'
+                                  }}></div>
+                                </div>
+                                
+                                {/* 쿠폰 내용 */}
+                                <div className="relative">
+                                  <div className="flex items-center gap-1.5 mb-2">
+                                    <i className="bi bi-ticket-perforated-fill text-white text-sm"></i>
+                                    <span className="text-[10px] font-semibold text-white/80 uppercase tracking-wider">할인 쿠폰</span>
+                                  </div>
+                                  
+                                  <h4 className="font-bold text-white text-sm mb-2 line-clamp-1">
+                                    {coupon.name}
+                                  </h4>
+                                  
+                                  <div className="flex items-end gap-1">
+                                    <span className="text-2xl font-black text-white">
+                                      ₩{coupon.percent.toLocaleString()}
+                                    </span>
+                                    <span className="text-xs text-white/80 mb-0.5 font-medium">할인</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* 쿠폰 톱니 효과 */}
+                              <div className="h-3 relative bg-white">
+                                <div className="absolute top-0 left-0 right-0 h-3" style={{
+                                  backgroundImage: 'radial-gradient(circle at 50% 0%, transparent 6px, white 6px)',
+                                  backgroundSize: '15px 15px',
+                                  backgroundPosition: '0 0'
+                                }}></div>
+                              </div>
+                              
+                              {/* 쿠폰 하단 */}
+                              <div className="bg-white px-3 py-2 flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                                  <span className="text-[10px] font-medium text-gray-600">사용 가능</span>
+                                </div>
+                                <i className="bi bi-arrow-right text-xs text-gray-400 group-hover:text-purple-600 group-hover:translate-x-1 transition-all"></i>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-12 text-center">
+                        <div className="flex flex-col items-center">
+                          <i className="bi bi-ticket-perforated text-4xl text-gray-400 mb-3"></i>
+                          <p className="text-gray-500 font-medium">보유 중인 쿠폰이 없습니다.</p>
+                          <p className="text-sm text-gray-400 mt-1">쿠폰 관리 메뉴에서 쿠폰을 발급할 수 있습니다.</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'management' && (
+                <div className="space-y-4">
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    {/* 2열 그리드 레이아웃 */}
+                    <div className="grid grid-cols-2 gap-px bg-gray-200">
+                      {/* 권한 관리 */}
+                      <div className="bg-white p-6">
+                        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">권한 관리</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-2">현재 역할</label>
+                            <span className={`inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium ${
+                              (selectedUser.role || 'USER') === 'ADMIN' 
+                                ? 'bg-red-50 text-red-700 border border-red-200' 
+                                : 'bg-blue-50 text-blue-700 border border-blue-200'
+                            }`}>
+                              <i className={`bi ${(selectedUser.role || 'USER') === 'ADMIN' ? 'bi-shield-fill' : 'bi-person-fill'} mr-2`}></i>
+                              {(selectedUser.role || 'USER') === 'ADMIN' ? '관리자' : '일반 사용자'}
+                            </span>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-2">역할 변경</label>
+                            <select
+                              value={selectedUser.role || 'USER'}
+                              onChange={(e) => handleRoleChange(selectedUser.id, e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
+                            >
+                              <option value="USER">일반 사용자</option>
+                              <option value="ADMIN">관리자</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 포인트 관리 */}
+                      <div className="bg-white p-6">
+                        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">포인트 관리</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">현재 포인트</label>
+                            <p className="text-2xl font-bold text-gray-900">{selectedUser.point.toLocaleString()}<span className="text-base text-gray-500 ml-1">P</span></p>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-2">포인트 증감</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="number"
+                                placeholder="증감값 (양수: 증가, 음수: 감소)"
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
+                                id="pointAdjustInput"
+                                onKeyPress={(e) => {
+                                  if (e.key === 'Enter') {
+                                    const value = parseInt((e.target as HTMLInputElement).value);
+                                    if (!isNaN(value)) {
+                                      handlePointChange(selectedUser.id, value);
+                                      (e.target as HTMLInputElement).value = '';
+                                    }
+                                  }
+                                }}
+                              />
+                              <button
+                                onClick={() => {
+                                  const input = document.getElementById('pointAdjustInput') as HTMLInputElement;
+                                  const value = parseInt(input.value);
+                                  if (!isNaN(value)) {
+                                    handlePointChange(selectedUser.id, value);
+                                    input.value = '';
+                                  }
+                                }}
+                                className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                              >
+                                적용
+                              </button>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            <button
+                              onClick={() => handlePointChange(selectedUser.id, 1000)}
+                              className="px-3 py-2 text-xs font-medium bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                            >
+                              +1K
+                            </button>
+                            <button
+                              onClick={() => handlePointChange(selectedUser.id, 5000)}
+                              className="px-3 py-2 text-xs font-medium bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                            >
+                              +5K
+                            </button>
+                            <button
+                              onClick={() => handlePointChange(selectedUser.id, 10000)}
+                              className="px-3 py-2 text-xs font-medium bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                            >
+                              +10K
+                            </button>
+                            <button
+                              onClick={() => handlePointChange(selectedUser.id, -1000)}
+                              className="px-3 py-2 text-xs font-medium bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                            >
+                              -1K
+                            </button>
+                            <button
+                              onClick={() => handlePointChange(selectedUser.id, -5000)}
+                              className="px-3 py-2 text-xs font-medium bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                            >
+                              -5K
+                            </button>
+                            <button
+                              onClick={() => handlePointChange(selectedUser.id, -10000)}
+                              className="px-3 py-2 text-xs font-medium bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                            >
+                              -10K
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 계정 설정 */}
+                      <div className="bg-gray-50 p-6">
+                        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">계정 설정</h3>
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => handleEditNickname(selectedUser.id, selectedUser.nickName)}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors text-left"
+                          >
+                            <i className="bi bi-pencil-square text-gray-600"></i>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-gray-900">닉네임 변경</div>
+                              <div className="text-xs text-gray-500">사용자 닉네임 수정</div>
+                            </div>
+                            <i className="bi bi-chevron-right text-gray-400"></i>
+                          </button>
+                          {!selectedUser.socialProvider && (
+                            <button
+                              onClick={() => handleResetPassword(selectedUser.id, selectedUser.name)}
+                              className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors text-left"
+                            >
+                              <i className="bi bi-key-fill text-gray-600"></i>
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-gray-900">비밀번호 초기화</div>
+                                <div className="text-xs text-gray-500">임시 비밀번호 발급</div>
+                              </div>
+                              <i className="bi bi-chevron-right text-gray-400"></i>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 위험 구역 */}
+                      <div className="bg-gray-50 p-6">
+                        <h3 className="text-sm font-semibold text-red-600 uppercase tracking-wide mb-4">위험 구역</h3>
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => handleSuspendUser(selectedUser.id, selectedUser.name)}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-red-50 border border-red-200 rounded-lg transition-colors text-left"
+                          >
+                            <i className="bi bi-pause-circle-fill text-red-600"></i>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-red-900">계정 정지</div>
+                              <div className="text-xs text-red-600">사용자 활동 제한</div>
+                            </div>
+                            <i className="bi bi-chevron-right text-red-400"></i>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(selectedUser.id, selectedUser.name)}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                          >
+                            <i className="bi bi-trash-fill"></i>
+                            <div className="flex-1 text-left">
+                              <div className="text-sm font-medium">계정 삭제</div>
+                              <div className="text-xs opacity-80">되돌릴 수 없습니다</div>
+                            </div>
+                            <i className="bi bi-exclamation-triangle-fill"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
