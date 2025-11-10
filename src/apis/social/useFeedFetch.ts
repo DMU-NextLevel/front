@@ -20,10 +20,10 @@ export const useFeedCreate = () => {
 
         // imgs가 있으면 각 이미지를 추가
         if (request.imgs && request.imgs.length > 0) {
-            request.imgs.forEach((img) => formData.append('imgs', img))
+            request.imgs.forEach((img) => formData.append('img', img))
         } else {
             // imgs가 없을 때는 빈 Blob을 보내서 백엔드가 빈 배열로 인식하도록 함
-            formData.append('imgs', new Blob(), '')
+            formData.append('img', new Blob(), '')
         }
 
         const response = await api.post<responseFeedFetch>('/social/social', formData)

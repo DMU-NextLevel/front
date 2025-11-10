@@ -143,7 +143,7 @@ export const SocialFeedCreateModal = ({ isOpen, onClose, editMode = false, feedI
 							<div className='grid grid-cols-3 gap-3 mt-4'>
 								{previewUrls.map((url, index) => (
 									<div key={index} className='relative group'>
-										<img src={`${baseUrl}/img/${url}`} alt={`미리보기 ${index + 1}`} className='w-full h-24 object-cover rounded-lg' />
+										<img src={url} alt={`미리보기 ${index + 1}`} className='w-full h-24 object-cover rounded-lg' />
 										<button
 											onClick={() => handleRemoveImage(index)}
 											className='absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600'>
