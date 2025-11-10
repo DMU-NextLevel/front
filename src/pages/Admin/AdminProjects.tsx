@@ -945,6 +945,7 @@ const AdminProjects: React.FC = () => {
           </tbody>
         </table>
       </div>
+    </div>
 
       {/* 페이지네이션 */}
       {sortedProjects.length > 0 && (

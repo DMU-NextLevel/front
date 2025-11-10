@@ -278,7 +278,13 @@ const AdminPage: React.FC = () => {
         setPopularProjects(data as RecentProject[])
       }
     } catch (error) {
-      console.warn('인기 프로젝트 로딩 실패:', error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '잠시 후 다시 시도해주세요. 계속 발생시 관리자에게 문의해주세요.',
+        confirmButtonColor: '#a66bff',
+        confirmButtonText: '확인',
+      })
     }
   }
 

@@ -180,11 +180,11 @@ const AdminUsers: React.FC = () => {
 
   // 검색 및 필터 적용
   const filteredUsers = users.filter(user => {
-    const matchesSearch = 
+    const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.nickName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    
+
     const matchesProvider = providerFilter === 'ALL' || user.socialProvider === providerFilter
 
     return matchesSearch && matchesProvider
@@ -250,7 +250,7 @@ const AdminUsers: React.FC = () => {
 
   const getSortIcon = (field: string) => {
     if (sortField !== field) return <i className="bi bi-caret-down-fill text-gray-300 text-xs ms-1"></i>
-    return sortDirection === 'asc' 
+    return sortDirection === 'asc'
       ? <i className="bi bi-caret-up-fill text-blue-600 text-xs ms-1"></i>
       : <i className="bi bi-caret-down-fill text-blue-600 text-xs ms-1"></i>
   }
@@ -264,7 +264,7 @@ const AdminUsers: React.FC = () => {
         </span>
       )
     }
-    
+
     const providerMap = {
       'google': { class: 'bg-red-100 text-red-700', icon: 'bi-google', text: 'Google' },
       'naver': { class: 'bg-green-100 text-green-700', icon: 'bi-circle-fill', text: 'Naver' },
@@ -303,9 +303,17 @@ const AdminUsers: React.FC = () => {
       // await api.delete(`/admin/users/${userId}`)
   }
 
-  const handleResetPassword = (userId: number, userName: string) => {
-    if (window.confirm(`"${userName}" 유저의 비밀번호를 초기화하시겠습니까?`)) {
-      alert(`${userName} 비밀번호 초기화 완료 (API 연결 후 실제 적용)`)
+  const handleResetPassword = async (userId: number, userName: string) => {
+    const confirmResult = await Swal.fire({
+      title: `"${userName}" 유저의 비밀번호를 초기화하시겠습니까?`,
+      icon: 'warning',
+      confirmButtonColor: '#a666ff',
+      confirmButtonText: '확인',
+      cancelButtonColor: '#9e9e9e',
+      cancelButtonText: '취소',
+    })
+    if (!confirmResult.isConfirmed) return
+      toast.success(`${userName} 비밀번호 초기화 완료 (API 연결 후 실제 적용)`)
       // TODO: API 연결
       // await api.post(`/admin/users/${userId}/reset-password`)
     }
@@ -548,7 +556,7 @@ const AdminUsers: React.FC = () => {
             transform: translateY(0);
           }
         }
-        
+
         @keyframes slideInDown {
           from {
             opacity: 0;
@@ -559,25 +567,25 @@ const AdminUsers: React.FC = () => {
             transform: translateY(0);
           }
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out;
         }
-        
+
         .animate-slideInDown {
           animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .animate-delay-100 {
           animation-delay: 0.1s;
           animation-fill-mode: backwards;
         }
-        
+
         .animate-delay-200 {
           animation-delay: 0.2s;
           animation-fill-mode: backwards;
         }
-        
+
         @keyframes expandDown {
           from {
             opacity: 0;
@@ -588,7 +596,7 @@ const AdminUsers: React.FC = () => {
             transform: translateY(0) scaleY(1);
           }
         }
-        
+
         @keyframes collapseUp {
           from {
             opacity: 1;
@@ -599,22 +607,22 @@ const AdminUsers: React.FC = () => {
             transform: translateY(-20px) scaleY(0.95);
           }
         }
-        
+
         .detail-row-wrapper {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .detail-expand-enter {
           animation: expandDown 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
           transform-origin: top;
         }
-        
+
         .detail-expand-exit {
           animation: collapseUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
           transform-origin: top;
         }
       `}</style>
-      
+
       {/* 헤더 */}
       <div className="flex justify-between items-center animate-slideInDown">
         <div>
@@ -712,7 +720,7 @@ const AdminUsers: React.FC = () => {
           <table className="min-w-[900px] w-full text-sm h-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th 
+                <th
                   onClick={() => handleSort('id')}
                   className="px-4 py-2 min-w-[50px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
@@ -721,25 +729,25 @@ const AdminUsers: React.FC = () => {
                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                   프로필
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('name')}
                   className="px-4 py-2 min-w-[140px] max-w-[220px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   이름 {getSortIcon('name')}
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('nickName')}
                   className="px-4 py-2 min-w-[100px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
                   닉네임 {getSortIcon('nickName')}
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('email')}
                   className="px-4 py-2 min-w-[180px] max-w-[260px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap hidden sm:table-cell"
                 >
                   이메일 {getSortIcon('email')}
                 </th>
-                <th 
+                <th
                   onClick={() => handleSort('point')}
                   className="px-4 py-2 min-w-[80px] text-left text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 whitespace-nowrap"
                 >
@@ -778,7 +786,7 @@ const AdminUsers: React.FC = () => {
               ) : (
                 sortedUsers.map((user) => (
                   <tr
-                    key={user.id} 
+                    key={user.id}
                     onClick={(e) => {
                       // 관리 메뉴 영역 클릭 시 모달 열기 방지
                       if (!(e.target as HTMLElement).closest('.action-menu')) {
@@ -793,8 +801,8 @@ const AdminUsers: React.FC = () => {
                     <td className="px-4 py-2 min-w-[56px]">
                       <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                         {user.img?.uri ? (
-                          <img 
-                            src={user.img.uri} 
+                          <img
+                            src={user.img.uri}
                             alt={user.name}
                             onError={(e) => {
                               e.currentTarget.onerror = null
