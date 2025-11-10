@@ -66,7 +66,7 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
   useEffect(() => {
     const fetchStatistics = async () => {
       try {
-        const response = await api.get(`/statistics/${project.id}`);
+        const response = await api.get(`/public/summery/project/${project.id}`);
         if (response.data?.message === 'success' && Array.isArray(response.data.data)) {
           const formatted: Record<string, { amount: number; backers: number }> = {};
           response.data.data.forEach((item: MonthlyStat) => {
