@@ -35,7 +35,7 @@ const MyProjects: React.FC = () => {
   // ✅ 프로젝트 데이터 불러오기
   const fetchProjects = async () => {
     try {
-      const response = await api.post('/project/list', {
+      const response = await api.post('/social/user/project', {
         page: 0,
         pageCount: 10,
         type: 'PROJECT',
