@@ -62,6 +62,8 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
     Record<string, { amount: number; backers: number }>
   >({});
 
+  const [data, setData] = useState<{month: number, userCount: number, fundingPrice: number, year: number}[]>([])
+
   // ✅ API 연동
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -69,6 +71,7 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
         const response = await api.get(`/public/summery/project/${project.id}`);
         if (response.data?.message === 'success' && Array.isArray(response.data.data)) {
           const formatted: Record<string, { amount: number; backers: number }> = {};
+          setData(response.data.data)
           response.data.data.forEach((item: MonthlyStat) => {
             const label = formatMonth(selectedYear, item.month);
             formatted[label] = {
@@ -121,7 +124,7 @@ const StatisticsOverlay: React.FC<StatisticsOverlayProps> = ({ project, onClose 
             <StatCard>
               <StatLabel>총 모금액</StatLabel>
               <StatValue>
-                {Math.round(project.fundingGoal * (project.progress / 100)).toLocaleString()}원
+                {data.reduce((acc: number, curr: { fundingPrice: number }) => acc + curr.fundingPrice, 0).toLocaleString()}원
               </StatValue>
               <ProgressBar>
                 <ProgressFill $progress={project.progress} />
