@@ -492,7 +492,7 @@ export const HeaderMain: React.FC = () => {
 								<button
 									onClick={(e) => {
 										e.preventDefault()
-										navigate('/following')
+										navigate('/mypage/following')
 										setIsMobileMenuOpen(false)
 									}}
 									className='flex items-center space-x-3 w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors'
@@ -683,7 +683,7 @@ export const HeaderMain: React.FC = () => {
 								<button
 									onClick={(e) => {
 										e.preventDefault()
-										navigate('/following')
+										navigate('/mypage/following')
 									}}
 									className={`flex items-center space-x-3 w-full text-left p-3 rounded-lg transition-colors ${location.pathname === '/' && !isScrolled ? 'bg-transparent border border-white/50 hover:bg-white/30 hover:border-white/70' : 'bg-white/80 border border-gray-300/50 hover:bg-white/90 hover:border-gray-400/50'}`}
 								>
